@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.facesys.data.statistic.mapper.HomeDataShowMapper">
+  <resultMap id="BaseResultMap" type="com.ss.facesys.data.statistic.common.dto.OneBidThirtyVO">
+    <result column="PERIOD_TYPE" jdbcType="INTEGER" property="periodType" />
+    <result column="VILLAGE_CODE" jdbcType="VARCHAR" property="villageCode" />
+    <result column="NOW_CNT" jdbcType="INTEGER" property="nowCnt" />
+    <result column="CHAIN_RATIO" jdbcType="BIGINT" property="chainRatio" />
+    <result column="CREASE_CNT" jdbcType="INTEGER" property="creaseCnt" />
+  </resultMap>
+
+
+  <resultMap id="BaseResultMap2" type="com.ss.facesys.data.statistic.common.dto.StPerceptVO">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="STAT_DATE" jdbcType="INTEGER" property="statDate" />
+    <result column="NOW_CNT" jdbcType="INTEGER" property="nowCnt" />
+    <result column="PERIOD_TYPE" jdbcType="INTEGER" property="periodType" />
+    <result column="VILLAGE_CODE" jdbcType="VARCHAR" property="villageCode" />
+    <result column="DATA_TYPE" jdbcType="INTEGER" property="dataType" />
+    <result column="VILLAGE_NAME" jdbcType="VARCHAR" property="villageName" />
+  </resultMap>
+
+
+  <sql id="Base_Column_List">
+    PERIOD_TYPE, VILLAGE_CODE, NOW_CNT, CHAIN_RATIO, CREASE_CNT
+  </sql>
+
+  <sql id="Base_Column_List2">
+    ID, STAT_DATE, NOW_CNT, PERIOD_TYPE, VILLAGE_CODE, DATA_TYPE, VILLAGE_NAME
+  </sql>
+
+  <select id="selAllOneBidThirty" parameterType="java.lang.String" resultType="com.ss.facesys.data.statistic.common.dto.OneBidThirtyVO">
+    select <include refid="Base_Column_List" />
+    from cw_st_people
+    Where  date_format(from_unixtime(STAT_DATE / 1000),'%Y-%m-%d') = DATE_ADD(str_to_date(DATE_FORMAT(NOW(), '%Y-%m-%d'), '%Y-%m-%d'), INTERVAL - 1 DAY)
+        AND VILLAGE_CODE = #{villageCode,jdbcType=VARCHAR})
+        AND PERIOD_TYPE = 1
+    UNION ALL
+    select <include refid="Base_Column_List" />
+    from cw_st_people
+    WHERE
+    date_format(from_unixtime(STAT_DATE / 1000),'%Y-%m-%d') &gt;= date_format(
+    date_sub(
+    date_sub(
+    now(),
+    INTERVAL WEEKDAY(NOW()) DAY
+    ),
+    INTERVAL 1 WEEK
+    ),
+    '%Y-%m-%d'
+    ) AND
+    date_format(from_unixtime(STAT_DATE / 1000),'%Y-%m-%d') &lt; date_format(
+    DATE_SUB(now(),INTERVAL WEEKDAY(now()) day),
+    '%Y-%m-%d'
+    ) AND VILLAGE_CODE = #{villageCode,jdbcType=VARCHAR}
+      AND PERIOD_TYPE = 2
+    UNION ALL
+    select <include refid="Base_Column_List" />
+    from cw_st_people
+    Where  date_format(from_unixtime(STAT_DATE / 1000),'%Y-%m-%d') = date_format(
+    date_sub(
+    date_sub(
+    date_format(now(), '%y-%m-%d'),
+    INTERVAL extract(DAY FROM now()) - 1 DAY
+    ),
+    INTERVAL 1 MONTH
+    )
+    ,'%Y-%m') and VILLAGE_CODE = #{villageCode,jdbcType=VARCHAR}) AND PERIOD_TYPE = 3
+  </select>
+  <!--实有人口天数据-->
+  <select id="selPeopleDay" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from cw_st_people
+    Where  date_format(from_unixtime(STAT_DATE),'%Y-%m-%d') = date_format(NOW(),'%Y-%m-%d')
+    <if test="villageCode != null and villageCode != ''">
+      AND VILLAGE_CODE = #{villageCode,jdbcType=VARCHAR}
+    </if>
+    AND PERIOD_TYPE = 1
+  </select>
+  <!--实有房屋天数据-->
+  <select id="selHouseDay" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from cw_st_house
+    Where  date_format(from_unixtime(STAT_DATE),'%Y-%m-%d') = date_format(NOW(),'%Y-%m-%d')
+    <if test="villageCode != null and villageCode != ''">
+      AND VILLAGE_CODE = #{villageCode,jdbcType=VARCHAR}
+    </if>
+    AND PERIOD_TYPE = 1
+  </select>
+  <!--实有单位天数据-->
+  <select id="selCompanyDay" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from cw_st_company
+    Where  date_format(from_unixtime(STAT_DATE),'%Y-%m-%d') = date_format(NOW(),'%Y-%m-%d')
+    <if test="villageCode != null and villageCode != ''">
+      AND VILLAGE_CODE = #{villageCode,jdbcType=VARCHAR}
+    </if>
+    AND PERIOD_TYPE = 1
+  </select>
+  <!--实有人口周数据-->
+  <select id="selPeopleWeek" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from cw_st_people
+    Where  date_format(from_unixtime(STAT_DATE / 1000),'%Y-%m-%d') &gt;= date_format(
+    date_sub(
+    date_sub(
+    now(),
+    INTERVAL WEEKDAY(NOW()) DAY
+    ),
+    INTERVAL 1 WEEK
+    ),
+    '%Y-%m-%d'
+    ) AND
+    date_format(from_unixtime(STAT_DATE / 1000),'%Y-%m-%d') &lt; date_format(
+    DATE_SUB(now(),INTERVAL WEEKDAY(now()) day),
+    '%Y-%m-%d'
+    )
+    <if test="villageCode != null and villageCode != ''">
+      AND VILLAGE_CODE = #{villageCode,jdbcType=VARCHAR}
+    </if>
+    AND PERIOD_TYPE = 2
+  </select>
+  <!--实有房屋周数据-->
+  <select id="selHouseWeek" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from cw_st_house
+    Where  date_format(from_unixtime(STAT_DATE / 1000),'%Y-%m-%d') &gt;= date_format(
+    date_sub(
+    date_sub(
+    now(),
+    INTERVAL WEEKDAY(NOW()) DAY
+    ),
+    INTERVAL 1 WEEK
+    ),
+    '%Y-%m-%d'
+    ) AND
+    date_format(from_unixtime(STAT_DATE / 1000),'%Y-%m-%d') &lt; date_format(
+    DATE_SUB(now(),INTERVAL WEEKDAY(now()) day),
+    '%Y-%m-%d'
+    )
+    <if test="villageCode != null and villageCode != ''">
+      AND VILLAGE_CODE = #{villageCode,jdbcType=VARCHAR}
+    </if>
+    AND PERIOD_TYPE = 2
+  </select>
+  <!--实有单位周数据-->
+  <select id="selCompanyWeek" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from cw_st_company
+    Where  date_format(from_unixtime(STAT_DATE / 1000),'%Y-%m-%d') &gt;= date_format(
+    date_sub(
+    date_sub(
+    now(),
+    INTERVAL WEEKDAY(NOW()) DAY
+    ),
+    INTERVAL 1 WEEK
+    ),
+    '%Y-%m-%d'
+    ) AND
+    date_format(from_unixtime(STAT_DATE / 1000),'%Y-%m-%d') &lt; date_format(
+    DATE_SUB(now(),INTERVAL WEEKDAY(now()) day),
+    '%Y-%m-%d'
+    )
+    <if test="villageCode != null and villageCode != ''">
+      AND VILLAGE_CODE = #{villageCode,jdbcType=VARCHAR}
+    </if>
+    AND PERIOD_TYPE = 2
+  </select>
+  <!--实有人口月数据-->
+  <select id="selPeopleMouth" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from cw_st_people
+    Where  date_format(from_unixtime(STAT_DATE / 1000),'%Y-%m-%d') = date_format(
+    date_sub(
+    date_sub(
+    date_format(now(), '%y-%m-%d'),
+    INTERVAL extract(DAY FROM now()) - 1 DAY
+    ),
+    INTERVAL 1 MONTH
+    )
+    ,'%Y-%m')
+    <if test="villageCode != null and villageCode != ''">
+      AND VILLAGE_CODE = #{villageCode,jdbcType=VARCHAR}
+    </if>
+    AND PERIOD_TYPE = 3
+  </select>
+  <!--实有房屋月数据-->
+  <select id="selHouseMouth" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from cw_st_house
+    Where  date_format(from_unixtime(STAT_DATE / 1000),'%Y-%m-%d') = date_format(
+    date_sub(
+    date_sub(
+    date_format(now(), '%y-%m-%d'),
+    INTERVAL extract(DAY FROM now()) - 1 DAY
+    ),
+    INTERVAL 1 MONTH
+    )
+    ,'%Y-%m')
+    <if test="villageCode != null and villageCode != ''">
+      AND VILLAGE_CODE = #{villageCode,jdbcType=VARCHAR}
+    </if>
+    AND PERIOD_TYPE = 3
+  </select>
+  <!--实有单位月数据-->
+  <select id="selCompanyMouth" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from cw_st_company
+    Where  date_format(from_unixtime(STAT_DATE / 1000),'%Y-%m-%d') = date_format(
+    date_sub(
+    date_sub(
+    date_format(now(), '%y-%m-%d'),
+    INTERVAL extract(DAY FROM now()) - 1 DAY
+    ),
+    INTERVAL 1 MONTH
+    )
+    ,'%Y-%m')
+    <if test="villageCode != null and villageCode != ''">
+      AND VILLAGE_CODE = #{villageCode,jdbcType=VARCHAR}
+    </if>
+    AND PERIOD_TYPE = 3
+  </select>
+
+  <!--感知增量天数据-->
+  <select id="selPerceptDay" parameterType="java.lang.String" resultMap="BaseResultMap2">
+    select <include refid="Base_Column_List2" />
+    from cw_st_percept
+    Where  date_format(from_unixtime(STAT_DATE),'%Y-%m-%d') = date_format(now() - interval #{dayNum,jdbcType=INTEGER} day,'%Y-%m-%d')
+    <if test="villageCode != null and villageCode != ''">
+      AND VILLAGE_CODE = #{villageCode,jdbcType=VARCHAR}
+    </if>
+    AND PERIOD_TYPE = 1 AND DATA_TYPE = 1
+  </select>
+</mapper>

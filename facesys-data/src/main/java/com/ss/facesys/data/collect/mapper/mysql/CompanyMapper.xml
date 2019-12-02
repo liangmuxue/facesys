@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.facesys.data.collect.mapper.CompanyMapper">
+
+	<!--条件查询单位-->
+	<select id="getCompany" parameterType="com.ss.facesys.data.collect.common.model.Company" resultType="com.ss.facesys.data.collect.common.model.Company">
+		SELECT
+		a.*,
+		c.villageName,
+		e.enumName AS companyTypeName,
+		COUNT(p.companyCode) countPeople
+		FROM
+		cw_base_company a
+		LEFT JOIN cw_base_village c ON a.villageCode = c.villageCode
+		LEFT JOIN cw_base_enum e ON a.companyType = e.enumValue AND e.enumType = 'companyType'
+		LEFT JOIN cw_base_company_people p on p.companyCode = a.companyCode AND p.villageCode = a.villageCode
+		<where>
+			<if test="companyName != null and companyName != ''">
+				AND a.companyName LIKE concat('%',#{companyName},'%')
+			</if>
+			<if test="companyType != null and companyType != ''">
+				AND a.companyType =#{companyType}
+			</if>
+			<if test="villageCode != null and villageCode != ''">
+				AND a.villageCode =#{villageCode}
+			</if>
+			<if test="isDelete != null and isDelete != ''">
+				AND a.isDelete =#{isDelete}
+			</if>
+			<if test="villageCodes !=null and villageCodes != ''">
+				AND FIND_IN_SET(a.villageCode,#{villageCodes})
+			</if>
+			<if test="dsf != null and dsf !=''">
+				AND ${dsf}
+			</if>
+		</where>
+		GROUP BY a.companyCode
+	</select>
+
+	<select id="searchEmployee" parameterType="Map"
+		resultType="com.ss.facesys.data.collect.common.model.Employee">
+		SELECT
+		@rownum :=@rownum + 1 AS rowNum,
+		a.*
+		FROM
+		(SELECT @rownum := 0) r,
+		cw_base_employee a
+		<where>
+			<if test="name != null and name != ''">
+				a.`name` LIKE concat(concat('%',#{name}),'%')
+			</if>
+			<if test="sex != null and sex != ''">
+				and a.`sextype` =#{sex}
+			</if>
+			<if test="nation != null and nation != ''">
+				and a.`nation` LIKE concat(concat('%',#{nation}),'%')
+			</if>
+			<if test="ipcard != null and ipcard != ''">
+				and a.`ipcard` LIKE concat(concat('%',#{ipcard}),'%')
+			</if>
+			<if test="address != null and address != ''">
+				and a.`address` LIKE concat(concat('%',#{address}),'%')
+			</if>
+			<if test="company != null and company != ''">
+				and a.`company` LIKE concat(concat('%',#{company}),'%')
+			</if>
+			<if test="telephone != null and telephone != ''">
+				and a.`telephone` LIKE
+				concat(concat('%',#{telephone}),'%')
+			</if>
+		</where>
+		ORDER BY
+		rowNum ASC
+	</select>
+
+
+
+	<select id="getPeopleInformation"
+		parameterType="com.ss.facesys.data.collect.common.model.House"
+		resultType="com.ss.facesys.data.collect.common.model.People">
+		SELECT
+		b.id,
+		b.peopleId,
+		b.credentialNo,
+		b.peopleName,
+		c.enumName,
+		TIMESTAMPDIFF(
+		YEAR,
+		str_to_date(b.birthDate, '%Y-%m-%d'),
+		CURDATE()
+		) AS age,
+		b.label,
+		b.facePic,
+		b.idCardPic
+		FROM
+		cw_relation_people_house AS a,
+		cw_base_people AS b,
+		cw_base_enum AS c
+		WHERE
+		a.houseId = #{id}
+		AND
+		a.peopleId = b.peopleId
+		AND c.enumValue =
+		a.relation
+		AND c.enumType =
+		"houseRelation"
+	</select>
+
+	<select id="getEmployee" parameterType="Map"
+		resultType="com.ss.facesys.data.collect.common.model.Employee">
+		SELECT
+		@rownum :=@rownum + 1 AS rowNum,
+		b.*
+		FROM
+		(SELECT
+		@rownum := 0) r,
+		cw_base_company a,
+		cw_base_employee b
+		WHERE
+		b.companyId
+		=a.id
+		and a.id =#{id}
+		ORDER BY
+		rowNum ASC
+	</select>
+
+
+	<select id="statisticsCompany"
+		resultType="com.ss.facesys.data.baseinfo.common.dto.StatistiscsDTO">
+		SELECT
+		t2.enumType AS 'type',
+		t2.enumName AS 'label',
+		t2.enumValue AS
+		'value',
+		COUNT(id) AS 'number'
+		FROM
+		cw_base_company t1
+		LEFT JOIN
+		cw_base_enum t2 ON t1.companyType = t2.enumValue
+		AND
+		t2.enumType =
+		'companyType'
+		<where>
+			<if test="villageCode !=null and villageCode !=''">
+				t1.villageCode = #{villageCode}
+			</if>
+		</where>
+		GROUP BY t1.companyType;
+	</select>
+
+	<select id="pages"
+		parameterType="com.ss.facesys.data.collect.common.model.Company"
+		resultType="com.ss.facesys.data.collect.common.model.Company">
+		SELECT t1.*,
+		t2.villageName
+		FROM cw_base_company t1
+		LEFT JOIN cw_base_village t2 ON t1.villageCode
+		= t2.villageCode
+		<where>
+			<if test="villageCode !=null and villageCode !=''">
+				t1.villageCode = #{villageCode}
+			</if>
+			<if test="companyName !=null and companyName !=''">
+				AND t1.companyName LIKE CONCAT('%', #{companyName}, '%')
+			</if>
+			<if test="companyType !=null and companyType !=''">
+				AND t1.companyType = #{companyType}
+			</if>
+			<if test="companySize !=null and companySize !=''">
+				AND t1.companySize = #{companySize}
+			</if>
+			<if test="importantFlag !=null and importantFlag !=''">
+				AND t1.importantFlag = #{importantFlag}
+			</if>
+			<if test="companyAdress !=null and companyAdress !=''">
+				AND t1.companyAdress = #{companyAdress}
+			</if>
+			<if test="leaderName !=null and leaderName !=''">
+				AND t1.leaderName LIKE CONCAT('%', #{leaderName}, '%')
+			</if>
+			<if test="leaderTel !=null and leaderTel !=''">
+				AND t1.leaderTel = #{leaderTel}
+			</if>
+			<if test="companyTel !=null and companyTel !=''">
+				AND t1.companyTel LIKE CONCAT('%', #{companyTel}, '%')
+			</if>
+			<if test="sqlMap.dsf !=null and sqlMap.dsf !=''">
+				AND ${sqlMap.dsf}
+			</if>
+
+		</where>
+
+	</select>
+
+</mapper>

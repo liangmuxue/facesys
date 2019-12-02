@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+        namespace="com.ss.facesys.data.resource.mapper.CameraRefMapper">
+
+    <delete id="deletes"
+            parameterType="com.ss.facesys.data.resource.common.model.CameraRef">
+        DELETE
+        FROM
+        cw_base_camera_ref
+        <where>
+            <if test="locationId != null and locationId != ''">
+                locationId = #{locationId}
+            </if>
+            <if test="type != null">
+                AND type = #{type}
+            </if>
+        </where>
+    </delete>
+
+    <update id="updates"
+            parameterType="com.ss.facesys.data.resource.common.model.CameraRef">
+        UPDATE cw_base_camera_ref
+        SET
+        <if test="cameraId != null and cameraId != ''">
+            cameraId = #{cameraId}
+        </if>
+        <where>
+            <if test="locationId != null and locationId != ''">
+                locationId = #{locationId}
+            </if>
+            <if test="type != null">
+                AND type = #{type}
+            </if>
+        </where>
+    </update>
+
+</mapper>

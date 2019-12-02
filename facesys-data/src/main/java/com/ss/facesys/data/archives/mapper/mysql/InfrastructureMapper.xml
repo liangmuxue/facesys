@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.facesys.data.archives.mapper.InfrastructureMapper">
+	
+	<select id="getWater"
+		parameterType="com.ss.facesys.data.archives.common.dto.PersonInfraDTO"
+		resultType="com.ss.facesys.data.archives.common.model.Water">
+		SELECT
+			*
+		FROM
+			cw_base_water_usage t1
+		<where>
+			<if test="year != null and year != ''">
+				`year` = #{year}
+			</if>
+			<if test="month != null and month != ''">
+				AND `month` = #{month}
+			</if>
+			<if test="villageCode != null and villageCode != ''">
+				AND `villageCode` = #{villageCode}
+			</if>
+			<if test="buildingNo != null and buildingNo != ''">
+				AND `buildingNo` = #{buildingNo}
+			</if>
+			<if test="unitNo != null and unitNo != ''">
+				AND `unitNo` = #{unitNo}
+			</if>
+			<if test="houseNo != null and houseNo != ''">
+				AND `houseNo` = #{houseNo}
+			</if>
+			<if test="sqlString != null and sqlString != ''">
+				AND ${sqlString}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getElectric"
+		parameterType="com.ss.facesys.data.archives.common.dto.PersonInfraDTO"
+		resultType="com.ss.facesys.data.archives.common.model.Electric">
+		SELECT
+			*
+		FROM
+			cw_base_electric_usage t1
+		<where>
+			<if test="year != null and year != ''">
+				`year` = #{year}
+			</if>
+			<if test="month != null and month != ''">
+				AND `month` = #{month}
+			</if>
+			<if test="villageCode != null and villageCode != ''">
+				AND `villageCode` = #{villageCode}
+			</if>
+			<if test="buildingNo != null and buildingNo != ''">
+				AND `buildingNo` = #{buildingNo}
+			</if>
+			<if test="unitNo != null and unitNo != ''">
+				AND `unitNo` = #{unitNo}
+			</if>
+			<if test="houseNo != null and houseNo != ''">
+				AND `houseNo` = #{houseNo}
+			</if>
+			<if test="sqlString != null and sqlString != ''">
+				AND ${sqlString}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getGas"
+		parameterType="com.ss.facesys.data.archives.common.dto.PersonInfraDTO"
+		resultType="com.ss.facesys.data.archives.common.model.Gas">
+		SELECT
+			*
+		FROM
+			cw_base_gas_usage t1
+		<where>
+			<if test="year != null and year != ''">
+				`year` = #{year}
+			</if>
+			<if test="month != null and month != ''">
+				AND `month` = #{month}
+			</if>
+			<if test="villageCode != null and villageCode != ''">
+				AND `villageCode` = #{villageCode}
+			</if>
+			<if test="buildingNo != null and buildingNo != ''">
+				AND `buildingNo` = #{buildingNo}
+			</if>
+			<if test="unitNo != null and unitNo != ''">
+				AND `unitNo` = #{unitNo}
+			</if>
+			<if test="houseNo != null and houseNo != ''">
+				AND `houseNo` = #{houseNo}
+			</if>
+			<if test="sqlString != null and sqlString != ''">
+				AND ${sqlString}
+			</if>
+		</where>
+	</select>
+	
+</mapper>

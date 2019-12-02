@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ss.facesys.data.resource.mapper.CompanyDao">
+
+    <select id="findAllCompanys"
+            resultType="com.ss.facesys.data.resource.common.model.Company">
+        SELECT * FROM cw_base_company a
+        <where>
+            a.isDelete = 0
+            <if test="villageCode !=null and villageCode !=''">
+                and a.villageCode =#{villageCode}
+            </if>
+            <if test="sqlMap.dsf != null and sqlMap.dsf !=''">
+                and ${sqlMap.dsf}
+            </if>
+        </where>
+    </select>
+
+</mapper>

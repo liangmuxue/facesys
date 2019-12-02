@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+        namespace="com.ss.facesys.data.resource.mapper.ResourceCountMapper">
+
+    <select id="peopleCount" resultType="Integer">
+        SELECT COUNT(1) AS peopleCount FROM cw_base_people
+        <where>
+            <if test="villageCode !=null and villageCode !=''">
+                villageCode =#{villageCode}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="companyCount" resultType="Integer">
+        SELECT COUNT(1) AS peopleCount FROM cw_base_company
+        <where>
+            <if test="villageCode !=null and villageCode !=''">
+                villageCode =#{villageCode}
+            </if>
+        </where>
+    </select>
+
+    <select id="houseCount" resultType="Integer">
+        SELECT COUNT(1) AS peopleCount FROM cw_base_house
+        <where>
+            <if test="villageCode !=null and villageCode !=''">
+                villageCode =#{villageCode}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="everyPeopleCount"
+            resultType="com.ss.facesys.data.resource.common.dto.CountDTO">
+		SELECT
+		a.villageCode,
+		b.villageName,
+		COUNT(1) AS num
+		FROM
+		cw_base_people a,
+		cw_base_village b
+		WHERE
+		a.villageCode = b.villageCode
+		GROUP BY
+		a.villageCode,
+		b.villageName
+	</select>
+
+    <select id="everyCompanyCount"
+            resultType="com.ss.facesys.data.resource.common.dto.CountDTO">
+		SELECT
+		a.villageCode,
+		b.villageName,
+		COUNT(1) AS num
+		FROM
+		cw_base_company a,
+		cw_base_village b
+		WHERE
+		a.villageCode = b.villageCode
+		AND a.villageCode =#{villageCode}
+		GROUP BY
+		b.villageName,
+		a.villageCode
+	</select>
+
+
+    <select id="everyHouseCount"
+            resultType="com.ss.facesys.data.resource.common.dto.CountDTO">
+		SELECT
+		a.villageCode,
+		b.villageName,
+		COUNT(1) AS num
+		FROM
+		cw_base_house a,
+		cw_base_village b
+		WHERE
+		a.villageCode = b.villageCode
+		AND a.`status` = 1
+		AND a.villageCode = #{villageCode}
+		GROUP BY
+		a.villageCode,
+		b.villageName
+	</select>
+</mapper>

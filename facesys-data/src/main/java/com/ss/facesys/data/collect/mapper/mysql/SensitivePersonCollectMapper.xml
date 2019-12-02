@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.facesys.data.collect.mapper.SensitivePersonCollectMapper">
+
+	<select id="queryList" parameterType="java.util.Map" resultType="com.ss.facesys.data.collect.common.model.SensitivePersonCollect">
+		SELECT * FROM cw_sensitive_traffic_collect
+		WHERE dayEnd = DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL 2 DAY),"%Y-%m-%d")
+		<if test="sensitivePersonIds != null and sensitivePersonIds.size > 0 ">
+			AND sensitivePersonId in
+			<foreach collection="sensitivePersonIds" index="index" item="item" open="("
+				separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</select>
+
+	<insert id="batchCompareCollect" parameterType="java.util.List">
+		INSERT INTO cw_sensitive_traffic_collect
+		(`collectId`, `sensitivePersonId`, `amount`, `dayBegin`, `dayEnd`, `updateTime`)
+		VALUES
+		<foreach collection="list" item="item" index="index" separator=",">
+			(#{item.collectId}, #{item.sensitivePersonId}, #{item.amount}, #{item.dayBegin},
+			#{item.dayEnd}, now())
+		</foreach>
+		ON DUPLICATE KEY UPDATE
+		amount=values(amount),
+		dayEnd=values(dayEnd),
+		updateTime=now()
+	</insert>
+
+</mapper>

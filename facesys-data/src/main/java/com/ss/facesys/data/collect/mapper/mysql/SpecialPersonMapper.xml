@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.facesys.data.collect.mapper.SpecialPersonMapper">
+
+	<insert id="batchCompareSpecialPerson" parameterType="java.util.List">
+		INSERT INTO cw_special_person
+		  (id,peopleId,recordId,specialType,state,days,leaveTime,remark,updateTime) 
+		  VALUES
+		<foreach collection="list" item="item" index="index" separator=",">
+		( #{item.id},#{item.peopleId}, #{item.recordId}, #{item.specialType}, #{item.state}, 
+			#{item.days}, #{item.leaveTime}, #{item.remark},now())
+		</foreach>  
+		ON DUPLICATE KEY UPDATE 
+		days=days+1,
+		updateTime=now()
+    </insert>
+    
+    <select id="querySpecialListByState" 
+		resultType="com.ss.facesys.data.collect.common.model.SpecialPerson">
+		SELECT t1.* FROM cw_special_person t1 
+		WHERE TO_DAYS(NOW()) - TO_DAYS(updateTime) = 1
+		and t1.specialType = #{specialType} 
+			<if test="state !=null">
+			    AND t1.state != #{state}
+			</if>
+	</select>
+	
+	<select id="pages" parameterType="com.ss.facesys.data.collect.common.web.SpecialPersonQuery"
+		 resultType="com.ss.facesys.data.collect.common.dto.SpecialPersonDTO" >
+		SELECT
+			t1.*,
+			t2.villageId AS villageCode,
+			t2.lastCaptureTime,
+			t2.capturePath,
+			t2.panoramaPath,
+			t2.facePitch,
+			t2.faceYaw,
+			t2.faceRoll,
+			t2.facex,
+			t2.facey,
+			t2.faceWidth,
+			t2.faceHeight,
+			t3.credentialNo,
+			t3.residenceDetailAddres AS residenceAddress,
+			t3.peopleName,
+			t3.idCardPic
+		FROM
+			cw_special_person t1
+		LEFT JOIN cw_leave_person t2 ON t1.recordId = t2.id
+		LEFT JOIN cw_base_people t3 ON t1.peopleId = t3.peopleId
+		<where>
+			 <![CDATA[t1.state !=4]]>
+		    <if test="specialType !=null">
+			    AND t1.specialType = #{specialType}
+			</if>
+			<if test="days !=null">
+			    AND <![CDATA[t1.days >= #{days}]]>
+			</if>
+			<if test="state !=null">
+				AND t1.state = #{state}
+			</if>
+			<if test="beginTime != null">
+				AND  <![CDATA[t1.updateTime >= #{beginTime}]]>
+			</if>
+			<if test="endTime != null">
+				AND  <![CDATA[t1.updateTime <= #{endTime}]]>
+			</if>
+			<if test="villageCode !=null and villageCode !=''">
+				AND t2.villageId  = #{villageCode}			
+			</if>
+			<if test="peopleName !=null and peopleName !=''">
+				AND t3.peopleName LIKE CONCAT('%', #{peopleName}, '%')
+			</if>
+			<if test="credentialNo !=null and credentialNo !=''">
+				AND t3.credentialNo LIKE CONCAT('%', #{credentialNo}, '%')
+			</if>
+			<if test="residenceAddress !=null and residenceAddress !=''">
+				AND t3.residenceDetailAddres LIKE CONCAT('%', #{residenceAddress}, '%')
+			</if>
+			<if test="sqlMap.dsf !=null">
+				AND FIND_IN_SET(t2.villageId,#{sqlMap.dsf})
+			</if>
+		</where>
+		ORDER BY t1.state,t1.updateTime DESC,t3.id DESC
+	</select>
+	
+	<select id="selectById" parameterType="java.lang.String" 
+		resultType="com.ss.facesys.data.collect.common.model.SpecialPerson">
+		SELECT * FROM cw_special_person WHERE  id = #{id}
+	</select>
+	
+	<update id="update" parameterType="com.ss.facesys.data.collect.common.model.SpecialPerson">
+		UPDATE cw_special_person 
+			<set> 
+			   <if test="updateTime !=null " >
+		        updateTime = #{updateTime},
+		      </if>
+			  <if test="state !=null " >
+		        state = #{state},
+		      </if>
+		      </set>
+			WHERE id = #{id}
+	</update>
+	
+	<update id="updateByRecordId" parameterType="com.ss.facesys.data.collect.common.model.SpecialPerson">
+		UPDATE cw_special_person 
+			<set>
+			  <if test="updateTime !=null">
+			    updateTime = #{updateTime},
+			  </if>
+			  <if test="state !=null " >
+		        state = #{state},
+		      </if>
+		     </set>
+			WHERE recordId = #{recordId}
+	</update>
+	
+	<delete id="updateSpecialState">
+        UPDATE cw_special_person set state = #{state},updateTime = now() 
+        WHERE peopleId = #{pId} and state = 1
+	</delete>
+</mapper>

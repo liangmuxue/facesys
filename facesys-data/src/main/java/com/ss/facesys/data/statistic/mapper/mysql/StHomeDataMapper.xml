@@ -1,0 +1,842 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.facesys.data.statistic.mapper.StHomeDataMapper">
+    <!--日统计-->
+    <insert id="selDayPeopel" parameterType="java.lang.String">
+    INSERT INTO cw_st_people (
+	  ID,
+	  STAT_DATE,
+	  PERIOD_TYPE,
+	  CREASE_CNT,
+	  VILLAGE_CODE,
+	  NOW_CNT,
+	  CHAIN_RATIO
+    ) SELECT
+	replace(uuid(),'-','') AS ID,
+	UNIX_TIMESTAMP(now()) AS STAT_DATE,
+	1 AS PERIOD_TYPE,
+	a.cnt - b.cnt AS CREASE_CNT,
+	a.villageCode AS VILLAGE_CODE,
+	a.cnt AS NOW_CNT,
+	(
+		SELECT
+			CASE
+		WHEN b.cnt IS NULL
+		OR b.cnt = 0 THEN
+			0
+		ELSE
+			round((a.cnt - b.cnt) / b.cnt * 100, 2)
+		END link_ratio_count
+	) AS CHAIN_RATIO
+   FROM
+	(
+		SELECT
+			count(id) AS cnt,
+			villageCode
+		FROM
+			cw_base_people
+		WHERE
+			date_format(
+				from_unixtime(createTime / 1000),
+				'%Y-%m-%d'
+			) = date_format(#{currencDate,jdbcType=VARCHAR},'%Y-%m-%d')
+		GROUP BY
+			villageCode
+	) a,
+	(
+		SELECT
+			IFNULL(t1.cnt, 0) AS cnt,
+			t1.villageCode
+		FROM
+			(
+				SELECT
+					d.NOW_CNT AS cnt,
+					c.villageCode AS villageCode
+				FROM
+					cw_base_village c
+				LEFT JOIN cw_st_people d ON c.villageCode = d.village_code
+				AND date_format(
+					from_unixtime(d.STAT_DATE / 1000),
+					'%Y-%m-%d'
+				) = date_format(
+					#{previousData,jdbcType=VARCHAR},'%Y-%m-%d')
+				) t1
+				RIGHT JOIN (SELECT 0) t2 ON 1 = 1
+			) b
+	WHERE
+		a.villageCode = b.villageCode
+  </insert>
+    <!--周统计-->
+    <insert id="selWeekPeopel" parameterType="java.lang.Integer">
+        INSERT INTO cw_st_people (
+        ID,
+        STAT_DATE,
+        PERIOD_TYPE,
+        CREASE_CNT,
+        VILLAGE_CODE,
+        NOW_CNT,
+        CHAIN_RATIO
+        ) SELECT
+        replace(uuid(),'-','') AS ID,
+        UNIX_TIMESTAMP(now()) AS STAT_DATE,
+        2 AS PERIOD_TYPE,
+        a.cnt - b.cnt AS CREASE_CNT,
+        a.villageCode AS VILLAGE_CODE,
+        a.cnt AS NOW_CNT,
+        (
+        SELECT
+        CASE
+        WHEN b.cnt IS NULL
+        OR b.cnt = 0 THEN
+        0
+        ELSE
+        round((a.cnt - b.cnt) / b.cnt * 100, 2)
+        END link_ratio_count
+        ) AS CHAIN_RATIO
+        FROM
+        (
+        SELECT
+        count(id) AS cnt,
+        villageCode
+        FROM
+        cw_base_people
+        WHERE
+        date_format(
+        from_unixtime(createTime / 1000),
+        '%Y-%m-%d'
+        ) &gt;= date_format(
+        date_sub(
+        date_sub(
+        now(),
+        INTERVAL WEEKDAY(NOW()) DAY
+        ),
+        INTERVAL #{weekNum,jdbcType=INTEGER} WEEK
+        ),
+        '%Y-%m-%d'
+        ) AND
+        date_format(
+        from_unixtime(createTime / 1000),
+        '%Y-%m-%d'
+        ) &lt; date_format(
+        date_sub(
+        date_sub(
+        now(),
+        INTERVAL WEEKDAY(NOW()) DAY
+        ),
+        INTERVAL #{weekNum,jdbcType=INTEGER} - 1 WEEK
+        ),
+        '%Y-%m-%d'
+        )
+        GROUP BY
+        villageCode
+        ) a,
+        (
+        SELECT
+        IFNULL(t1.cnt, 0) AS cnt,
+        t1.villageCode
+        FROM
+        (
+        SELECT
+        d.NOW_CNT AS cnt,
+        c.villageCode AS villageCode
+        FROM
+        cw_base_village c
+        LEFT JOIN cw_st_people d ON c.villageCode = d.village_code
+        AND date_format(
+        from_unixtime(d.STAT_DATE / 1000),
+        '%Y-%m-%d'
+        ) &gt;= date_format(
+        date_sub(
+        date_sub(
+        now(),
+        INTERVAL WEEKDAY(NOW()) DAY
+        ),
+        INTERVAL #{weekNum,jdbcType=INTEGER} + 1 WEEK
+        ),
+        '%Y-%m-%d'
+        ) and date_format(
+        from_unixtime(d.STAT_DATE / 1000),
+        '%Y-%m-%d'
+        ) &lt; date_format(
+        date_sub(
+        date_sub(
+        now(),
+        INTERVAL WEEKDAY(NOW()) DAY
+        ),
+        INTERVAL #{weekNum,jdbcType=INTEGER} WEEK
+        ),
+        '%Y-%m-%d'
+        )
+        ) t1
+        RIGHT JOIN (SELECT 0) t2 ON 1 = 1
+        ) b
+        WHERE
+        a.villageCode = b.villageCode
+    </insert>
+
+    <!--月统计-->
+    <insert id="selMouthPeopel" parameterType="java.lang.String">
+        INSERT INTO cw_st_people (
+        ID,
+        STAT_DATE,
+        PERIOD_TYPE,
+        CREASE_CNT,
+        VILLAGE_CODE,
+        NOW_CNT,
+        CHAIN_RATIO
+        ) SELECT
+        replace(uuid(),'-','') AS ID,
+        UNIX_TIMESTAMP(now()) AS STAT_DATE,
+        3 AS PERIOD_TYPE,
+        a.cnt - b.cnt AS CREASE_CNT,
+        a.villageCode AS VILLAGE_CODE,
+        a.cnt AS NOW_CNT,
+        (
+        SELECT
+        CASE
+        WHEN b.cnt IS NULL
+        OR b.cnt = 0 THEN
+        0
+        ELSE
+        round((a.cnt - b.cnt) / b.cnt * 100, 2)
+        END link_ratio_count
+        ) AS CHAIN_RATIO
+        FROM
+        (
+        SELECT
+        count(id) AS cnt,
+        villageCode
+        FROM
+        cw_base_people
+        WHERE
+        date_format(
+        from_unixtime(createTime / 1000),
+        '%Y-%m'
+        ) = date_format(#{currencDate,jdbcType=VARCHAR},'%Y-%m')
+        GROUP BY
+        villageCode
+        ) a,
+        (
+        SELECT
+        IFNULL(t1.cnt, 0) AS cnt,
+        t1.villageCode
+        FROM
+        (
+        SELECT
+        d.NOW_CNT AS cnt,
+        c.villageCode AS villageCode
+        FROM
+        cw_base_village c
+        LEFT JOIN cw_st_people d ON c.villageCode = d.village_code
+        AND date_format(
+        from_unixtime(d.STAT_DATE / 1000),
+        '%Y-%m'
+        ) = date_format(
+        #{previousData,jdbcType=VARCHAR},'%Y-%m')
+        ) t1
+        RIGHT JOIN (SELECT 0) t2 ON 1 = 1
+        ) b
+        WHERE
+        a.villageCode = b.villageCode
+    </insert>
+
+    <!--实有房屋-->
+    <!--日统计-->
+    <insert id="selDayHouse" parameterType="java.lang.String">
+        INSERT INTO cw_st_house (
+        ID,
+        STAT_DATE,
+        PERIOD_TYPE,
+        CREASE_CNT,
+        VILLAGE_CODE,
+        NOW_CNT,
+        CHAIN_RATIO
+        ) SELECT
+        replace(uuid(),'-','') AS ID,
+        UNIX_TIMESTAMP(now()) AS STAT_DATE,
+        1 AS PERIOD_TYPE,
+        a.cnt - b.cnt AS CREASE_CNT,
+        a.villageCode AS VILLAGE_CODE,
+        a.cnt AS NOW_CNT,
+        (
+        SELECT
+        CASE
+        WHEN b.cnt IS NULL
+        OR b.cnt = 0 THEN
+        0
+        ELSE
+        round((a.cnt - b.cnt) / b.cnt * 100, 2)
+        END link_ratio_count
+        ) AS CHAIN_RATIO
+        FROM
+        (
+        SELECT
+        count(id) AS cnt,
+        villageCode
+        FROM
+        cw_base_house
+        WHERE
+        date_format(
+        createTime,'%Y-%m-%d'
+        ) = date_format(#{currencDate,jdbcType=VARCHAR},'%Y-%m-%d')
+        GROUP BY
+        villageCode
+        ) a,
+        (
+        SELECT
+        IFNULL(t1.cnt, 0) AS cnt,
+        t1.villageCode
+        FROM
+        (
+        SELECT
+        d.NOW_CNT AS cnt,
+        c.villageCode AS villageCode
+        FROM
+        cw_base_village c
+        LEFT JOIN cw_st_house d ON c.villageCode = d.village_code
+        AND date_format(
+        from_unixtime(d.STAT_DATE / 1000),
+        '%Y-%m-%d'
+        ) = date_format(
+        #{previousData,jdbcType=VARCHAR},'%Y-%m-%d')
+        ) t1
+        RIGHT JOIN (SELECT 0) t2 ON 1 = 1
+        ) b
+        WHERE
+        a.villageCode = b.villageCode
+    </insert>
+    <!--周统计-->
+    <insert id="selWeekHouse" parameterType="java.lang.Integer">
+        INSERT INTO cw_st_house (
+        ID,
+        STAT_DATE,
+        PERIOD_TYPE,
+        CREASE_CNT,
+        VILLAGE_CODE,
+        NOW_CNT,
+        CHAIN_RATIO
+        ) SELECT
+        replace(uuid(),'-','') AS ID,
+        UNIX_TIMESTAMP(now()) AS STAT_DATE,
+        2 AS PERIOD_TYPE,
+        a.cnt - b.cnt AS CREASE_CNT,
+        a.villageCode AS VILLAGE_CODE,
+        a.cnt AS NOW_CNT,
+        (
+        SELECT
+        CASE
+        WHEN b.cnt IS NULL
+        OR b.cnt = 0 THEN
+        0
+        ELSE
+        round((a.cnt - b.cnt) / b.cnt * 100, 2)
+        END link_ratio_count
+        ) AS CHAIN_RATIO
+        FROM
+        (
+        SELECT
+        count(id) AS cnt,
+        villageCode
+        FROM
+        cw_base_house
+        WHERE
+        date_format(
+        createTime,'%Y-%m-%d'
+        ) &gt;= date_format(
+        date_sub(
+        date_sub(
+        now(),
+        INTERVAL WEEKDAY(NOW()) DAY
+        ),
+        INTERVAL #{weekNum,jdbcType=INTEGER} WEEK
+        ),
+        '%Y-%m-%d'
+        ) AND
+        date_format(
+        createTime,'%Y-%m-%d'
+        ) &lt; date_format(
+        date_sub(
+        date_sub(
+        now(),
+        INTERVAL WEEKDAY(NOW()) DAY
+        ),
+        INTERVAL #{weekNum,jdbcType=INTEGER} - 1 WEEK
+        ),
+        '%Y-%m-%d'
+        )
+        GROUP BY
+        villageCode
+        ) a,
+        (
+        SELECT
+        IFNULL(t1.cnt, 0) AS cnt,
+        t1.villageCode
+        FROM
+        (
+        SELECT
+        d.NOW_CNT AS cnt,
+        c.villageCode AS villageCode
+        FROM
+        cw_base_village c
+        LEFT JOIN cw_st_house d ON c.villageCode = d.village_code
+        AND date_format(
+        from_unixtime(d.STAT_DATE / 1000),
+        '%Y-%m-%d'
+        ) &gt;= date_format(
+        date_sub(
+        date_sub(
+        now(),
+        INTERVAL WEEKDAY(NOW()) DAY
+        ),
+        INTERVAL #{weekNum,jdbcType=INTEGER} + 1 WEEK
+        ),
+        '%Y-%m-%d'
+        ) and date_format(
+        from_unixtime(d.STAT_DATE / 1000),
+        '%Y-%m-%d'
+        ) &lt; date_format(
+        date_sub(
+        date_sub(
+        now(),
+        INTERVAL WEEKDAY(NOW()) DAY
+        ),
+        INTERVAL #{weekNum,jdbcType=INTEGER} WEEK
+        ),
+        '%Y-%m-%d'
+        )
+        ) t1
+        RIGHT JOIN (SELECT 0) t2 ON 1 = 1
+        ) b
+        WHERE
+        a.villageCode = b.villageCode
+    </insert>
+
+    <!--月统计-->
+    <insert id="selMouthHouse" parameterType="java.lang.String">
+        INSERT INTO cw_st_house (
+        ID,
+        STAT_DATE,
+        PERIOD_TYPE,
+        CREASE_CNT,
+        VILLAGE_CODE,
+        NOW_CNT,
+        CHAIN_RATIO
+        ) SELECT
+        replace(uuid(),'-','') AS ID,
+        UNIX_TIMESTAMP(now()) AS STAT_DATE,
+        3 AS PERIOD_TYPE,
+        a.cnt - b.cnt AS CREASE_CNT,
+        a.villageCode AS VILLAGE_CODE,
+        a.cnt AS NOW_CNT,
+        (
+        SELECT
+        CASE
+        WHEN b.cnt IS NULL
+        OR b.cnt = 0 THEN
+        0
+        ELSE
+        round((a.cnt - b.cnt) / b.cnt * 100, 2)
+        END link_ratio_count
+        ) AS CHAIN_RATIO
+        FROM
+        (
+        SELECT
+        count(id) AS cnt,
+        villageCode
+        FROM
+        cw_base_house
+        WHERE
+        date_format(
+        createTime,'%Y-%m'
+        ) = date_format(#{currencDate,jdbcType=VARCHAR},'%Y-%m')
+        GROUP BY
+        villageCode
+        ) a,
+        (
+        SELECT
+        IFNULL(t1.cnt, 0) AS cnt,
+        t1.villageCode
+        FROM
+        (
+        SELECT
+        d.NOW_CNT AS cnt,
+        c.villageCode AS villageCode
+        FROM
+        cw_base_village c
+        LEFT JOIN cw_st_house d ON c.villageCode = d.village_code
+        AND date_format(
+        from_unixtime(d.STAT_DATE / 1000),
+        '%Y-%m'
+        ) = date_format(
+        #{previousData,jdbcType=VARCHAR},'%Y-%m')
+        ) t1
+        RIGHT JOIN (SELECT 0) t2 ON 1 = 1
+        ) b
+        WHERE
+        a.villageCode = b.villageCode
+    </insert>
+
+    <!--实有单位-->
+    <!--日统计-->
+    <insert id="selDayCompany" parameterType="java.lang.String">
+        INSERT INTO cw_st_company (
+        ID,
+        STAT_DATE,
+        PERIOD_TYPE,
+        CREASE_CNT,
+        VILLAGE_CODE,
+        NOW_CNT,
+        CHAIN_RATIO
+        ) SELECT
+        replace(uuid(),'-','') AS ID,
+        UNIX_TIMESTAMP(now()) AS STAT_DATE,
+        1 AS PERIOD_TYPE,
+        a.cnt - b.cnt AS CREASE_CNT,
+        a.villageCode AS VILLAGE_CODE,
+        a.cnt AS NOW_CNT,
+        (
+        SELECT
+        CASE
+        WHEN b.cnt IS NULL
+        OR b.cnt = 0 THEN
+        0
+        ELSE
+        round((a.cnt - b.cnt) / b.cnt * 100, 2)
+        END link_ratio_count
+        ) AS CHAIN_RATIO
+        FROM
+        (
+        SELECT
+        count(id) AS cnt,
+        villageCode
+        FROM
+        cw_base_company
+        WHERE
+        date_format(
+        createTime,'%Y-%m-%d'
+        ) = date_format(#{currencDate,jdbcType=VARCHAR},'%Y-%m-%d')
+        GROUP BY
+        villageCode
+        ) a,
+        (
+        SELECT
+        IFNULL(t1.cnt, 0) AS cnt,
+        t1.villageCode
+        FROM
+        (
+        SELECT
+        d.NOW_CNT AS cnt,
+        c.villageCode AS villageCode
+        FROM
+        cw_base_village c
+        LEFT JOIN cw_st_company d ON c.villageCode = d.village_code
+        AND date_format(
+        from_unixtime(d.STAT_DATE / 1000),
+        '%Y-%m-%d'
+        ) = date_format(
+        #{previousData,jdbcType=VARCHAR},'%Y-%m-%d')
+        ) t1
+        RIGHT JOIN (SELECT 0) t2 ON 1 = 1
+        ) b
+        WHERE
+        a.villageCode = b.villageCode
+    </insert>
+    <!--周统计-->
+    <insert id="selWeekCompany" parameterType="java.lang.Integer">
+        INSERT INTO cw_st_company (
+        ID,
+        STAT_DATE,
+        PERIOD_TYPE,
+        CREASE_CNT,
+        VILLAGE_CODE,
+        NOW_CNT,
+        CHAIN_RATIO
+        ) SELECT
+        replace(uuid(),'-','') AS ID,
+        UNIX_TIMESTAMP(now()) AS STAT_DATE,
+        2 AS PERIOD_TYPE,
+        a.cnt - b.cnt AS CREASE_CNT,
+        a.villageCode AS VILLAGE_CODE,
+        a.cnt AS NOW_CNT,
+        (
+        SELECT
+        CASE
+        WHEN b.cnt IS NULL
+        OR b.cnt = 0 THEN
+        0
+        ELSE
+        round((a.cnt - b.cnt) / b.cnt * 100, 2)
+        END link_ratio_count
+        ) AS CHAIN_RATIO
+        FROM
+        (
+        SELECT
+        count(id) AS cnt,
+        villageCode
+        FROM
+        cw_base_company
+        WHERE
+        date_format(
+        createTime,'%Y-%m-%d'
+        ) &gt;= date_format(
+        date_sub(
+        date_sub(
+        now(),
+        INTERVAL WEEKDAY(NOW()) DAY
+        ),
+        INTERVAL #{weekNum,jdbcType=INTEGER} WEEK
+        ),
+        '%Y-%m-%d'
+        ) AND
+        date_format(
+        createTime,'%Y-%m-%d'
+        ) &lt; date_format(
+        date_sub(
+        date_sub(
+        now(),
+        INTERVAL WEEKDAY(NOW()) DAY
+        ),
+        INTERVAL #{weekNum,jdbcType=INTEGER} - 1 WEEK
+        ),
+        '%Y-%m-%d'
+        )
+        GROUP BY
+        villageCode
+        ) a,
+        (
+        SELECT
+        IFNULL(t1.cnt, 0) AS cnt,
+        t1.villageCode
+        FROM
+        (
+        SELECT
+        d.NOW_CNT AS cnt,
+        c.villageCode AS villageCode
+        FROM
+        cw_base_village c
+        LEFT JOIN cw_st_company d ON c.villageCode = d.village_code
+        AND date_format(
+        from_unixtime(d.STAT_DATE / 1000),
+        '%Y-%m-%d'
+        ) &gt;= date_format(
+        date_sub(
+        date_sub(
+        now(),
+        INTERVAL WEEKDAY(NOW()) DAY
+        ),
+        INTERVAL #{weekNum,jdbcType=INTEGER} + 1 WEEK
+        ),
+        '%Y-%m-%d'
+        ) and date_format(
+        from_unixtime(d.STAT_DATE / 1000),
+        '%Y-%m-%d'
+        ) &lt; date_format(
+        date_sub(
+        date_sub(
+        now(),
+        INTERVAL WEEKDAY(NOW()) DAY
+        ),
+        INTERVAL #{weekNum,jdbcType=INTEGER} WEEK
+        ),
+        '%Y-%m-%d'
+        )
+        ) t1
+        RIGHT JOIN (SELECT 0) t2 ON 1 = 1
+        ) b
+        WHERE
+        a.villageCode = b.villageCode
+    </insert>
+
+    <!--月统计-->
+    <insert id="selMouthCompany" parameterType="java.lang.String">
+        INSERT INTO cw_st_company (
+        ID,
+        STAT_DATE,
+        PERIOD_TYPE,
+        CREASE_CNT,
+        VILLAGE_CODE,
+        NOW_CNT,
+        CHAIN_RATIO
+        ) SELECT
+        replace(uuid(),'-','') AS ID,
+        UNIX_TIMESTAMP(now()) AS STAT_DATE,
+        3 AS PERIOD_TYPE,
+        a.cnt - b.cnt AS CREASE_CNT,
+        a.villageCode AS VILLAGE_CODE,
+        a.cnt AS NOW_CNT,
+        (
+        SELECT
+        CASE
+        WHEN b.cnt IS NULL
+        OR b.cnt = 0 THEN
+        0
+        ELSE
+        round((a.cnt - b.cnt) / b.cnt * 100, 2)
+        END link_ratio_count
+        ) AS CHAIN_RATIO
+        FROM
+        (
+        SELECT
+        count(id) AS cnt,
+        villageCode
+        FROM
+        cw_base_company
+        WHERE
+        date_format(
+        createTime,'%Y-%m'
+        ) = date_format(#{currencDate,jdbcType=VARCHAR},'%Y-%m')
+        GROUP BY
+        villageCode
+        ) a,
+        (
+        SELECT
+        IFNULL(t1.cnt, 0) AS cnt,
+        t1.villageCode
+        FROM
+        (
+        SELECT
+        d.NOW_CNT AS cnt,
+        c.villageCode AS villageCode
+        FROM
+        cw_base_village c
+        LEFT JOIN cw_st_company d ON c.villageCode = d.village_code
+        AND date_format(
+        from_unixtime(d.STAT_DATE / 1000),
+        '%Y-%m'
+        ) = date_format(
+        #{previousData,jdbcType=VARCHAR},'%Y-%m')
+        ) t1
+        RIGHT JOIN (SELECT 0) t2 ON 1 = 1
+        ) b
+        WHERE
+        a.villageCode = b.villageCode
+    </insert>
+
+    <!--感知增量-->
+    <!--日统计-->
+    <insert id="selDayPercept" parameterType="java.lang.String">
+        INSERT INTO cw_st_percept (
+	    ID,
+	    STAT_DATE,
+        NOW_CNT,
+	    PERIOD_TYPE,
+	    VILLAGE_CODE,
+	    DATA_TYPE,
+	    VILLAGE_NAME
+        ) SELECT
+	    REPLACE (uuid(), '-', '') AS ID,
+	    UNIX_TIMESTAMP(now()) AS STAT_DATE,
+	    a.cnt AS NOW_CNT,
+	    1 AS PERIOD_TYPE,
+	    a.villageCode AS VILLAGE_CODE,
+	    1 AS DATA_TYPE,
+	    a.villageName AS VILLAGE_NAME
+        FROM
+	   (
+		SELECT
+			count(ve.id) AS cnt,
+			ve.villageCode,
+			v.villageName
+		FROM
+			cw_base_vehicle ve,
+			cw_base_village v
+		WHERE
+        date_format(ve.createTime,'%Y-%m-%d') = date_format(#{currencDate,jdbcType=VARCHAR},'%Y-%m-%d') AND ve.villageCode=v.villageCode
+			AND ve.villageCode = v.villageCode
+		GROUP BY
+			villageCode
+	   ) a
+    </insert>
+    <!--周统计-->
+    <insert id="selWeekPercept" parameterType="java.lang.Integer">
+        INSERT INTO cw_st_percept (
+	    ID,
+	    STAT_DATE,
+        NOW_CNT,
+	    PERIOD_TYPE,
+	    VILLAGE_CODE,
+	    DATA_TYPE,
+	    VILLAGE_NAME
+       ) SELECT
+	   REPLACE (uuid(), '-', '') AS ID,
+	   UNIX_TIMESTAMP(now()) AS STAT_DATE,
+	   a.cnt AS NOW_CNT,
+	   2 AS PERIOD_TYPE,
+	   a.villageCode AS VILLAGE_CODE,
+	   1 AS DATA_TYPE,
+	   a.villageName AS VILLAGE_NAME
+     FROM
+	 (
+		SELECT
+			count(ve.id) AS cnt,
+			ve.villageCode,
+			v.villageName
+		FROM
+			cw_base_vehicle ve,
+			cw_base_village v
+		WHERE
+        date_format(
+        ve.createTime,'%Y-%m-%d'
+        ) &gt;= date_format(
+        date_sub(
+        date_sub(
+        now(),
+        INTERVAL WEEKDAY(NOW()) DAY
+        ),
+        INTERVAL #{weekNum,jdbcType=INTEGER} WEEK
+        ),
+        '%Y-%m-%d'
+        ) AND
+        date_format(
+        ve.createTime,'%Y-%m-%d'
+        ) &lt; date_format(
+        date_sub(
+        date_sub(
+        now(),
+        INTERVAL WEEKDAY(NOW()) DAY
+        ),
+        INTERVAL #{weekNum,jdbcType=INTEGER} - 1 WEEK
+        ),
+        '%Y-%m-%d'
+        )
+			AND ve.villageCode = v.villageCode
+		GROUP BY
+			villageCode
+	 ) a
+    </insert>
+
+    <!--月统计-->
+    <insert id="selMouthPercept" parameterType="java.lang.String">
+        INSERT INTO cw_st_percept (
+	    ID,
+	    STAT_DATE,
+        NOW_CNT,
+	    PERIOD_TYPE,
+	    VILLAGE_CODE,
+	    DATA_TYPE,
+	    VILLAGE_NAME
+       ) SELECT
+	   REPLACE (uuid(), '-', '') AS ID,
+	   UNIX_TIMESTAMP(now()) AS STAT_DATE,
+	   a.cnt AS NOW_CNT,
+	   3 AS PERIOD_TYPE,
+	   a.villageCode AS VILLAGE_CODE,
+	   1 AS DATA_TYPE,
+	   a.villageName AS VILLAGE_NAME
+     FROM
+	 (
+		SELECT
+			count(ve.id) AS cnt,
+			ve.villageCode,
+			v.villageName
+		FROM
+			cw_base_vehicle ve,
+			cw_base_village v
+		WHERE
+        date_format(ve.createTime,'%Y-%m') = date_format(#{currencDate,jdbcType=VARCHAR},'%Y-%m') AND ve.villageCode=v.villageCode
+			AND ve.villageCode = v.villageCode
+		GROUP BY
+			villageCode
+	) a
+    </insert>
+</mapper>

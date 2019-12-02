@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ss.facesys.data.resource.mapper.UnitMapper">
+
+    <select id="pages" parameterType="com.ss.facesys.data.resource.common.web.UnitQueryVO" resultType="com.ss.facesys.data.resource.common.model.Unit">
+        SELECT
+        t1.*, v.villageName, b.buildingName
+        FROM
+        cw_base_unit t1
+        LEFT JOIN cw_base_building b ON t1.buildingNo = b.buildingNo AND
+        t1.`villageCode` = b.`villageCode`
+        LEFT JOIN cw_base_village v ON
+        t1.villageCode = v.villageCode
+        <where>
+            <if test="villageCode != null and villageCode != ''">
+                t1.villageCode = #{villageCode}
+            </if>
+            <if test="buildingNo != null and buildingNo != ''">
+                AND t1.buildingNo = #{buildingNo}
+            </if>
+            <if test="unitName != null and unitName != ''">
+                AND t1.unitName LIKE CONCAT('%',#{unitName},'%')
+            </if>
+            <if test="sqlString != null and sqlString != ''">
+                AND ${sqlString}
+            </if>
+            <if test="villageCodes !=null and villageCodes != ''">
+                AND FIND_IN_SET(t1.villageCode,#{villageCodes})
+            </if>
+            AND b.isDelete = 0
+            AND t1.isDelete = 0
+            AND v.state = 0
+        </where>
+        ORDER BY t1.villageCode, t1.buildingNo, t1.unitNo
+    </select>
+
+    <select id="maxUnitNo"
+            parameterType="com.ss.facesys.data.resource.common.model.Unit"
+            resultType="com.ss.facesys.data.resource.common.model.Unit">
+        SELECT
+        MAX(CAST(unitNo AS SIGNED)) AS unitNo
+        FROM
+        cw_base_unit
+        <where>
+            <if test="villageCode != null and villageCode != ''">
+                villageCode = #{villageCode}
+            </if>
+            <if test="buildingNo != null and buildingNo != ''">
+                AND buildingNo = #{buildingNo}
+            </if>
+        </where>
+    </select>
+
+    <select id="findById"
+            parameterType="com.ss.facesys.data.resource.common.model.Unit"
+            resultType="com.ss.facesys.data.resource.common.model.Unit">
+        SELECT
+        u.*, b.buildingName,
+        v.villageName
+        FROM
+        cw_base_unit u
+        LEFT JOIN cw_base_building b ON u.buildingNo = b.buildingNo
+        AND
+        u.villageCode = b.villageCode
+        LEFT JOIN cw_base_village v ON
+        u.villageCode = v.villageCode
+        <where>
+            <if test="id != null and id != ''">
+                u.id = #{id}
+            </if>
+            AND u.isDelete = 0
+            AND b.isDelete = 0
+            AND v.state = 0
+        </where>
+    </select>
+
+    <!-- building 新增 -->
+    <insert id="inserts"
+            parameterType="com.ss.facesys.data.resource.common.model.Unit">
+		INSERT INTO cw_base_unit (
+		villageCode,
+		buildingNo,
+		unitNo,
+		unitName,
+		floorNum,
+		houseNum,
+		gisType,
+		description,
+		lon,
+		lat,
+		alt,
+		thirdId
+		)
+		VALUES
+		(
+		#{villageCode},
+		#{buildingNo},
+		#{unitNo},
+		#{unitName},
+		#{floorNum},
+		#{houseNum},
+		#{gisType},
+		#{description},
+		#{lon},
+		#{lat},
+		#{alt},
+		#{thirdId}
+		)
+	</insert>
+
+    <update id="updateUnit"
+            parameterType="com.ss.facesys.data.resource.common.model.Unit">
+        UPDATE cw_base_unit
+        SET
+        <if test="unitName != null and unitName != ''">
+            unitName = #{unitName} ,
+        </if>
+        floorNum = #{floorNum},
+        houseNum = #{houseNum},
+        <if test="buildingNo != null">
+            buildingNo = #{buildingNo},
+        </if>
+        gisType = #{gisType},
+        lon = #{lon},
+        lat = #{lat},
+        alt = #{alt},
+        description = #{description},
+        thirdId = #{thirdId}
+        where id = #{id}
+    </update>
+
+    <update id="deletes"
+            parameterType="com.ss.facesys.data.resource.common.model.Unit">
+		UPDATE cw_base_unit
+		SET isDelete = #{isDelete}
+		where id = #{id}
+	</update>
+
+
+    <select id="getUnitNumByBuilding"
+            parameterType="com.ss.facesys.data.resource.common.model.Building"
+            resultType="com.ss.facesys.data.resource.common.model.Unit">
+        SELECT
+        unitName,
+        unitNo
+        FROM
+        cw_base_unit
+        <where>
+            isDelete = 0
+            <if test="villageCode != null and villageCode != ''">
+                AND villageCode = #{villageCode}
+            </if>
+            <if test="buildingNo != null and buildingNo != ''">
+                AND buildingNo = #{buildingNo}
+            </if>
+        </where>
+    </select>
+
+</mapper>

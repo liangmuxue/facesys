@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ss.facesys.data.resource.mapper.BuildingMapper">
+
+    <!-- 查询list -->
+    <select id="findBuildings"
+            resultType="com.ss.facesys.data.resource.common.model.Building">
+        SELECT * FROM cw_base_building
+        <where>
+            <if test="villageCode !=null and villageCode !=''">
+                villageCode =#{villageCode}
+            </if>
+            <if test="sqlMap.dsf != null and sqlMap.dsf !=''">
+                and ${sqlMap.dsf}
+            </if>
+            AND villageCode IS NOT NULL
+            AND isDelete = 0
+        </where>
+    </select>
+
+    <!-- 分页查询 -->
+    <select id="pages" parameterType="com.ss.facesys.data.resource.common.web.BuildingQueryVO" resultType="com.ss.facesys.data.resource.common.model.Building">
+        SELECT
+        t1.*, v.villageName
+        FROM
+        cw_base_building t1
+        LEFT JOIN cw_base_village v ON t1.villageCode = v.villageCode
+        <where>
+            <if test="buildingName != null and buildingName != ''">
+                AND t1.buildingName LIKE CONCAT('%',#{buildingName},'%')
+            </if>
+            <if test="villageCode != null and villageCode != ''">
+                AND t1.villageCode = #{villageCode}
+            </if>
+            <if test="sqlString != null and sqlString != ''">
+                AND ${sqlString}
+            </if>
+            <if test="villageCodes !=null and villageCodes != ''">
+                AND FIND_IN_SET(t1.villageCode,#{villageCodes})
+            </if>
+            AND t1.isDelete = 0
+            AND v.state = 0
+        </where>
+        ORDER BY t1.villageCode, t1.buildingNo
+    </select>
+
+    <!-- 详情 -->
+    <select id="findById" parameterType="com.ss.facesys.data.resource.common.model.Building" resultType="com.ss.facesys.data.resource.common.model.Building">
+        SELECT
+        b.*, v.villageName
+        FROM
+        cw_base_building b
+        LEFT JOIN cw_base_village v ON b.villageCode = v.villageCode
+        <where>
+            <if test="id != null and id != ''">
+                b.id = #{id}
+            </if>
+            AND b.isDelete = 0
+            AND v.state = 0
+        </where>
+    </select>
+
+    <!-- building 新增 -->
+    <insert id="inserts" parameterType="com.ss.facesys.data.resource.common.model.Building">
+		INSERT INTO cw_base_building (
+		villageCode,
+		buildingNo,
+		buildingName,
+		floorNum,
+		houseNum,
+		gisType,
+		description,
+		lon,
+		lat,
+		alt,
+		thirdId
+		)
+		VALUES
+		(
+		#{villageCode},
+		#{buildingNo},
+		#{buildingName},
+		#{floorNum},
+		#{houseNum},
+		#{gisType},
+		#{description},
+		#{lon},
+		#{lat},
+		#{alt},
+		#{thirdId}
+		)
+	</insert>
+
+    <!-- 查询小区最大BuildingNo -->
+    <select id="maxBuildingNo"
+            parameterType="com.ss.facesys.data.resource.common.model.Building"
+            resultType="com.ss.facesys.data.resource.common.model.Building">
+        SELECT
+        MAX(CAST(buildingNo AS SIGNED)) AS buildingNo
+        FROM
+        cw_base_building
+        <where>
+            <if test="villageCode != null and villageCode != ''">
+                villageCode = #{villageCode}
+            </if>
+        </where>
+    </select>
+
+    <update id="updateBuilding"
+            parameterType="com.ss.facesys.data.resource.common.model.Building">
+        UPDATE cw_base_building
+        SET
+        <if test="buildingName != null and buildingName != ''">
+            buildingName = #{buildingName},
+        </if>
+        floorNum = #{floorNum},
+        houseNum = #{houseNum},
+        <if test="gisType != null">
+            gisType = #{gisType},
+        </if>
+        <if test="lon != null">
+            lon = #{lon},
+        </if>
+        <if test="lat != null">
+            lat = #{lat},
+        </if>
+        alt = #{alt},
+        description = #{description},
+        thirdId = #{thirdId}
+        WHERE id = #{id}
+    </update>
+
+    <select id="getByThirdId"
+            resultType="com.ss.facesys.data.resource.common.model.Building">
+		SELECT * FROM cw_base_building WHERE thirdId = #{thirdId}
+	</select>
+
+    <update id="deletes" parameterType="com.ss.facesys.data.resource.common.model.Building">
+		UPDATE cw_base_building 
+		SET isDelete = #{isDelete}
+		WHERE id = #{id}
+	</update>
+</mapper>

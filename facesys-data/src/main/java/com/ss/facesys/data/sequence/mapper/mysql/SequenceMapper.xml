@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.facesys.data.sequence.mapper.SequenceMapper">
+
+	<select id="nextvalue" parameterType="string" resultType="long">
+		select NEXT_VAL(#{sequenceName, jdbcType=VARCHAR}) from dual
+	</select>
+
+</mapper>

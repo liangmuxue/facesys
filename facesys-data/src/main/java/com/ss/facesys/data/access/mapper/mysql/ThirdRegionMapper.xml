@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+        namespace="com.ss.facesys.data.resource.mapper.ThirdRegionMapper">
+    <insert id="batchCompareThirdRegion" parameterType="java.util.List">
+        INSERT INTO cw_third_region_info
+        (id,regionCode,regionName,parentId,parentCodeStr,state,
+        coordinates,systemNo,regionType,remark)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.id},#{item.regionCode},#{item.regionName},#{item.parentId},#{item.parentCodeStr},
+            #{item.state},#{item.coordinates},#{item.systemNo},#{item.regionType},#{item.remark})
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        regionName=values(regionName),
+        parentCodeStr=values(parentCodeStr),
+        coordinates=values(coordinates),
+        remark = values(remark)
+    </insert>
+
+
+    <select id="getRegionTypeByThirdId"
+            resultType="Integer">
+        SELECT
+        regionType
+        FROM
+        cw_third_region_info
+        <where>
+            <if test="thirdId !=null and thirdId !=''">
+                id =#{thirdId}
+            </if>
+        </where>
+    </select>
+
+
+</mapper>

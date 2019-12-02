@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.facesys.data.trail.mapper.VehicleRecordMapper">
+
+	<select id="vehicleTrack"
+		resultType="com.ss.facesys.data.trail.common.dto.VehicleRecordDTO"
+		parameterType="com.ss.facesys.data.trail.common.web.VehicleRecordVO">
+		SELECT 
+			t1.id,
+			t1.villageCode,
+			t1.tollgateID,
+			t1.cameraId,
+			t1.recordId,
+			t1.plateType,
+			t1.carType,
+			t1.plateColor,
+			t1.plateNumber,
+			t1.inOutTime,
+			t1.inOutType,
+			t1.platePicUrl,
+			t1.plateNoPicUrl,
+			t1.createTime,
+			t1.updateTime,
+			t1.withState,
+			t2.tollgateName AS 'channelName',
+			t2.lon,
+			t2.lat,
+			t2.lon AS lng
+			FROM
+		cw_vehicle_record t1
+		LEFT JOIN cw_vehicle_tollgate t2 ON t1.tollgateID = t2.tollgateID
+		<where>
+			       t2.tollgateID IS NOT  NULL
+		       AND t2.lon IS NOT NULL
+		       AND t2.lat IS NOT NULL
+			<if test="inOutTimeB !=null">
+                <![CDATA[AND t1.inOutTime >= #{inOutTimeB}]]>
+			</if>
+			<if test="inOutTimeE !=null">
+                <![CDATA[AND t1.inOutTime  <=#{inOutTimeE}  ]]>
+			</if>
+			<if test="plateNumber !=null and plateNumber !=''">
+               AND t1.plateNumber =#{plateNumber}
+            </if>
+            <if test="villageCode !=null">
+		       AND FIND_IN_SET(t1.villageCode,#{villageCode})
+		     </if>
+		</where>
+		ORDER BY t1.inOutTime DESC
+	</select>
+
+</mapper>

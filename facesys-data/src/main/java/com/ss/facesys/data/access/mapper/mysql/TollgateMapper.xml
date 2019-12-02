@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+        namespace="com.ss.facesys.data.resource.mapper.TollgateMapper">
+
+    <select id="findTollgates"
+            resultType="com.ss.facesys.data.resource.common.model.Tollgate">
+        SELECT * FROM cw_vehicle_tollgate
+        <where>
+            isDelete = 0
+            <if test="villageCode !=null and villageCode !=''">
+                and villageCode =#{villageCode}
+            </if>
+            <if test="sqlMap.dsf != null and sqlMap.dsf !=''">
+                and ${sqlMap.dsf}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="findAllVehicleTollgates"
+            parameterType="com.ss.facesys.data.resource.common.model.Tollgate"
+            resultType="com.ss.facesys.data.resource.common.model.Tollgate">
+        SELECT
+        a.*, b.villageName,c.enumName
+        FROM
+        cw_vehicle_tollgate a
+        LEFT JOIN
+        cw_base_village b ON a.villageCode = b.villageCode
+        LEFT JOIN
+        cw_base_enum c ON c.enumType = "gisType"
+        AND a.gisType = c.enumValue
+        <where>
+            a.isDelete = 0
+            <if test="villageCode != null and villageCode != ''">
+                AND a.villageCode = #{villageCode}
+            </if>
+            <if test="sqlMap.dsf != null and sqlMap.dsf != ''">
+                AND ${sqlMap.dsf}
+            </if>
+            <if test="villageCodes !=null">
+                AND FIND_IN_SET(a.villageCode,#{villageCodes})
+            </if>
+            <if test="tollgateName != null and tollgateName !=''">AND a.tollgateName LIKE
+                CONCAT('%',#{tollgateName},'%')
+            </if>
+            <if test="status != null">AND a.status = #{status}</if>
+            <if test="tollgateType != null and tollgateType !=''">AND a.tollgateType = #{tollgateType}</if>
+        </where>
+    </select>
+
+    <!-- 车辆卡口 分页 -->
+    <select id="pages" parameterType="com.ss.facesys.data.resource.common.web.TollgateQueryVO" resultType="com.ss.facesys.data.resource.common.model.Tollgate">
+        SELECT
+        t1.*, v.villageName,
+        enum.enumName AS tollgateTypeName,
+        ts.enumName AS statusDesc
+        FROM
+        cw_vehicle_tollgate t1
+        LEFT JOIN cw_base_village v ON t1.villageCode = v.villageCode
+        LEFT JOIN cw_base_enum enum ON t1.tollgateType = enum.enumValue AND enum.enumType = 'tollgateType'
+        LEFT JOIN cw_base_enum ts ON t1.status = ts.enumValue AND ts.enumType = 'TOLLGATE_STATUS'
+        <where>
+            enum.enumType = 'tollgateType'
+            <if test="tollgateName != null and tollgateName != ''">
+                AND t1.tollgateName LIKE CONCAT('%',#{tollgateName},'%')
+            </if>
+            <if test="tollgateType != null">
+                AND t1.tollgateType = #{tollgateType}
+            </if>
+            <if test="status != null">
+                AND t1.`status` = #{status}
+            </if>
+            <if test="villageCode != null and villageCode != ''">
+                AND t1.villageCode = #{villageCode}
+            </if>
+            <if test="sqlString != null and sqlString != ''">
+                AND ${sqlString}
+            </if>
+            <if test="villageCodes !=null and villageCodes != ''">
+                AND FIND_IN_SET(t1.villageCode,#{villageCodes})
+            </if>
+            AND t1.isDelete = 0
+            AND v.state = 0
+        </where>
+        ORDER BY t1.villageCode, t1.id
+    </select>
+
+    <!-- 车辆卡口 新增 -->
+    <insert id="add"
+            parameterType="com.ss.facesys.data.resource.common.model.Tollgate">
+		INSERT INTO cw_vehicle_tollgate (
+		villageCode,
+		tollgateID,
+		tollgateName,
+		lon,
+		lat,
+		alt,
+		gisType,
+		place,
+		STATUS,
+		tollgateType,
+		tollgatePicUrl,
+		remark,
+		createTime,
+		updateTime
+		)
+		VALUES
+		(
+		#{villageCode},
+		#{tollgateID},
+		#{tollgateName},
+		#{lon},
+		#{lat},
+		#{alt},
+		#{gisType},
+		#{place},
+		#{status},
+		#{tollgateType},
+		#{tollgatePicUrl},
+		#{remark},
+		NOW(),
+		NOW()
+		);
+	</insert>
+
+    <!-- 车辆卡口 查询单个 -->
+    <select id="selectOne"
+            parameterType="com.ss.facesys.data.resource.common.model.Tollgate"
+            resultType="com.ss.facesys.data.resource.common.model.Tollgate">
+        SELECT
+        *
+        FROM
+        cw_vehicle_tollgate
+        <where>
+            <if test="id != null">
+                AND id = #{id}
+            </if>
+            <if test="tollgateID != null and tollgateID != ''">
+                AND tollgateID = #{tollgateID}
+            </if>
+            <if test="isDelete != null">
+                AND isDelete = #{isDelete}
+            </if>
+        </where>
+    </select>
+
+    <!-- 导入卡口是否存在 -->
+    <select id="check"
+            parameterType="com.ss.facesys.data.resource.common.model.Tollgate"
+            resultType="com.ss.facesys.data.resource.common.model.Tollgate">
+        SELECT
+        *
+        FROM
+        cw_vehicle_tollgate
+        <where>
+            tollgateID = #{tollgateID}
+        </where>
+    </select>
+
+    <!-- 车辆卡口 更新 -->
+    <update id="update"
+            parameterType="com.ss.facesys.data.resource.common.model.Tollgate">
+        UPDATE cw_vehicle_tollgate
+        <set>
+            tollgateID = #{tollgateID},
+            <if test="villageCode != null and villageCode != ''">
+                villageCode = #{villageCode},
+            </if>
+            <if test="tollgateName != null and tollgateName != ''">
+                tollgateName = #{tollgateName},
+            </if>
+            lon = #{lon},
+            lat = #{lat},
+            alt = #{alt},
+            gisType = #{gisType},
+            place = #{place},
+            <if test="status != null">
+                `status` = #{status},
+            </if>
+            <if test="tollgateType != null">
+                tollgateType = #{tollgateType},
+            </if>
+            tollgatePicUrl = #{tollgatePicUrl},
+            remark = #{remark},
+            <if test="isDelete != null">
+                isDelete = #{isDelete}
+            </if>
+        </set>
+        WHERE
+        id = #{id}
+    </update>
+
+    <delete id="delete"
+            parameterType="com.ss.facesys.data.resource.common.model.Tollgate">
+        DELETE
+        FROM
+        cw_vehicle_tollgate
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <!-- 车辆卡口 批量新增 -->
+    <insert id="insertList" parameterType="java.util.List">
+        <selectKey resultType="java.lang.Integer" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO cw_vehicle_tollgate (
+        villageCode,
+        tollgateName,
+        tollgateID,
+        lon,
+        lat,
+        alt,
+        gisType,
+        place,
+        STATUS,
+        tollgateType,
+        tollgatePicUrl,
+        remark,
+        createTime,
+        updateTime
+        )
+        VALUES
+        <foreach collection="list" item="item" index="index"
+                 separator=",">
+            (
+            #{item.villageCode},
+            #{item.tollgateName},
+            #{item.tollgateID},
+            #{item.lon},
+            #{item.lat},
+            #{item.alt},
+            #{item.gisType},
+            #{item.place},
+            #{item.status},
+            #{item.tollgateType},
+            #{item.tollgatePicUrl},
+            #{item.remark},
+            NOW(),
+            NOW()
+            )
+        </foreach>
+    </insert>
+
+    <!-- 卡口 批量更新 -->
+    <update id="updateBatch" parameterType="java.util.List">
+        <foreach collection="list" item="item" separator=";">
+            UPDATE
+            cw_vehicle_tollgate
+            <set>
+                <if test="item.tollgateID != null and item.tollgateID != ''">
+                    tollgateID = #{item.tollgateID},
+                </if>
+                <if test="item.villageCode != null and item.villageCode != ''">
+                    villageCode = #{item.villageCode},
+                </if>
+                <if test="item.tollgateName != null and item.tollgateName != ''">
+                    tollgateName = #{item.tollgateName},
+                </if>
+                <if test="item.lon != null">
+                    lon = #{item.lon},
+                </if>
+                <if test="item.lat != null">
+                    lat = #{item.lat},
+                </if>
+                <if test="item.alt != null">
+                    alt = #{item.alt},
+                </if>
+                <if test="item.gisType != null">
+                    gisType = #{item.gisType},
+                </if>
+                <if test="item.place != null and item.place != ''">
+                    place = #{item.place},
+                </if>
+                <if test="item.status != null">
+                    `status` = #{item.status},
+                </if>
+                <if test="item.tollgateType != null">
+                    tollgateType = #{item.tollgateType},
+                </if>
+                <if test="item.tollgatePicUrl != null and item.tollgatePicUrl != ''">
+                    tollgatePicUrl = #{item.tollgatePicUrl},
+                </if>
+                <if test="item.remark != null and item.remark != ''">
+                    remark = #{item.remark},
+                </if>
+                updateTime = now(),
+                isDelete = 0
+            </set>
+            <where>
+                id = #{item.id}
+            </where>
+        </foreach>
+    </update>
+
+    <update id="deletes"
+            parameterType="com.ss.facesys.data.resource.common.model.Tollgate">
+		UPDATE cw_vehicle_tollgate
+		SET isDelete = #{isDelete}
+		WHERE
+		id = #{id}
+	</update>
+
+    <select id="checkUpdate"
+            parameterType="com.ss.facesys.data.resource.common.model.Tollgate"
+            resultType="com.ss.facesys.data.resource.common.model.Tollgate">
+        SELECT
+        *
+        FROM
+        `cw_vehicle_tollgate`
+        <where>
+            <if test="tollgateID != null and tollgateID != ''">
+                AND tollgateID = #{tollgateID}
+            </if>
+            <if test="isDelete != null">
+                AND isDelete = #{isDelete}
+            </if>
+            <if test="id != null">
+                AND id != #{id}
+            </if>
+        </where>
+    </select>
+
+</mapper>

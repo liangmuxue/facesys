@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.facesys.data.resource.mapper.PeopleCollectionMapper">
+
+    <select id="peopleCollectionList" parameterType="com.ss.facesys.data.resource.common.model.PeopleCollection" resultType="com.ss.facesys.data.resource.common.model.PeopleCollection">
+        SELECT
+            id,
+            user_id AS userId,
+            people_id AS peopleId
+        FROM
+            ss_people_collection t
+        <where>
+            <if test="userId !=null and userId !=''">
+                AND t.user_id = #{userId}
+            </if>
+            <if test="peopleId !=null and peopleId !=''">
+                AND t.people_id = #{peopleId}
+            </if>
+        </where>
+    </select>
+
+    <!-- 批量取消收藏实有人口 -->
+    <delete id="batchCancelCollect" parameterType="com.ss.facesys.data.resource.common.model.PeopleCollection">
+        DELETE FROM ss_people_collection
+        WHERE user_id = #{userId} AND FIND_IN_SET(people_id,#{peopleId})
+    </delete>
+
+    <!-- 根据用户编号和人口编号查询唯一对象 -->
+    <select id="selectByUserIdAndPeopleId" parameterType="com.ss.facesys.data.resource.common.model.PeopleCollection" resultType="com.ss.facesys.data.resource.common.model.PeopleCollection">
+        SELECT
+            id,
+            user_id AS userId,
+            people_id AS peopleId
+        FROM
+            ss_people_collection t
+        WHERE
+            t.user_id = #{userId} AND t.people_id = #{peopleId}
+    </select>
+
+</mapper>

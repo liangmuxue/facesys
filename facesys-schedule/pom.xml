@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>facesys-schedule</artifactId>
+    <packaging>jar</packaging>
+
+    <parent>
+        <groupId>com.ss</groupId>
+        <artifactId>facesys</artifactId>
+        <version>1.0.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <dependencies>
+
+        <!-- *************************模块依赖************************* -->
+
+        <!-- facesys-common -->
+        <dependency>
+            <groupId>com.ss</groupId>
+            <artifactId>facesys-common</artifactId>
+        </dependency>
+        <!-- facesys-data -->
+        <dependency>
+            <groupId>com.ss</groupId>
+            <artifactId>facesys-data</artifactId>
+        </dependency>
+        <!-- facesys-util -->
+        <dependency>
+            <groupId>com.ss</groupId>
+            <artifactId>facesys-util</artifactId>
+        </dependency>
+        <!-- facesys-spider -->
+        <dependency>
+            <groupId>com.ss</groupId>
+            <artifactId>facesys-spider</artifactId>
+        </dependency>
+
+        <!-- *************************第三方依赖************************* -->
+
+        <!-- dangdang:elastic-job -->
+        <dependency>
+            <groupId>com.dangdang</groupId>
+            <artifactId>elastic-job-common-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.dangdang</groupId>
+            <artifactId>elastic-job-lite-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.dangdang</groupId>
+            <artifactId>elastic-job-lite-spring</artifactId>
+        </dependency>
+        <!-- druid -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
+        </dependency>
+        <!-- tamper -->
+        <dependency>
+            <groupId>com.alibaba.tamper</groupId>
+            <artifactId>tamper</artifactId>
+        </dependency>
+    </dependencies>
+</project>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.ss.facesys.data.process.mapper.VehicleDiscoveryDetailMapper">
+	
+	<select id="selectDetail" 
+	parameterType="com.ss.facesys.data.process.common.model.VehicleDiscoveryDetail"
+	resultType="com.ss.facesys.data.process.common.model.VehicleDiscoveryDetail">
+	    SELECT
+			t3.villageCode, t3.plateNumber, t2.*
+		FROM
+			(
+				SELECT
+					max(id) AS id
+				FROM
+					cw_vehicle_discovery_detail
+				<where>
+					<if test="discoveryId != null and discoveryId != ''">
+						discoveryId = #{discoveryId}
+					</if>
+				</where>
+			) t1
+		LEFT JOIN cw_vehicle_discovery_detail t2 ON t1.id = t2.id
+		LEFT JOIN cw_vehicle_discovery t3 ON t2.discoveryId = t3.id
+	</select>
+	
+	<update id="updateVehicleRecord"
+	parameterType="com.ss.facesys.data.process.common.model.VehicleDiscoveryDetail">
+		UPDATE cw_vehicle_record
+		<set>
+			<if test="withState != null">
+				 withState = #{withState},
+			</if>
+			<if test="leaveState != null">
+				leaveState = #{leaveState},
+			</if>
+			<if test="retenState != null">
+				retenState = #{retenState}
+			</if>
+		</set>
+		WHERE
+		<if test="villageCode != null and villageCode != ''">
+			villageCode = #{villageCode}
+		</if>
+		<if test="plateNumber != null and plateNumber != ''">
+			AND plateNumber = #{plateNumber}
+		</if>
+		<if test="dayBegin != null and dayBegin != '' and dayEnd != null and dayEnd">
+			AND inOutTime BETWEEN #{dayBegin} AND #{dayEnd}
+		</if>
+		<if test="inOutTime != null">
+			AND inOutTime = #{inOutTime}
+		</if>
+	</update>
+	
+	<select id="selectVehicleLeaveOne"
+	parameterType="com.ss.facesys.data.process.common.model.VehicleDiscoveryDetail"
+	resultType="com.ss.facesys.data.process.common.model.VehicleDiscoveryDetail">
+		SELECT
+			villageCode,
+			plateNumber
+		FROM
+			cw_vehicle_leave
+		<where> 
+			<if test="leaveId != null and leaveId != ''">
+				id = #{leaveId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectVehicleRetenOne" 
+	parameterType="com.ss.facesys.data.process.common.model.VehicleDiscoveryDetail"
+	resultType="com.ss.facesys.data.process.common.model.VehicleDiscoveryDetail">
+		SELECT
+			villageCode,
+			plateNumber
+		FROM
+			cw_vehicle_retention
+		<where>
+			<if test="retenId != null and retenId != ''">
+				id = #{retenId}
+			</if>
+		</where>
+	</select>
+
+
+</mapper>

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.facesys.data.resource.mapper.CompanyPeopleMapper">
+
+    <!--单位从业人员分页查询-->
+    <select id="pages" resultType="com.ss.facesys.data.resource.common.model.CompanyPeople">
+        SELECT
+        a.id,
+        a.peopleName,
+        a.genderCode,
+        a.credentialNo,
+        a.phone,
+        a.residenceAdress,
+        b.nationCode,
+        e.enumName AS nation,
+        c.companyAdress,
+        c.companyName,
+        e1.enumName AS gender
+        FROM
+        cw_base_company_people a
+        LEFT JOIN cw_base_people b ON a.credentialNo = b.credentialNo
+        LEFT JOIN cw_base_company c ON a.companyCode = c.companyCode AND a.villageCode = c.villageCode
+        LEFT JOIN cw_base_enum e ON b.nationCode = e.enumValue AND e.enumType = "nation"
+        LEFT JOIN cw_base_enum e1 ON a.genderCode = e1.enumValue AND e1.enumType = "sex"
+        <where>
+            a.companyCode =#{companyCode}
+            <if test="peopleName !=null and peopleName !=''">
+                AND a.peopleName LIKE CONCAT('%',#{peopleName},'%')
+            </if>
+            <if test="genderCode !=null and genderCode !=''">
+                AND a.genderCode =#{genderCode}
+            </if>
+            <if test="nation !=null and nation !=''">
+                AND e.enumName LIKE CONCAT('%',#{nation},'%')
+            </if>
+            <if test="credentialNo !=null and credentialNo !=''">
+                AND a.credentialNo LIKE CONCAT('%',#{credentialNo},'%')
+            </if>
+            <if test="residenceAdress !=null and residenceAdress !=''">
+                AND a.residenceAdress LIKE CONCAT('%',#{residenceAdress},'%')
+            </if>
+            <if test="phone !=null and phone !=''">
+                AND a.phone LIKE CONCAT('%',#{phone},'%')
+            </if>
+            <if test="companyAdress !=null and companyAdress !=''">
+                AND c.companyAdress LIKE CONCAT('%',#{companyAdress},'%')
+            </if>
+        </where>
+    </select>
+
+
+    <select id="check" resultType="com.ss.facesys.data.resource.common.model.CompanyPeople">
+        SELECT * FROM cw_base_company_people
+        <where>
+            <if test="credentialNo !=null and credentialNo !=''">
+                credentialNo =#{credentialNo}
+            </if>
+            <if test="companyCode !=null and companyCode !=''">
+                AND companyCode =#{companyCode}
+            </if>
+            <if test="id !=null">
+                AND id !=#{id}
+            </if>
+        </where>
+        LIMIT 0,1
+    </select>
+
+
+    <update id="updateBatch" parameterType="java.util.List">
+        <foreach collection="list" item="item" index="index" open="" separator=";" close="">
+            update cw_base_company_people
+            <set>
+                companyCode = #{item.companyCode,jdbcType=VARCHAR},
+                villageCode =
+                #{item.villageCode,jdbcType=VARCHAR},
+                peopleName =
+                #{item.peopleName,jdbcType=VARCHAR},
+                <if test="item.gender !=null and item.gender !='' ">
+                    gender = #{item.gender,jdbcType=INTEGER},
+                </if>
+                <if test="item.genderCode !=null">
+                    genderCode = #{item.genderCode,jdbcType=INTEGER},
+                </if>
+                credentialType = #{item.credentialType,jdbcType=INTEGER},
+                credentialNo = #{item.credentialNo,jdbcType=VARCHAR},
+                domicileAddress =#{item.domicileAddress,jdbcType=VARCHAR},
+                <if
+                        test="item.residenceAdress !=null and item.residenceAdress !=''">
+                    residenceAdress = #{item.residenceAdress,jdbcType=VARCHAR},
+                </if>
+                <if test="item.phone !=null and item.phone !=''">
+                    phone = #{item.phone,jdbcType=VARCHAR},
+                </if>
+                <if test="item.entrydate !=null">
+                    entrydate = #{item.entrydate},
+                </if>
+                <if test="item.jobTitle !=null and item.jobTitle !=''">
+                    jobTitle = #{item.jobTitle,jdbcType=VARCHAR},
+                </if>
+                <if test="item.remark !=null and item.remark !=''">
+                    remark = #{item.remark,jdbcType=VARCHAR},
+                </if>
+                <if test="item.idCardPicUrl !=null and item.idCardPicUrl !=''">
+                    idCardPicUrl = #{item.idCardPicUrl,jdbcType=VARCHAR},
+                </if>
+                updateTime =now()
+            </set>
+            where id = #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+
+    <!--单位从业人员删除-->
+    <delete id="deleteCompanyPeople" parameterType="com.ss.facesys.data.resource.common.model.Company">
+        DELETE FROM cw_base_company_people
+        <where>
+            <if test="villageCode !=null and villageCode !=''">
+                villageCode = #{villageCode,jdbcType=VARCHAR}
+            </if>
+            <if test="companyCode !=null and companyCode !=''">
+                AND companyCode = #{companyCode,jdbcType=VARCHAR}
+            </if>
+                AND id in
+            <foreach collection="ids" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </where>
+    </delete>
+
+</mapper>

@@ -1,0 +1,424 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+        namespace="com.ss.facesys.data.resource.mapper.RegionMapper">
+
+    <select id="findRegion"
+            resultType="com.ss.facesys.data.resource.common.model.Region">
+        SELECT * FROM tbl_iss_region
+        <where>
+            <if test="regionName !=null and regionName !=''">
+                REGIONNAME LIKE concat(concat('%',#{regionName}),'%')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectRegionCodeByThirdId"
+            resultType="String">
+        SELECT
+        regionCode
+        FROM
+        cw_third_region_info
+        <where>
+            <if test="thirdId !=null and thirdId !=''">
+                id =#{thirdId}
+            </if>
+        </where>
+    </select>
+
+    <select id="searchNextRegion"
+            resultType="com.ss.facesys.data.resource.common.model.Region">
+        SELECT
+        REGION_CODE AS regionCode,
+        REGION_NAME AS regionName,
+        PARENT_ID AS
+        parentId,
+        STATE AS state,
+        REMARK AS remark,
+        CREATED_TIME AS createdTime,
+        REGION_ID AS regionId
+        FROM
+        cw_ge_region_info
+        <where>
+            <if test="regionCode !=null and regionCode !=''">
+                PARENT_ID =#{regionCode}
+            </if>
+        </where>
+    </select>
+
+    <select id="treeList"
+            parameterType="com.ss.facesys.data.resource.common.model.Region"
+            resultType="com.ss.facesys.data.resource.common.dto.RegionTree">
+		SELECT
+		REGION_ID AS regionId,
+		REGION_CODE AS regionCode,
+		REGION_NAME AS
+		regionName,
+		PARENT_ID AS parentId,
+		STATE AS state,
+		gisArea,
+		gisCenter,
+		gisType,
+		CREATED_TIME AS createdTime,
+		pinyin,
+		regionType,
+		updateTime
+		FROM
+		cw_ge_region_info
+		WHERE STATE = 1 AND regionType NOT IN ('1','2')
+        <if test="regionCode !=null and regionCode !='' ">
+            AND REGION_CODE LIKE CONCAT('%', #{regionCode}, '%')
+        </if>
+        <if test="regionName !=null and regionName !='' ">
+            AND REGION_NAME LIKE CONCAT('%', #{regionName}, '%')
+        </if>
+        ORDER BY REGION_CODE
+	</select>
+
+    <select id="findVillageRegion"
+            resultType="com.ss.facesys.data.resource.common.dto.RegionTree">
+		SELECT
+		t1.villageCode AS 'regionId',
+		t1.villageCode AS 'regionCode',
+		t1.villageName AS 'regionName',
+		t2.REGION_NAME,
+		t2.REGION_ID AS 'parentId',
+		t1.createTime AS 'createdTime',
+		t1.gisCenter,
+		t1.gisArea,
+		t1.gisType,
+		t1.lon,
+		t1.lat,
+		t1.pinyin,
+		7 AS 'regionType',
+		t1.updateTime
+		FROM
+		cw_base_village t1
+		LEFT JOIN cw_ge_region_info t2 ON t1.orgCode =
+		t2.REGION_CODE
+		WHERE t1.state=0
+	</select>
+
+
+    <select id="findList"
+            parameterType="com.ss.facesys.data.resource.common.dto.RegionTree"
+            resultType="com.ss.facesys.data.resource.common.dto.RegionTree">
+        SELECT
+        t1.REGION_ID AS regionId,
+        t1.REGION_CODE AS regionCode,
+        t1.REGION_NAME AS regionName,
+        t1.PARENT_ID AS parentId,
+        t1.STATE AS
+        state,
+        t1.CREATED_TIME AS createdTime,
+        t2.lon,
+        t2.lat
+        FROM
+        cw_ge_region_info t1
+        LEFT JOIN cw_base_village t2 ON t1.REGION_CODE =
+        t2.villageCode
+        <where>
+            <if test="regionCode !=null and regionCode !=''">
+                REGION_CODE LIKE CONCAT('%', #{regionCode}, '%')
+            </if>
+            <if test="parentId !=null and parentId !=''">
+                AND PARENT_ID = #{parentId}
+            </if>
+            <if test="regionName !=null and regionName !=''">
+                AND REGION_NAME LIKE CONCAT('%', #{regionName}, '%')
+            </if>
+        </where>
+    </select>
+
+
+    <select id="findCurrentRegion"
+            parameterType="com.ss.facesys.data.resource.common.model.Region"
+            resultType="com.ss.facesys.data.resource.common.model.Region">
+        SELECT
+        REGION_ID AS regionId,
+        REGION_CODE AS regionCode,
+        REGION_NAME AS
+        regionName,
+        PARENT_ID AS parentId,
+        STATE AS state,
+        REMARK AS remark,
+        CREATED_TIME AS createdTime,
+        gisArea AS gisArea,
+        gisCenter AS gisCenter,
+        gisType AS gisType,
+        thirdId AS thirdId,
+        regionType AS regionType
+        FROM
+        cw_ge_region_info
+        <where>
+            <if test="regionId !=null and regionId !=''">
+                REGION_ID =#{regionId}
+            </if>
+        </where>
+    </select>
+
+
+    <insert id="insertRegion"
+            parameterType="com.ss.facesys.data.resource.common.model.Region">
+		INSERT INTO cw_ge_region_info
+		( REGION_ID,
+		REGION_CODE,
+		REGION_NAME,
+		PARENT_ID,
+		STATE,
+		REMARK,
+		gisArea,
+		gisCenter,
+		gisType,
+		pinyin,
+		thirdId,
+		regionType,
+		CREATED_TIME
+		)VALUE(
+		#{regionId},
+		#{regionCode},
+		#{regionName},
+		#{parentId},
+		#{state},
+		#{remark},
+		#{gisArea},
+		#{gisCenter},
+		#{gisType},
+		#{pinyin},
+		#{thirdId},
+		#{regionType},
+		#{createdTime}
+		);
+	</insert>
+
+    <delete id="deleteRegion"
+            parameterType="com.ss.facesys.data.resource.common.model.Region">
+		DELETE FROM cw_ge_region_info WHERE REGION_ID
+		=#{regionId}
+	</delete>
+
+    <delete id="deleteChildrenRegion"
+            parameterType="com.ss.facesys.data.resource.common.model.Region">
+		DELETE FROM cw_ge_region_info WHERE REGION_ID in (select
+		REGION_ID from (
+		select t1.REGION_ID,
+		if(find_in_set(parent_id, @pids) >
+		0, @pids := concat(@pids, ',', REGION_ID), "0") as ischild
+		from (
+		select
+		REGION_ID,PARENT_ID from cw_ge_region_info t where t.state = 1
+		order
+		by PARENT_ID, REGION_ID
+		) t1,
+		(select @pids := #{regionId}) t2
+		) t3
+		where
+		ischild != "0")
+	</delete>
+
+    <update id="updateRegion"
+            parameterType="com.ss.facesys.data.resource.common.model.Region">
+        UPDATE cw_ge_region_info
+        <set>
+            <if test="regionCode != null and regionCode !=''">REGION_CODE = #{regionCode},</if>
+            <if test="regionName != null and regionName !=''">REGION_NAME = #{regionName},</if>
+            <if test="state != null and state !=''">STATE = #{state},</if>
+            <if test="gisCenter != null and gisCenter !=''">gisCenter = #{gisCenter},</if>
+            <if test="gisArea != null and gisArea !=''">gisArea = #{gisArea},</if>
+            <if test="gisType != null and gisType !=''">gisType = #{gisType},</if>
+            <if test="pinyin != null and pinyin !=''">pinyin = #{pinyin},</if>
+            thirdId = #{thirdId},
+            <if test="regionType != null and regionType !=''">regionType = #{regionType}</if>
+        </set>
+        WHERE
+        region_id = #{regionId}
+    </update>
+
+    <!--<select id="getThirdTreeData"
+            resultType="com.ss.facesysesys.data.resource.common.model.ThirdRegion">
+        SELECT * FROM
+        WHERE
+        <if test="parentCode ==null ">
+            <if test="parentId !=null and parentId !=''">
+                parentId =#{parentId}
+            </if>
+            <if test="parentId ==null">
+                parentId IS NULL OR parentId =''
+            </if>
+        </if>
+        <if test="parentCode !=null and parentCode !=''">
+            parentId =#{parentCode}
+        </if>
+
+    </select>-->
+
+    <select id="getRegion"
+            resultType="com.ss.facesys.data.resource.common.model.Region">
+        SELECT `REGION_ID` as regionId,
+        `REGION_CODE` as regionCode,
+        `REGION_NAME` as regionName,
+        `PARENT_ID` as parentId,
+        `STATE` as state,
+        `REMARK` as remark,
+        `CREATED_TIME` as createdTime,
+        `gisCenter`,
+        `gisArea`,
+        `gisType`,
+        `pinyin`,
+        `updateTime`,
+        `thirdId`,
+        `regionType` FROM
+        cw_ge_region_info
+        <where>
+            <if test="thirdId != null and thirdId != ''">
+                thirdId = #{thirdId}
+            </if>
+            <if test="regionId != null">
+                AND REGION_CODE = #{regionId}
+            </if>
+            <if test="regionCode != null">
+                AND REGION_ID = #{regionCode}
+            </if>
+            <if test="regionType != null and regionType != ''">
+                and regionType = #{regionType}
+            </if>
+        </where>
+    </select>
+
+    <select id="getBindThirdRegion"
+            resultType="com.ss.facesys.data.resource.common.model.Region">
+		SELECT t1.* FROM cw_ge_region_info t1 INNER JOIN
+		cw_third_region_info t2
+		ON t1.thirdId = t2.regionCode
+		WHERE t1.regionType = 5 AND t2.regionType =
+		5
+	</select>
+
+    <select id="getThirdRegionNumber" resultType="int">
+		SELECT COUNT(1)
+		FROM cw_ge_region_info t1,cw_third_region_info t2 WHERE t1.thirdId =
+		t2.regionCode
+	</select>
+
+    <select id="getRegionParent"
+            resultType="com.ss.facesys.data.resource.common.model.Region">
+		SELECT `REGION_ID` as regionId,
+		`REGION_CODE` as regionCode,
+		`REGION_NAME` as regionName,
+		`PARENT_ID` as parentId,
+		`STATE` as state,
+		`REMARK` as remark,
+		`CREATED_TIME` as createdTime,
+		`gisCenter`,
+		`gisArea`,
+		`gisType`,
+		`pinyin`,
+		`updateTime`,
+		`thirdId`,
+		`regionType` FROM cw_ge_region_info WHERE REGION_ID = #{regionId}
+	</select>
+
+    <select id="selectRegionList"
+            parameterType="com.ss.facesys.data.resource.common.model.Region"
+            resultType="com.ss.facesys.data.resource.common.model.Region">
+        SELECT * FROM cw_base_region
+        <where>
+            <if test="parentId !=null and parentId !='' ">
+                parentId = #{parentId}
+            </if>
+        </where>
+    </select>
+
+    <!-- 查询行政区划列表 -->
+    <select id="selectRegionInfoList" parameterType="com.ss.facesys.data.resource.common.web.RegionVO" resultType="com.ss.facesys.data.resource.common.model.Region">
+        SELECT
+            `REGION_ID` as regionId,
+            `REGION_CODE` as regionCode,
+            `REGION_NAME` as regionName,
+            `PARENT_ID` as parentId,
+            `STATE` as state,
+            `REMARK` as remark,
+            `CREATED_TIME` as createdTime,
+            `gisCenter`,
+            `gisArea`,
+            `gisType`,
+            `pinyin`,
+            `updateTime`,
+            `thirdId`,
+            `regionType`,
+            rt.enumName AS regionTypeDesc
+        FROM cw_ge_region_info a
+        LEFT JOIN cw_base_enum rt ON a.regionType = rt.enumValue AND rt.enumType = 'REGION_TYPE'
+        <where>
+            STATE =1 AND regionType NOT IN ('1','2')
+            <if test="regionCode !=null and regionCode !='' ">
+                AND REGION_CODE LIKE CONCAT('%', #{regionCode}, '%')
+            </if>
+            <if test="regionName !=null and regionName !='' ">
+                AND REGION_NAME LIKE CONCAT('%', #{regionName}, '%')
+            </if>
+        </where>
+        ORDER BY REGION_CODE
+    </select>
+
+    <select id="selectRegionByCode"
+            resultType="com.ss.facesys.data.resource.common.model.Region">
+		SELECT * FROM cw_base_region WHERE regionCode=#{regionCode}
+	</select>
+
+
+    <select id="isRepeat"
+            resultType="com.ss.facesys.data.resource.common.model.Region">
+		SELECT
+		*
+		FROM
+		cw_ge_region_info
+		WHERE
+		REGION_CODE =#{regionCode}
+	</select>
+
+    <select id="selectRegionNameByRegionType" resultType="String">
+		SELECT
+		regionName
+		FROM
+		cw_third_region_info
+		WHERE
+		regionCode =#{thirdId}
+		AND
+		regionType = 5
+	</select>
+
+
+    <select id="selectRegionName" resultType="String">
+		SELECT
+		regionName
+		FROM
+		cw_third_region_info
+		WHERE
+		regionCode =#{thirdId}
+		AND regionType = 1
+	</select>
+
+
+    <select id="selectIdByRegionCode5" resultType="com.ss.facesys.data.resource.common.model.ThirdRegion">
+		SELECT
+		*
+		FROM
+		cw_third_region_info
+		WHERE
+		regionCode =#{thirdId}
+	</select>
+
+
+    <select id="selectIdByRegionCode" resultType="String">
+		SELECT
+		id
+		FROM
+		cw_third_region_info
+		WHERE
+		regionCode =#{thirdId}
+		AND
+		regionType = 1
+	</select>
+
+</mapper>

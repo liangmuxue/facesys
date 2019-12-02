@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.facesys.data.resource.mapper.ResourceCompanyMapper">
+
+    <select id="pages" parameterType="com.ss.facesys.data.resource.common.model.Company"
+            resultType="com.ss.facesys.data.resource.common.model.Company">
+        SELECT t1.*,
+        t2.villageName
+        FROM cw_base_company t1
+        LEFT JOIN cw_base_village t2 ON t1.villageCode = t2.villageCode
+        <where>
+            <if test="villageCode !=null and villageCode !=''">
+                t1.villageCode = #{villageCode}
+            </if>
+            <if test="companyName !=null and companyName !=''">
+                AND t1.companyName LIKE CONCAT('%', #{companyName}, '%')
+            </if>
+            <if test="companyType !=null and companyType !=''">
+                AND t1.companyType = #{companyType}
+            </if>
+            <if test="companySize !=null and companySize !=''">
+                AND t1.companySize = #{companySize}
+            </if>
+            <if test="importantFlag !=null and importantFlag !=''">
+                AND t1.importantFlag = #{importantFlag}
+            </if>
+            <if test="companyAdress !=null and companyAdress !=''">
+                AND t1.companyAdress = #{companyAdress}
+            </if>
+            <if test="leaderName !=null and leaderName !=''">
+                AND t1.leaderName LIKE CONCAT('%', #{leaderName}, '%')
+            </if>
+            <if test="leaderTel !=null and leaderTel !=''">
+                AND t1.leaderTel = #{leaderTel}
+            </if>
+            <if test="companyTel !=null and companyTel !=''">
+                AND t1.companyTel LIKE CONCAT('%', #{companyTel}, '%')
+            </if>
+            <!-- 	<if test="sqlMap.dsf !=null and sqlMap.dsf !=''">
+                    AND ${sqlMap.dsf}
+                </if> -->
+            <if test="sqlMap.dsf !=null">
+                AND FIND_IN_SET(t1.villageCode,#{sqlMap.dsf})
+            </if>
+        </where>
+        ORDER BY t1.updateTime DESC
+    </select>
+
+    <!--单位条件查询-->
+    <select id="check" resultType="com.ss.facesys.data.resource.common.model.Company">
+        SELECT * FROM cw_base_company
+        <where>
+            <if test="companyCode !=null and companyCode !=''">
+                companyCode =#{companyCode}
+            </if>
+            <if test="villageCode !=null and villageCode !=''">
+                AND villageCode =#{villageCode}
+            </if>
+            <if test="id !=null">
+                AND id !=#{id}
+            </if>
+        </where>
+        LIMIT 0,1
+    </select>
+
+
+    <select id="selectByCompanyCode" resultType="com.ss.facesys.data.resource.common.model.Company">
+        SELECT * FROM cw_base_company WHERE companyCode =#{companyCode}
+    </select>
+
+
+    <update id="updateBatch" parameterType="java.util.List">
+        <foreach collection="list" item="item" index="index" open="" separator=";" close="">
+            update cw_base_company
+            <set>
+                companyCode = #{item.companyCode,jdbcType=VARCHAR},
+                villageCode = #{item.villageCode,jdbcType=VARCHAR},
+                companyName = #{item.companyName,jdbcType=VARCHAR},
+                <if test="item.companyType !=null">
+                    companyType = #{item.companyType,jdbcType=INTEGER},
+                </if>
+                <if test="item.companySize !=null">
+                    companySize = #{item.companySize,jdbcType=INTEGER},
+                </if>
+                <if test="item.economicType !=null">
+                    economicType = #{item.economicType,jdbcType=INTEGER},
+                </if>
+                <if test="item.importantFlag !=null">
+                    importantFlag = #{item.importantFlag,jdbcType=SMALLINT},
+                </if>
+                companyAdress = #{item.companyAdress,jdbcType=VARCHAR},
+                companyAdress = #{item.companyAdress,jdbcType=VARCHAR},
+                companyTel = #{item.companyTel},
+                <if test="item.organCode !=null and item.organCode !=''">
+                    organCode = #{item.organCode,jdbcType=VARCHAR},
+                </if>
+                leaderName = #{item.leaderName,jdbcType=VARCHAR},
+                credentialType = #{item.credentialType,jdbcType=INTEGER},
+                credentialNo = #{item.credentialNo,jdbcType=VARCHAR},
+                leaderTel =#{item.leaderTel,jdbcType=VARCHAR},
+                <if test="item.companyPic !=null and item.companyPic !=''">
+                    companyPic = #{item.companyPic,jdbcType=VARCHAR},
+                </if>
+                gisType = #{item.gisType,jdbcType=INTEGER},
+                lon = #{item.lon,jdbcType=DOUBLE},
+                lat = #{item.lat,jdbcType=DOUBLE},
+                <if test="item.alt !=null">
+                    alt = #{item.alt,jdbcType=DOUBLE},
+                </if>
+                <if test="item.description !=null and item.description !=''">
+                    description = #{item.description,jdbcType=VARCHAR},
+                </if>
+                updateTime =now()
+            </set>
+            where id = #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+
+
+    <!--单位条件查询-->
+    <select id="selectById" resultType="com.ss.facesys.data.resource.common.model.Company">
+        SELECT
+        c.* ,
+        e.enumName AS gisTypeName
+        FROM cw_base_company c
+        LEFT JOIN cw_base_enum e ON c.gisType = e.enumValue AND enumType = "gisType"
+        where id = #{id}
+    </select>
+</mapper>

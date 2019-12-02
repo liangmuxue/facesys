@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ss.facesys.data.access.mapper.AlarmReceiveMapper">
+
+    <insert id="insertAlarmReceive"
+            parameterType="com.ss.facesys.data.access.common.web.AlarmReceive">
+		insert into cw_alarm_record (
+		alarmId, monitorId,
+		monitorName, monitorType, monitorProperty,
+		topn, alarmScore, captureId,
+		captureTime, alarmTime, deviceId,
+		deviceCode, deviceType, deviceName,
+		deviceAddress, lng, lat,
+		devExtField1, devExtField2, devExtField3,
+		monExtField1, monExtField2, monExtField3,
+		panoramaId, captureUrlFull, panoramaUrlFull,
+		qualityScore, age, ageGroup,
+		gender, race, faceTotalScore,
+		lightScore, maskScore, maskState,
+		clarityScore, glassesScore, glassesState,
+		mouthScore, faceClarityScore, sunGlassesScore,
+		sunGlassesState, nation, pitch,
+		yaw, roll, x, y,
+		width, height, printfaceScore,
+		fromSystem, remark, createTime,
+		birthday, cardNation, cardId,
+		name, cardGender, address,
+		cardOrg, validdateStart, validdateEnd,
+		score, cardUrlFull, authResult,
+		snId)
+		values (
+		#{alarmId,jdbcType=VARCHAR},
+		#{monitorId,jdbcType=VARCHAR},
+		#{monitorName,jdbcType=VARCHAR}, #{monitorType,jdbcType=SMALLINT},
+		#{monitorProperty,jdbcType=SMALLINT},
+		#{topn,jdbcType=SMALLINT}, #{alarmScore,jdbcType=REAL}, #{captureId,jdbcType=VARCHAR},
+		#{captureTime,jdbcType=TIMESTAMP}, #{alarmTime,jdbcType=TIMESTAMP},
+		#{deviceId,jdbcType=VARCHAR},
+		#{deviceCode,jdbcType=VARCHAR}, #{deviceType,jdbcType=SMALLINT}, #{deviceName,jdbcType=VARCHAR},
+		#{deviceAddress,jdbcType=VARCHAR}, #{lng,jdbcType=VARCHAR},
+		#{lat,jdbcType=VARCHAR},
+		#{devExtField1,jdbcType=VARCHAR}, #{devExtField2,jdbcType=VARCHAR}, #{devExtField3,jdbcType=VARCHAR},
+		#{monExtField1,jdbcType=VARCHAR}, #{monExtField2,jdbcType=VARCHAR},
+		#{monExtField3,jdbcType=VARCHAR},
+		#{panoramaId,jdbcType=VARCHAR}, #{captureUrlFull,jdbcType=VARCHAR},
+		#{panoramaUrlFull,jdbcType=VARCHAR},
+		#{qualityScore,jdbcType=REAL}, #{age,jdbcType=SMALLINT}, #{ageGroup,jdbcType=SMALLINT},
+		#{gender,jdbcType=SMALLINT}, #{race,jdbcType=SMALLINT},
+		#{faceTotalScore,jdbcType=REAL},
+		#{lightScore,jdbcType=REAL}, #{maskScore,jdbcType=REAL}, #{maskState,jdbcType=INTEGER},
+		#{clarityScore,jdbcType=REAL}, #{glassesScore,jdbcType=REAL},
+		#{glassesState,jdbcType=INTEGER},
+		#{mouthScore,jdbcType=REAL}, #{faceClarityScore,jdbcType=REAL}, #{sunGlassesScore,jdbcType=REAL},
+		#{sunGlassesState,jdbcType=INTEGER}, #{nation,jdbcType=REAL},
+		#{pitch,jdbcType=REAL},
+		#{yaw,jdbcType=REAL}, #{roll,jdbcType=REAL}, #{x,jdbcType=REAL}, #{y,jdbcType=REAL},
+		#{width,jdbcType=REAL}, #{height,jdbcType=REAL},
+		#{printfaceScore,jdbcType=REAL},
+		#{fromSystem,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
+		#{birthday,jdbcType=VARCHAR}, #{cardNation,jdbcType=VARCHAR},
+		#{cardId,jdbcType=VARCHAR},
+		#{name,jdbcType=VARCHAR}, #{cardGender,jdbcType=INTEGER}, #{address,jdbcType=VARCHAR},
+		#{cardOrg,jdbcType=VARCHAR}, #{validdateStart,jdbcType=VARCHAR},
+		#{validdateEnd,jdbcType=VARCHAR},
+		#{score,jdbcType=REAL}, #{cardUrlFull,jdbcType=VARCHAR}, #{authResult,jdbcType=INTEGER},
+		#{snId,jdbcType=VARCHAR})
+	</insert>
+
+
+    <insert id="insertRecordAlarmTopns"
+            parameterType="com.ss.facesys.data.access.common.web.RecordAlarmReceive">
+        insert into cw_alarm_record_detail (alarmTopId, alarmId,
+        simScore, faceId, facedbId,
+        facedbName, faceCardType, faceCardId,
+        faceName, faceBirthday, faceAddress,
+        faceGender, faceCardOrg, faceUrlFull,
+        topSeq, remark, createTime,
+        faceExtField1, faceExtField2, faceExtField3,
+        facedbExtField1, facedbExtField2, facedbExtField3
+        )
+        values
+        <foreach collection="list" item="items" index="index" open="" close=""
+                 separator=",">
+            (
+            #{items.alarmTopId,jdbcType=VARCHAR},
+            #{items.alarmId,jdbcType=VARCHAR},
+            #{items.simScore,jdbcType=REAL},
+            #{items.faceId,jdbcType=VARCHAR},
+            #{items.facedbId,jdbcType=VARCHAR},
+            #{items.facedbName,jdbcType=VARCHAR},
+            #{items.faceCardType,jdbcType=VARCHAR},
+            #{items.faceCardId,jdbcType=VARCHAR},
+            #{items.faceName,jdbcType=VARCHAR},
+            #{items.faceBirthday,jdbcType=VARCHAR},
+            #{items.faceAddress,jdbcType=VARCHAR},
+            #{items.faceGender,jdbcType=INTEGER},
+            #{items.faceCardOrg,jdbcType=VARCHAR},
+            #{items.faceUrlFull,jdbcType=VARCHAR},
+            #{index,jdbcType=INTEGER},
+            #{items.remark,jdbcType=VARCHAR},
+            #{items.createTime,jdbcType=TIMESTAMP},
+            #{items.faceExtField1,jdbcType=VARCHAR},
+            #{items.faceExtField2,jdbcType=VARCHAR},
+            #{items.faceExtField3,jdbcType=VARCHAR},
+            #{items.facedbExtField1,jdbcType=VARCHAR},
+            #{items.facedbExtField2,jdbcType=VARCHAR},
+            #{items.facedbExtField3,jdbcType=VARCHAR}
+            )
+        </foreach>
+    </insert>
+
+</mapper>

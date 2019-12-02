@@ -1,0 +1,490 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ss.facesys.data.resource.mapper.CameraMapper">
+
+    <select id="findCameras"
+            resultType="com.ss.facesys.data.resource.common.model.Camera"
+            parameterType="com.ss.facesys.data.resource.common.model.Camera">
+        SELECT
+        a.*,
+        CONCAT(b.provinceCode,b.cityCode,b.districtCode,b.streetCode,b.roadCode)AS regionCode,b.villageName
+        FROM
+        cw_base_camera a
+        LEFT JOIN cw_base_village b ON a.villageCode = b.villageCode
+        <where>
+            <if test="villageCode !=null and villageCode !=''">
+                and a.villageCode in #{villageCode}
+            </if>
+            <if test="villageCodes !=null and villageCodes !=''">
+                AND FIND_IN_SET(a.villageCode,#{villageCodes})
+            </if>
+            <if test="cameraType !=null and cameraType !=''">
+                and a.cameraType = #{cameraType}
+            </if>
+            <if test="cameraName !=null and cameraName !=''">
+                and a.cameraName LIKE CONCAT('%', #{cameraName}, '%')
+            </if>
+            <if test="sqlMap.dsf != null and sqlMap.dsf !=''">
+                and ${sqlMap.dsf}
+            </if>
+            <if test="cameraList != null and cameraList.size > 0">
+                and a.cameraType in
+                <foreach collection="cameraList" index="index" item="item"
+                         open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            AND a.state = 0
+            AND b.state = 0
+        </where>
+    </select>
+
+    <select id="findCapturedeviceIds"
+            resultType="com.ss.facesys.data.resource.common.dto.CameraCaptureDTO">
+		SELECT
+			t1.villageCode,
+			GROUP_CONCAT(t2.cameraId) AS deviceIds
+		FROM
+			cw_base_village t1
+		LEFT JOIN cw_base_camera t2 ON t1.villageCode = t2.villageCode
+		WHERE t1.state=0 AND t2.state=0
+		GROUP BY
+			t1.villageCode
+	</select>
+    <select id="findFaceCapturedeviceIds"
+            resultType="com.ss.facesys.data.statistic.common.dto.CameraFaceCaptureDTO">
+        SELECT
+            t1.villageName,
+			t1.villageCode,
+			GROUP_CONCAT(t2.cameraId) AS deviceIds
+		FROM
+			cw_base_village t1
+		LEFT JOIN cw_base_camera t2 ON t1.villageCode = t2.villageCode
+		WHERE t1.state=0 AND t2.state=0 AND t2.cameraType=2
+		GROUP BY
+			t1.villageCode
+    </select>
+
+    <select id="selectByCameraId"
+            resultType="com.ss.facesys.data.resource.common.model.Camera"
+            parameterType="java.lang.String">
+		SELECT * FROM cw_base_camera WHERE cameraId =
+		#{cameraId}
+	</select>
+
+
+    <select id="selectById"
+            resultType="com.ss.facesys.data.resource.common.model.Camera"
+            parameterType="com.ss.facesys.data.resource.common.model.Camera">
+		SELECT * FROM cw_base_camera WHERE id =
+		#{id}
+	</select>
+
+    <insert id="insertCamera"
+            parameterType="com.ss.facesys.data.resource.common.model.Camera">
+		INSERT INTO cw_base_camera
+		(
+		villageCode,
+		cameraId,
+		cameraName,
+		cameraIp,
+		cameraPort,
+		password,
+		loginName,
+		streamSource,
+		buildingNo,
+		installAdd,
+		prducetBrand,
+		productModel,
+		productCode,
+		companyCode,
+		thridType,
+		cameraType,
+		inOutFlag,
+		cameraState,
+		gisType,
+		lon,
+		lat,
+		alt,
+		vehicleChannelNo,
+		camreaChannelID,
+		thirdCameraId,
+		standardCameraId,
+		createTime,
+		updateTime
+		)
+		VALUE
+		(
+		#{villageCode},
+		#{cameraId},
+		#{cameraName},
+		#{cameraIp},
+		#{cameraPort},
+		#{password},
+		#{loginName},
+		#{streamSource},
+		#{buildingNo},
+		#{installAdd},
+		#{prducetBrand},
+		#{productModel},
+		#{productCode},
+		#{companyCode},
+		#{thridType},
+		#{cameraType},
+		#{inOutFlag},
+		#{cameraState},
+		#{gisType},
+		#{lon},
+		#{lat},
+		#{alt},
+		#{vehicleChannelNo},
+		#{camreaChannelID},
+		#{thirdCameraId},
+		#{standardCameraId},
+		NOW(),
+		NOW()
+		)
+	</insert>
+
+
+    <insert id="insertImportCamera"
+            parameterType="com.ss.facesys.data.resource.common.dto.ImportCamera">
+		INSERT INTO cw_base_camera
+		(
+		villageCode,
+		cameraId,
+		cameraName,
+		cameraIp,
+		cameraPort,
+		password,
+		loginName,
+		streamSource,
+		buildingNo,
+		installAdd,
+		prducetBrand,
+		productModel,
+		productCode,
+		companyCode,
+		thridType,
+		cameraType,
+		inOutFlag,
+		cameraState,
+		gisType,
+		lon,
+		lat,
+		alt,
+		vehicleChannelNo,
+		camreaChannelID,
+		thirdCameraId,
+		standardCameraId,
+		createTime,
+		updateTime
+		)
+		VALUE
+		(
+		#{villageCode},
+		#{cameraId},
+		#{cameraName},
+		#{cameraIp},
+		#{cameraPort},
+		#{password},
+		#{loginName},
+		#{streamSource},
+		#{buildingNo},
+		#{installAdd},
+		#{prducetBrand},
+		#{productModel},
+		#{productCode},
+		#{companyCode},
+		#{thridType},
+		#{cameraType},
+		#{inOutFlag},
+		#{cameraState},
+		#{gisType},
+		#{lon},
+		#{lat},
+		#{alt},
+		#{vehicleChannelNo},
+		#{camreaChannelID},
+		#{thirdCameraId},
+		#{standardCameraId},
+		NOW(),
+		NOW()
+		)
+	</insert>
+
+
+    <update id="updateCamera"
+            parameterType="com.ss.facesys.data.resource.common.model.Camera">
+        UPDATE cw_base_camera
+        <set>
+            <if test="villageCode != null and villageCode !=''">villageCode = #{villageCode},</if>
+            cameraId = #{cameraId},
+            cameraIp = #{cameraIp},
+            <if test="cameraName != null and cameraName !=''">cameraName = #{cameraName},</if>
+            cameraPort = #{cameraPort},
+            password = #{password},
+            loginName = #{loginName},
+            streamSource = #{streamSource},
+            buildingNo = #{buildingNo},
+            installAdd = #{installAdd},
+            prducetBrand = #{prducetBrand},
+            productModel = #{productModel},
+            companyCode = #{companyCode},
+            thridType = #{thridType},
+            inOutFlag =#{inOutFlag},
+            cameraState =#{cameraState},
+            gisType = #{gisType},
+            lon = #{lon},
+            lat = #{lat},
+            alt = #{alt},
+            vehicleChannelNo = #{vehicleChannelNo},
+            camreaChannelID = #{camreaChannelID},
+            thirdCameraId = #{thirdCameraId},
+            standardCameraId = #{standardCameraId},
+            thirdCameraId = #{thirdCameraId},
+            updateTime = NOW()
+        </set>
+        WHERE
+        id = #{id}
+    </update>
+
+    <update id="deleteCamera"
+            parameterType="com.ss.facesys.data.resource.common.model.Camera">
+		UPDATE cw_base_camera
+		SET state = 1
+		WHERE
+		id = #{id}
+	</update>
+
+
+    <select id="findAllCameras" parameterType="com.ss.facesys.data.resource.common.web.CameraQueryVO" resultType="com.ss.facesys.data.resource.common.dto.ImportCamera">
+        SELECT
+        a.*,
+        ct.enumName AS cameraTypeDesc,
+        cs.enumName AS cameraStateDesc,
+        b.villageName
+        FROM
+        cw_base_camera a
+        LEFT JOIN cw_base_village b ON a.villageCode = b.villageCode
+        LEFT JOIN cw_base_enum ct ON ct.enumType = 'cameraType' AND a.cameraType = ct.enumValue
+        LEFT JOIN cw_base_enum cs ON cs.enumType = 'CAMERA_STATE' AND a.cameraState = cs.enumValue
+        <where>
+            a.state = 0
+            <if test="villageCode != null and villageCode != ''">
+                AND a.villageCode = #{villageCode}
+            </if>
+            <if test="sqlMap.dsf != null and sqlMap.dsf != ''">
+                AND ${sqlMap.dsf}
+            </if>
+            <if test="villageCodes !=null and villageCodes != ''">
+                AND FIND_IN_SET(a.villageCode,#{villageCodes})
+            </if>
+            <if test="cameraName != null and cameraName !=''">AND a.cameraName LIKE CONCAT('%',#{cameraName},'%')</if>
+            <if test="prducetBrand != null and prducetBrand !=''">AND a.prducetBrand LIKE
+                CONCAT('%',#{prducetBrand},'%')
+            </if>
+            <!--<if test="productModel != null and productModel !=''">AND a.productModel LIKE-->
+                <!--CONCAT('%',#{productModel},'%')-->
+            <!--</if>-->
+            <if test="cameraType != null">AND a.cameraType = #{cameraType}</if>
+            <if test="cameraState != null">AND a.cameraState = #{cameraState}</if>
+        </where>
+    </select>
+
+
+    <select id="check"
+            resultType="com.ss.facesys.data.resource.common.dto.ImportCamera">
+        SELECT
+        *
+        FROM
+        cw_base_camera
+        <where>
+            <if test="cameraId !=null and cameraId !=''">
+                cameraId = #{cameraId}
+            </if>
+            <if test="cameraName !=null and cameraName !=''">
+                AND cameraName = #{cameraName}
+            </if>
+            <if test="cameraType !=null and cameraType !=''">
+                AND cameraType = #{cameraType}
+            </if>
+            <if test="cameraState !=null and cameraState !=''">
+                AND cameraState = #{cameraState}
+            </if>
+        </where>
+        LIMIT 0,1
+    </select>
+
+
+    <update id="updateBatch" parameterType="java.util.List">
+        <foreach collection="list" item="item" index="index" open=""
+                 separator=";" close="">
+            update cw_base_camera
+            <set>
+                <if test="item.villageCode !=null and item.villageCode !=''">
+                    villageCode = #{item.villageCode,jdbcType=VARCHAR},
+                </if>
+                <if test="item.cameraId !=null and item.cameraId !=''">
+                    cameraId =#{item.cameraId,jdbcType=VARCHAR},
+                </if>
+                <if test="item.cameraName !=null and item.cameraName !=''">
+                    cameraName = #{item.cameraName,jdbcType=VARCHAR},
+                </if>
+                <if test="item.cameraIp !=null and item.cameraIp !=''">
+                    cameraIp = #{item.cameraIp,jdbcType=VARCHAR},
+                </if>
+                <if test="item.cameraPort !=null">
+                    cameraPort = #{item.cameraPort,jdbcType=INTEGER},
+                </if>
+                <if test="item.loginName !=null and item.loginName !=''">
+                    loginName = #{item.loginName,jdbcType=VARCHAR},
+                </if>
+                <if test="item.password !=null and item.password !=''">
+                    password = #{item.password,jdbcType=VARCHAR},
+                </if>
+                <if test="item.streamSource !=null and item.streamSource !=''">
+                    streamSource = #{item.streamSource,jdbcType=VARCHAR},
+                </if>
+                <if test="item.buildingNo !=null and item.buildingNo !=''">
+                    buildingNo = #{item.buildingNo,jdbcType=VARCHAR},
+                </if>
+                <if test="item.installAdd !=null and item.installAdd !=''">
+                    installAdd = #{item.installAdd,jdbcType=VARCHAR},
+                </if>
+                <if test="item.prducetBrand !=null and item.prducetBrand !=''">
+                    prducetBrand = #{item.prducetBrand,jdbcType=VARCHAR},
+                </if>
+                <if test="item.productModel !=null and item.productModel !=''">
+                    productModel = #{item.productModel,jdbcType=VARCHAR},
+                </if>
+                <if test="item.productCode !=null and item.productCode !=''">
+                    productCode = #{item.productCode,jdbcType=VARCHAR},
+                </if>
+                <if test="item.companyCode !=null and item.companyCode !=''">
+                    companyCode = #{item.companyCode,jdbcType=VARCHAR},
+                </if>
+                <if test="item.cameraType !=null">
+                    cameraType = #{item.installAdd,jdbcType=SMALLINT},
+                </if>
+                <if test="item.thridType !=null">
+                    thridType = #{item.thridType,jdbcType=SMALLINT},
+                </if>
+                <if test="item.inOutFlag !=null">
+                    inOutFlag = #{item.inOutFlag,jdbcType=SMALLINT},
+                </if>
+                <if test="item.cameraState !=null">
+                    cameraState = #{item.cameraState,jdbcType=SMALLINT},
+                </if>
+                <if test="item.gisType !=null">
+                    gisType = #{item.gisType,jdbcType=SMALLINT},
+                </if>
+                <if test="item.lon !=null">
+                    lon = #{item.lon,jdbcType=DOUBLE},
+                </if>
+                <if test="item.lat !=null">
+                    lat = #{item.lat,jdbcType=DOUBLE},
+                </if>
+                <if test="item.alt !=null">
+                    alt = #{item.alt,jdbcType=DOUBLE},
+                </if>
+                <if test="item.vehicleChannelNo !=null">
+                    vehicleChannelNo =
+                    #{item.vehicleChannelNo,jdbcType=INTEGER},
+                </if>
+                <if
+                        test="item.camreaChannelId !=null and item.camreaChannelId !=''">
+                    camreaChannelId = #{item.camreaChannelId,jdbcType=VARCHAR},
+                </if>
+                <if test="item.thirdCameraId !=null and item.thirdCameraId !=''">
+                    thirdCameraId = #{item.thirdCameraId,jdbcType=VARCHAR},
+                </if>
+                <if
+                        test="item.standardCameraId !=null and item.standardCameraId !=''">
+                    standardCameraId = #{item.standardCameraId,jdbcType=VARCHAR},
+                </if>
+                updateTime = now()
+            </set>
+            where id = #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+
+    <select id="cameraIdList"
+            parameterType="com.ss.facesys.data.resource.common.model.Camera"
+            resultType="java.lang.String">
+        SELECT
+        cameraId
+        FROM
+        cw_base_camera t1
+        WHERE
+        t1.state = 0
+        <if test="cameraType != null">
+            AND t1.cameraType = #{cameraType}
+        </if>
+        <if test="sqlString != null and sqlString != ''">
+            AND ${sqlString}
+        </if>
+        <if test="cameraTypeList != null and cameraTypeList.size > 0 ">
+            AND t1.cameraType in
+            <foreach collection="cameraTypeList" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="findCameraIds" parameterType="com.ss.facesys.data.resource.common.model.Camera"
+            resultType="java.lang.String">
+        SELECT
+        cameraId
+        FROM
+        cw_base_camera
+        <where>
+            state = 0
+            <if test="cameraType !=null">
+                AND cameraType = #{cameraType}
+            </if>
+            <if test="cameraList != null and cameraList.size > 0">
+                AND cameraType IN
+                <foreach collection="cameraList" index="index" item="item"
+                         open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="villageCode !=null">
+                AND FIND_IN_SET(villageCode,#{villageCode})
+            </if>
+        </where>
+    </select>
+    <!--根据ip查询设备-->
+    <select id="checkIp" resultType="com.ss.facesys.data.resource.common.dto.ImportCamera" parameterType="com.ss.facesys.data.resource.common.model.Camera">
+        SELECT
+        *
+        FROM
+        cw_base_camera
+        <where>
+            state != 1
+            <if test="cameraIp !=null and cameraIp !=''">
+                AND cameraIp = #{cameraIp}
+            </if>
+        </where>
+        LIMIT 0,1
+    </select>
+    <!--根据ip、id查询设备-->
+    <select id="checkIpById" resultType="com.ss.facesys.data.resource.common.dto.ImportCamera" parameterType="com.ss.facesys.data.resource.common.model.Camera">
+        SELECT
+        *
+        FROM
+        cw_base_camera
+        <where>
+            state != 1
+            <if test="id !=null and id !=''">
+                AND id != #{id}
+            </if>
+            <if test="cameraIp !=null and cameraIp !=''">
+                AND cameraIp = #{cameraIp}
+            </if>
+        </where>
+        LIMIT 0,1
+    </select>
+
+</mapper>

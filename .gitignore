@@ -7,5 +7,5 @@ target
 .myumldata
 .idea
 .idea/*.xml
-isc-*/*.iml
+facesys-*/*.iml
 .DS_Store

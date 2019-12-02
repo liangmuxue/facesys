@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.facesys.data.collect.mapper.PeopleMapper">
+
+    <select id="getPeopleNum" parameterType="java.lang.String" resultType="java.lang.Integer">
+        SELECT
+			COUNT(t1.id)
+		FROM
+			cw_base_people t1
+		LEFT JOIN cw_base_village t2 ON t1.villageCode = t2.villageCode
+		<where>
+		        t1.isLeave = 0
+		        AND t2.villageCode IS NOT NULL
+            <if test="villageCode !=null and villageCode !=''">
+                AND t1.villageCode = #{villageCode}
+            </if>
+        </where> 
+	</select>
+
+	<select id="getGenderRatio" 
+		parameterType="java.lang.String"
+		resultType="com.ss.facesys.data.collect.common.dto.PopulationSta">
+		SELECT
+		cbe.enumValue AS "value",
+		cbe.enumName AS "label",
+		cbe.enumType AS "type",
+		COUNT(1) AS "num"
+		FROM
+		cw_base_enum cbe
+		LEFT JOIN cw_base_people cbp ON cbe.enumValue = cbp.genderCode
+		<where>
+			cbe.enumType = "sex"
+	        <if test="villageCode !=null and villageCode !=''">
+	            AND cbp.villageCode = #{villageCode}
+	        </if>
+	        AND cbp.isLeave = 0
+			GROUP BY
+			enumName
+			ORDER BY
+			cbe.enumValue;
+		</where>
+	</select>
+
+
+	<select id="getPeopleType"
+		parameterType="java.lang.String"
+		resultType="com.ss.facesys.data.collect.common.dto.PopulationSta">
+		SELECT
+		cbe.enumValue AS "value",
+		cbe.enumName AS "label",
+		cbe.enumType AS "type",
+		COUNT(1) AS "num"
+		FROM
+		cw_base_enum cbe
+		LEFT JOIN cw_base_people cbp ON cbe.enumValue = cbp.peopleType
+		<where>
+			cbe.enumType = "peopleType"
+	        <if test="villageCode !=null and villageCode !=''">
+	            AND cbp.villageCode = #{villageCode}
+	        </if>
+	        AND cbp.isLeave = 0
+			GROUP BY
+			enumName
+			ORDER BY
+			cbe.enumValue;
+		</where>
+	</select>
+
+
+	<select id="getPeopleLabelInfo"
+		parameterType="java.lang.String"
+		resultType="com.ss.facesys.data.collect.common.dto.PopulationSta">
+		  SELECT * FROM (
+			SELECT cbe.enumValue AS "value", cbe.enumName AS "label", cbe.enumType AS "type",
+			 IFNULL(SUM(cbp.num),0) AS "num"
+			 FROM  cw_base_enum cbe
+			 LEFT JOIN (
+			 SELECT COUNT(id) AS 'num',c.label FROM (
+			 select a.id,
+			 substring_index(substring_index(a.label,',',b.help_topic_id+1),',',-1)  AS 'label'
+			   from 
+			   cw_base_people a
+			   join
+			  mysql.help_topic b
+			on b.help_topic_id <![CDATA[ < ]]> (length(a.label) - length(replace(a.label,',',''))+1) 
+			<where>
+				<if test="villageCode != null and villageCode != ''">
+					a.villageCode = #{villageCode}
+				</if> 
+				    AND a.isLeave = 0
+			</where>
+			) c
+			WHERE c.label!='' 
+			GROUP BY c.label
+			) cbp 
+			ON cbe.enumValue = cbp.label 
+			WHERE cbe.enumType ='label' AND cbp.num != ''
+			GROUP BY  cbp.label
+			ORDER BY  num DESC, cbe.enumValue
+			LIMIT 0,10
+			) cbpe ORDER BY value
+		 
+	</select>
+
+
+
+	<select id="getPeopleAgeGroupNum" resultType="java.lang.Integer"
+		parameterType="com.ss.facesys.data.collect.common.model.People">
+		SELECT
+		COUNT(age)
+		FROM
+		(
+		SELECT
+		TIMESTAMPDIFF(
+		YEAR,
+		str_to_date(birthDate, '%Y-%m-%d'),
+		CURDATE()
+		) AS 'age',
+		villageCode
+		FROM
+		cw_base_people  WHERE isLeave = 0
+		) a
+		<where>
+			<if test="minAge != null and minAge != ''">
+				a.age &gt;= #{minAge}
+			</if>
+			<if test="maxAge != null and maxAge != ''">
+				and a.age &lt;= #{maxAge}
+			</if>
+			<if test="villageCode != null and villageCode != ''">
+				AND a.villageCode = #{villageCode}
+			</if>
+		</where>
+	</select>
+
+	<select id="page" resultType="com.ss.facesys.data.collect.common.model.People" parameterType="com.ss.facesys.data.collect.common.model.People">
+		SELECT
+			cbp.*,
+			b.buildingName,
+			u.unitName,
+			h.floor,
+			h.houseNo,
+			h.address AS houseAddress
+		FROM
+			(
+				SELECT
+					*, TIMESTAMPDIFF(
+						YEAR,
+						str_to_date(birthDate, '%Y-%m-%d'),
+						CURDATE()
+					) AS 'age'
+				FROM
+					cw_base_people
+			) cbp
+			LEFT JOIN cw_relation_peoplehouse ph ON cbp.credentialNo = ph.credentialNo
+			LEFT JOIN cw_base_house h ON h.houseNo = ph.houseNo
+			LEFT JOIN cw_base_building b ON b.buildingNo = h.buildingNo
+			LEFT JOIN cw_base_unit u ON u.unitNo = h.unitNo
+		<where>
+		        cbp.isLeave= 0 and cbp.delete_flag = 0
+			<if test="genderCode !=null and genderCode !=''">
+				and cbp.genderCode =#{genderCode}
+			</if>
+			<if test="peopleType !=null and peopleType !=''">
+				and cbp.peopleType =#{peopleType}
+			</if>
+			<if test="minAge != null and minAge != ''">
+				and cbp.age &gt;#{minAge}
+			</if>
+			<if test="maxAge != null and maxAge != ''">
+				and cbp.age &lt;#{maxAge}
+			</if>
+			<if test="labelArr != null and labelArr != ''">
+				and ${sqlMap.labelSql}
+			</if>
+			<if test="peopleName != null and peopleName != ''">
+				AND cbp.peopleName LIKE CONCAT('%', #{peopleName}, '%')
+			</if>
+			<if test="genderCode != null and genderCode != ''">
+				AND cbp.genderCode = #{genderCode}
+			</if>
+			<if test="nation != null and nation != ''">
+				AND cbp.nation LIKE CONCAT('%', #{nation}, '%')
+			</if>
+			<if test="nationCode != null and nationCode != ''">
+				AND cbp.nationCode = #{nationCode}
+			</if>
+			<if test="credentialNo != null and credentialNo != ''">
+				AND cbp.credentialNo LIKE CONCAT('%', #{credentialNo}, '%')
+			</if>
+			<if test="phoneNo != null and phoneNo != ''">
+				AND cbp.phoneNo LIKE CONCAT('%', #{phoneNo}, '%')
+			</if>
+			<if test="villageCode !=null and villageCode !=''">
+				AND cbp.villageCode = #{villageCode}
+			</if>
+			<if	test="residenceDetailAddres != null and residenceDetailAddres != ''">
+				AND cbp.residenceDetailAddres LIKE CONCAT('%',#{residenceDetailAddres},'%')
+			</if>
+			<if test="sqlMap.dsf != null">
+				AND FIND_IN_SET(cbp.villageCode,#{sqlMap.dsf})
+			</if>
+		</where>
+		ORDER BY cbp.updateTime DESC
+	</select>
+	
+	<update id="updateByPeopleId">
+		UPDATE cw_base_people
+		SET
+		  isLeave = #{isLeave},
+		  leaveTime = #{leaveTime}
+		WHERE
+			peopleId =#{peopleId}
+	</update>
+    
+    
+    <insert id="insertFacedbfaceInfo">
+    	INSERT INTO cw_base_people_facedbface_ref (peopleId, facedbfaceId)
+		VALUES
+			(
+				#{peopleId,jdbcType=VARCHAR}, 
+				#{facedbfaceId,jdbcType=VARCHAR}
+			)
+    </insert>
+    
+    <select id="selectFacedbId" resultType="java.lang.String">
+    	SELECT facedbId FROM cw_base_village_facedb WHERE villageCode =#{villageCode}
+		LIMIT 0,1
+    </select>
+    
+</mapper>
