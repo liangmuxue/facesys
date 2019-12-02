@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.isc.data.viid.mapper.SubscribeMapper">
+	<!--新增订阅-->
+	<insert id="add" parameterType="com.ss.isc.data.collect.common.web.SubscribeVO">
+		INSERT INTO ss_viid_subscribe
+		(`subscribeId`, `title`, `subscribeDetail`, `resourceURI`, `applicantName`, `applicantOrg`,
+		`beginTime`, `endTime`, `receiveAddr`, `reportInterval`, `reason`, `subscribeStatus`,
+		`subscribeCancelOrg`, `subscribeCancelPerson`, `cancelTime`, `cancelReason`)
+		VALUES
+		(#{subscribeId},#{title},#{subscribeDetail},#{resourceURI},#{applicantName},#{applicantOrg},
+		#{beginTime},#{endTime},#{receiveAddr},#{reportInterval},#{reason},#{subscribeStatus},
+		#{subscribeCancelOrg},#{subscribeCancelPerson},#{cancelTime},#{cancelReason})
+	</insert>
+	<!--取消订阅-->
+	<update id="delete" parameterType="com.ss.isc.data.collect.common.web.SubscribeVO">
+		update ss_viid_subscribe
+		<set>
+			<if test="subscribeStatus != null">
+				subscribeStatus = #{subscribeStatus},
+			</if>
+			<if test="subscribeCancelOrg != null">
+				subscribeCancelOrg = #{subscribeCancelOrg,jdbcType=VARCHAR},
+			</if>
+			<if test="subscribeCancelPerson != null">
+				subscribeCancelPerson = #{subscribeCancelPerson,jdbcType=VARCHAR},
+			</if>
+			<if test="cancelTime != null">
+				cancelTime = #{cancelTime,jdbcType=SMALLINT},
+			</if>
+			<if test="cancelReason != null">
+				cancelReason = #{cancelReason,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where SubscribeID = #{subscribeId,jdbcType=INTEGER}
+	</update>
+	<!--修改订阅-->
+	<update id="update" parameterType="com.ss.isc.data.collect.common.web.SubscribeVO">
+		update ss_viid_subscribe SET
+		subscribeId = #{subscribeId},
+		title = #{title},
+		subscribeDetail = #{subscribeDetail},
+		resourceURI = #{resourceURI},
+		applicantName = #{applicantName},
+		applicantOrg = #{applicantOrg},
+		beginTime = #{beginTime},
+		endTime = #{endTime},
+		receiveAddr = #{receiveAddr},
+		reportInterval = #{reportInterval},
+		reason = #{reason},
+		subscribeStatus = #{subscribeStatus},
+		subscribeCancelOrg = #{subscribeCancelOrg},
+		subscribeCancelPerson = #{subscribeCancelPerson},
+		cancelTime = #{cancelTime},
+		cancelReason = #{cancelReason}
+		where SubscribeID = #{subscribeId,jdbcType=INTEGER}
+	</update>
+	<!--查询订阅信息-->
+	<select id="check" resultType="com.ss.isc.data.viid.common.from.SubscribeBaseForm" parameterType="java.lang.String">
+		SELECT * FROM ss_viid_subscribe WHERE subscribeID =#{subscribeId}
+	</select>
+</mapper>

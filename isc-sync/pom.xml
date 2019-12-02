@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>isc-sync</artifactId>
+    <packaging>jar</packaging>
+
+    <parent>
+        <artifactId>isc</artifactId>
+        <groupId>com.ss</groupId>
+        <version>1.0.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <dependencies>
+
+        <!-- *************************模块依赖************************* -->
+
+        <dependency>
+            <groupId>com.ss</groupId>
+            <artifactId>isc-data</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.ss</groupId>
+            <artifactId>isc-util</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.ss</groupId>
+            <artifactId>isc-spider</artifactId>
+        </dependency>
+
+        <!-- *************************第三方依赖************************* -->
+
+        <!-- MySql连接 -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+        </dependency>
+        <!-- 支持 @ConfigurationProperties 注解 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <!-- mybatis 通用方法mapper -->
+        <dependency>
+            <groupId>tk.mybatis</groupId>
+            <artifactId>mapper-spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>tk.mybatis</groupId>
+            <artifactId>mapper</artifactId>
+        </dependency>
+        <!-- commons-net -->
+        <dependency>
+            <groupId>commons-net</groupId>
+            <artifactId>commons-net</artifactId>
+        </dependency>
+        <!-- com.dangdang -->
+        <dependency>
+            <groupId>com.dangdang</groupId>
+            <artifactId>elastic-job-common-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.dangdang</groupId>
+            <artifactId>elastic-job-lite-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.dangdang</groupId>
+            <artifactId>elastic-job-lite-spring</artifactId>
+        </dependency>
+        <!-- com.alibaba -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+
+        <!-- 编译xml文件 -->
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                </includes>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+
+    </build>
+
+</project>

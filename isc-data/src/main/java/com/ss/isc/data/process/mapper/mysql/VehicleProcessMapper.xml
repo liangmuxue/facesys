@@ -1,0 +1,469 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.ss.isc.data.process.mapper.VehicleProcessMapper">
+
+	<!-- 感知发现分页 -->
+	<select id="discoveryList" parameterType="com.ss.isc.data.process.common.web.VehicleVO" resultType="com.ss.isc.data.process.common.model.VehicleDiscovery">
+			SELECT
+				d.id,
+				v.villageCode,
+				v.villageName,
+				d.platePicUrl,
+				d.days AS totalDays,
+				d.`status`,
+				d.inOutTime,
+				d.plateNoPicUrl,
+				d.plateNumber,
+				d.remark,
+				DATE_FORMAT(t2.createTime,"%Y-%m-%d") AS alarmTime,
+				t2.dayBegin,
+				t2.dayEnd
+			FROM
+				(
+					SELECT
+						o.*
+					FROM
+						(
+							SELECT
+								MAX(id) AS id
+							FROM
+								cw_vehicle_discovery_detail detail
+							<where>
+								<if test="beginTime != null and beginTime != '' and endTime != null and endTime != ''">
+									detail.createTime BETWEEN #{beginTime} AND #{endTime}
+								</if>
+								</where>
+							GROUP BY
+								discoveryId
+						) dd
+					LEFT JOIN cw_vehicle_discovery_detail o ON o.id = dd.id
+				) t2
+			LEFT JOIN cw_vehicle_discovery d ON d.id = t2.discoveryId
+			LEFT JOIN cw_base_village v ON d.villageCode = v.villageCode
+			LEFT JOIN cw_base_vehicle vehicle ON d.vehicleId = vehicle.id
+		<where>
+			<if test="state != null and state == 1">
+				AND d.`status` = 1
+			</if>
+			<if test="state != null and state == 0">
+				AND d.`status` != 1
+			</if>
+			<if test="plateNumber != null and plateNumber != ''">
+				AND d.plateNumber LIKE CONCAT('%',#{plateNumber},'%')
+			</if>
+			<if test="status != null">
+				AND d.`status` = #{status}
+			</if>
+			<if test="villageCode != null and villageCode != ''">
+				AND d.villageCode = #{villageCode}
+			</if>
+			<if test="villageCodes != null and villageCodes != ''">
+				AND FIND_IN_SET(d.villageCode,#{villageCodes})
+			</if>
+			<if test="sqlString != null and sqlString != ''">
+				AND ${sqlString}
+			</if>
+		</where>
+		ORDER BY d.`status`, t2.createTime DESC, d.inOutTime DESC
+	</select>
+	
+	<!-- 感知发现详情 -->
+	<select id="discoveryDetail"
+	parameterType="com.ss.isc.data.process.common.dto.VehicleDTO"
+	resultType="com.ss.isc.data.process.common.model.VehicleDiscovery">
+		SELECT
+						v.villageName,
+						vehicle.plateNo AS plateNumber,
+						vehicle.carType,
+						vehicle.plateColor,
+						vehicle.plateType,
+						vehicle.registerName,
+						vehicle.contactTel,
+						vehicle.credentialType,
+						vehicle.credentialNo,
+						vehicle.platePic,
+						building.buildingName,
+						unit.unitName,
+						house.floor,
+						house.houseNo,
+						d.remark
+		FROM
+			cw_vehicle_discovery d
+		LEFT JOIN (SELECT * FROM cw_base_vehicle WHERE isLeave = 0)  vehicle ON d.vehicleId = vehicle.id
+		LEFT JOIN cw_base_village v ON vehicle.villageCode = v.villageCode
+		LEFT JOIN cw_base_building building ON vehicle.villageCode = building.villageCode
+		AND vehicle.buildingNo = building.buildingNo
+		LEFT JOIN cw_base_unit unit ON vehicle.villageCode = unit.villageCode
+		AND vehicle.buildingNo = unit.buildingNo
+		AND vehicle.unitNo = unit.unitNo
+		LEFT JOIN cw_base_house house ON vehicle.villageCode = house.villageCode
+		AND vehicle.buildingNo = house.buildingNo
+		AND vehicle.unitNo = house.unitNo
+		AND vehicle.houseNo = house.houseNo
+		<where> 
+			d.id = #{handleId}
+		</where>
+	</select>
+	
+	<!-- 感知发现 天数 -->
+	<select id="discoveryDays"
+		parameterType="com.ss.isc.data.process.common.dto.VehicleDTO"
+		resultType="java.lang.Integer">
+		SELECT
+			IFNULL(COUNT(1), 0)
+		FROM
+			(
+				SELECT
+					count(1)
+				FROM
+					cw_vehicle_record r
+				<where>
+					<if test="beginTime != null and beginTime != '' and endTime != null and endTime != ''">
+						r.inOutTime BETWEEN #{beginTime} AND #{endTime}
+					</if>
+					<if test="plateNumber != null and plateNumber != ''">
+						AND r.plateNumber = #{plateNumber}
+					</if>
+					<if test="villageCode != null and villageCode != ''">
+						AND r.villageCode = #{villageCode}
+					</if>
+				</where>
+				GROUP BY
+					DATE_FORMAT(r.inOutTime, "%Y-%m-%d")
+			) t
+		
+	</select>
+	
+	<!-- 通行记录：抓拍照 -->
+	<select id="recordList"
+		parameterType="com.ss.isc.data.process.common.dto.VehicleDTO"
+		resultType="com.ss.isc.data.process.common.model.VehicleRecord">
+		SELECT
+			r.plateNoPicUrl, r.platePicUrl, r.inOutTime, t1.tollgateName AS channelName
+		FROM
+			cw_vehicle_record r
+		LEFT JOIN cw_vehicle_tollgate t1 ON r.villageCode = t1.villageCode AND r.tollgateID = t1.tollgateID
+		<where>
+			<if test="beginTime != null and beginTime != '' and endTime != null and endTime != ''">
+				r.inOutTime BETWEEN #{beginTime} AND #{endTime}
+			</if>
+			<if test="plateNumber != null and plateNumber != ''">
+				AND r.plateNumber = #{plateNumber}
+			</if>
+			<if test="villageCode != null and villageCode != ''">
+				AND r.villageCode = #{villageCode}
+			</if>
+		</where>
+		ORDER BY r.inOutTime DESC
+	</select>
+	
+	<!-- 处置 感知发现 -->
+	<update id="updateDiscovery"
+		parameterType="com.ss.isc.data.process.common.model.Vehicle">
+		UPDATE cw_vehicle_discovery d
+		<set>
+			<if test="status != null">
+				STATUS = #{status},
+			</if>
+			<if test="id != null">
+				vehicleId = #{id},
+			</if>
+			remark = #{remark}
+		</set>
+		<where>
+			<if test="handleId != null and handleId != ''">
+				id = #{handleId}
+			</if>
+		</where>
+	</update>
+	
+	<!-- 新增 车辆表 -->
+	<insert id="insertVehicle"
+		useGeneratedKeys="true" keyProperty="id"
+		parameterType="com.ss.isc.data.process.common.model.Vehicle">
+		INSERT INTO cw_base_vehicle (
+		villageCode,
+		plateNo,
+		plateColor,
+		plateType,
+		carType,
+		registerName,
+		credentialType,
+		credentialNo,
+		contactTel,
+		buildingNo,
+		unitNo,
+		floorNo,
+		houseNo,
+		platePic
+	)
+	VALUES
+		(
+			#{villageCode},
+			#{plateNo},
+			#{plateColor},
+			#{plateType},
+			#{carType},
+			#{registerName},
+			#{credentialType},
+			#{credentialNo},
+			#{contactTel},
+			#{buildingNo},
+			#{unitNo},
+			#{floorNo},
+			#{houseNo},
+			#{platePic}
+		)	
+	</insert>
+	
+	<!-- 感知离开分页 -->
+	<select id="leaveList" parameterType="com.ss.isc.data.process.common.web.VehicleVO" resultType="com.ss.isc.data.process.common.model.VehicleLeave">
+		SELECT
+			t4.id,
+			t4.days,
+			t5.villageName,
+			t4.platePicUrl,
+			t4.plateNoPicUrl,
+			t4.plateNumber,
+			t4.`status`,
+			DATE_FORMAT(t3.createTime,"%Y-%m-%d") AS dayBegin,
+			t4.remark,
+			t5.villageCode,
+			t4.inOutTime,
+			t6.tollgateName AS channelName
+		FROM (SELECT t2.* FROM (SELECT MAX(id) AS id FROM cw_vehicle_leave_detail detail 
+			  <where>
+				<if test="beginTime != null and beginTime != '' and endTime != null and endTime != ''">
+					detail.createTime BETWEEN #{beginTime} AND #{endTime}
+				</if>
+				</where>
+				GROUP BY leaveId) t1 LEFT JOIN cw_vehicle_leave_detail t2 ON t1.id = t2.id ) t3 
+			LEFT JOIN cw_vehicle_leave t4 ON t3.leaveId = t4.id
+			LEFT JOIN cw_base_village t5 ON t4.villageCode = t5.villageCode
+			LEFT JOIN cw_vehicle_tollgate t6 ON t4.villageCode = t6.villageCode AND t4.tollgateID = t6.tollgateID
+		<where>
+			<if test="state != null and state == 1">
+				AND t4.`status` = 1
+			</if>
+			<if test="state != null and state == 0">
+				AND t4.`status` != 1
+			</if>
+			<if test="villageCode != null and villageCode != ''">
+				t4.villageCode = #{villageCode}
+			</if>
+			<if test="villageCodes != null and villageCodes != ''">
+				AND FIND_IN_SET(t4.villageCode,#{villageCodes})
+			</if>
+			<if test="plateNumber != null and plateNumber != ''">
+				AND t4.plateNumber LIKE CONCAT('%',#{plateNumber},'%')
+			</if>
+			<if test="status != null">
+				AND t4.`status` = #{status}
+			</if>
+			<if test="sqlString != null and sqlString != ''">
+				AND ${sqlString}
+			</if>
+		</where>
+		ORDER BY t4.`status`, t3.createTime DESC, t4.inOutTime DESC
+	</select>
+	
+	<!-- 车辆滞留分页 -->
+	<select id="retationList" parameterType="com.ss.isc.data.process.common.web.VehicleVO" resultType="com.ss.isc.data.process.common.model.VehicleRetation">
+		SELECT
+			t4.id,
+			t4.days,
+			t5.villageName,
+			t4.platePicUrl,
+			t4.plateNoPicUrl,
+			t4.plateNumber,
+			t4.`status`,
+			DATE_FORMAT(t3.createTime,"%Y-%m-%d") AS dayBegin,
+			t4.remark,
+			t4.inOutTime,
+			t4.villageCode,
+			t6.tollgateName AS channelName
+		FROM
+			(
+				SELECT
+					t2.*
+				FROM
+					(
+						SELECT
+							MAX(id) AS id
+						FROM
+							cw_vehicle_retation_detail detail
+						<where>
+						<if test="beginTime != null and beginTime != '' and endTime != null and endTime != ''">
+							detail.createTime BETWEEN #{beginTime} AND #{endTime}
+						</if>
+						</where>
+						GROUP BY
+							retationId
+					) t1
+				LEFT JOIN cw_vehicle_retation_detail t2 ON t1.id = t2.id
+			) t3
+		LEFT JOIN cw_vehicle_retention t4 ON t3.retationId = t4.id
+		LEFT JOIN cw_base_village t5 ON t4.villageCode = t5.villageCode
+		LEFT JOIN cw_vehicle_tollgate t6 ON t4.villageCode = t6.villageCode AND t4.tollgateID = t6.tollgateID
+		<where>
+			<if test="state != null and state == 1">
+				AND t4.`status` = 1
+			</if>
+			<if test="state != null and state == 0">
+				AND t4.`status` != 1
+			</if>
+			<if test="villageCode != null and villageCode != ''">
+				t4.villageCode = #{villageCode}
+			</if>
+			<if test="villageCodes != null and villageCodes != ''">
+				AND FIND_IN_SET(t4.villageCode,#{villageCodes})
+			</if>
+			<if test="plateNumber != null and plateNumber != null">
+				AND t4.plateNumber LIKE CONCAT('%',#{plateNumber},'%')
+			</if>
+			<if test="status != null">
+				AND t4.`status` = #{status}
+			</if>
+			<if test="sqlString != null and sqlString != ''">
+				AND ${sqlString}
+			</if>
+		</where>
+		ORDER BY t4.`status`, t3.createTime DESC, t4.inOutTime DESC
+	</select>
+	
+	<!-- 更新leave表状态 -->
+	<update id="updateLeave"
+		parameterType="com.ss.isc.data.process.common.model.Vehicle">
+		UPDATE cw_vehicle_leave
+		<if test="status != null">
+			SET `status` = #{status},
+		</if>
+		remark = #{remark}
+		<where>
+			<if test="handleId != null and handleId != ''">
+				id = #{handleId}
+			</if>
+		</where>
+	</update>
+	
+	<!-- vehicle表更新 -->
+	<update id="updateVehicle"
+		parameterType="com.ss.isc.data.process.common.model.Vehicle">
+		UPDATE cw_base_vehicle
+		<set>
+			<if test="plateColor != null">
+				plateColor = #{plateColor},
+			</if>
+			<if test="plateType != null">
+				 plateType = #{plateType},
+			</if>
+			<if test="carType != null">
+				 carType = #{carType},
+			</if>
+			<if test="registerName != null and registerName != ''">
+				 registerName = #{registerName},
+			</if>	
+			 <if test="credentialType != null">
+				 credentialType = #{credentialType},
+			 </if>
+			 <if test="credentialNo != null and credentialNo != ''">
+				 credentialNo = #{credentialNo},
+			 </if>
+			 <if test="contactTel != null and contactTel != ''">
+				 contactTel = #{contactTel},
+			 </if>
+			 <if test="buildingNo != null and buildingNo != ''">
+				 buildingNo = #{buildingNo},
+			 </if>
+			 <if test="unitNo != null and unitNo != ''">
+				 unitNo = #{unitNo},
+			 </if>
+			 <if test="floorNo != null and floorNo != ''">
+				 floorNo = #{floorNo},
+			 </if>
+			 <if test="houseNo != null and houseNo != ''">
+				 houseNo = #{houseNo},
+			 </if>
+			 <if test="isLeave != null">
+				 isLeave = #{isLeave},
+			 </if>
+			 <if test="platePic != null and platePic != ''">
+			 	platePic = #{platePic}
+			 </if>
+		 </set>
+		<where>
+			<if test="plateNo != null and plateNo != ''">
+				plateNo = #{plateNo}
+			</if>
+			<if test="villageCode != null and villageCode != ''">
+				AND villageCode = #{villageCode}
+			</if>
+		</where>	
+	</update>
+	
+	<!-- 更新retation表状态 -->
+	<update id="updateRetation"
+		parameterType="com.ss.isc.data.process.common.model.Vehicle">
+		UPDATE cw_vehicle_retention 
+		<if test="status != null">
+			SET `status` = #{status},
+		</if>
+		remark = #{remark}
+		<where>
+			<if test="handleId != null and handleId != ''">
+				id = #{handleId}
+			</if>
+		</where>
+	</update>
+	
+	<!-- 该小区该车牌是否存在 -->
+	<select id="existVehicle"
+		parameterType="com.ss.isc.data.process.common.dto.VehicleDTO"
+		resultType="com.ss.isc.data.process.common.model.Vehicle">
+		SELECT * FROM cw_base_vehicle
+		<where>
+			villageCode = #{villageCode}
+			AND plateNo = #{plateNo}
+		</where>	
+	</select>
+	
+	<!-- 最后一次进出时间 -->
+	<select id="lastInOutTime"
+	parameterType="com.ss.isc.data.process.common.dto.VehicleDTO"
+	resultType="com.ss.isc.data.process.common.model.VehicleRecord">
+		SELECT
+			*
+		FROM
+			cw_vehicle_record
+		WHERE
+			<if test="villageCode != null and villageCode != ''">
+				villageCode = #{villageCode}
+			</if>
+			<if test="plateNumber != null and plateNumber != ''">
+				AND plateNumber = #{plateNumber}
+			</if>
+			<if test="inOutType != null">
+				AND inOutType = #{inOutType}
+			</if>
+		ORDER BY
+			inOutTime DESC
+	</select>
+
+
+	<!-- 更新未处置的车辆预警信息状态为有效[感知发现] -->
+	<update id="updateUntreatedDiscoveryAsValid">
+		UPDATE cw_vehicle_discovery SET STATUS = 2 WHERE STATUS = 1
+	</update>
+	<!-- 更新未处置的车辆预警信息状态为有效[感知离开] -->
+	<update id="updateUntreatedLeaveAsValid">
+		UPDATE cw_vehicle_leave SET STATUS = 2 WHERE STATUS = 1
+	</update>
+	<!-- 更新未处置的车辆预警信息状态为有效[车辆滞留] -->
+	<update id="updateUntreatedRetentionAsValid">
+		UPDATE cw_vehicle_retention SET STATUS = 2 WHERE STATUS = 1
+	</update>
+
+</mapper>

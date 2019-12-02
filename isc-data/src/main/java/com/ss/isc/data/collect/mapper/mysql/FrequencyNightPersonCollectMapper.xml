@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.isc.data.collect.mapper.FrequencyNightPersonCollectMapper">
+
+	<select id="queryList" parameterType="java.util.Map" resultType="com.ss.isc.data.collect.common.model.FrequencyNightPersonCollect">
+		SELECT * FROM cw_frequency_night_collect
+		WHERE dayEnd = DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL 2 DAY),"%Y-%m-%d")
+		<if test="frequencyNightPersonIds != null and frequencyNightPersonIds.size > 0 ">
+			AND frequencyPersonId in
+			<foreach collection="frequencyNightPersonIds" index="index" item="item" open="("
+				separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</select>
+
+	<insert id="batchCompareCollect" parameterType="java.util.List">
+		INSERT INTO cw_frequency_night_collect
+		(`collectId`, `frequencyPersonId`, `amount`, `dayBegin`, `dayEnd`, `updateTime`)
+		VALUES
+		<foreach collection="list" item="item" index="index" separator=",">
+			(#{item.collectId}, #{item.frequencyNightPersonId}, #{item.amount}, #{item.dayBegin},
+			#{item.dayEnd}, now())
+		</foreach>
+		ON DUPLICATE KEY UPDATE
+		amount=values(amount),
+		dayEnd=values(dayEnd),
+		updateTime=now()
+	</insert>
+
+</mapper>

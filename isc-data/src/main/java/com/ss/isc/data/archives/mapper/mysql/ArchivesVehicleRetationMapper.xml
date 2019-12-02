@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.isc.data.archives.mapper.ArchivesVehicleRetationMapper">
+
+     <!-- 根据主表id查询最大子表id -->
+     <select id="getRetentionDetailId"
+     	parameterType="com.ss.isc.data.archives.common.model.VehicleRetation"
+     	resultType="java.lang.String">
+		SELECT
+			MAX(id)
+		FROM
+			cw_vehicle_retation_detail
+		<where>
+			retationId = #{id}
+		</where>
+     </select>
+     
+     <!-- 1主表 -->
+     <update id="updateRetentionFirstMaster" parameterType="java.util.List">
+         <foreach collection="list" item="item" separator=";">
+			UPDATE cw_vehicle_retention
+			<if test="item.days != null">
+				SET days = #{item.days,jdbcType=SMALLINT}
+			</if>
+			WHERE
+				id = #{item.id,jdbcType=VARCHAR}
+         </foreach>    
+     </update>
+     
+     <!-- 1更新子表updateTime -->
+     <update id="updateRetentionFirstSlave" parameterType="java.util.List">
+         <foreach collection="list" item="item" separator=";">
+			UPDATE cw_vehicle_retation_detail
+			SET dayEnd = #{item.dayEnd},
+			days = #{item.days}
+			WHERE
+				id = #{item.detailId}       
+         </foreach>    
+     </update> 
+     
+     <!-- 2 主表更新 -->
+     <update id="updateRetentionThirdMaster"
+     	parameterType="java.util.List">
+     	<foreach collection="list" item="item" separator=";">
+			UPDATE cw_vehicle_retention 
+			SET days = #{item.days},
+			flag = 0
+			<where>
+				id = #{item.id}
+			</where>        
+        </foreach>    
+     </update>  
+     
+     <!-- 2 子表新增一条数据 -->
+    <insert id ="insertsRetentionThirdSlave" parameterType="java.util.List" >
+            <selectKey resultType ="java.lang.Integer" keyProperty= "id"
+                 order= "AFTER">
+                SELECT LAST_INSERT_ID()
+            </selectKey>
+        	INSERT INTO cw_vehicle_retation_detail (
+				retationId,
+				days,
+				dayBegin,
+				dayEnd
+			)
+			VALUES
+            <foreach collection ="list" item="item" index= "index" separator =",">
+                (
+                #{item.id},
+                #{item.days},
+                #{item.dayBegin},
+                #{item.dayEnd}
+                )
+            </foreach>
+     </insert>  
+	
+	<!-- 3 schedule 车辆滞留：批量新增 -->
+    <insert id ="insertsRetention" parameterType="java.util.List" >
+           INSERT INTO cw_vehicle_retention (
+           		id,
+				tollgateID,
+				cameraId,
+				villageCode,
+				plateNumber,
+				inOutTime,
+				platePicUrl,
+				plateNoPicUrl,
+				channelName,
+				days,
+				status
+			)
+			VALUES
+            <foreach collection ="list" item="item" index= "index" separator =",">
+                (
+                #{item.thirdId},
+                #{item.tollgateID},
+                #{item.cameraId},
+                #{item.villageCode},
+                #{item.plateNumber},
+                #{item.inOutTime},
+                #{item.platePicUrl},
+                #{item.plateNoPicUrl},
+                #{item.channelName},
+                #{item.days},
+                1
+                )
+            </foreach>
+     </insert>
+     
+     <!-- 3 子表新增数据 -->
+     <insert id ="insertsRetentionRecordSlave" parameterType="java.util.List" >
+        <selectKey resultType ="java.lang.Integer" keyProperty= "id"
+             order= "AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        	INSERT INTO cw_vehicle_retation_detail (
+				retationId,
+				days,
+				dayBegin,
+				dayEnd
+			)
+			VALUES
+			<foreach collection ="list" item="item" index= "index" separator =",">
+				(
+				#{item.thirdId},
+				#{item.days},
+                #{item.dayBegin},
+                #{item.dayEnd}
+                )
+			</foreach>
+     </insert>
+	
+	
+</mapper>

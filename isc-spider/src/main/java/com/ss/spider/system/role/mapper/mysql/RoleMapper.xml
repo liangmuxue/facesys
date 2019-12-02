@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.spider.system.role.mapper.RoleMapper">
+	
+	<resultMap id="BaseRoleMap" type="com.ss.spider.system.role.model.Role">
+		<id 	column="ROLE_ID" 				property="roleId" 				jdbcType="VARCHAR" />
+		<result column="ROLE_CNAME"  			property="roleCname"  			jdbcType="VARCHAR" />
+		<result column="ROLE_ENAME"          	property="roleEname"      		jdbcType="VARCHAR" />
+		<result column="STATUS" 				property="status"    			jdbcType="INTEGER" />
+		<result column="REMARK"   				property="remark"      			jdbcType="VARCHAR" />
+		<result column="INIT_FLAG" 				property="initFlag"    			jdbcType="INTEGER" />
+		<result column="CREATED_TIME"   		property="createdTime"      	jdbcType="BIGINT" />
+		<result column="CREATED_USERID"      	property="createdUserid"    	jdbcType="VARCHAR" />
+		<result column="UPDATED_TIME"    		property="updatedTime"    		jdbcType="BIGINT" />
+		<result column="UPDATED_USERID"    		property="updatedUserid"    	jdbcType="VARCHAR" />
+		<result column="DELETED_TIME"    		property="deletedTime"    		jdbcType="BIGINT" />
+		<result column="DELETED_USERID"    		property="deletedUserid"    	jdbcType="VARCHAR" />
+	</resultMap>
+	<!--权限角色分页查询-->
+	<select id="pages" parameterType="com.ss.spider.system.role.model.Role" resultMap="BaseRoleMap">
+		select ROLE_ID, ROLE_CNAME, ROLE_ENAME, STATUS, REMARK, INIT_FLAG, CREATED_TIME, CREATED_USERID,
+		       UPDATED_TIME, UPDATED_USERID, DELETED_TIME, DELETED_USERID
+		  from CW_GE_ROLE
+		 where 1 = 1
+		 <if test="roleId != null and roleId != ''">
+		 	and ROLE_ID = #{roleId, jdbcType=VARCHAR}
+		 </if>
+		 
+		 <if test="roleCname != null and roleCname != ''">
+		 	and ROLE_CNAME like CONCAT('%', #{roleCname, jdbcType=VARCHAR}, '%')
+		 </if>
+		 
+		 <if test="roleEname != null and roleEname != ''">
+		 	and ROLE_ENAME like CONCAT('%', #{roleEname, jdbcType=VARCHAR}, '%')
+		 </if>
+		 
+		 <if test="initFlag != null and initFlag != ''">
+		 	and INIT_FLAG = #{initFlag, jdbcType=INTEGER}
+		 </if>
+		 
+		 <choose>
+		 	<when test="status != null">
+		 		and STATUS = #{status, jdbcType=INTEGER}
+		 	</when>
+		 	<otherwise>
+		 		and STATUS in(0, 1)
+		 	</otherwise>
+		 </choose>
+		 
+		 order by CREATED_TIME desc
+	</select>
+	
+	<!--查询角色-->
+	<select id="list" parameterType="com.ss.spider.system.role.model.Role" resultMap="BaseRoleMap">
+		select ROLE_ID, ROLE_CNAME, ROLE_ENAME, STATUS, REMARK, INIT_FLAG, CREATED_TIME, CREATED_USERID, 
+		       UPDATED_TIME, UPDATED_USERID, DELETED_TIME, DELETED_USERID
+		  from CW_GE_ROLE
+		 where 1 = 1
+		 <if test="roleId != null and roleId != ''">
+		 	and ROLE_ID = #{roleId, jdbcType=VARCHAR}
+		 </if>
+		 
+		 <if test="roleCname != null and roleCname != ''">
+		 	and ROLE_CNAME = #{roleCname, jdbcType=VARCHAR}
+		 </if>
+		 
+		 <if test="roleEname != null and roleEname != ''">
+		 	and ROLE_ENAME = #{roleEname, jdbcType=VARCHAR}
+		 </if>
+		 
+		 <if test="initFlag != null and initFlag != ''">
+		 	and INIT_FLAG = #{initFlag, jdbcType=INTEGER}
+		 </if>
+		 
+		 <choose>
+		 	<when test="status != null">
+		 		and STATUS = #{status, jdbcType=INTEGER}
+		 	</when>
+		 	<otherwise>
+		 		and STATUS in(0, 1)
+		 	</otherwise>
+		 </choose>
+	</select>
+	<!--查询角色-->
+	<select id="gets" parameterType="map" resultMap="BaseRoleMap">
+		select ROLE_ID, ROLE_CNAME, ROLE_ENAME, STATUS, REMARK, INIT_FLAG, CREATED_TIME, CREATED_USERID, 
+		       UPDATED_TIME, UPDATED_USERID, DELETED_TIME, DELETED_USERID
+		  from CW_GE_ROLE
+		 where 1 = 1
+		<choose>
+			<when test="roleId != null and roleId != ''">
+				and ROLE_ID = #{roleId, jdbcType=VARCHAR}
+			</when>
+			<when test="roleIds != null">
+				and ROLE_ID in
+				<foreach collection="roleIds" item="item" open="(" close=")" separator=",">
+					#{item, jdbcType=VARCHAR}
+				</foreach>
+			</when>
+		</choose>
+		 
+		<choose>
+			<when test="status != null">
+				and STATUS = #{status, jdbcType=INTEGER}
+			</when>
+			<otherwise>
+				and STATUS in(0, 1)
+			</otherwise>
+		</choose>
+		 
+		<if test="roleCname != null and roleCname != ''">
+		 	and ROLE_CNAME = #{roleCname, jdbcType=VARCHAR}
+		 </if>
+		 
+		 <if test="roleEname != null and roleEname != ''">
+		 	and ROLE_ENAME = #{roleEname, jdbcType=VARCHAR}
+		 </if>
+		 
+		 <if test="initFlag != null and initFlag != ''">
+		 	and INIT_FLAG = #{initFlag, jdbcType=INTEGER}
+		 </if>
+		 
+	</select>
+	<!--添加权限角色-->
+	<insert id="save" parameterType="com.ss.spider.system.role.model.Role">
+		insert into CW_GE_ROLE(ROLE_ID, ROLE_CNAME, ROLE_ENAME, STATUS, REMARK, 
+		       CREATED_TIME, CREATED_USERID, UPDATED_TIME, UPDATED_USERID)
+		values(#{roleId, jdbcType=VARCHAR},				#{roleCname, jdbcType=VARCHAR},			#{roleEname, jdbcType=VARCHAR},
+			   #{status, jdbcType=INTEGER},				#{remark, jdbcType=VARCHAR},			#{createdTime, jdbcType=BIGINT},		
+			   #{createdUserid, jdbcType=VARCHAR},		#{updatedTime, jdbcType=BIGINT},		#{updatedUserid, jdbcType=VARCHAR})
+	</insert>
+	<!--修改权限角色-->
+	<update id="update" parameterType="com.ss.spider.system.role.model.Role">
+		update CW_GE_ROLE
+		   set ROLE_CNAME = #{roleCname, jdbcType=VARCHAR},
+		       ROLE_ENAME = #{roleEname, jdbcType=VARCHAR},
+			   STATUS      = #{status, jdbcType=INTEGER},
+			   REMARK	   = #{remark, jdbcType=VARCHAR},				
+			   UPDATED_TIME   = #{updatedTime, jdbcType=BIGINT},		
+			   UPDATED_USERID = #{updatedUserid, jdbcType=VARCHAR}		
+		 where ROLE_ID = #{roleId, jdbcType=VARCHAR}
+	</update>
+	<!--权限角色逻辑删除-->
+	<update id="discard" parameterType="map">
+		update CW_GE_ROLE
+		   set STATUS = -1,
+		   	   DELETED_TIME   = #{deletedTime, jdbcType=BIGINT},
+		       DELETED_USERID = #{deletedUserid, jdbcType=VARCHAR}
+		<where>
+			<choose>
+				<when test="roleId != null and roleId != ''">
+					ROLE_ID = #{roleId, jdbcType=VARCHAR}
+				</when>
+				<when test="roleIds != null">
+					ROLE_ID in
+					<foreach collection="roleIds" item="item" open="(" close=")" separator=",">
+						#{item, jdbcType=VARCHAR}
+					</foreach>
+				</when>
+				<otherwise>
+					1 != 1
+				</otherwise>
+			</choose>
+		</where>
+	</update>
+	
+	<delete id="remove" parameterType="map">
+		delete from CW_GE_ROLE
+		<where>
+			<choose>
+				<when test="roleId != null and roleId != ''">
+					ROLE_ID = #{roleId, jdbcType=VARCHAR}
+				</when>
+				<when test="roleIds != null">
+					ROLE_ID in
+					<foreach collection="roleIds" item="item" open="(" close=")" separator=",">
+						#{item, jdbcType=VARCHAR}
+					</foreach>
+				</when>
+				<otherwise>
+					1 != 1
+				</otherwise>
+			</choose>
+		</where>
+	</delete>
+</mapper>

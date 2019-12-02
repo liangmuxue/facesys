@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+        namespace="com.ss.isc.data.resource.mapper.WifiMapper">
+
+    <select id="findWifis"
+            resultType="com.ss.isc.data.resource.common.model.Wifi">
+        SELECT * FROM cw_wifi_device
+        <where>
+            isDelete = 0
+            <if test="villageCode !=null and villageCode !=''">
+                and villageCode =#{villageCode}
+            </if>
+            <if test="sqlMap.dsf != null and sqlMap.dsf !=''">
+                and ${sqlMap.dsf}
+            </if>
+        </where>
+    </select>
+
+    <insert id="insertWifi"
+            parameterType="com.ss.isc.data.resource.common.model.Wifi">
+		INSERT INTO cw_wifi_device (
+		villageCode,
+		deviceId,
+		deviceName,
+		networkName,
+		detailAddress,
+		lon,
+		lat,
+		alt,
+		gisType,
+		devicePicUrl
+		)
+		VALUES
+		(
+		#{villageCode},
+		#{deviceId},
+		#{deviceName},
+		#{networkName},
+		#{detailAddress},
+		#{lon},
+		#{lat},
+		#{alt},
+		#{gisType},
+		#{devicePicUrl}
+		)
+	</insert>
+
+    <update id="updateWifi"
+            parameterType="com.ss.isc.data.resource.common.model.Wifi">
+        UPDATE cw_wifi_device
+        <set>
+            <if test="villageCode != null and villageCode !=''">villageCode = #{villageCode},</if>
+            <if test="deviceId != null and deviceId !=''">deviceId = #{deviceId},</if>
+            deviceName = #{deviceName},
+            networkName = #{networkName},
+            detailAddress = #{detailAddress},
+            lon = #{lon},
+            lat = #{lat},
+            alt = #{alt},
+            gisType = #{gisType},
+            updateTime =#{updateTime},
+            devicePicUrl = #{devicePicUrl}
+        </set>
+        WHERE
+        id = #{id}
+    </update>
+
+    <delete id="deleteWifi"
+            parameterType="com.ss.isc.data.resource.common.model.Wifi">
+		DELETE
+		FROM
+		cw_wifi_device
+		WHERE
+		id = #{id}
+	</delete>
+
+    <select id="findAllWifis"
+            parameterType="com.ss.isc.data.resource.common.model.Wifi"
+            resultType="com.ss.isc.data.resource.common.model.Wifi">
+        SELECT
+        a.*, b.villageName,
+        c.enumName
+        FROM
+        cw_wifi_device a
+        LEFT JOIN
+        cw_base_village
+        b ON
+        a.villageCode = b.villageCode
+        LEFT JOIN cw_base_enum
+        c ON
+        c.enumType = "gisType"
+        AND a.gisType = c.enumValue
+        <where>
+            a.isDelete = 0
+            <if test="villageCode != null and villageCode != ''">
+                AND a.villageCode = #{villageCode}
+            </if>
+            <if test="sqlMap.dsf != null and sqlMap.dsf != ''">
+                AND ${sqlMap.dsf}
+            </if>
+            <if test="villageCodes !=null">
+                AND FIND_IN_SET(a.villageCode,#{villageCodes})
+            </if>
+            <if test="deviceName != null and deviceName !=''">AND a.deviceName LIKE CONCAT('%',#{deviceName},'%')</if>
+            <if test="deviceId != null and deviceId !=''">AND a.deviceId LIKE CONCAT('%',#{deviceId},'%')</if>
+            <if test="detailAddress != null and detailAddress !=''">AND a.detailAddress LIKE
+                CONCAT('%',#{detailAddress},'%')
+            </if>
+        </where>
+    </select>
+
+
+    <select id="getWifiSum"
+            resultType="com.ss.isc.data.collect.common.dto.CaptureSumDTO">
+		SELECT
+		a.villageCode,
+		b.villageName,
+		count(1) AS num
+		FROM
+		cw_wifi_collect a
+		LEFT JOIN cw_base_village b ON a.villageCode =
+		b.villageCode
+		WHERE a.createTime BETWEEN DATE_SUB(CURDATE(), INTERVAL 6
+		DAY) and
+		DATE_FORMAT(now(), '%Y-%m-%d')
+		GROUP BY
+		a.villageCode
+	</select>
+
+
+    <select id="getWifiAllSum"
+            resultType="com.ss.isc.data.collect.common.dto.CaptureSumDTO">
+		SELECT
+		a.villageCode,
+		b.villageName,
+		count(1) AS num
+		FROM
+		cw_wifi_collect a
+		LEFT JOIN cw_base_village b ON a.villageCode =
+		b.villageCode
+		GROUP BY
+		a.villageCode
+	</select>
+
+
+    <select id="pages"
+            parameterType="com.ss.isc.data.resource.common.model.Wifi"
+            resultType="com.ss.isc.data.resource.common.model.Wifi">
+        SELECT
+        a.villageCode,
+        b.phone,
+        a.deviceId,
+        a.collectMac,
+        d.deviceName,
+        a.collectTime,
+        d.detailAddress
+        FROM
+        cw_wifi_collect a
+        LEFT JOIN cw_wifi_phone_ref b ON a.collectMac = b.mac
+        LEFT JOIN cw_wifi_device d ON a.deviceId = d.deviceId
+        <where>
+            <if test="beginTime !=null and beginTime !=''">
+                and a.collectTime &gt;#{beginTime}
+            </if>
+            <if test="endTime !=null and endTime !=''">
+                and a.collectTime &lt;#{endTime}
+            </if>
+            <if test="phone !=null and phone !=''">
+                AND b.phone LIKE CONCAT('%', #{phone}, '%')
+            </if>
+            <if test="collectMac !=null and collectMac !=''">
+                AND a.collectMac LIKE CONCAT('%', #{collectMac}, '%')
+            </if>
+            <if test="detailAddress !=null and detailAddress !=''">
+                AND d.detailAddress LIKE CONCAT('%', #{detailAddress},
+                '%')
+            </if>
+            <if test="deviceName != null and deviceName !=''">
+                AND d.deviceName LIKE CONCAT('%',#{deviceName},'%')
+            </if>
+            <if test="villages != null and villages.size() !=''">
+                AND a.villageCode in
+                <foreach collection="villages" index="index" item="item"
+                         open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY
+        a.collectTime
+        DESC
+    </select>
+
+
+    <select id="check"
+            resultType="com.ss.isc.data.resource.common.model.Wifi">
+        SELECT
+        *
+        FROM
+        cw_wifi_device
+        <where>
+            <if test="deviceId !=null and deviceId !=''">
+                deviceId = #{deviceId}
+            </if>
+            <if test="villageCode !=null and villageCode !=''">
+                AND villageCode = #{villageCode}
+            </if>
+        </where>
+        LIMIT 0,1
+    </select>
+
+
+    <update id="updateBatch" parameterType="java.util.List">
+        <foreach collection="list" item="item" index="index" open=""
+                 separator=";" close="">
+            update cw_wifi_device
+            <set>
+                <if test="item.villageCode !=null and item.villageCode !=''">
+                    villageCode = #{item.villageCode,jdbcType=VARCHAR},
+                </if>
+                <if test="item.deviceId !=null and item.deviceId !=''">
+                    deviceId = #{item.deviceId,jdbcType=VARCHAR},
+                </if>
+                <if test="item.deviceName !=null and item.deviceName !=''">
+                    deviceName = #{item.deviceName,jdbcType=VARCHAR},
+                </if>
+                <if test="item.networkName !=null and item.networkName !=''">
+                    networkName = #{item.networkName,jdbcType=VARCHAR},
+                </if>
+                <if test="item.detailAddress !=null and item.detailAddress !=''">
+                    detailAddress = #{item.detailAddress,jdbcType=VARCHAR},
+                </if>
+                <if test="item.lon !=null">
+                    lon = #{item.lon,jdbcType=DOUBLE},
+                </if>
+                <if test="item.lat !=null">
+                    lat = #{item.lat,jdbcType=DOUBLE},
+                </if>
+                <if test="item.gisType !=null">
+                    gisType = #{item.gisType,jdbcType=SMALLINT},
+                </if>
+                <if test="item.devicePicUrl !=null and item.devicePicUrl !=''">
+                    devicePicUrl = #{item.devicePicUrl,jdbcType=VARCHAR},
+                </if>
+                <if test="item.updateTime !=null">
+                    updateTime = #{item.updateTime},
+                </if>
+            </set>
+            where id = #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+
+
+</mapper>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.isc.data.collect.mapper.SensitivePersonMapper">
+
+	<select id="querySensitiveList" resultType="com.ss.isc.data.collect.common.model.SensitivePerson">
+		SELECT t1.* FROM cw_sensitive_traffic t1
+		WHERE t1.state = 1 or t1.state = 4
+	</select>
+
+	<!--条件查询夜间高频人员-->
+	<select id="findSensitivePerson" parameterType="com.ss.isc.data.collect.common.model.SensitivePerson" resultType="com.ss.isc.data.collect.common.model.SensitivePerson">
+		SELECT * FROM `cw_sensitive_traffic`
+		<where>
+			<if test="capturePath != null and capturePath != ''">
+				AND capturePath =#{capturePath}
+			</if>
+			<if test="panoramaPath != null and panoramaPath != ''">
+				AND panoramaPath =#{panoramaPath}
+			</if>
+			<if test="deviceNo != null and deviceNo != ''">
+				AND deviceNo =#{deviceNo}
+			</if>
+			<if test="doorCode != null and doorCode != ''">
+				AND doorCode =#{doorCode}
+			</if>
+			<if test="doorName != null and doorName != ''">
+				AND doorName =#{doorName}
+			</if>
+			<if test="villageId != null and villageId != ''">
+				AND villageId =#{villageId}
+			</if>
+			<if test="regionCode != null and regionCode != ''">
+				AND regionCode =#{regionCode}
+			</if>
+			<if test="lastCaptureTime != null">
+				AND lastCaptureTime =#{lastCaptureTime}
+			</if>
+		</where>
+		LIMIT 0,1
+	</select>
+
+	<insert id="batchCompareSensitivePerson" parameterType="java.util.List">
+		INSERT INTO cw_sensitive_traffic
+		(`id`, `capturePath`,`panoramaPath`, `deviceNo`, `doorCode`, `doorName`, `villageId`,
+		`regionCode`, `state`, `keyState`, `excludeFlag`, `updateTime`,`lastCaptureTime`,
+		`facePitch`,`faceYaw`,`faceRoll`,`facex`,`facey`,`faceWidth`,`faceHeight`)
+		VALUES
+		<foreach collection="list" item="item" index="index" separator=",">
+			( #{item.id},#{item.capturePath},#{item.panoramaPath},#{item.deviceNo}, #{item.doorCode},
+			#{item.doorName}, #{item.villageId}, #{item.regionCode}, #{item.state}, #{item.keyState}, #{item.excludeFlag},
+			now(),#{item.lastCaptureTime},#{item.facePitch}, #{item.faceYaw}, #{item.faceRoll}, #{item.facex}, #{item.facey},
+			#{item.faceWidth}, #{item.faceHeight})
+		</foreach>
+		ON DUPLICATE KEY UPDATE
+		capturePath=values(capturePath),
+		panoramaPath=values(panoramaPath),
+		updateTime=now(),
+		lastCaptureTime=values(lastCaptureTime),
+		facePitch=values(facePitch),
+		faceYaw=values(faceYaw),
+		faceRoll=values(faceRoll),
+		facex=values(facex),
+		facey=values(facey),
+		faceWidth=values(faceWidth),
+		faceHeight=values(faceHeight)
+	</insert>
+
+	<insert id="batchInsertSensitivePersonDetail" parameterType="java.util.List">
+		INSERT INTO cw_sensitive_traffic_detail
+		(id,sensitivePersonId,detailId,taskId,deviceId,captureUrl,captureUrlFull,captureTime,
+		panoramaUrl,panoramaUrlFull,deviceName,deviceType,lng,lat,captureId,
+		facePitch,faceYaw,faceRoll,facex,facey,faceWidth,faceHeight)
+		VALUES
+		<foreach collection="list" item="item" index="index" separator=",">
+			(#{item.id},#{item.sensitivePersonId},#{item.detailId},#{item.taskId},#{item.deviceId},#{item.captureUrl},
+			#{item.captureUrlFull},#{item.captureTime},#{item.panoramaUrl},#{item.panoramaUrlFull},#{item.deviceName},
+			#{item.deviceType},#{item.lng},#{item.lat},#{item.captureId},#{item.facePitch}, #{item.faceYaw}, #{item.faceRoll}, #{item.facex}, #{item.facey},
+			#{item.faceWidth}, #{item.faceHeight})
+		</foreach>
+	</insert>
+
+	<select id="querySensitivePersonDetCaptureIds" resultType="string">
+		SELECT captureId FROM cw_sensitive_traffic_detail WHERE captureId is not null
+		 and sensitivePersonId = #{sensitivePersonId}
+	</select>
+	<!--更新敏感通行表-->
+	<update id="update" parameterType="com.ss.isc.data.collect.common.model.SensitivePerson">
+		UPDATE cw_sensitive_traffic
+		<set>
+			<if test="state != null" >
+				state = #{state,jdbcType=INTEGER},
+			</if>
+			<if test="updateTime != null" >
+				updateTime = #{updateTime},
+			</if>
+			<if test="label != null and label !=''" >
+				label = #{label},
+			</if>
+			<if test="remark != null and remark !=''" >
+				remark = #{remark},
+			</if>
+		</set>
+		where id = #{id,jdbcType=VARCHAR}
+	</update>
+
+	<!--查询敏感通行人员备注和标签-->
+	<select id="findSensitivePersonResult" parameterType="java.lang.String" resultType="com.ss.isc.data.collect.common.model.SensitivePerson">
+		SELECT remark, label FROM cw_sensitive_traffic WHERE id = #{id}
+	</select>
+
+</mapper>

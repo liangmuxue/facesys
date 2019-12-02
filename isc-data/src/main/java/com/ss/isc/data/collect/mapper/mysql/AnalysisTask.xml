@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.isc.data.collect.mapper.AnalysisTaskMapper">
+	<select id="queryAnalysisTask" parameterType="java.lang.Integer"
+		resultType="com.ss.isc.data.collect.common.model.AnalysisTask">
+		SELECT t.* FROM cw_analysis_task t
+		<where> 
+			<if test="state == 2">
+				t.state != 9 and (t.state = 1 or t.state = 2)
+			</if>
+			<if test="state != 2">
+				t.state = #{state}
+			</if>
+			<if test="taskType != null and taskType !='' ">
+				t.taskType = #{taskType}
+			</if>
+		</where>
+	</select>
+
+	<insert id="insertAnalysisTask" parameterType="map">
+		INSERT INTO
+		cw_iscdb.cw_analysis_task
+		(id,taskName,state,taskType)
+		VALUES (#{id},#{taskName},#{state},#{taskType})
+	</insert>
+
+	<insert id="updateAnalysisTaskState"
+		parameterType="com.ss.isc.data.collect.common.model.AnalysisTask">
+		UPDATE cw_analysis_task
+		SET state = #{state},updateTime = NOW()
+		WHERE id = #{id}
+	</insert>
+	
+	<update id="batchUpdateState" parameterType="java.util.List">
+		<foreach collection="list" item="item" separator=";">
+			UPDATE cw_analysis_task
+			SET state = 9
+   		 	WHERE id = #{item}
+		</foreach>
+	</update>
+</mapper>

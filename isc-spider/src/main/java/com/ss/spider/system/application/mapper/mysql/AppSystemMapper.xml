@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.spider.system.application.mapper.AppSystemMapper">
+	
+	<resultMap id="BaseAppSystemMap" type="com.ss.spider.system.application.model.AppSystem">
+		<id 	column="APP_ID" 			property="appId" 				jdbcType="VARCHAR" />
+		<result column="CODE"  				property="code"  				jdbcType="VARCHAR" />
+		<result column="NAME"          		property="name"      			jdbcType="VARCHAR" />
+		<result column="APP_ICO" 			property="appIco"    			jdbcType="VARCHAR" />
+		<result column="REMARK"   			property="remark"      			jdbcType="VARCHAR" />
+		<result column="VERSION"      		property="version"    			jdbcType="VARCHAR" />
+		<result column="CREATED_TIME"    	property="createdTime"    		jdbcType="BIGINT" />
+	</resultMap>
+	
+	<select id="pages" parameterType="com.ss.spider.system.application.model.AppSystem" resultMap="BaseAppSystemMap">
+		select APP_ID, CODE, NAME, APP_ICO, REMARK, VERSION, CREATED_TIME
+		  from CW_APP_SYSTEM
+		 where 1 = 1
+		<if test="appId != null and appId != ''">
+			and APP_ID = #{appId, jdbcType=VARCHAR}
+		</if>
+		
+		<if test="code != null and code != ''">
+			and CODE like CONCAT('%', #{code, jdbcType=VARCHAR}, '%')
+		</if>
+		 
+		<if test="name != null and name != ''">
+			and NAME like CONCAT('%', #{name, jdbcType=VARCHAR}, '%')
+		</if>
+		 
+		<if test="version != null and version != ''">
+			and VERSION = #{version, jdbcType=VARCHAR}
+		</if>
+		order by CREATED_TIME desc
+	</select>
+	
+	<select id="list" parameterType="com.ss.spider.system.application.model.AppSystem" resultMap="BaseAppSystemMap">
+		select APP_ID, CODE, NAME, APP_ICO, REMARK, VERSION, CREATED_TIME
+		  from CW_APP_SYSTEM
+		 where 1 = 1
+		<if test="appId != null and appId != ''">
+			and APP_ID = #{appId, jdbcType=VARCHAR}
+		</if>
+		 
+		<if test="code != null and code != ''">
+			and CODE = #{code, jdbcType=VARCHAR}
+		</if>
+		 
+		<if test="name != null and name != ''">
+			and NAME = #{name, jdbcType=VARCHAR}
+		</if>
+		 
+		<if test="version != null and version != ''">
+			and VERSION = #{version, jdbcType=VARCHAR}
+		</if>
+		order by CREATED_TIME desc
+	</select>
+	
+	<select id="gets" parameterType="map" resultMap="BaseAppSystemMap">
+		select APP_ID, CODE, NAME, APP_ICO, REMARK, VERSION, CREATED_TIME
+		  from CW_APP_SYSTEM
+		 where 1 = 1
+		<choose>
+			<when test="appId != null and appId != ''">
+		 		and APP_ID = #{appId, jdbcType=VARCHAR}
+			</when>
+			<when test="appIds != null">
+		 		and APP_ID in
+		 		<foreach collection="appIds" item="item" open="(" separator="," close=")">
+		 			#{item, jdbcType=VARCHAR}
+		 		</foreach>
+			</when>
+		</choose>
+		
+		<if test="code != null and code != ''">
+			and CODE = #{code, jdbcType=VARCHAR}
+		</if>
+		 
+		<if test="name != null and name != ''">
+			and NAME = #{name, jdbcType=VARCHAR} 
+		</if>
+		 
+		<if test="version != null and version != ''">
+			and VERSION = #{version, jdbcType=VARCHAR}
+		</if>
+	</select>
+	
+	<insert id="save" parameterType="com.ss.spider.system.application.model.AppSystem">
+		insert into CW_APP_SYSTEM(APP_ID, CODE, NAME, APP_ICO, REMARK, VERSION, CREATED_TIME)
+		values(#{appId, jdbcType=VARCHAR},		#{code, jdbcType=VARCHAR},		#{name, jdbcType=VARCHAR},
+			   #{appIco, jdbcType=VARCHAR},		#{remark, jdbcType=VARCHAR},	#{version, jdbcType=VARCHAR},
+			   #{createdTime, jdbcType=BIGINT})
+	</insert>
+	
+	<update id="update" parameterType="com.ss.spider.system.application.model.AppSystem">
+		update CW_APP_SYSTEM
+		   set CODE = #{code, jdbcType=VARCHAR},		
+		   	   NAME = #{name, jdbcType=VARCHAR},
+			   APP_ICO = #{appIco, jdbcType=VARCHAR},		
+			   REMARK  = #{remark, jdbcType=VARCHAR},	
+			   VERSION = #{version, jdbcType=VARCHAR}
+		 where APP_ID = #{appId, jdbcType=VARCHAR}
+	</update>
+	
+	<delete id="remove" parameterType="map">
+		delete from CW_APP_SYSTEM
+		 where 1 = 1
+		<choose>
+			<when test="code != null and code != ''">
+		 		and CODE = #{code, jdbcType=VARCHAR}
+			</when>
+			<when test="codes != null">
+		 		and CODE in
+		 		<foreach collection="codes" item="item" open="(" separator="," close=")">
+		 			#{item, jdbcType=VARCHAR}
+		 		</foreach>
+			</when>
+		</choose>
+		
+		<choose>
+			<when test="appId != null and appId != ''">
+		 		and APP_ID = #{appId, jdbcType=VARCHAR}
+			</when>
+			<when test="appIds != null">
+		 		and APP_ID in
+		 		<foreach collection="appIds" item="item" open="(" separator="," close=")">
+		 			#{item, jdbcType=VARCHAR}
+		 		</foreach>
+			</when>
+		</choose>
+		 
+		<if test="name != null and name != ''">
+			and NAME = #{name, jdbcType=VARCHAR} 
+		</if>
+		 
+		<if test="version != null and version != ''">
+			and VERSION = #{version, jdbcType=VARCHAR}
+		</if>
+	</delete>
+</mapper>

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.spider.system.systeminfo.mapper.SystemInfoMapper">
+    <resultMap id="BaseResultMap" type="com.ss.spider.system.systeminfo.model.SystemInfo">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="SYSTEM_ID" jdbcType="VARCHAR" property="systemId"/>
+        <result column="VERSION" jdbcType="VARCHAR" property="version"/>
+        <result column="NAME" jdbcType="VARCHAR" property="name"/>
+        <result column="COPY_RIGHT" jdbcType="VARCHAR" property="copyRight"/>
+        <result column="OCX_VERSION" jdbcType="VARCHAR" property="ocxVersion"/>
+        <result column="REMARK" jdbcType="VARCHAR" property="remark"/>
+        <result column="LOGIN_IMG" jdbcType="VARCHAR" property="loginImg"/>
+        <result column="LOGIN_BACKGROUND" jdbcType="VARCHAR" property="loginBackground"/>
+        <result column="SYSTEM_LOGO" jdbcType="VARCHAR" property="systemLogo"/>
+        <result column="ICO" jdbcType="VARCHAR" property="ico"/>
+        <result column="ABOUT_SYSTEM" jdbcType="VARCHAR" property="aboutSystem"/>
+        <result column="AUTH_EXPIRES" jdbcType="VARCHAR" property="authExpires"/>
+    </resultMap>
+
+    <select id="pages" parameterType="com.ss.spider.system.systeminfo.model.SystemInfo" resultMap="BaseResultMap">
+        select SYSTEM_ID, VERSION, NAME, COPY_RIGHT, OCX_VERSION,
+        REMARK,LOGIN_IMG,LOGIN_BACKGROUND,ICO,ABOUT_SYSTEM,AUTH_EXPIRES
+        from CW_GE_SYSTEM_INFO
+        where 1 = 1
+        <if test="systemId != null and systemId != ''">
+            and SYSTEM_ID = #{systemId, jdbcType=VARCHAR}
+        </if>
+
+        <if test="version != null and version != ''">
+            and VERSION like CONCAT('%', #{version, jdbcType=VARCHAR}, '%')
+        </if>
+
+        <if test="name != null and name != ''">
+            and NAME like CONCAT('%', #{name, jdbcType=VARCHAR}, '%')
+        </if>
+
+        <if test="copyRight != null and copyRight != ''">
+            and COPY_RIGHT like CONCAT('%', #{copyRight, jdbcType=VARCHAR}, '%')
+        </if>
+
+        <if test="ocxVersion != null and ocxVersion != ''">
+            and OCX_VERSION like CONCAT('%', #{ocxVersion, jdbcType=VARCHAR}, '%')
+        </if>
+
+    </select>
+
+
+    <select id="list" parameterType="com.ss.spider.system.systeminfo.model.SystemInfo" resultMap="BaseResultMap">
+        select SYSTEM_ID, VERSION, NAME, COPY_RIGHT, OCX_VERSION,
+        REMARK,LOGIN_IMG,LOGIN_BACKGROUND,ICO,ABOUT_SYSTEM,AUTH_EXPIRES
+        from CW_GE_SYSTEM_INFO
+        where 1 = 1
+
+        <if test="systemId != null and systemId != ''">
+            and SYSTEM_ID = #{systemId, jdbcType=VARCHAR}
+        </if>
+
+        <if test="version != null and version != ''">
+            and VERSION like CONCAT('%', #{version, jdbcType=VARCHAR}, '%')
+        </if>
+
+        <if test="name != null and name != ''">
+            and NAME like CONCAT('%', #{name, jdbcType=VARCHAR}, '%')
+        </if>
+
+        <if test="copyRight != null and copyRight != ''">
+            and COPY_RIGHT like CONCAT('%', #{copyRight, jdbcType=VARCHAR}, '%')
+        </if>
+
+        <if test="ocxVersion != null and ocxVersion != ''">
+            and OCX_VERSION like CONCAT('%', #{ocxVersion, jdbcType=VARCHAR}, '%')
+        </if>
+
+    </select>
+
+    <select id="gets" parameterType="map" resultMap="BaseResultMap">
+        select SYSTEM_ID, VERSION, NAME, COPY_RIGHT, OCX_VERSION,
+        REMARK,LOGIN_IMG,LOGIN_BACKGROUND,ICO,ABOUT_SYSTEM,AUTH_EXPIRES
+        from CW_GE_SYSTEM_INFO
+        where 1 = 1
+        <if test="systemId != null and systemId != ''">
+            and SYSTEM_ID = #{systemId, jdbcType=VARCHAR}
+        </if>
+
+        <if test="version != null and version != ''">
+            and VERSION like CONCAT('%', #{version, jdbcType=VARCHAR}, '%')
+        </if>
+
+        <if test="name != null and name != ''">
+            and NAME like CONCAT('%', #{name, jdbcType=VARCHAR}, '%')
+        </if>
+
+        <if test="copyRight != null and copyRight != ''">
+            and COPY_RIGHT like CONCAT('%', #{copyRight, jdbcType=VARCHAR}, '%')
+        </if>
+
+        <if test="ocxVersion != null and ocxVersion != ''">
+            and OCX_VERSION like CONCAT('%', #{ocxVersion, jdbcType=VARCHAR}, '%')
+        </if>
+    </select>
+
+    <delete id="remove" parameterType="map">
+        delete from CW_GE_SYSTEM_INFO
+        <if test="systemId != null and systemId != ''">
+            and SYSTEM_ID = #{systemId, jdbcType=VARCHAR}
+        </if>
+    </delete>
+</mapper>

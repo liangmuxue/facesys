@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ss.spider.log.mapper.AppLogMapper">
+    <resultMap id="BaseResultMap" type="com.ss.spider.log.model.AppLog">
+        <!--
+          WARNING - @mbggenerated
+        -->
+        <id column="APP_LOG" property="appLog" jdbcType="VARCHAR"/>
+        <result column="USER_ID" property="userId" jdbcType="VARCHAR"/>
+        <result column="ORG_ID" property="orgId" jdbcType="VARCHAR"/>
+        <result column="PHONE_NUMBER" property="phoneNumber" jdbcType="VARCHAR"/>
+        <result column="WORK_CODE" property="workCode" jdbcType="VARCHAR"/>
+        <result column="NAME" property="name" jdbcType="VARCHAR"/>
+        <result column="OPER_TIME" property="operTime" jdbcType="BIGINT"/>
+        <result column="MODULE_CODE" property="moduleCode" jdbcType="VARCHAR"/>
+        <result column="TYPE" property="type" jdbcType="VARCHAR"/>
+        <result column="LOG_TYPE" property="logType" jdbcType="SMALLINT"/>
+        <result column="URL" property="url" jdbcType="VARCHAR"/>
+        <result column="IP" property="ip" jdbcType="VARCHAR"/>
+        <result column="TIME_CONSUM" property="timeConsum" jdbcType="INTEGER"/>
+        <result column="IS_SUCCESS" property="isSuccess" jdbcType="SMALLINT"/>
+        <result column="OP_DESC" property="desc" jdbcType="LONGVARCHAR"/>
+        <result column="IN_PARA" property="inPara" jdbcType="LONGVARCHAR"/>
+        <result column="OUT_PARA" property="outPara" jdbcType="LONGVARCHAR"/>
+    </resultMap>
+
+    <resultMap id="UserResultMap" type="com.ss.spider.log.model.AppLogUser">
+        <result column="USER_ID" property="userId" jdbcType="VARCHAR"/>
+        <result column="ORG_ID" property="orgId" jdbcType="VARCHAR"/>
+        <result column="WORK_CODE" property="workCode" jdbcType="VARCHAR"/>
+        <result column="LOGIN_NAME" property="loginName" jdbcType="VARCHAR"/>
+        <result column="NAME" property="name" jdbcType="VARCHAR"/>
+        <result column="PHONE_NUMBER" property="phoneNumber" jdbcType="VARCHAR"/>
+    </resultMap>
+    <resultMap id="ModelResultMap" type="com.ss.spider.log.model.AppLogOpModel">
+        <result column="DATA_NAME" property="dataName" jdbcType="VARCHAR"/>
+        <result column="DATA_VALUE" property="dataValue" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Full_Column_List">
+        APP_LOG,USER_ID,ORG_ID,PHONE_NUMBER,WORK_CODE,`NAME`,OPER_TIME,MODULE_CODE,`TYPE`,LOG_TYPE,URL,IP,TIME_CONSUM,IS_SUCCESS,`OP_DESC`,IN_PARA,OUT_PARA
+    </sql>
+    <sql id="Base_Column_List">
+        APP_LOG,USER_ID,ORG_ID,PHONE_NUMBER,WORK_CODE,`NAME`,OPER_TIME,MODULE_CODE,`TYPE`,LOG_TYPE,URL,IP,TIME_CONSUM,IS_SUCCESS,`OP_DESC`
+    </sql>
+    <select id="getUser" resultMap="UserResultMap" parameterType="java.lang.String">
+        select USER_ID,ORG_ID,WORK_CODE,LOGIN_NAME,`NAME`,PHONE_NUMBER from CW_GE_USER where USER_ID=#{userId, jdbcType=VARCHAR}
+    </select>
+    <sql id="Base_Condition">
+        <if test="userId!=null and ''!=userId">
+            AND USER_ID = #{userId,jdbcType=VARCHAR}
+        </if>
+
+        <if test="userIds!=null and  userIds.size()!=0">
+            AND USER_ID in
+            <foreach collection="userIds" index="index" open="(" close=")" item="userId" separator=",">
+                #{userId,jdbcType=VARCHAR}
+            </foreach>
+        </if>
+
+        <if test="moduleCode!=null and ''!=moduleCode">
+            AND MODULE_CODE = #{moduleCode,jdbcType=VARCHAR}
+        </if>
+        <if test="orgId!=null and ''!=orgId">
+            AND ORG_ID = #{orgId,jdbcType=VARCHAR}
+        </if>
+
+        <if test="workCode!=null and ''!=workCode">
+            AND WORK_CODE = #{workCode,jdbcType=VARCHAR}
+        </if>
+
+        <if test="ip!=null and ''!=ip">
+            AND IP like concat('%', #{ip,jdbcType=VARCHAR},'%')
+        </if>
+
+        <if test="phoneNumber!=null and ''!=phoneNumber">
+            AND PHONE_NUMBER like concat('%', #{phoneNumber,jdbcType=VARCHAR},'%')
+        </if>
+
+        <if test="url!=null and ''!=url">
+            AND URL like concat('%', #{url,jdbcType=VARCHAR},'%')
+        </if>
+
+        <if test="name!=null and ''!=name">
+            AND `NAME` like concat('%', #{name,jdbcType=VARCHAR},'%')
+        </if>
+
+        <if test="desc!=null and ''!=desc">
+            AND `OP_DESC` like concat('%', #{desc,jdbcType=VARCHAR},'%')
+        </if>
+
+        <if test="inPara!=null and ''!=inPara">
+            AND IN_PARA like concat('%', #{inPara,jdbcType=VARCHAR},'%')
+        </if>
+
+        <if test="outPara!=null and ''!=outPara">
+            AND OUT_PARA like concat('%', #{outPara,jdbcType=VARCHAR},'%')
+        </if>
+
+        <if test="type!=null and ''!=type">
+            AND `TYPE` = #{type,jdbcType=VARCHAR}
+        </if>
+
+        <if test="logType!=null">
+            AND LOG_TYPE = #{logType,jdbcType=SMALLINT}
+        </if>
+        <if test="isSuccess!=null">
+            AND IS_SUCCESS = #{isSuccess,jdbcType=SMALLINT}
+        </if>
+        <if test="operTimeB!=null">
+            <![CDATA[ AND OPER_TIME >= #{operTimeB,jdbcType=BIGINT} ]]>
+        </if>
+        <if test="operTimeE!=null">
+            <![CDATA[ AND OPER_TIME <= #{operTimeE,jdbcType=BIGINT} ]]>
+        </if>
+    </sql>
+    <select id="queryFull" resultMap="BaseResultMap" parameterType="com.ss.spider.log.bean.dto.QueryDTO">
+        select
+        <include refid="Full_Column_List"/>
+        from cw_app_log where 1=1
+        <if test="keyword!=null and ''!=keyword">
+            AND (
+            `NAME` like concat('%', #{keyword,jdbcType=VARCHAR},'%')
+            OR `OP_DESC` like concat('%', #{keyword,jdbcType=VARCHAR},'%')
+            OR `IN_PARA` like concat('%', #{keyword,jdbcType=VARCHAR},'%')
+            OR `OUT_PARA` like concat('%', #{keyword,jdbcType=VARCHAR},'%')
+            )
+        </if>
+        <include refid="Base_Condition"/>
+        ORDER BY OPER_TIME DESC
+    </select>
+
+    <select id="query" resultMap="BaseResultMap" parameterType="com.ss.spider.log.bean.dto.QueryDTO">
+        select
+        <include refid="Base_Column_List"/>
+        from cw_app_log where 1=1
+        <if test="keyword!=null and ''!=keyword">
+            AND (
+            `NAME` like concat('%', #{keyword,jdbcType=VARCHAR},'%')
+            OR `OP_DESC` like concat('%', #{keyword,jdbcType=VARCHAR},'%')
+            )
+        </if>
+        <include refid="Base_Condition"/>
+        ORDER BY OPER_TIME DESC
+    </select>
+    <select id="getOpModelList" resultMap="ModelResultMap">
+        select  DATA_VALUE,DATA_NAME from cw_ge_dic_data where DIC_ID IN( SELECT DIC_ID FROM  cw_ge_dictionary WHERE DIC_TYPE_CODE='SYSTEM_MODULE')
+    </select>
+    <select id="getUserByLoginName" resultMap="UserResultMap" parameterType="java.lang.String">
+        select USER_ID,ORG_ID,WORK_CODE,LOGIN_NAME,`NAME`,PHONE_NUMBER from CW_GE_USER where LOGIN_NAME=#{loginName, jdbcType=VARCHAR};
+    </select>
+
+</mapper>

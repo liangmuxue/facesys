@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.isc.data.collect.mapper.AddPersonWithMapper">
+	<insert id="batchInsertAddPersonWith" parameterType="java.util.List">
+		INSERT INTO cw_add_person_with 
+		  (addPersonDetId,captureId,cardId,cardType,name,facePath,cardPath,facePathFull,
+			cardPathFull,threshold,recogScore,address,keyState,suspectState,villageId,
+			captureTime,captureUrl,captureUrlFull,panoramaUrl,panoramaUrlFull,deviceId,
+			lng,lat) 
+		  VALUES
+		<foreach collection="list" item="item" index="index" separator=",">
+		( #{item.addPersonDetId},#{item.captureId},#{item.cardId},#{item.cardType},#{item.name},
+		#{item.facePath},#{item.cardPath},#{item.facePathFull},#{item.cardPathFull},
+		#{item.threshold},#{item.recogScore},#{item.address},#{item.keyState},#{item.suspectState},
+		#{item.villageId},#{item.captureTime},#{item.captureUrl},#{item.captureUrlFull},
+		#{item.panoramaUrl},#{item.panoramaUrlFull},#{item.deviceId},#{item.lng},#{item.lat})
+		</foreach>  
+    </insert>
+    
+    <update id="batchUpdateWithState" parameterType="java.util.List">
+		<foreach collection="list" item="item" separator=";">
+			UPDATE cw_add_person_detail
+			SET withState = 1
+   		 	WHERE id = #{item}
+		</foreach>
+	</update>
+    
+    <update id="updateWithState">
+		UPDATE cw_add_person_detail
+		SET withState = 1 WHERE id = #{id}
+	</update>
+</mapper>

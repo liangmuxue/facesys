@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.spider.system.sequence.mapper.AppSequenceMapper">
+	
+	<resultMap id="BaseAppSequenceMap" type="com.ss.spider.system.sequence.model.AppSequence">
+		<id 	column="SEQ_CODE" 			property="seqCode" 				jdbcType="VARCHAR" />
+		<result column="SEQ_NAME"  			property="seqName"  			jdbcType="VARCHAR" />
+		<result column="START_VAL"          property="startVal"      		jdbcType="INTEGER" />
+		<result column="MAX_VAL" 			property="maxVal"    			jdbcType="INTEGER" />
+		<result column="CURR_VAL"   		property="currVal"      		jdbcType="INTEGER" />
+		<result column="NEXT_VAL"      		property="nextVal"    			jdbcType="INTEGER" />
+		<result column="STEP"    			property="step"    				jdbcType="INTEGER" />
+		<result column="ISCYCLE"    		property="iscycle"    			jdbcType="INTEGER" />
+		<result column="REMARK"    			property="remark"    			jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="get" parameterType="java.lang.String" resultMap="BaseAppSequenceMap">
+		select SEQ_CODE, SEQ_NAME, START_VAL, MAX_VAL, CURR_VAL, NEXT_VAL, STEP, ISCYCLE, REMARK
+		  from CW_APP_SEQUENCE
+		 where SEQ_CODE = #{seqCode, jdbcType=VARCHAR}
+	</select>
+	
+	<insert id="save" parameterType="com.ss.spider.system.sequence.model.AppSequence">
+		insert into CW_APP_SEQUENCE(SEQ_CODE, SEQ_NAME, START_VAL, MAX_VAL, CURR_VAL, NEXT_VAL, STEP, ISCYCLE, REMARK)
+		values(#{seqCode, jdbcType=VARCHAR},		#{seqName, jdbcType=VARCHAR},		#{startVal, jdbcType=INTEGER},
+			   #{maxVal, jdbcType=INTEGER},			#{currVal, jdbcType=INTEGER},		#{nextVal, jdbcType=INTEGER},
+			   #{step, jdbcType=INTEGER}, 			#{iscycle, jdbcType=INTEGER}, 		#{remark, jdbcType=VARCHAR})
+	</insert>
+	
+	<update id="nextVal" parameterType="java.lang.String">
+		update CW_APP_SEQUENCE
+		   set CURR_VAL  = NEXT_VAL,
+			   NEXT_VAL  = NEXT_VAL + STEP
+		 where SEQ_CODE = #{seqCode, jdbcType=VARCHAR}
+	</update>
+	
+	<update id="update" parameterType="com.ss.spider.system.sequence.model.AppSequence">
+		update CW_APP_SEQUENCE
+		   set SEQ_NAME  = #{seqName, jdbcType=VARCHAR},
+			   START_VAL = #{startVal, jdbcType=INTEGER},		
+			   MAX_VAL   = #{maxVal, jdbcType=INTEGER},	
+			   CURR_VAL  = #{currVal, jdbcType=INTEGER},
+			   NEXT_VAL  = #{nextVal, jdbcType=INTEGER},
+			   STEP 	 = #{step, jdbcType=INTEGER},
+			   ISCYCLE   = #{iscycle, jdbcType=INTEGER},
+			   REMARK    = #{remark, jdbcType=VARCHAR}
+		 where SEQ_CODE = #{seqCode, jdbcType=VARCHAR}
+	</update>
+	
+	<delete id="remove" parameterType="java.lang.String">
+		delete from CW_APP_SEQUENCE
+		 where SEQ_CODE = #{seqCode, jdbcType=VARCHAR}
+	</delete>
+</mapper>

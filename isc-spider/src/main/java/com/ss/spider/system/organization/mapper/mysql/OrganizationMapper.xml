@@ -1,0 +1,474 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.spider.system.organization.mapper.OrganizationMapper">
+	
+	<resultMap id="BaseOrganizationMap" type="com.ss.spider.system.organization.model.Organization">
+		<id 	column="ORG_ID" 			property="orgId" 				jdbcType="VARCHAR" />
+		<result column="ORG_CODE"  			property="orgCode"  			jdbcType="VARCHAR" />
+		<result column="ORG_CNAME"          property="orgCname"      		jdbcType="VARCHAR" />
+		<result column="ORG_ENAME" 			property="orgEname"    			jdbcType="VARCHAR" />
+		<result column="ADDRESS"   			property="address"      		jdbcType="VARCHAR" />
+		<result column="ZIP_CODE"      		property="zipCode"    			jdbcType="VARCHAR" />
+		<result column="TELEPHONE"    		property="telephone"    		jdbcType="VARCHAR" />
+		<result column="FAX"    			property="fax"    				jdbcType="VARCHAR" />
+		<result column="STATUS"    			property="status"    			jdbcType="INTEGER" />
+		<result column="PARENT_ID"    		property="parentId"    			jdbcType="VARCHAR" />
+		<result column="DEPARTH"    			property="departh"    			jdbcType="VARCHAR" />
+		<result column="CREATED_TIME"    	property="createdTime"    		jdbcType="BIGINT" />
+		<result column="CREATED_USERID"    	property="createdUserid"    	jdbcType="VARCHAR" />
+		<result column="UPDATED_TIME"    	property="updatedTime"    		jdbcType="BIGINT" />
+		<result column="UPDATED_USERID"    	property="updatedUserid"    	jdbcType="VARCHAR" />
+		<result column="REMARK"    			property="remark"    			jdbcType="VARCHAR" />
+		<result column="LINK_MAN_NAME"    	property="linkManName"    		jdbcType="VARCHAR" />
+		<result column="LINK_MAN_DEPT"    	property="linkManDept"    		jdbcType="VARCHAR" />
+		<result column="LINK_MAN_POS"    	property="linkManPos"    		jdbcType="VARCHAR" />
+		<result column="LINK_MAN_TEL"    	property="linkManTel"    		jdbcType="VARCHAR" />
+		<result column="LINK_MAN_FAX"    	property="linkManFax"    		jdbcType="VARCHAR" />
+		<result column="LINK_MAN_EMAIL"    	property="linkManEmail"    		jdbcType="VARCHAR" />
+		<result column="DELETED_TIME"    	property="deletedTime"    		jdbcType="BIGINT" />
+		<result column="DELETED_USERID"    	property="deletedUserid"    	jdbcType="VARCHAR" />
+		<result column="FROM_SYSTEM"    		property="fromSystem"    		jdbcType="VARCHAR" />
+		<result column="IS_LINKAGE"    		property="isLinkage"    		jdbcType="SMALLINT" />
+	</resultMap>
+
+	
+	<select id="pages" parameterType="com.ss.spider.system.organization.model.Organization" resultMap="BaseOrganizationMap">
+		select ORG_ID, ORG_CODE, ORG_CNAME, ORG_ENAME, ADDRESS, ZIP_CODE, TELEPHONE, FAX, STATUS,
+			   PARENT_ID, DEPARTH, CREATED_TIME, CREATED_USERID, UPDATED_TIME, UPDATED_USERID,
+			   REMARK, LINK_MAN_NAME, LINK_MAN_DEPT, LINK_MAN_POS, LINK_MAN_TEL, LINK_MAN_FAX,
+			   LINK_MAN_EMAIL, DELETED_TIME, DELETED_USERID, FROM_SYSTEM, IS_LINKAGE
+		  from CW_GE_ORGANIZATION
+		 where 1 = 1
+		<if test="parentId != null and parentId != ''">
+			<choose>
+				<when test="parentId eq '-1'">
+					and PARENT_ID is null
+				</when>
+				<otherwise>
+					and PARENT_ID = #{parentId, jdbcType=VARCHAR}
+				</otherwise>
+			</choose>
+		</if>
+		
+		<choose>
+			<when test="status != null">
+				and STATUS = #{status, jdbcType=INTEGER}
+			</when>
+			<otherwise>
+				and STATUS in (0, 1)
+			</otherwise>
+		</choose>
+		
+		<if test="fax != null and fax != ''">
+			and FAX like CONCAT('%', #{fax, jdbcType=VARCHAR}, '%')
+		</if>
+		
+		<if test="zipCode != null and zipCode != ''">
+		 	and ZIP_CODE like CONCAT('%', #{zipCode, jdbcType=VARCHAR}, '%')
+		</if>
+		
+		<if test="orgCode != null and orgCode != ''">
+			and ORG_CODE like CONCAT('%', #{orgCode, jdbcType=VARCHAR}, '%')
+		</if>
+		
+		<if test="orgCname != null and orgCname != ''">
+			and ORG_CNAME like CONCAT('%', #{orgCname, jdbcType=VARCHAR}, '%')
+		</if>
+		
+		<if test="orgEname != null and orgEname != ''">
+			and ORG_ENAME like CONCAT('%', #{orgEname, jdbcType=VARCHAR}, '%')
+		</if>
+		
+		<if test="telephone != null and telephone != ''">
+			and TELEPHONE like CONCAT('%', #{telephone, jdbcType=VARCHAR}, '%')
+		</if>
+		
+		<if test="address != null and address != ''">
+			and ADDRESS like CONCAT('%', #{address, jdbcType=VARCHAR}, '%')
+		</if>
+			
+		<if test="linkManName != null and linkManName != ''">
+			and LINK_MAN_NAME like CONCAT('%', #{linkManName, jdbcType=VARCHAR}, '%')
+		</if>
+		
+		<if test="linkManDept != null and linkManDept != ''">
+			and LINK_MAN_DEPT like CONCAT('%', #{linkManDept, jdbcType=VARCHAR}, '%')
+		</if>
+		
+		<if test="linkManPos != null and linkManPos != ''">
+			and LINK_MAN_POS like CONCAT('%', #{linkManPos, jdbcType=VARCHAR}, '%')
+		</if>
+		
+		<if test="linkManTel != null and linkManTel != ''">
+			and LINK_MAN_TEL like CONCAT('%', #{linkManTel, jdbcType=VARCHAR}, '%')
+		</if>
+		 
+		<if test="linkManFax != null and linkManFax != ''">
+			and LINK_MAN_FAX like CONCAT('%', #{linkManFax, jdbcType=VARCHAR}, '%')
+		</if>
+		 
+		<if test="linkManEmail != null and linkManEmail != ''">
+			and LINK_MAN_EMAIL like CONCAT('%', #{linkManEmail, jdbcType=VARCHAR}, '%')
+		</if>
+
+		<if test="isLinkage != null ">
+			and IS_LINKAGE = #{isLinkage, jdbcType=SMALLINT}
+		</if>
+
+		order by CREATED_TIME desc
+	</select>
+	
+	
+	<select id="list" parameterType="com.ss.spider.system.organization.model.Organization" resultMap="BaseOrganizationMap">
+		select ORG_ID, ORG_CODE, ORG_CNAME, ORG_ENAME, ADDRESS, ZIP_CODE, TELEPHONE, FAX, STATUS,
+			   PARENT_ID, DEPARTH, CREATED_TIME, CREATED_USERID, UPDATED_TIME, UPDATED_USERID,
+			   REMARK, LINK_MAN_NAME, LINK_MAN_DEPT, LINK_MAN_POS, LINK_MAN_TEL, LINK_MAN_FAX,
+			   LINK_MAN_EMAIL, DELETED_TIME, DELETED_USERID, FROM_SYSTEM, IS_LINKAGE
+		  from CW_GE_ORGANIZATION
+		 where 1 = 1
+		<if test="orgId != null and orgId != ''">
+		 	and ORG_ID = #{orgId, jdbcType=VARCHAR}
+		</if>
+		 
+		<choose>
+		 	<when test="status != null">
+		 		and STATUS = #{status, jdbcType=INTEGER}
+		 	</when>
+		 	<otherwise>
+		 		and STATUS in (0, 1)
+		 	</otherwise>
+		</choose>
+		 	
+		<if test="parentId != null and parentId != ''">
+			<choose>
+				<when test="parentId eq '-1'">
+					and PARENT_ID is null
+				</when>
+				<otherwise>
+					and PARENT_ID = #{parentId, jdbcType=VARCHAR}
+				</otherwise>
+			</choose>
+		</if>
+		
+		<if test="departh != null and departh !=''">
+			and CONCAT('|',DEPARTH, '|') like CONCAT('%|', #{departh, jdbcType=VARCHAR}, '|%')
+		</if>
+		
+		<if test="fax != null and fax != ''">
+			and FAX like CONCAT('%', #{fax, jdbcType=VARCHAR}, '%')
+		</if>
+		
+		<if test="zipCode != null and zipCode != ''">
+		 	and ZIP_CODE like CONCAT('%', #{zipCode, jdbcType=VARCHAR}, '%')
+		</if>
+		 
+		<if test="orgCode != null and orgCode != ''">
+			and ORG_CODE like CONCAT('%', #{orgCode, jdbcType=VARCHAR}, '%')
+		</if>
+		
+		<if test="orgCname != null and orgCname != ''">
+			and ORG_CNAME like CONCAT('%', #{orgCname, jdbcType=VARCHAR}, '%')
+		</if>
+		
+		<if test="orgEname != null and orgEname != ''">
+			and ORG_ENAME like CONCAT('%', #{orgEname, jdbcType=VARCHAR}, '%')
+		</if>
+		
+		<if test="telephone != null and telephone != ''">
+			and TELEPHONE like CONCAT('%', #{telephone, jdbcType=VARCHAR}, '%')
+		</if>
+		
+		<if test="address != null and address != ''">
+			and ADDRESS like CONCAT('%', #{address, jdbcType=VARCHAR}, '%')
+		</if>
+			
+		<if test="linkManName != null and linkManName != ''">
+			and LINK_MAN_NAME like CONCAT('%', #{linkManName, jdbcType=VARCHAR}, '%')
+		</if>
+		
+		<if test="linkManDept != null and linkManDept != ''">
+			and LINK_MAN_DEPT like CONCAT('%', #{linkManDept, jdbcType=VARCHAR}, '%')
+		</if>
+		
+		<if test="linkManPos != null and linkManPos != ''">
+			and LINK_MAN_POS like CONCAT('%', #{linkManPos, jdbcType=VARCHAR}, '%')
+		</if>
+		
+		<if test="linkManTel != null and linkManTel != ''">
+			and LINK_MAN_TEL like CONCAT('%', #{linkManTel, jdbcType=VARCHAR}, '%')
+		</if>
+		 
+		<if test="linkManFax != null and linkManFax != ''">
+			and LINK_MAN_FAX like CONCAT('%', #{linkManFax, jdbcType=VARCHAR}, '%')
+		</if>
+		 
+		<if test="linkManEmail != null and linkManEmail != ''">
+			and LINK_MAN_EMAIL like CONCAT('%', #{linkManEmail, jdbcType=VARCHAR}, '%')
+		</if>
+
+		<if test="updatedTime != null and updatedTime != ''">
+			and UPDATED_TIME >=  #{updatedTime, jdbcType=DECIMAL}
+		</if>
+		<if test="isLinkage != null ">
+			and IS_LINKAGE = #{isLinkage, jdbcType=SMALLINT}
+		</if>
+	</select>
+
+	<select id="selectNameAndCode" parameterType="com.ss.spider.system.organization.model.Organization" resultMap="BaseOrganizationMap">
+		select ORG_ID, ORG_CODE, ORG_CNAME, ORG_ENAME, ADDRESS, ZIP_CODE, TELEPHONE, FAX, STATUS,
+		PARENT_ID, DEPARTH, CREATED_TIME, CREATED_USERID, UPDATED_TIME, UPDATED_USERID,
+		REMARK, LINK_MAN_NAME, LINK_MAN_DEPT, LINK_MAN_POS, LINK_MAN_TEL, LINK_MAN_FAX,
+		LINK_MAN_EMAIL, DELETED_TIME, DELETED_USERID, FROM_SYSTEM, IS_LINKAGE
+		from CW_GE_ORGANIZATION
+		where 1 = 1
+
+		<choose>
+			<when test="status != null">
+				and STATUS = #{status, jdbcType=INTEGER}
+			</when>
+			<otherwise>
+				and STATUS in (0, 1)
+			</otherwise>
+		</choose>
+
+		<if test="orgCode != null and orgCode != ''">
+			and ORG_CODE = #{orgCode, jdbcType=VARCHAR}
+		</if>
+
+		<if test="orgCname != null and orgCname != ''">
+			and ORG_CNAME = #{orgCname, jdbcType=VARCHAR}
+		</if>
+	</select>
+
+	<select id="selectDeparth" parameterType="com.ss.spider.system.organization.model.Organization" resultMap="BaseOrganizationMap">
+		select ORG_ID, ORG_CODE, ORG_CNAME, ORG_ENAME, ADDRESS, ZIP_CODE, TELEPHONE, FAX, STATUS,
+		PARENT_ID, DEPARTH, CREATED_TIME, CREATED_USERID, UPDATED_TIME, UPDATED_USERID,
+		REMARK, LINK_MAN_NAME, LINK_MAN_DEPT, LINK_MAN_POS, LINK_MAN_TEL, LINK_MAN_FAX,
+		LINK_MAN_EMAIL, DELETED_TIME, DELETED_USERID, FROM_SYSTEM, IS_LINKAGE
+		from CW_GE_ORGANIZATION
+		where 1 = 1
+
+		<choose>
+			<when test="status != null">
+				and STATUS = #{status, jdbcType=INTEGER}
+			</when>
+			<otherwise>
+				and STATUS in (0, 1)
+			</otherwise>
+		</choose>
+
+		<if test="parentId != null and parentId != ''">
+			and ORG_ID = #{parentId, jdbcType=VARCHAR}
+		</if>
+	</select>
+
+	<select id="getDept" parameterType="java.lang.String" resultMap="BaseOrganizationMap">
+		select ORG_ID, ORG_CODE, ORG_CNAME, ORG_ENAME, ADDRESS, ZIP_CODE, TELEPHONE, FAX, STATUS,
+		PARENT_ID, DEPARTH, CREATED_TIME, CREATED_USERID, UPDATED_TIME, UPDATED_USERID,
+		REMARK, LINK_MAN_NAME, LINK_MAN_DEPT, LINK_MAN_POS, LINK_MAN_TEL, LINK_MAN_FAX,
+		LINK_MAN_EMAIL, DELETED_TIME, DELETED_USERID, FROM_SYSTEM, IS_LINKAGE
+		from CW_GE_ORGANIZATION
+		where 1 = 1
+
+		<choose>
+			<when test="status != null">
+				and STATUS = #{status, jdbcType=INTEGER}
+			</when>
+			<otherwise>
+				and STATUS in (0, 1)
+			</otherwise>
+		</choose>
+
+		<if test="orgId != null and orgId != ''">
+			and PARENT_ID = #{orgId, jdbcType=VARCHAR}
+		</if>
+	</select>
+
+	<select id="gets" parameterType="map" resultMap="BaseOrganizationMap">
+		select ORG_ID, ORG_CODE, ORG_CNAME, ORG_ENAME, ADDRESS, ZIP_CODE, TELEPHONE, FAX, STATUS,
+			   PARENT_ID, DEPARTH, CREATED_TIME, CREATED_USERID, UPDATED_TIME, UPDATED_USERID,
+			   REMARK, LINK_MAN_NAME, LINK_MAN_DEPT, LINK_MAN_POS, LINK_MAN_TEL, LINK_MAN_FAX,
+			   LINK_MAN_EMAIL, DELETED_TIME, DELETED_USERID, FROM_SYSTEM, IS_LINKAGE
+		  from CW_GE_ORGANIZATION
+		 where 1 = 1
+		 <choose>
+		 	<when test="orgId != null and orgId != ''">
+		 		and ORG_ID = #{orgId, jdbcType=VARCHAR}
+		 	</when>
+		 	<when test="orgIds != null">
+		 		and ORG_ID in
+		 		<foreach collection="orgIds" item="item" open="(" close=")" separator=",">
+		 			#{item, jdbcType=VARCHAR}
+		 		</foreach>
+		 	</when>
+		 </choose>
+		 
+		 <choose>
+		 	<when test="status != null">
+		 		and STATUS = #{status, jdbcType=INTEGER}
+		 	</when>
+		 	<otherwise>
+		 		and STATUS in (0, 1)
+		 	</otherwise>
+		 </choose>
+		 
+		 <if test="orgCode != null and orgCode != ''">
+		 	and ORG_CODE = #{orgCode, jdbcType=VARCHAR}
+		 </if>
+		 
+		 <if test="orgCname != null and orgCname != ''">
+		 	and ORG_CNAME = #{orgCname, jdbcType=VARCHAR}
+		 </if>
+		 
+		 <if test="orgEname != null and orgEname != ''">
+		 	and ORG_ENAME = #{orgEname, jdbcType=VARCHAR}
+		 </if>
+		 
+		 <if test="telephone != null and telephone != ''">
+		 	and TELEPHONE = #{telephone, jdbcType=VARCHAR}
+		 </if>
+		 
+		 <if test="parentId != null and parentId != ''">
+		 	and PARENT_ID = #{parentId, jdbcType=VARCHAR}
+		 </if>
+		 
+		  <if test="telephone != null and telephone != ''">
+		 	and TELEPHONE = #{telephone, jdbcType=VARCHAR}
+		 </if>
+		 
+		 <if test="address != null and address != ''">
+		 	and ADDRESS = #{address, jdbcType=VARCHAR}
+		 </if>
+		 
+		 <if test="zipCode != null and zipCode != ''">
+		 	and ZIP_CODE = #{zipCode, jdbcType=VARCHAR}
+		 </if>
+		 
+		 <if test="fax != null and fax != ''">
+		 	and FAX = #{fax, jdbcType=VARCHAR}
+		 </if>
+	</select>
+
+    <insert id="save" parameterType="com.ss.spider.system.organization.model.Organization">
+		insert into CW_GE_ORGANIZATION(ORG_ID, ORG_CODE, ORG_CNAME, ORG_ENAME, ADDRESS, ZIP_CODE, 
+			   TELEPHONE, FAX, STATUS, PARENT_ID, DEPARTH, CREATED_TIME, CREATED_USERID, UPDATED_TIME, 
+			   UPDATED_USERID, REMARK, LINK_MAN_NAME, LINK_MAN_DEPT, LINK_MAN_POS, LINK_MAN_TEL, 
+			   LINK_MAN_FAX, LINK_MAN_EMAIL, DELETED_TIME, DELETED_USERID, FROM_SYSTEM, IS_LINKAGE)
+		values(#{orgId, jdbcType=VARCHAR}, 				#{orgCode, jdbcType=VARCHAR},			#{orgCname, jdbcType=VARCHAR},
+			   #{orgEname, jdbcType=VARCHAR},			#{address, jdbcType=VARCHAR},			#{zipCode, jdbcType=VARCHAR},
+			   #{telephone, jdbcType=VARCHAR},			#{fax, jdbcType=VARCHAR},				#{status, jdbcType=INTEGER},
+			   #{parentId, jdbcType=VARCHAR},			#{departh, jdbcType=VARCHAR},			#{createdTime, jdbcType=BIGINT},
+			   #{createdUserid, jdbcType=VARCHAR},		#{updatedTime, jdbcType=BIGINT},		#{updatedUserid, jdbcType=VARCHAR},
+			   #{remark, jdbcType=VARCHAR},				#{linkManName, jdbcType=VARCHAR},		#{linkManDept, jdbcType=VARCHAR},
+			   #{linkManPos, jdbcType=VARCHAR},			#{linkManTel, jdbcType=VARCHAR},		#{linkManFax, jdbcType=VARCHAR},
+			   #{linkManEmail, jdbcType=VARCHAR},		#{deletedTime, jdbcType=BIGINT},		#{deletedUserid, jdbcType=VARCHAR},
+			   #{fromSystem, jdbcType=VARCHAR}, #{isLinkage, jdbcType=SMALLINT})
+	</insert>
+	
+	<update id="update" parameterType="com.ss.spider.system.organization.model.Organization">
+		update CW_GE_ORGANIZATION
+		   set ORG_CODE  = #{orgCode, jdbcType=VARCHAR},			
+		   	   ORG_CNAME = #{orgCname, jdbcType=VARCHAR},
+			   ORG_ENAME = #{orgEname, jdbcType=VARCHAR},			
+			   ADDRESS   = #{address, jdbcType=VARCHAR},			
+			   ZIP_CODE  = #{zipCode, jdbcType=VARCHAR},
+			   TELEPHONE = #{telephone, jdbcType=VARCHAR},			
+			   FAX       = #{fax, jdbcType=VARCHAR},				
+			   STATUS    = #{status, jdbcType=INTEGER},
+			   PARENT_ID = #{parentId, jdbcType=VARCHAR},			
+			   DEPARTH   = #{departh, jdbcType=VARCHAR},			
+			   UPDATED_TIME   = #{updatedTime, jdbcType=BIGINT},		
+			   UPDATED_USERID = #{updatedUserid, jdbcType=VARCHAR},
+			   REMARK         = #{remark, jdbcType=VARCHAR},				
+			   LINK_MAN_NAME  = #{linkManName, jdbcType=VARCHAR},		
+			   LINK_MAN_DEPT  = #{linkManDept, jdbcType=VARCHAR},
+			   LINK_MAN_POS   = #{linkManPos, jdbcType=VARCHAR},			
+			   LINK_MAN_TEL   = #{linkManTel, jdbcType=VARCHAR},		
+			   LINK_MAN_FAX   = #{linkManFax, jdbcType=VARCHAR},
+			   LINK_MAN_EMAIL = #{linkManEmail, jdbcType=VARCHAR},
+			   FROM_SYSTEM = #{fromSystem, jdbcType=VARCHAR},
+			   IS_LINKAGE = #{isLinkage, jdbcType=SMALLINT}
+		 where ORG_ID = #{orgId, jdbcType=VARCHAR}
+	</update>
+	
+	<update id="discard" parameterType="map">
+		update CW_GE_ORGANIZATION
+		   set STATUS         = -1,
+			   DELETED_TIME   = #{deletedTime, jdbcType=BIGINT},			
+			   DELETED_USERID = #{deletedUserid, jdbcType=VARCHAR}
+		<where>
+			<choose>
+			 	<when test="orgId != null and orgId != ''">
+			 		ORG_ID = #{orgId, jdbcType=VARCHAR}
+			 	</when>
+			 	<when test="orgIds != null">
+			 		ORG_ID in
+			 		<foreach collection="orgIds" item="item" open="(" close=")" separator=",">
+			 			#{item, jdbcType=VARCHAR}
+			 		</foreach>
+			 	</when>
+			 	<otherwise>
+			 		1 != 1
+			 	</otherwise>
+			</choose>
+		</where>
+	</update>
+	
+	<delete id="remove" parameterType="map">
+		delete from CW_GE_ORGANIZATION
+		<where>
+			<choose>
+				<when test="orgId != null and orgId != ''">
+					ORG_ID = #{orgId, jdbcType=VARCHAR}
+				</when>
+				<when test="orgIds != null">
+					ORG_ID in
+					<foreach collection="orgIds" item="item" open="(" close=")" separator=",">
+						#{item, jdbcType=VARCHAR}
+					</foreach>
+				</when>
+				<otherwise>
+					1 != 1
+				</otherwise>
+			</choose>
+		</where>
+	</delete>
+
+	<select id="getTopOrg" resultMap="BaseOrganizationMap">
+		SELECT ORG_ID, ORG_CODE, ORG_CNAME, ORG_ENAME, ADDRESS, ZIP_CODE, TELEPHONE, FAX, STATUS,
+			   PARENT_ID, DEPARTH, CREATED_TIME, CREATED_USERID, UPDATED_TIME, UPDATED_USERID,
+			   REMARK, LINK_MAN_NAME, LINK_MAN_DEPT, LINK_MAN_POS, LINK_MAN_TEL, LINK_MAN_FAX,
+			   LINK_MAN_EMAIL, DELETED_TIME, DELETED_USERID, FROM_SYSTEM, IS_LINKAGE
+		  FROM CW_GE_ORGANIZATION WHERE STATUS =1 AND (PARENT_ID IS NULL OR PARENT_ID ='')
+	</select>
+
+	<insert id="insertOrg" parameterType="java.util.List">
+		insert into cw_ge_organization (ORG_ID, ORG_CODE, ORG_CNAME,
+		ORG_ENAME, ADDRESS, ZIP_CODE,
+		TELEPHONE, FAX, STATUS,
+		PARENT_ID, LINK_MAN_NAME, LINK_MAN_DEPT,
+		LINK_MAN_POS, LINK_MAN_TEL, LINK_MAN_FAX,
+		LINK_MAN_EMAIL, FROM_SYSTEM, IS_LINKAGE,
+		REMARK, CREATED_TIME, CREATED_USERID,
+		UPDATED_TIME, UPDATED_USERID, DELETED_TIME,
+		DELETED_USERID, DEPARTH)
+		values
+		<foreach collection="list" item="organizationExpList" index="index"  separator=",">
+		(#{organizationExpList.orgId,jdbcType=VARCHAR}, #{organizationExpList.orgCode,jdbcType=VARCHAR}, #{organizationExpList.orgCname,jdbcType=VARCHAR},
+		#{organizationExpList.orgEname,jdbcType=VARCHAR}, #{organizationExpList.address,jdbcType=VARCHAR}, #{organizationExpList.zipCode,jdbcType=VARCHAR},
+		#{organizationExpList.telephone,jdbcType=VARCHAR}, #{organizationExpList.fax,jdbcType=VARCHAR}, #{organizationExpList.status,jdbcType=DECIMAL},
+		#{organizationExpList.parentId,jdbcType=VARCHAR}, #{organizationExpList.linkManName,jdbcType=VARCHAR}, #{organizationExpList.linkManDept,jdbcType=VARCHAR},
+		#{organizationExpList.linkManPos,jdbcType=VARCHAR}, #{organizationExpList.linkManTel,jdbcType=VARCHAR}, #{organizationExpList.linkManFax,jdbcType=VARCHAR},
+		#{organizationExpList.linkManEmail,jdbcType=VARCHAR}, #{organizationExpList.fromSystem,jdbcType=VARCHAR}, #{organizationExpList.isLinkage,jdbcType=SMALLINT},
+		#{organizationExpList.remark,jdbcType=VARCHAR}, #{organizationExpList.createdTime,jdbcType=DECIMAL}, #{organizationExpList.createdUserid,jdbcType=VARCHAR},
+		#{organizationExpList.updatedTime,jdbcType=DECIMAL}, #{organizationExpList.updatedUserid,jdbcType=VARCHAR}, #{organizationExpList.deletedTime,jdbcType=DECIMAL},
+		#{organizationExpList.deletedUserid,jdbcType=VARCHAR}, #{organizationExpList.departh,jdbcType=LONGVARCHAR})
+		</foreach>
+	</insert>
+
+	<delete id="deleteTreeData">
+		DELETE FROM cw_ge_organization
+	</delete>
+
+
+</mapper>

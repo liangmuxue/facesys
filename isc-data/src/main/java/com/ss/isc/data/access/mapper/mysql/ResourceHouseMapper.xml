@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ss.isc.data.resource.mapper.ResourceHouseMapper">
+
+    <select id="findList" resultType="com.ss.isc.data.resource.common.model.House">
+		SELECT * FROM cw_base_house
+	</select>
+
+    <select id="getHouseNo" resultType="com.ss.isc.data.resource.common.model.House">
+		SELECT houseNo FROM cw_base_house WHERE id = #{id}
+	</select>
+
+    <select id="houseTotal" parameterType="java.util.Map"
+            resultType="java.lang.Integer">
+        select count(id)
+        from cw_base_house
+        <where>
+            status = 1
+            <if test="villageCode != null and villageCode != ''">
+                and villageCode =#{villageCode}
+            </if>
+        </where>
+    </select>
+
+    <select id="statisticsHouse" parameterType="java.lang.String"
+            resultType="com.ss.isc.data.baseinfo.common.dto.StatistiscsDTO">
+        SELECT
+        t2.enumType AS 'type',
+        t2.enumName AS 'label',
+        t2.enumValue AS
+        'value',
+        COUNT(id) AS 'number'
+        FROM
+        cw_base_house t1
+        LEFT JOIN
+        cw_base_enum t2 ON t1.peopleRelation = t2.enumValue
+        AND t2.enumType ='peopleRelation'
+        <where>
+            t1.peopleRelation is NOT NULL
+            <if test="villageCode != null and villageCode != ''">
+                AND t1.villageCode =#{villageCode}
+            </if>
+        </where>
+        GROUP BY t1.peopleRelation
+    </select>
+
+    <select id="pages"
+            parameterType="com.ss.isc.data.resource.common.model.House"
+            resultType="com.ss.isc.data.resource.common.dto.HouseDTO">
+
+        SELECT
+        t1.id,t1.villageCode,t1.buildingNo,t1.unitNo,t1.houseNo,t1.floor,t1.peopleRelation,t1.houseType,
+        t1.gisType,t1.lon,t1.lat,t1.createTime,t1.updateTime,t1.status,
+        IFNULL(t1.address,CONCAT(t4.villageName,t1.buildingNo,'栋',t1.unitNo,'单元',t1.houseNo,'室')) AS address,
+        t2.unitName,t3.buildingName,t4.villageName
+        FROM
+        cw_base_house t1
+        LEFT JOIN cw_base_unit t2 ON t1.unitNo = t2.unitNo AND t1.buildingNo = t2.buildingNo AND t2.villageCode =
+        t1.villageCode
+        LEFT JOIN cw_base_building t3 ON t1.buildingNo = t3.buildingNo AND t1.villageCode = t3.villageCode
+        LEFT JOIN cw_base_village t4 ON t1.villageCode = t4.villageCode
+
+        <where>
+            t1.status = 1
+            AND t4.id IS NOT NULL
+            AND t3.id IS NOT NULL
+            AND t2.id IS NOT NULL
+            AND t4.state =0
+            AND t3.isDelete = 0
+            AND t2.isDelete = 0
+            <if test="villageCode != null and villageCode != ''">
+                and t1.villageCode =#{villageCode}
+            </if>
+            <if test="buildingNo != null and buildingNo != ''">
+                and t1.buildingNo =#{buildingNo}
+            </if>
+            <if test="unitNo != null and unitNo != ''">
+                and t1.unitNo =#{unitNo}
+            </if>
+            <if test="houseNo != null and houseNo != ''">
+                and t1.houseNo =#{houseNo}
+            </if>
+            <if test="peopleRelation != null and peopleRelation!=''">
+                and t1.peopleRelation =#{peopleRelation}
+            </if>
+            <if test="houseType != null and houseType!=''">
+                and t1.houseType =#{houseType}
+            </if>
+            <if test="floor != null and floor!=''">
+                and t1.floor =#{floor}
+            </if>
+            <!-- <if test="sqlMap.dsf !=null and sqlMap.dsf !=''">
+               and ${sqlMap.dsf}
+            </if> -->
+            <if test="sqlMap.dsf !=null">
+                AND FIND_IN_SET(t1.villageCode,#{sqlMap.dsf})
+            </if>
+        </where>
+    </select>
+
+    <select id="selectById" resultType="com.ss.isc.data.resource.common.dto.HouseDTO">
+		SELECT
+		  t1.id,
+		  t1.villageCode,
+		  t1.buildingNo,
+		  t1.unitNo,
+		  t1.houseNo,
+		  t1.floor,
+		  t1.peopleRelation,
+		  t1.houseType,
+		  t1.gisType,
+		  t1.lon,
+		  t1.lat,
+		  t1.createTime,
+		  t1.updateTime,
+		  t1.status,
+		  t1.thirdId,
+		  IFNULL(t1.address,CONCAT(t3.villageName,t1.buildingNo,'栋',unitNo,'单元',houseNo,'室')) AS address,
+		  t2.buildingName,
+		  t3.villageName
+		FROM
+			cw_base_house t1
+		LEFT JOIN cw_base_building t2 ON t1.buildingNo = t2.buildingNo
+		AND t1.villageCode = t2.villageCode
+		LEFT JOIN cw_base_village t3 ON t1.villageCode = t3.villageCode
+		WHERE t1.id = #{id}
+	</select>
+
+    <!-- 逻辑删除 -->
+    <!-- <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from cw_base_house WHERE id=#{id}
+    </delete> -->
+
+    <update id="deleteById">
+		update cw_base_house set STATUS = -1 WHERE id=#{id}
+	</update>
+    <!--修改房屋信息-->
+    <update id="update"
+            parameterType="com.ss.isc.data.resource.common.model.House">
+        update cw_base_house
+        <set>
+            <if test="villageCode != null">
+                villageCode = #{villageCode,jdbcType=VARCHAR},
+            </if>
+            <if test="buildingNo != null">
+                buildingNo = #{buildingNo,jdbcType=VARCHAR},
+            </if>
+            <if test="houseNo != null">
+                houseNo = #{houseNo,jdbcType=VARCHAR},
+            </if>
+            <if test="floor != null">
+                floor = #{floor,jdbcType=VARCHAR},
+            </if>
+            <if test="peopleRelation != null">
+                peopleRelation = #{peopleRelation,jdbcType=SMALLINT},
+            </if>
+            <!--<if test="houseType != null">
+                houseType = #{houseType,jdbcType=SMALLINT},
+            </if>-->
+            <if test="gisType != null">
+                gisType = #{gisType,jdbcType=SMALLINT},
+            </if>
+            <if test="unitNo != null">
+                unitNo = #{unitNo,jdbcType=VARCHAR},
+            </if>
+            <if test="lon != null">
+                lon = #{lon,jdbcType=DOUBLE},
+            </if>
+            <if test="lat != null">
+                lat = #{lat,jdbcType=DOUBLE},
+            </if>
+            <if test="alt != null">
+                alt = #{alt,jdbcType=DOUBLE},
+            </if>
+            <if test="address != null">
+                address = #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                createTime = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                updateTime = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="thirdId != null">
+                thirdId = #{thirdId,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <!-- <insert id="insertBatch" parameterType="java.util.List">
+        INSERT INTO cw_base_house
+          (`collectId`, `addPersonId`, `days`, `dayBegin`, `dayEnd`, `updateTime`)
+          VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+        (#{item.collectId}, #{item.addPersonId}, #{item.days}, #{item.dayBegin},
+        #{item.dayEnd}, now())
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        days=days+1,
+        dayEnd=values(dayEnd),
+        updateTime=now()
+    </insert> -->
+
+
+    <update id="updateBatch" parameterType="java.util.List">
+        <foreach collection="list" item="item" index="index" open="" separator=";" close="">
+            update cw_base_house
+            <set>
+                <if test="item.floor !=null and item.floor !=''">
+                    floor = #{item.floor,jdbcType=VARCHAR},
+                </if>
+                <if test="item.peopleRelation !=null">
+                    peopleRelation = #{item.peopleRelation,jdbcType=SMALLINT},
+                </if>
+                <if test="item.houseType !=null">
+                    houseType = #{item.houseType,jdbcType=SMALLINT},
+                </if>
+                <if test="item.gisType !=null">
+                    gisType = #{item.gisType,jdbcType=SMALLINT},
+                </if>
+                <if test="item.lon !=null">
+                    lon = #{item.lon,jdbcType=DOUBLE},
+                </if>
+                <if test="item.lat !=null">
+                    lat = #{item.lat,jdbcType=DOUBLE},
+                </if>
+                <if test="item.alt !=null">
+                    alt = #{item.alt,jdbcType=DOUBLE},
+                </if>
+                <if test="item.address !=null and item.address">
+                    address = #{item.address,jdbcType=VARCHAR},
+                </if>
+                updateTime =now()
+            </set>
+            where id = #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+
+    <!--按条件查询房屋-->
+    <select id="check" resultType="com.ss.isc.data.resource.common.model.House">
+        SELECT
+        *
+        FROM
+        cw_base_house
+        <where>
+            <if test="id !=null">
+                AND id != #{id}
+            </if>
+            <if test="villageCode !=null and villageCode !=''">
+                AND villageCode = #{villageCode}
+            </if>
+            <if test="buildingNo !=null and buildingNo !=''">
+                AND buildingNo = #{buildingNo}
+            </if>
+            <if test="unitNo !=null and unitNo !=''">
+                AND unitNo = #{unitNo}
+            </if>
+            <if test="floor !=null and floor !=''">
+                AND floor = #{floor}
+            </if>
+            <if test="houseNo !=null and houseNo !=''">
+                AND houseNo = #{houseNo}
+            </if>
+            AND status =1
+        </where>
+        LIMIT 0,1
+    </select>
+
+
+    <select id="getAddInformation" resultType="integer">
+		SELECT
+		count(1)
+		FROM
+		cw_add_person
+		WHERE
+		createdTime BETWEEN DATE_SUB(CURDATE(), INTERVAL 1
+		DAY)
+		AND DATE_FORMAT(now(), '%Y-%m-%d')
+	</select>
+
+    <select id="getLeaveCountInformation" resultType="integer">
+		SELECT
+		count(1)
+		FROM
+		cw_leave_person
+		WHERE
+		createdTime BETWEEN DATE_SUB(CURDATE(), INTERVAL
+		1 DAY)
+		AND DATE_FORMAT(now(), '%Y-%m-%d')
+	</select>
+
+
+    <select id="getCarCountInformation" resultType="integer">
+		SELECT
+		count(1)
+		FROM
+		cw_vehicle_retention
+		WHERE
+		createTime BETWEEN DATE_SUB(CURDATE(), INTERVAL 1 DAY)
+		AND DATE_FORMAT(now(), '%Y-%m-%d')
+	</select>
+
+
+    <insert id="insertBatchPeopleRelation" parameterType="java.util.List">
+        INSERT INTO cw_relation_peoplehouse
+        (
+        villageCode,
+        credentialType,
+        credentialNo,
+        buildingNo,
+        unitNo,
+        houseNo,
+        peopleRelation
+        )
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.villageCode},
+            #{item.credentialType},
+            #{item.credentialNo},
+            #{item.buildingNo},
+            #{item.unitNo},
+            #{item.houseNo},
+            #{item.peopleRelation}
+            )
+        </foreach>
+    </insert>
+
+    <update id="updateBatchPeopleRelation" parameterType="java.util.List">
+        <foreach collection="list" item="item" index="index" open="" separator=";" close="">
+            update cw_relation_peoplehouse
+            <set>
+                <if test="item.credentialType !=null">
+                    credentialType = #{item.credentialType,jdbcType=VARCHAR},
+                </if>
+                <if test="item.credentialNo !=null">
+                    credentialNo = #{item.credentialNo,jdbcType=VARCHAR},
+                </if>
+            </set>
+            where id = #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+
+    <select id="checkPeopleHouse" parameterType="com.ss.isc.data.resource.common.model.PeopleHouse"
+            resultType="com.ss.isc.data.resource.common.model.PeopleHouse">
+		SELECT
+			*
+		FROM
+			`cw_relation_peoplehouse`
+		WHERE
+			villageCode = #{villageCode}
+		AND buildingNo = #{buildingNo}
+		AND unitNo = #{unitNo}
+		AND houseNo = #{houseNo}
+		AND credentialNo = #{credentialNo}
+	</select>
+</mapper>

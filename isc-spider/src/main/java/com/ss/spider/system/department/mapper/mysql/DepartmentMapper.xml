@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.spider.system.department.mapper.DepartmentMapper">
+	
+	<resultMap id="BaseDeparementMap" type="com.ss.spider.system.department.model.Department">
+		<id 	column="DEPART_ID" 				property="departId" 				jdbcType="VARCHAR" />
+		<result column="ORG_ID"  				property="orgId"  					jdbcType="VARCHAR" />
+		<result column="DEPART_CODE"          	property="departCode"      			jdbcType="VARCHAR" />
+		<result column="DEPART_CNAME" 			property="departCname"    			jdbcType="VARCHAR" />
+		<result column="DEPART_ENAME"   		property="departEname"      		jdbcType="VARCHAR" />
+		<result column="REMARK"      			property="remark"    				jdbcType="VARCHAR" />
+		<result column="STATUS"    				property="status"    				jdbcType="INTEGER" />
+		<result column="CREATED_TIME"    		property="createdTime"    			jdbcType="BIGINT" />
+		<result column="CREATED_USERID"    		property="createdUserid"    		jdbcType="VARCHAR" />
+		<result column="UPDATED_TIME"    		property="updatedTime"    			jdbcType="BIGINT" />
+		<result column="UPDATED_USERID"    		property="updatedUserid"    		jdbcType="VARCHAR" />
+		<result column="LINK_MAN_NAME"    		property="linkManName"    			jdbcType="VARCHAR" />
+		<result column="LINK_MAN_TEL"    		property="linkManTel"    			jdbcType="VARCHAR" />
+		<result column="LINK_MAN_FAX"    		property="linkManFax"    			jdbcType="VARCHAR" />
+		<result column="DELETED_TIME"    		property="deletedTime"    			jdbcType="BIGINT" />
+		<result column="DELETED_USERID"    		property="deletedUserid"    		jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="pages" parameterType="com.ss.spider.system.department.model.Department" resultMap="BaseDeparementMap">
+		select DEPART_ID, ORG_ID, DEPART_CODE, DEPART_CNAME, DEPART_ENAME, REMARK,
+			   STATUS, CREATED_TIME, CREATED_USERID, UPDATED_TIME, UPDATED_USERID,
+			   LINK_MAN_NAME, LINK_MAN_TEL, LINK_MAN_FAX, DELETED_TIME, DELETED_USERID
+		  from CW_GE_DEPARTMENT
+		 where 1 = 1
+		 <if test="departId != null and departId != ''">
+		 	and DEPART_ID = #{departId, jdbcType=VARCHAR}
+		 </if>
+		 
+		 <if test="orgId != null and orgId != ''">
+		 	and ORG_ID = #{orgId, jdbcType=VARCHAR}
+		 </if>
+		 
+		 <if test="orgIdList != null">
+		 	and ORG_ID in
+			<foreach collection="orgIdList" item="item" open="(" close=")" separator=",">
+				#{item, jdbcType=VARCHAR}
+			</foreach>
+		 </if>
+		 
+		 <if test="departCode != null and departCode != ''">
+		 	and DEPART_CODE like CONCAT('%', #{departCode, jdbcType=VARCHAR}, '%')
+		 </if>
+		 
+		 <if test="departCname != null and departCname != ''">
+		 	and DEPART_CNAME like CONCAT('%', #{departCname, jdbcType=VARCHAR}, '%')
+		 </if>
+		 
+		 <if test="departEname != null and departEname != ''">
+		 	and DEPART_ENAME like CONCAT('%', #{departEname, jdbcType=VARCHAR}, '%')
+		 </if>
+		 
+		 <choose>
+		 	<when test="status != null">
+		 		and STATUS = #{status, jdbcType=INTEGER}
+		 	</when>
+		 	<otherwise>
+		 		and STATUS in(0, 1)
+		 	</otherwise>
+		 </choose>
+		 
+		 <if test="linkManName != null and linkManName != ''">
+		 	and LINK_MAN_NAME like CONCAT('%', #{linkManName, jdbcType=VARCHAR}, '%')
+		 </if>
+		 
+		 <if test="linkManFax != null and linkManFax != ''">
+		 	and LINK_MAN_FAX like CONCAT('%', #{linkManFax, jdbcType=VARCHAR}, '%')
+		 </if>
+		 
+		 <if test="linkManTel != null and linkManTel != ''">
+		 	and LINK_MAN_TEL like CONCAT('%', #{linkManTel, jdbcType=VARCHAR}, '%')
+		 </if>
+		 
+		 order by CREATED_TIME desc
+	</select>
+	
+	
+	<select id="list" parameterType="com.ss.spider.system.department.model.Department" resultMap="BaseDeparementMap">
+		select DEPART_ID, ORG_ID, DEPART_CODE, DEPART_CNAME, DEPART_ENAME, REMARK,
+			   STATUS, CREATED_TIME, CREATED_USERID, UPDATED_TIME, UPDATED_USERID,
+			   LINK_MAN_NAME, LINK_MAN_TEL, LINK_MAN_FAX, DELETED_TIME, DELETED_USERID
+		  from CW_GE_DEPARTMENT
+		 where 1 = 1
+		 <if test="departId != null and departId != ''">
+		 	and DEPART_ID = #{departId, jdbcType=VARCHAR}
+		 </if>
+		 
+		 <if test="orgId != null and orgId != ''">
+		 	and ORG_ID = #{orgId, jdbcType=VARCHAR}
+		 </if>
+
+		<if test="orgIdList != null">
+			and ORG_ID in
+			<foreach collection="orgIdList" item="item" open="(" close=")" separator=",">
+				#{item, jdbcType=VARCHAR}
+			</foreach>
+		</if>
+
+		 <if test="departCode != null and departCode != ''">
+		 	and DEPART_CODE = #{departCode, jdbcType=VARCHAR}
+		 </if>
+		 
+		 <if test="departCname != null and departCname != ''">
+		 	and DEPART_CNAME = #{departCname, jdbcType=VARCHAR}
+		 </if>
+		 
+		 <if test="departEname != null and departEname != ''">
+		 	and DEPART_ENAME = #{departEname, jdbcType=VARCHAR}
+		 </if>
+		 
+		 <choose>
+		 	<when test="status != null">
+		 		and STATUS = #{status, jdbcType=INTEGER}
+		 	</when>
+		 	<otherwise>
+		 		and STATUS in(0, 1)
+		 	</otherwise>
+		 </choose>
+		 
+		 <if test="linkManName != null and linkManName != ''">
+		 	and LINK_MAN_NAME = #{linkManName, jdbcType=VARCHAR}
+		 </if>
+		 
+		 <if test="linkManFax != null and linkManFax != ''">
+		 	and LINK_MAN_FAX = #{linkManFax, jdbcType=VARCHAR}
+		 </if>
+		 
+		 <if test="linkManTel != null and linkManTel != ''">
+		 	and LINK_MAN_TEL = #{linkManTel, jdbcType=VARCHAR}
+		 </if>
+	</select>
+
+	<select id="gets" parameterType="map" resultMap="BaseDeparementMap">
+		select DEPART_ID, ORG_ID, DEPART_CODE, DEPART_CNAME, DEPART_ENAME, REMARK,
+			   STATUS, CREATED_TIME, CREATED_USERID, UPDATED_TIME, UPDATED_USERID,
+			   LINK_MAN_NAME, LINK_MAN_TEL, LINK_MAN_FAX, DELETED_TIME, DELETED_USERID
+		  from CW_GE_DEPARTMENT
+		 where 1 = 1
+		<choose>
+			<when test="departId != null and departId != ''">
+				and DEPART_ID = #{departId, jdbcType=VARCHAR}
+			</when>
+			<when test="departIds != null">
+				and DEPART_ID in
+				<foreach collection="departIds" item="item" open="(" close=")" separator=",">
+					#{item, jdbcType=VARCHAR}
+				</foreach>
+			</when>
+		</choose>
+		 
+		<choose>
+			<when test="status != null">
+				and STATUS = #{status, jdbcType=INTEGER}
+			</when>
+			<otherwise>
+				and STATUS in(0, 1)
+			</otherwise>
+		</choose>
+		 
+		<if test="orgId != null and orgId != ''">
+			and ORG_ID = #{orgId, jdbcType=VARCHAR}
+		</if>
+		 
+		<if test="departCode != null and departCode != ''">
+			and DEPART_CODE = #{departCode, jdbcType=VARCHAR}
+		</if>
+		
+		<if test="departCname != null and departCname != ''">
+			and DEPART_CNAME = #{departCname, jdbcType=VARCHAR}
+		</if>
+		
+		<if test="departEname != null and departEname != ''">
+			and DEPART_ENAME = #{departEname, jdbcType=VARCHAR}
+		</if>
+		
+		<if test="linkManName != null and linkManName != ''">
+			and LINK_MAN_NAME = #{linkManName, jdbcType=VARCHAR}
+		</if>
+		
+		<if test="linkManFax != null and linkManFax != ''">
+			and LINK_MAN_FAX = #{linkManFax, jdbcType=VARCHAR}
+		</if>
+		
+		<if test="linkManTel != null and linkManTel != ''">
+			and LINK_MAN_TEL = #{linkManTel, jdbcType=VARCHAR}
+		</if>
+	</select>
+	
+	<insert id="save" parameterType="com.ss.spider.system.department.model.Department">
+		insert into CW_GE_DEPARTMENT(DEPART_ID, ORG_ID, DEPART_CODE, DEPART_CNAME, DEPART_ENAME, REMARK, STATUS, 
+			   CREATED_TIME, CREATED_USERID, UPDATED_TIME, UPDATED_USERID, LINK_MAN_NAME, LINK_MAN_TEL, LINK_MAN_FAX)
+		values(#{departId, jdbcType=VARCHAR},			#{orgId, jdbcType=VARCHAR},				#{departCode, jdbcType=VARCHAR},
+			   #{departCname, jdbcType=VARCHAR},		#{departEname, jdbcType=VARCHAR},		#{remark, jdbcType=VARCHAR},
+			   #{status, jdbcType=INTEGER},				#{createdTime, jdbcType=BIGINT},		#{createdUserid, jdbcType=VARCHAR},
+			   #{updatedTime, jdbcType=BIGINT},			#{updatedUserid, jdbcType=VARCHAR},		#{linkManName, jdbcType=VARCHAR},
+			   #{linkManTel, jdbcType=VARCHAR},			#{linkManFax, jdbcType=VARCHAR})
+	</insert>
+	
+	<update id="update" parameterType="com.ss.spider.system.department.model.Department">
+		update CW_GE_DEPARTMENT
+		   set ORG_ID = #{orgId, jdbcType=VARCHAR},
+		       REMARK = #{remark, jdbcType=VARCHAR},
+			   STATUS = #{status, jdbcType=INTEGER},					
+		   	   DEPART_CODE  = #{departCode, jdbcType=VARCHAR},
+			   DEPART_CNAME = #{departCname, jdbcType=VARCHAR},		
+			   DEPART_ENAME = #{departEname, jdbcType=VARCHAR},		
+			   UPDATED_TIME   = #{updatedTime, jdbcType=BIGINT},			
+			   UPDATED_USERID = #{updatedUserid, jdbcType=VARCHAR},		
+			   LINK_MAN_NAME  = #{linkManName, jdbcType=VARCHAR},
+			   LINK_MAN_TEL   = #{linkManTel, jdbcType=VARCHAR},			
+			   LINK_MAN_FAX   = #{linkManFax, jdbcType=VARCHAR}
+		 where DEPART_ID = #{departId, jdbcType=VARCHAR}
+	</update>
+	
+	<update id="discard" parameterType="map">
+		update CW_GE_DEPARTMENT
+		   set STATUS = -1,
+		   	   DELETED_TIME = #{deletedTime, jdbcType=BIGINT},
+		       DELETED_USERID = #{deletedUserid, jdbcType=VARCHAR}
+		<trim prefix=" where " prefixOverrides="and|or">
+			<choose>
+				<when test="(departId != null and departId != '') or departIds != null or
+							(orgId != null and orgId != '') or orgIds != null">
+					<choose>
+						<when test="departId != null and departId != ''">
+							and DEPART_ID = #{departId, jdbcType=VARCHAR}
+						</when>
+						<when test="departIds != null">
+							and DEPART_ID in
+							<foreach collection="departIds" item="item" open="(" close=")" separator=",">
+								#{item, jdbcType=VARCHAR}
+							</foreach>
+						</when>
+					</choose>
+					<choose>
+						<when test="orgId != null and orgId != ''">
+							and ORG_ID = #{orgId, jdbcType=VARCHAR}
+						</when>
+						<when test="orgIds != null">
+							and ORG_ID in
+							<foreach collection="orgIds" item="item" open="(" close=")" separator=",">
+								#{item, jdbcType=VARCHAR}
+							</foreach>
+						</when>
+					</choose>
+				</when>
+				<otherwise> 
+					and 1 != 1
+				</otherwise>
+			</choose>
+		</trim>
+	</update>
+	
+	<delete id="remove" parameterType="map">
+		delete from CW_GE_DEPARTMENT
+		<trim prefix=" where " prefixOverrides="and|or">
+			<choose>
+				<when test="(departId != null and departId != '') or departIds != null or
+							(orgId != null and orgId != '') or orgIds != null">
+					<choose>
+						<when test="departId != null and departId != ''">
+							and DEPART_ID = #{departId, jdbcType=VARCHAR}
+						</when>
+						<when test="departIds != null">
+							and DEPART_ID in
+							<foreach collection="departIds" item="item" open="(" close=")" separator=",">
+								#{item, jdbcType=VARCHAR}
+							</foreach>
+						</when>
+					</choose>
+					<choose>
+						<when test="orgId != null and orgId != ''">
+							and ORG_ID = #{orgId, jdbcType=VARCHAR}
+						</when>
+						<when test="orgIds != null">
+							and ORG_ID in
+							<foreach collection="orgIds" item="item" open="(" close=")" separator=",">
+								#{item, jdbcType=VARCHAR}
+							</foreach>
+						</when>
+					</choose>
+				</when>
+				<otherwise> 
+					and 1 != 1
+				</otherwise>
+			</choose>
+		</trim>
+	</delete>
+</mapper>

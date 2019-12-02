@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+        namespace="com.ss.isc.data.access.mapper.WifiCollectReceiveMapper">
+
+    <insert id="batchInsert"
+            parameterType="java.util.List">
+        insert into cw_wifi_collect (
+        villageCode,
+        deviceId,
+        lon,
+        lat,
+        gisType,
+        collectMac,
+        collectTime
+        )
+        values
+        <foreach collection="list" item="items" index="index" open="" close=""
+                 separator=",">
+            (
+            #{items.villageCode},
+            #{items.deviceId},
+            #{items.lon},
+            #{items.lat},
+            #{items.gisType},
+            #{items.collectMac},
+            #{items.collectTime}
+            )
+        </foreach>
+    </insert>
+
+</mapper>

@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.isc.sync.data.mapper.SystemMapper">
+
+	<select id="queryCamera"
+		resultType="com.ss.isc.sync.data.model.Camera">
+		SELECT
+		*
+		FROM
+		cw_base_camera
+		WHERE cameraType = 2
+	</select>
+	
+	<select id="getCameraByNo"
+		resultType="com.ss.isc.sync.data.model.Camera">
+		SELECT
+		*
+		FROM
+		cw_base_camera
+		<where>
+		<if test="productCode != null and productCode != ''">
+			 productCode = #{productCode}
+		</if>
+		<if test="cameraNo != null and cameraNo != ''">
+			 and cameraId = #{cameraNo}
+		</if>
+		</where> 
+	</select>
+	
+	<insert id="insertCamera" parameterType="com.ss.isc.sync.data.model.Camera">
+		INSERT INTO cw_base_camera 
+		  (cameraId,cameraName,villageCode,cameraIp,productCode,cameraType,cameraState,lon,lat,createTime,updateTime) 
+		  VALUES
+		(#{cameraId},#{cameraName},#{villageCode},#{cameraIp},#{productCode},#{cameraType},#{cameraState},#{lon},#{lat},now(),now())
+    </insert>
+    
+	<insert id="batchInsertCamera" parameterType="java.util.List">
+		INSERT INTO cw_base_camera 
+		  (villageCode,cameraId,cameraName,cameraIp,cameraPort,loginName,password,streamSource,
+			buildingNo,installAdd,prducetBrand,productModel,productCode,companyCode,cameraType,
+			thridType,inOutFlag,cameraState,gisType,lon,lat,alt,vehicleChannelNo,camreaChannelID,
+			thirdCameraId,standardCameraId,createTime,updateTime) 
+		  VALUES
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{villageCode},#{cameraId},#{cameraName},#{cameraIp},#{cameraPort},
+		#{loginName},#{password},#{streamSource},#{buildingNo},#{installAdd},
+		#{prducetBrand},#{productModel},#{productCode},#{companyCode},
+		#{cameraType},#{thridType},#{inOutFlag},#{cameraState},#{gisType},
+		#{lon},#{lat},#{alt},#{vehicleChannelNo},#{camreaChannelID},#{thirdCameraId},
+		#{standardCameraId},now(),now())
+		</foreach>  
+    </insert>
+    
+    <update id="updateCamera" parameterType="com.ss.isc.sync.data.model.Camera">
+		UPDATE cw_base_camera
+		SET 
+		  cameraName = #{cameraName},
+		  cameraIp = #{cameraIp},
+		  cameraState = #{cameraState},
+		  updateTime = now() 
+		WHERE productCode = #{productCode}
+    </update>
+    
+    <insert id="batchCompareRegion" parameterType="java.util.List">
+		INSERT INTO cw_ge_region_info
+		(REGION_ID,REGION_CODE,REGION_NAME,PARENT_ID,STATE,CREATED_TIME,updateTime,REMARK,
+		thirdId,regionType)
+		  VALUES
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.regionId},#{item.regionCode},#{item.regionName},#{item.parentId},
+		#{item.state},REPLACE(UNIX_TIMESTAMP(CURRENT_TIMESTAMP(3)),'.',''),now(),#{item.remark},
+		#{item.thirdId},#{item.regionType})
+		</foreach>
+		ON DUPLICATE KEY UPDATE 
+		REGION_CODE=values(REGION_CODE),
+		REGION_NAME=values(REGION_NAME),
+		PARENT_ID=values(PARENT_ID),
+		STATE=values(STATE),
+		updateTime = now(),
+		REMARK = values(remark),
+		thirdId = values(thirdId),
+		regionType = values(regionType)
+    </insert>
+    
+	<insert id="batchInsertRegion" parameterType="java.util.List">
+		INSERT INTO cw_ge_region_info
+		(REGION_ID,REGION_CODE,REGION_NAME,PARENT_ID,STATE,CREATED_TIME)
+		  VALUES
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.regionId},#{item.regionCode},#{item.regionName},#{item.parentId},#{item.state},REPLACE(UNIX_TIMESTAMP(CURRENT_TIMESTAMP(3)),'.',''))
+		</foreach>  
+    </insert>
+    
+    
+    <select id="getFacedbfaceId" resultType="string">
+    	SELECT t2.facedbfaceId FROM cw_base_people t1,cw_base_people_facedbface_ref t2 
+    	WHERE t1.peopleId= t2.peopleId AND t1.credentialNo=#{credentialNo}
+	</select>
+    
+    <select id="getBuildingByCode" resultType="com.ss.isc.data.resource.common.model.Building">
+		SELECT * FROM cw_base_building WHERE villageCode=#{villageCode} and buildingNo=#{buildingNo}
+	</select>
+	
+	<insert id="insertBuilding" parameterType="com.ss.isc.data.resource.common.model.Building">
+		INSERT INTO cw_base_building 
+		(villageCode,buildingNo,buildingName,gisType,lon,lat,thirdStreetCode,thirdVillageId,thirdId,state,updateTime)
+		  VALUES
+		(#{villageCode},#{buildingNo},#{buildingName},#{gisType},
+		#{lon},#{lat},#{thirdStreetCode},#{thirdVillageId},#{thirdId},#{state},now())
+    </insert>
+    
+     <update id="updateBuilding" parameterType="com.ss.isc.data.resource.common.model.Building">
+		UPDATE cw_base_building
+		SET 
+		buildingName=#{buildingName},
+		thirdStreetCode=#{thirdStreetCode},
+		thirdVillageId=#{thirdVillageId},
+		thirdId=#{thirdId},
+		state=#{state},
+		updateTime = now()
+		WHERE id = #{id} and buildingNo = #{buildingNo}
+    </update>
+    
+    <select id="getHouseByCode" resultType="com.ss.isc.sync.data.model.House">
+		SELECT * FROM cw_base_house WHERE houseNo=#{houseNo}
+	</select>
+	
+	<select id="getHouseByThirdId" resultType="com.ss.isc.sync.data.model.House">
+		SELECT * FROM cw_base_house WHERE thirdId=#{thirdId}
+	</select>
+	
+	<insert id="insertHouse" parameterType="com.ss.isc.sync.data.model.House">
+		INSERT INTO cw_base_house 
+		(villageCode,buildingNo,unitNo,houseNo,floor,houseType,gisType,lon,lat,
+		status,thirdRegionCode,thirdStreetCode,
+		<if test="thirdId != null and thirdId != ''">
+			thirdId,
+		</if>
+		<if test="thirdBuildingNo != null and thirdBuildingNo != ''">
+			 thirdBuildingNo,
+		</if>
+		updateTime)
+		  VALUES
+		(#{villageCode},#{buildingNo},#{unitNo},#{houseNo},#{floor},1,
+		#{gisType},#{lon},#{lat},#{status},#{thirdRegionCode},#{thirdStreetCode},
+		<if test="thirdId != null and thirdId != ''">
+			#{thirdId},
+		</if>
+		<if test="thirdBuildingNo != null and thirdBuildingNo != ''">
+			 #{thirdBuildingNo},
+		</if>
+		now())
+    </insert>
+    
+     <update id="updateHouse" parameterType="com.ss.isc.sync.data.model.House">
+		UPDATE cw_base_house
+		SET 
+		buildingNo=#{buildingNo},
+		unitNo=#{unitNo},
+		floor=#{floor},
+		status=#{status},
+		<if test="thirdRegionCode != null and thirdRegionCode != ''">
+			thirdRegionCode=#{thirdRegionCode},
+		</if>
+		<if test="thirdStreetCode != null and thirdStreetCode != ''">
+			thirdStreetCode=#{thirdStreetCode},
+		</if>
+		<if test="thirdId != null and thirdId != ''">
+			 thirdId = #{thirdId} ,
+		</if>
+		<if test="thirdBuildingNo != null and thirdBuildingNo != ''">
+			 thirdBuildingNo = #{thirdBuildingNo},
+		</if>
+		updateTime = now() 
+		WHERE houseNo = #{id}
+    </update>
+    
+    <select id="getVillage" 
+		resultType="com.ss.isc.data.resource.common.model.Village">
+		SELECT * FROM cw_base_village 
+		<where>
+			<if test="thirdId != null and thirdId != ''">
+				 thirdId = #{thirdId} 
+			</if>
+		</where>
+	</select>
+	
+</mapper>

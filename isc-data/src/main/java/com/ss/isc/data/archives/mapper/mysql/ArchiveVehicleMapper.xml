@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.isc.data.archives.mapper.ArchivesVehicleMapper">
+
+	<!-- 车辆信息分页查询详情 -->
+	<select id="list" parameterType="com.ss.isc.data.archives.common.model.Vehicle" resultType="com.ss.isc.data.archives.common.model.Vehicle">
+		SELECT
+			t1.id,
+			t1.plateNo,
+			t1.carType,
+			t1.carColor,
+			e2.enumName AS carColorName,
+			e.enumName AS carTypeName,
+			t1.plateType,
+			e1.enumName AS plateTypeName,
+			p.peopleName AS registerName,
+			t1.platePic,
+			p.credentialNo,
+			p.residenceDetailAddres AS adress,
+			p.villageCode,
+			v.villageName
+		FROM
+			cw_base_vehicle t1
+			LEFT JOIN cw_base_people p ON t1.peopleId = p.id
+			LEFT JOIN cw_base_enum e ON e.enumValue = t1.carType AND e.enumType = "carType"
+			LEFT JOIN cw_base_enum e1 ON e1.enumValue = t1.plateType AND e1.enumType = "plateType"
+			LEFT JOIN cw_base_enum e2 ON e2.enumValue = t1.carColor AND e2.enumType = "carColor"
+			LEFT JOIN cw_base_village v ON v.villageCode = p.villageCode
+		<where>
+			<if test="plateNo != null and plateNo != ''">
+				AND t1.plateNo = #{plateNo}
+			</if>
+
+			<if test="carType != null and carType != ''">
+				AND t1.carType = #{carType}
+			</if>
+
+			<if test="plateType != null and plateType != ''">
+				AND t1.plateType = #{plateType}
+			</if>
+
+			<if test="carColor != null and carColor != ''">
+				AND t1.carColor = #{carColor}
+			</if>
+
+			<if test="villageCode != null and villageCode != ''">
+				AND t1.villageCode = #{villageCode}
+			</if>
+
+			<if test="registerName != null and registerName != ''">
+				AND t1.registerName LIKE concat('%',#{registerName},'%')
+			</if>
+
+			<if test="villageCodes !=null and villageCodes != ''">
+				AND FIND_IN_SET(t1.villageCode,#{villageCodes})
+			</if>
+			<!--<if test="sqlString != null and sqlString != ''">
+				AND ${sqlString}
+			</if>-->
+			AND t1.isLeave = 0
+		</where>
+		ORDER BY t1.isLeave 
+	</select>
+
+	<!-- 车辆信息通过ID查询 -->
+	<select id="selectById" parameterType="com.ss.isc.data.archives.common.model.Vehicle" resultType="com.ss.isc.data.archives.common.model.Vehicle">
+		SELECT
+		t1.id,
+		t1.plateNo,
+		t1.carType,
+		e.enumName AS carTypeName,
+		t1.plateType,
+		e1.enumName AS plateTypeName,
+		t1.carColor,
+		e2.enumName AS carColorName,
+		t1.platePic,
+		p.residenceDetailAddres AS adress,
+		t1.villageCode
+		FROM
+		cw_base_vehicle t1
+		LEFT JOIN cw_base_people p ON t1.credentialNo = p.credentialNo
+		LEFT JOIN cw_base_enum e ON e.enumValue = t1.carType AND e.enumType = "carType"
+		LEFT JOIN cw_base_enum e1 ON e1.enumValue = t1.plateType AND e1.enumType = "plateType"
+		LEFT JOIN cw_base_enum e2 ON e2.enumValue = t1.carColor AND e2.enumType = "carColor"
+		<where>
+			<if test="id != null and id != ''">
+				AND t1.id = #{id}
+			</if>
+		</where>
+	</select>
+
+	<!-- 条件查询车辆感知发现 -->
+	<select id="getDiscovery" parameterType="com.ss.isc.data.archives.common.model.VehicleDiscovery" resultType="com.ss.isc.data.archives.common.model.VehicleDiscovery">
+		SELECT
+			t1.id,
+			t1.villageCode,
+			v.villageName,
+			t1.inOutTime,
+			t1.platePicUrl,
+			t1.days,
+			t1.status,
+			e.enumName AS statusName
+		FROM
+			cw_vehicle_discovery t1
+		LEFT JOIN cw_base_village v ON t1.villageCode = v.villageCode
+		LEFT JOIN cw_base_enum e ON t1.status = e.enumValue AND e.enumType = "state"
+		<where>
+			<if test="plateNumber != null and plateNumber != ''">
+				AND t1.plateNumber = #{plateNumber}
+			</if>
+			<if test="sqlString != null and sqlString != ''">
+				AND ${sqlString}
+			</if>
+				AND v.state = 0
+		</where>
+		ORDER BY t1.updateTime DESC
+		LIMIT 0,1
+	</select>
+	
+	<!-- 条件查询车辆感知离开 -->
+	<select id="getLeave" parameterType="com.ss.isc.data.archives.common.model.VehicleLeave" resultType="com.ss.isc.data.archives.common.model.VehicleLeave">
+		SELECT
+		t1.id,
+		t1.villageCode,
+		v.villageName,
+		t1.inOutTime,
+		t1.platePicUrl,
+		t1.days,
+		t1.status,
+		e.enumName AS statusName
+		FROM
+		cw_vehicle_leave t1
+		LEFT JOIN cw_base_village v ON t1.villageCode = v.villageCode
+		LEFT JOIN cw_base_enum e ON t1.status = e.enumValue AND e.enumType = "state"
+		<where>
+			<if test="plateNumber != null and plateNumber != ''">
+				AND t1.plateNumber = #{plateNumber}
+			</if>
+			<if test="sqlString != null and sqlString != ''">
+				AND ${sqlString}
+			</if>
+			AND v.state = 0
+		</where>
+		ORDER BY t1.updateTime DESC
+		LIMIT 0,1
+	</select>
+	
+	<!-- 条件查询车辆滞留 -->
+	<select id="getRetation" parameterType="com.ss.isc.data.archives.common.model.VehicleRetation" resultType="com.ss.isc.data.archives.common.model.VehicleRetation">
+		SELECT
+		t1.id,
+		t1.villageCode,
+		v.villageName,
+		t1.inOutTime,
+		t1.platePicUrl,
+		t1.days,
+		t1.status,
+		e.enumName AS statusName
+		FROM
+		cw_vehicle_retention t1
+		LEFT JOIN cw_base_village v ON t1.villageCode = v.villageCode
+		LEFT JOIN cw_base_enum e ON t1.status = e.enumValue AND e.enumType = "state"
+		<where>
+			<if test="plateNumber != null and plateNumber != ''">
+				AND t1.plateNumber = #{plateNumber}
+			</if>
+			<if test="sqlString != null and sqlString != ''">
+				AND ${sqlString}
+			</if>
+			AND v.state = 0
+		</where>
+		ORDER BY t1.updateTime DESC
+	</select>
+
+	<!-- 查询房间关联车辆滞留 -->
+	<select id="getVehicleInformation" parameterType="com.ss.isc.data.archives.common.model.Vehicle" resultType="com.ss.isc.data.archives.common.model.Vehicle">
+		SELECT
+			v.plateNo,
+			v.plateType,
+			e.enumName AS plateTypeName,
+			v.carType,
+			e1.enumName AS carTypeName,
+			v.carColor,
+			e2.enumName AS carColorName,
+			v.platePic,
+			p.residenceDetailAddres AS adress
+		FROM
+			cw_base_vehicle v
+		LEFT JOIN cw_base_people p ON v.peopleId = p.id
+		LEFT JOIN cw_relation_peoplehouse ph ON p.id = ph.peopleId
+		LEFT JOIN cw_base_enum e ON v.plateType = e.enumValue AND e.enumType = "plateType"
+		LEFT JOIN cw_base_enum e1 ON v.carType = e1.enumValue AND e1.enumType = "carType"
+		LEFT JOIN cw_base_enum e2 ON v.carColor = e2.enumValue AND e2.enumType = "carColor"
+		<where>
+			<if test="houseId != null and houseId != ''">
+				AND ph.houseId = #{houseId}
+			</if>
+			<if test="villageCode != null and villageCode != ''">
+				AND v.villageCode = #{villageCode}
+			</if>
+			<!-- <if test="villageCode != null and villageCode != ''">
+				AND t1.villageCode = #{villageCode}
+			</if> -->
+			<if test="buildingNo != null and buildingNo != ''">
+				AND v.buildingNo = #{buildingNo}
+			</if>
+			<if test="unitNo != null and unitNo != ''">
+				AND v.unitNo = #{unitNo}
+			</if>
+			<if test="houseNo != null and houseNo != ''">
+				AND v.houseNo = #{houseNo}
+			</if>
+			AND v.isLeave = 0
+		</where>
+		ORDER BY v.isLeave
+	</select>
+
+	<!--检查车辆是否存在-->
+	<select id="check" resultType="com.ss.isc.data.archives.common.model.Vehicle">
+		SELECT
+		*
+		FROM
+		cw_base_vehicle
+		<where>
+			<if test="plateNo !=null and plateNo !=''">
+				and plateNo = #{plateNo}
+			</if>
+			<if test="id !=null">
+				and id != #{id}
+			</if>
+			AND status = 0
+		</where>
+		LIMIT 0,1
+	</select>
+
+	<!--修改车辆信息-->
+	<update id="updateVehicle" parameterType="com.ss.isc.data.archives.common.model.Vehicle">
+		update cw_base_vehicle
+		<set>
+			<if test="villageCode != null">
+				villageCode = #{villageCode},
+			</if>
+			<if test="plateNo != null">
+				plateNo = #{plateNo},
+			</if>
+			<if test="plateColor == null">
+			plateColor = null,
+			</if>
+			<if test="plateType != null">
+				plateType = #{plateType},
+			</if>
+			<if test="carColor != null">
+				carColor = #{carColor},
+			</if>
+			<if test="carType != null">
+				carType = #{carType},
+			</if>
+			<if test="registerName == null">
+				registerName = null,
+			</if>
+			<if test="credentialType == null">
+				credentialType = null,
+			</if>
+			<if test="credentialNo == null">
+				credentialNo = null,
+			</if>
+			<if test="contactTel == null">
+				contactTel = null,
+			</if>
+			<if test="buildingNo == null">
+				buildingNo = null,
+			</if>
+			<if test="unitNo == null">
+				unitNo = null,
+			</if>
+			<if test="floorNo == null">
+				floorNo = null,
+			</if>
+			<if test="houseNo == null">
+				houseNo = null,
+			</if>
+			<if test="createTime != null">
+				createTime = #{createTime},
+			</if>
+			<if test="updateTime != null">
+				updateTime = #{updateTime},
+			</if>
+			<if test="isLeave != null">
+				isLeave = #{isLeave},
+			</if>
+			<if test="platePic == null">
+				platePic = null,
+			</if>
+		</set>
+		where id = #{id}
+	</update>
+
+	<!--修改车辆信息-->
+	<update id="update" parameterType="com.ss.isc.data.archives.common.model.Vehicle">
+		update cw_base_vehicle
+		<set>
+			<if test="villageCode != null">
+				villageCode = #{villageCode},
+			</if>
+			<if test="plateNo != null">
+				plateNo = #{plateNo},
+			</if>
+			<if test="plateColor != null">
+				plateColor = #{plateColor},
+			</if>
+			<if test="plateType != null">
+				plateType = #{plateType},
+			</if>
+			<if test="carColor != null">
+				carColor = #{carColor},
+			</if>
+			<if test="carType != null">
+				carType = #{carType},
+			</if>
+			<if test="registerName != null">
+				registerName = #{registerName},
+			</if>
+			<if test="credentialType != null">
+				credentialType = #{credentialType},
+			</if>
+			<if test="credentialNo != null">
+				credentialNo = #{credentialNo},
+			</if>
+			<if test="contactTel != null">
+				contactTel = #{contactTel},
+			</if>
+			<if test="buildingNo != null">
+				buildingNo = #{buildingNo},
+			</if>
+			<if test="unitNo != null">
+				unitNo = #{unitNo},
+			</if>
+			<if test="floorNo != null">
+				floorNo = #{floorNo},
+			</if>
+			<if test="houseNo != null">
+				houseNo = #{houseNo},
+			</if>
+			<if test="createTime != null">
+				createTime = #{createTime},
+			</if>
+			<if test="updateTime != null">
+				updateTime = #{updateTime},
+			</if>
+			<if test="isLeave != null">
+				isLeave = #{isLeave},
+			</if>
+			<if test="platePic != null">
+				platePic = #{platePic},
+			</if>
+		</set>
+		where id = #{id}
+	</update>
+
+	<!--删除车辆-->
+	<update id="deleteById">
+		update cw_base_vehicle set isLeave = 1 where id=#{id}
+	</update>
+
+	<!--通过证件号查询车辆详情-->
+	<select id="detail" parameterType="com.ss.isc.data.archives.common.model.Vehicle" resultType="com.ss.isc.data.archives.common.model.Vehicle">
+		SELECT
+		t1.id,
+		t1.plateNo,
+		t1.carType,
+		e.enumName AS carTypeName,
+		t1.plateType,
+		e1.enumName AS plateTypeName,
+		t1.carColor,
+		e2.enumName AS carColorName,
+		t1.platePic,
+		p.residenceDetailAddres AS adress
+		FROM
+		cw_base_vehicle t1
+		LEFT JOIN cw_base_people p ON t1.credentialNo = p.credentialNo
+		LEFT JOIN cw_base_enum e ON e.enumValue = t1.carType AND e.enumType = "carType"
+		LEFT JOIN cw_base_enum e1 ON e1.enumValue = t1.plateType AND e1.enumType = "plateType"
+		LEFT JOIN cw_base_enum e2 ON e2.enumValue = t1.carColor AND e2.enumType = "carColor"
+		<where>
+			<if test="credentialNo != null and credentialNo != ''">
+				AND t1.credentialNo = #{credentialNo}
+			</if>
+		</where>
+	</select>
+</mapper>

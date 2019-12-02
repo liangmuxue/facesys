@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.spider.system.user.mapper.UserMapper">
+	<resultMap id="BaseUserMap" type="com.ss.spider.system.user.model.User">
+		<id 	column="USER_ID" 			property="userId" 				jdbcType="VARCHAR" />
+		<result column="DEPART_ID"  		property="departId"  			jdbcType="VARCHAR" />
+		<result column="ORG_ID"          	property="orgId"      			jdbcType="VARCHAR" />
+		<result column="WORK_CODE" 			property="workCode"    			jdbcType="VARCHAR" />
+		<result column="LOGIN_NAME"   		property="loginName"      		jdbcType="VARCHAR" />
+		<result column="PASSWORD"      		property="password"    			jdbcType="VARCHAR" />
+		<result column="SALT"    			property="salt"    				jdbcType="VARCHAR" />
+		<result column="NAME"    			property="name"    				jdbcType="VARCHAR" />
+		<result column="SEX"    			property="sex"    				jdbcType="INTEGER" />
+		<result column="BRITHDAY"    		property="brithday"    			jdbcType="VARCHAR" />
+		<result column="APP_ON_OFF"    		property="appOnOff"    			jdbcType="INTEGER" />
+		<result column="STATUS"    			property="status"    			jdbcType="INTEGER" />
+		<result column="POSITION"    		property="position"    			jdbcType="VARCHAR" />
+		<result column="EMAIL"    			property="email"    			jdbcType="VARCHAR" />
+		<result column="PHONE_NUMBER"    	property="phoneNumber"    		jdbcType="VARCHAR" />
+		<result column="PICTURE_URL"    	property="pictureUrl"    		jdbcType="VARCHAR" />
+		<result column="REMARK"    			property="remark"    			jdbcType="VARCHAR" />
+		<result column="INIT_FLAG"    		property="initFlag"    			jdbcType="INTEGER" />
+		<result column="CREATED_TIME"    	property="createdTime"    		jdbcType="BIGINT" />
+		<result column="CREATED_USERID"    	property="createdUserid"    	jdbcType="VARCHAR" />
+		<result column="UPDATED_TIME"    	property="updatedTime"    		jdbcType="BIGINT" />
+		<result column="UPDATED_USERID"    	property="updatedUserid"    	jdbcType="VARCHAR" />
+		<result column="DELETED_TIME"    	property="deletedTime"    		jdbcType="BIGINT" />
+		<result column="DELETED_USERID"    	property="deletedUserid"    	jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="pages" parameterType="com.ss.spider.system.user.model.User" resultMap="BaseUserMap">
+		select gu.USER_ID, gu.DEPART_ID, gu.ORG_ID, gu.WORK_CODE, gu.LOGIN_NAME, gu.PASSWORD, gu.SALT,
+			   gu.NAME, gu.SEX, gu.BRITHDAY, gu.APP_ON_OFF, gu.STATUS, gu.POSITION, gu.EMAIL, gu.PHONE_NUMBER, gu.PICTURE_URL, 
+			   gu.REMARK, gu.INIT_FLAG, gu.CREATED_TIME, gu.CREATED_USERID, gu.UPDATED_TIME, gu.UPDATED_USERID, gu.DELETED_TIME, gu.DELETED_USERID
+		  from CW_GE_USER gu LEFT JOIN CW_GE_USER_ROLE_REF urr ON gu.USER_ID = urr.USER_ID 
+			LEFT JOIN CW_GE_ROLE gr ON urr.ROLE_ID = gr.ROLE_ID
+		 where 1 = 1
+		<if test="departId != null and departId != ''">
+		 	and gu.DEPART_ID = #{departId, jdbcType=VARCHAR}
+		</if>
+		 
+		<if test="orgId != null and orgId != ''">
+		 	and gu.ORG_ID = #{orgId, jdbcType=VARCHAR}
+		</if>
+		 
+		<if test="loginName != null and loginName != ''">
+		 	and gu.LOGIN_NAME like CONCAT('%', #{loginName, jdbcType=VARCHAR}, '%')
+		</if>
+		 
+		<if test="workCode != null and workCode != ''">
+		 	and gu.WORK_CODE like CONCAT('%', #{workCode, jdbcType=VARCHAR}, '%')
+		</if>
+		 
+		<if test="email != null and email != ''">
+		 	and gu.EMAIL like CONCAT('%', #{email, jdbcType=VARCHAR}, '%')
+		</if>
+		 
+		<if test="name != null and name != ''">
+		 	and gu.NAME like CONCAT('%', #{name, jdbcType=VARCHAR}, '%')
+		</if>
+		 
+		<if test="position != null and position != ''">
+		 	and gu.POSITION like CONCAT('%', #{position, jdbcType=VARCHAR}, '%')
+		</if>
+		 
+		<if test="phoneNumber != null and phoneNumber != ''">
+		 	and gu.PHONE_NUMBER like CONCAT('%', #{phoneNumber, jdbcType=VARCHAR}, '%')
+		</if>
+		 
+		<choose>
+		 	<when test="status != null">
+		 		and gu.status = #{status, jdbcType=INTEGER}
+		 	</when>
+		 	<otherwise>
+		 		and gu.status in(0, 1)
+		 	</otherwise>
+		</choose>
+		 
+		<if test="roleName != null and roleName != ''">
+		 	and (gr.ROLE_CNAME like CONCAT('%', #{roleName, jdbcType=VARCHAR}, '%') or
+		 		gr.ROLE_ENAME like CONCAT('%', #{roleName, jdbcType=VARCHAR}, '%') )
+		</if>
+         GROUP BY gu.USER_ID
+		 order by gu.CREATED_TIME desc
+	</select>
+	<!--查询用户信息-->
+	<select id="list" parameterType="com.ss.spider.system.user.model.User" resultMap="BaseUserMap">
+		select USER_ID, DEPART_ID, ORG_ID, WORK_CODE, LOGIN_NAME, PASSWORD, SALT,
+			   NAME, SEX, BRITHDAY, APP_ON_OFF, STATUS, POSITION, EMAIL, PHONE_NUMBER, PICTURE_URL, 
+			   REMARK, INIT_FLAG, CREATED_TIME, CREATED_USERID, UPDATED_TIME, UPDATED_USERID, DELETED_TIME, DELETED_USERID
+		  from CW_GE_USER
+		 where 1 = 1
+		 <if test="userId != null and userId != ''">
+		 	and USER_ID = #{userId, jdbcType=VARCHAR}
+		 </if>
+		 
+		 <if test="departId != null and departId != ''">
+		 	and DEPART_ID = #{departId, jdbcType=VARCHAR}
+		 </if>
+		 
+		 <if test="orgId != null and orgId != ''">
+		 	and ORG_ID = #{orgId, jdbcType=VARCHAR}
+		 </if>
+		 <if test="orgIds != null">
+			 and ORG_ID in
+			 <foreach collection="orgIds" item="item" open="(" close=")" separator=",">
+				 #{item, jdbcType=VARCHAR}
+			 </foreach>
+		 </if>
+		 <if test="loginName != null and loginName != ''">
+		 	and LOGIN_NAME = #{loginName, jdbcType=VARCHAR}
+		 </if>
+		 
+		 <if test="workCode != null and workCode != ''">
+		 	and WORK_CODE = #{workCode, jdbcType=VARCHAR}
+		 </if>
+		 
+		 <if test="email != null and email != ''">
+		 	and EMAIL = #{email, jdbcType=VARCHAR}
+		 </if>
+		 
+		 <if test="name != null and name != ''">
+		 	and NAME = #{name, jdbcType=VARCHAR}
+		 </if>
+		 
+		 <if test="position != null and position != ''">
+		 	and POSITION = #{position, jdbcType=VARCHAR}
+		 </if>
+		 
+		 <if test="phoneNumber != null and phoneNumber != ''">
+		 	and PHONE_NUMBER = #{phoneNumber, jdbcType=VARCHAR}
+		 </if>
+		 
+		 <choose>
+		 	<when test="status != null">
+		 		and status = #{status, jdbcType=INTEGER}
+		 	</when>
+		 	<otherwise>
+		 		and status in(0, 1)
+		 	</otherwise>
+		 </choose>
+	</select>
+	<!--查询用户信息-->
+	<select id="gets" parameterType="map" resultMap="BaseUserMap">			 
+		select USER_ID, DEPART_ID, ORG_ID, WORK_CODE, LOGIN_NAME, PASSWORD, SALT,
+			   NAME, SEX, BRITHDAY, APP_ON_OFF, STATUS, POSITION, EMAIL, PHONE_NUMBER, PICTURE_URL,
+			   REMARK, INIT_FLAG, CREATED_TIME, CREATED_USERID, UPDATED_TIME, UPDATED_USERID, DELETED_TIME, DELETED_USERID
+		  from CW_GE_USER
+		 where 1 = 1
+		<choose>
+			<when test="userId != null and userId != ''">
+		 		and USER_ID = #{userId, jdbcType=VARCHAR}
+			</when>
+		 	<when test="userIds != null">
+		 		and USER_ID in
+		 		<foreach collection="userIds" item="item" open="(" separator="," close=")">
+		 			#{item, jdbcType=VARCHAR}
+		 		</foreach>
+		 	</when>
+		</choose>
+
+		<if test="departId != null and departId != ''">
+			and DEPART_ID = #{departId, jdbcType=VARCHAR}
+		</if>
+
+		<if test="orgId != null and orgId != ''">
+			and ORG_ID = #{orgId, jdbcType=VARCHAR}
+		</if>
+
+		<if test="workCode != null and workCode != ''">
+			and WORK_CODE = #{workCode, jdbcType=VARCHAR}
+		</if>
+
+		<if test="email != null and email != ''">
+			and EMAIL = #{email, jdbcType=VARCHAR}
+		</if>
+
+		<if test="loginName != null and loginName != ''">
+			and LOGIN_NAME = #{loginName, jdbcType=VARCHAR}
+		</if>
+
+		<if test="name != null and name != ''">
+			and NAME = #{name, jdbcType=VARCHAR}
+		</if>
+
+		<if test="position != null and position != ''">
+			and POSITION = #{position, jdbcType=VARCHAR}
+		</if>
+
+		<if test="phoneNumber != null and phoneNumber != ''">
+			and PHONE_NUMBER = #{phoneNumber, jdbcType=VARCHAR}
+		</if>
+
+		<choose>
+		 	<when test="status != null">
+		 		and status = #{status, jdbcType=INTEGER}
+		 	</when>
+		 	<otherwise>
+		 		and status in(0, 1)
+			</otherwise>
+		</choose>
+
+		<if test="searchKey != null and searchKey != ''">
+			and (NAME LIKE CONCAT('%', #{searchKey, jdbcType=VARCHAR},'%') OR LOGIN_NAME LIKE CONCAT('%', #{searchKey, jdbcType=VARCHAR},'%'))
+		</if>
+	</select>
+	<!--查询用户拥有角色-->
+	<select id="rlist" parameterType="java.lang.String" resultType="java.lang.String">
+		select cu.ROLE_ID from cw_ge_user_role_ref cu
+		LEFT JOIN cw_ge_role cr ON cr.ROLE_ID = cu.ROLE_ID
+		where cr.STATUS = 1
+		<if test="userId != null and userId != ''">
+			and cu.USER_ID = #{userId, jdbcType=VARCHAR}
+		</if>
+	</select>
+	<!--新建用户-->
+	<insert id="save" parameterType="com.ss.spider.system.user.model.User">
+		insert into CW_GE_USER(USER_ID, DEPART_ID, ORG_ID, WORK_CODE, LOGIN_NAME, PASSWORD, SALT, 
+				NAME, SEX, BRITHDAY, APP_ON_OFF, STATUS, POSITION, EMAIL, PHONE_NUMBER, PICTURE_URL, 
+				REMARK, CREATED_TIME, CREATED_USERID, UPDATED_TIME, UPDATED_USERID)
+		values(#{userId, jdbcType=VARCHAR},				#{departId, jdbcType=VARCHAR},		#{orgId, jdbcType=VARCHAR},
+			   #{workCode, jdbcType=VARCHAR},			#{loginName, jdbcType=VARCHAR},		#{password, jdbcType=VARCHAR},
+			   #{salt, jdbcType=VARCHAR},				#{name, jdbcType=VARCHAR},			#{sex, jdbcType=INTEGER},	
+			   #{brithday, jdbcType=VARCHAR},			#{appOnOff, jdbcType=INTEGER},		#{status, jdbcType=INTEGER},
+			   #{position, jdbcType=VARCHAR},			#{email, jdbcType=VARCHAR},			#{phoneNumber, jdbcType=VARCHAR},
+			   #{pictureUrl, jdbcType=VARCHAR},			#{remark, jdbcType=VARCHAR},		#{createdTime, jdbcType=BIGINT},			
+			   #{createdUserid, jdbcType=VARCHAR}, #{updatedTime, jdbcType=BIGINT}, 	    #{updatedUserid, jdbcType=VARCHAR})
+	</insert>
+	<!--重置用户密码-->
+	<update id="updateNotNull" parameterType="com.ss.spider.system.user.model.User">
+		update CW_GE_USER
+		<set>
+			<if test="departId != null and departId != ''">
+				DEPART_ID = #{departId, jdbcType=VARCHAR},
+			</if>
+			
+			<if test="orgId != null and orgId != ''">
+				ORG_ID = #{orgId, jdbcType=VARCHAR},
+			</if>
+			
+			<if test="workCode != null and workCode != ''">
+				WORK_CODE = #{workCode, jdbcType=VARCHAR},
+			</if>
+			
+			<if test="loginName != null and loginName != ''">
+				LOGIN_NAME = #{loginName, jdbcType=VARCHAR},
+			</if>
+			
+			<if test="password != null and password != ''">
+				PASSWORD = #{password, jdbcType=VARCHAR},
+			</if>
+			
+			<if test="salt != null and salt != ''">
+				SALT = #{salt, jdbcType=VARCHAR},
+			</if>
+			
+			<if test="name != null and name != ''">
+				NAME = #{name, jdbcType=VARCHAR},
+			</if>
+			
+			<if test="sex != null">
+				SEX = #{sex, jdbcType=INTEGER},
+			</if>
+			
+			<if test="brithday != null and brithday != ''">
+				BRITHDAY = #{brithday, jdbcType=VARCHAR},
+			</if>
+			
+			<if test="appOnOff != null">
+				APP_ON_OFF = #{appOnOff, jdbcType=INTEGER},
+			</if>
+			
+			<if test="status != null">
+				STATUS = #{status, jdbcType=INTEGER},
+			</if>
+			
+			<if test="position != null and position != ''">
+				POSITION = #{position, jdbcType=VARCHAR},
+			</if>
+			
+			<if test="email != null and email != ''">
+				EMAIL = #{email, jdbcType=VARCHAR},
+			</if>
+			
+			<if test="phoneNumber != null and phoneNumber != ''">
+				PHONE_NUMBER = #{phoneNumber, jdbcType=VARCHAR},
+			</if>
+			
+			<if test="pictureUrl != null and pictureUrl != ''">
+				PICTURE_URL = #{pictureUrl, jdbcType=VARCHAR},
+			</if>
+			
+			<if test="remark != null and remark != ''">
+				REMARK = #{remark, jdbcType=VARCHAR},
+			</if>
+			
+			<if test="updatedTime != null">
+				UPDATED_TIME = #{updatedTime, jdbcType=BIGINT},
+			</if>
+			
+			<if test="updatedUserid != null and updatedUserid !=  ''">
+				UPDATED_USERID = #{updatedUserid, jdbcType=VARCHAR},
+			</if>
+		</set>
+		 where USER_ID = #{userId, jdbcType=VARCHAR}
+	</update>
+	
+	<update id="update" parameterType="com.ss.spider.system.user.model.User">
+		update CW_GE_USER
+		   set DEPART_ID = #{departId, jdbcType=VARCHAR},
+			   ORG_ID    = #{orgId, jdbcType=VARCHAR},
+			   WORK_CODE = #{workCode, jdbcType=VARCHAR},
+			   LOGIN_NAME  = #{loginName, jdbcType=VARCHAR},
+			   NAME        = #{name, jdbcType=VARCHAR},
+			   SEX 		   = #{sex, jdbcType=INTEGER},
+			   BRITHDAY    = #{brithday, jdbcType=VARCHAR},
+			   APP_ON_OFF = #{appOnOff, jdbcType=INTEGER},
+			   STATUS      = #{status, jdbcType=INTEGER},
+			   POSITION    = #{position, jdbcType=VARCHAR},
+			   EMAIL       = #{email, jdbcType=VARCHAR},
+			   PHONE_NUMBER  = #{phoneNumber, jdbcType=VARCHAR},
+			   PICTURE_URL = #{pictureUrl, jdbcType=VARCHAR},
+			   REMARK      = #{remark, jdbcType=VARCHAR},
+			   UPDATED_TIME    = #{updatedTime, jdbcType=BIGINT},
+			   UPDATED_USERID  = #{updatedUserid, jdbcType=VARCHAR}
+		 where USER_ID = #{userId, jdbcType=VARCHAR}
+	</update>
+	<!--逻辑删除用户信息-->
+	<update id="discard" parameterType="map">
+		update CW_GE_USER
+		   set STATUS         = -1,
+		   	   DELETED_TIME   = #{deletedTime, jdbcType=BIGINT}, 
+		       DELETED_USERID = #{deletedUserid, jdbcType=VARCHAR}
+		 <where>
+			<choose>
+				<when test="userId != null and userId != ''">
+			 		USER_ID = #{userId, jdbcType=VARCHAR}
+				</when>
+			 	<when test="userIds != null">
+			 		USER_ID in
+			 		<foreach collection="userIds" item="item" open="(" separator="," close=")">
+			 			#{item, jdbcType=VARCHAR}
+			 		</foreach>
+			 	</when>
+			 	<otherwise>
+			 		1 != 1
+			 	</otherwise>
+			</choose>
+		</where>
+	</update>
+	
+	<delete id="remove" parameterType="map">
+		delete from CW_GE_USER
+		<where>
+			<choose>
+				<when test="userId != null and userId != ''">
+			 		USER_ID = #{userId, jdbcType=VARCHAR}
+				</when>
+			 	<when test="userIds != null">
+			 		USER_ID in
+			 		<foreach collection="userIds" item="item" open="(" separator="," close=")">
+			 			#{item, jdbcType=VARCHAR}
+			 		</foreach>
+			 	</when>
+			 	<otherwise>
+			 		1 != 1
+			 	</otherwise>
+			</choose>
+		</where>
+	</delete>
+</mapper>

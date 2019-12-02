@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+        namespace="com.ss.isc.data.resource.mapper.PeopleHouseMapper">
+    <!--查询房屋关联人员-->
+    <select id="selectPeopleHouse" resultType="com.ss.isc.data.resource.common.dto.PeopleHouseDTO">
+        SELECT t1.*,t2.peopleName FROM cw_relation_peoplehouse t1
+        LEFT JOIN cw_base_people t2 ON t1.peopleId = t2.id AND t1.villageCode=t2.villageCode
+        <where>
+            <if test="id !=null and id !=''">
+                AND t1.houseId = #{id}
+            </if>
+        </where>
+    </select>
+
+    <!--编辑人房关系人员-->
+    <insert id="insertPeopleRelation" parameterType="java.util.List">
+        INSERT INTO cw_relation_peoplehouse
+        (
+        peopleId,
+        houseId,
+        villageCode,
+        credentialType,
+        credentialNo,
+        buildingNo,
+        unitNo,
+        houseNo,
+        peopleRelation,
+        createTime,
+        updateTime
+        )
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.peopleId},
+            #{item.houseId},
+            #{item.villageCode},
+            #{item.credentialType},
+            #{item.credentialNo},
+            #{item.buildingNo},
+            #{item.unitNo},
+            #{item.houseNo},
+            #{item.peopleRelation},
+            #{item.createTime},
+            #{item.updateTime}
+            )
+        </foreach>
+    </insert>
+
+    <delete id="deletePeopleRelation" parameterType="com.ss.isc.data.resource.common.model.PeopleHouse">
+        DELETE FROM `cw_relation_peoplehouse` WHERE houseId = #{houseId}
+    </delete>
+
+    <!--编辑人车关联信息-->
+    <update id="updateVehiclePeopleRelation" parameterType="com.ss.isc.data.resource.common.model.PeopleVehicle">
+        update cw_base_vehicle
+        <set>
+            <if test="peopleId != null">
+                peopleId = #{peopleId},
+            </if>
+            <if test="villageCode != null">
+                villageCode = #{villageCode},
+            </if>
+            <if test="registerName != null">
+                registerName = #{registerName},
+            </if>
+            <if test="credentialType != null">
+                credentialType = #{credentialType},
+            </if>
+            <if test="credentialNo != null">
+                credentialNo = #{credentialNo},
+            </if>
+            <if test="contactTel != null">
+                contactTel = #{contactTel},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+</mapper>

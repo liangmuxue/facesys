@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.isc.data.collect.mapper.HouseMapper">
+	<select id="getBuildHouses" resultType="com.ss.isc.data.collect.common.model.House" parameterType="com.ss.isc.data.collect.common.model.Building">
+		SELECT b.villageName AS 'villageName', a.* FROM cw_base_house a
+		LEFT
+		JOIN cw_base_village b ON a.villageCode = b.villageCode
+		<where>
+			a.`status` = 1
+			<if test="buildingno != null and buildingno != ''">
+				and a.buildingNo=#{buildingno}
+			</if>
+			<if test="villageCode != null and villageCode != ''">
+				and a.villageCode=#{villageCode}
+			</if>
+			<if test="floornum != null and floornum != ''">
+				and a.floor=#{floornum}
+			</if>
+			<if test="unitNo != null and unitNo != ''">
+				and a.unitNo=#{unitNo}
+			</if>
+		</where>
+	</select>
+
+
+	<select id="getHouseId" parameterType="com.ss.isc.data.collect.common.model.House" resultType="com.ss.isc.data.collect.common.model.House">
+		SELECT
+		cw_base_house.id
+		FROM
+		cw_base_house
+		WHERE
+		villageCode = (
+		SELECT
+		a.villageCode
+		FROM
+		cw_base_village a
+		WHERE
+		a.villageName =
+		#{villagecode}
+		)
+		AND buildingNo = #{buildingno}
+		AND houseNo = #{houseno}
+	</select>
+
+	<!--按条件查询房屋-->
+	<select id="getHouse" parameterType="Map" resultType="com.ss.isc.data.collect.common.model.House">
+		SELECT
+		@rownum :=@rownum + 1 AS rowNum,
+		aa.id,
+		aa.villageCode,
+		aa.unitNo,
+		aa.floor,
+		aa.houseNo,
+		aa.buildingNo,
+		aa.address,
+		aa.peopleRelation,
+		cc.enumName AS peopleRelationName,
+		aa.houseType,
+		bb.enumName AS houseTypeName,
+		dd.unitName,
+		ee.buildingName,
+		ff.villageName,
+		p.credentialNo,
+		CONCAT(ff.villageName,aa.buildingNo,'栋',aa.unitNo,'单元',aa.houseNo,'室') AS buildingNoAndUnitNo
+		FROM
+		(SELECT @rownum := 0) r,
+		cw_base_house aa
+		LEFT JOIN cw_relation_peoplehouse p ON p.villageCode = aa.villageCode AND p.buildingNo = aa.buildingNo AND p.unitNo = aa.unitNo AND p.houseNo = aa.houseNo AND p.peopleRelation = 1
+		LEFT JOIN cw_base_enum cc ON cc.enumType = 'peopleRelation' AND aa.peopleRelation = cc.enumValue
+		LEFT JOIN cw_base_enum bb ON bb.enumType = 'houseType' AND aa.peopleRelation = bb.enumValue
+		LEFT JOIN cw_base_unit dd ON dd.buildingNo = aa.buildingNo AND dd.unitNo = aa.unitNo AND aa.villageCode = dd.villageCode
+		LEFT JOIN cw_base_building ee ON ee.buildingNo = aa.buildingNo AND aa.villageCode = ee.villageCode
+		LEFT JOIN cw_base_village ff ON ff.villageCode = aa.villageCode
+		<where>
+			aa.`status` = 1
+			<if test="buildingno != null and buildingno != ''">
+				and aa.buildingNo LIKE concat(concat('%',#{buildingno}),'%')
+			</if>
+
+			<if test="houseno != null and houseno != ''">
+				and aa.houseNo LIKE concat(concat('%',#{houseno}),'%')
+			</if>
+
+			<if test="peoplerelation != null and peoplerelation != ''">
+				and aa.peopleRelation=#{peoplerelation}
+			</if>
+
+			<if test="houseType != null and houseType != ''">
+				and aa.houseType=#{houseType}
+			</if>
+
+			<if test="unitNo != null and unitNo !=''">
+				and aa.unitNo=#{unitNo}
+			</if>
+
+			<if test="floor != null and floor !=''">
+				and aa.floor=#{floor}
+			</if>
+
+			<if test="villageCode != null and villageCode != ''">
+				and aa.villageCode LIKE concat(concat('%',#{villageCode}),'%')
+			</if>
+		</where>
+		GROUP BY
+		aa.houseNo,
+		aa.buildingNo,
+		aa.unitNo,
+		aa.floor,
+		aa.villageCode,
+		ff.villageName
+		ORDER BY
+		rowNum ASC
+	</select>
+
+
+	<resultMap id="BaseResultMap" type="com.ss.isc.data.collect.common.model.Vehicle">
+		<id column="id" property="id" jdbcType="VARCHAR" />
+		<result column="info_number" property="infoNumber" jdbcType="INTEGER" />
+		<result column="bayonet_number" property="bayonetNumber" jdbcType="VARCHAR" />
+		<result column="bayonet_name" property="bayonetName" jdbcType="VARCHAR" />
+		<result column="lon" property="lon" jdbcType="DOUBLE" />
+		<result column="lat" property="lat" jdbcType="DOUBLE" />
+		<result column="elapsed_time" property="elapsedTime" jdbcType="TIMESTAMP" />
+		<result column="lane_number" property="laneNumber" jdbcType="INTEGER" />
+		<result column="license_plate" property="licensePlate" jdbcType="VARCHAR" />
+		<result column="license_colour" property="licenseColour" jdbcType="VARCHAR" />
+		<result column="direction_code" property="directionCode" jdbcType="INTEGER"/>
+		<result column="drive_Direction" property="driveDirection" jdbcType="VARCHAR"/>
+		<result column="vehicle_type" property="vehicleType" jdbcType="VARCHAR"/>
+		<result column="vehicle_colour" property="vehicleColour" jdbcType="VARCHAR"/>
+		<result column="license_type" property="licenseType" jdbcType="VARCHAR"/>
+		<result column="speed" property="speed" jdbcType="DOUBLE"/>
+		<result column="illegal_code" property="illegalCode" jdbcType="VARCHAR"/>
+		<result column="license_plate_picture" property="licensePlatePicture" jdbcType="VARCHAR"/>
+		<result column="pass_picture" property="passPicture" jdbcType="VARCHAR"/>
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+	</resultMap>
+
+	<select id="findList" parameterType="Map" resultMap="BaseResultMap">
+		SELECT
+		@rownum :=@rownum + 1 AS rowNum,
+		r.*
+		FROM
+		(SELECT @rownum := 0) n,
+		cw_vehicle_bayonet r
+		<where>
+			<if test="beginTime !=null and beginTime !=''">
+				and elapsed_time &gt;=#{beginTime}
+			</if>
+			<if test="endTime !=null and endTime !=''">
+				and elapsed_time &lt;=#{endTime}
+			</if>
+			<if test="licensePlate !=null and licensePlate !=''">
+				AND license_plate LIKE CONCAT('%', #{licensePlate}, '%')
+			</if>
+			<if test="bayonetName !=null and bayonetName !=''">
+				AND bayonet_name LIKE CONCAT('%', #{bayonetName}, '%')
+			</if>
+			<if test="directionCode !=null and directionCode !=''">
+				AND direction_code = #{directionCode}
+			</if>
+		</where>
+		ORDER BY
+		rowNum ASC
+	</select>
+
+	<!--查询房屋总人数-->
+	<select id="getCountPeople" parameterType="com.ss.isc.data.collect.common.model.House" resultType="Integer">
+		SELECT
+		count(1) AS num
+		FROM
+		cw_relation_peoplehouse rp
+		LEFT JOIN cw_base_people p ON p.id = rp.peopleId
+		WHERE
+		p.delete_flag != 1 AND
+		houseId = #{id}
+	</select>
+
+
+	<select id="getCountCar" parameterType="com.ss.isc.data.collect.common.model.House" resultType="Integer">
+		SELECT
+		count(1) AS num
+		FROM
+		cw_base_vehicle
+		WHERE
+		isLeave = 0
+		AND buildingNo =#{buildingno}
+		AND houseNo = #{houseno}
+		AND unitNo = #{unitNo}
+		AND villageCode = #{villageCode}
+	</select>
+</mapper>

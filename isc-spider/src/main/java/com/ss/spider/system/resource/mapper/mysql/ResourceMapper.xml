@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.spider.system.resource.mapper.ResourceMapper">
+	
+	<resultMap id="BaseResourceMap" type="com.ss.spider.system.resource.model.Resource">
+		<id 	column="RESOURCE_ID" 			property="resourceId" 			jdbcType="VARCHAR" />
+		<result column="APP_ID"  				property="appId"  				jdbcType="VARCHAR" />
+		<result column="RES_CODE"          		property="resCode"      		jdbcType="VARCHAR" />
+		<result column="RES_CANME" 				property="resCanme"    			jdbcType="VARCHAR" />
+		<result column="RES_ENAME" 				property="resEname"    			jdbcType="VARCHAR" />
+		<result column="STATUS" 				property="status"    			jdbcType="INTEGER" />
+		<result column="REMARK" 				property="remark"    			jdbcType="VARCHAR" />
+		<result column="RES_TYPE" 				property="resType"    			jdbcType="INTEGER" />
+		<result column="RES_ORDER" 				property="resOrder"    			jdbcType="INTEGER" />
+		<result column="URL" 					property="url"    				jdbcType="VARCHAR" />
+		<result column="RES_ICO" 				property="resIco"    			jdbcType="VARCHAR" />
+		<result column="PARENT_ID" 				property="parentId"    			jdbcType="VARCHAR" />
+		<result column="CREATED_TIME"   		property="createdTime"      	jdbcType="BIGINT" />
+		<result column="CREATED_USERID"      	property="createdUserid"    	jdbcType="VARCHAR" />
+		<result column="UPDATED_TIME"    		property="updatedTime"    		jdbcType="BIGINT" />
+		<result column="UPDATED_USERID"    		property="updatedUserid"    	jdbcType="VARCHAR" />
+		<result column="DELETED_TIME"    		property="deletedTime"    		jdbcType="BIGINT" />
+		<result column="DELETED_USERID"    		property="deletedUserid"    	jdbcType="VARCHAR" />
+	</resultMap>
+	<!--查询用户资源列表-->
+	<select id="query" parameterType="map" resultMap="BaseResourceMap">
+		SELECT DISTINCT A.RESOURCE_ID,A.APP_ID,A.RES_CODE,A.RES_CANME,A.RES_ENAME,
+			A.STATUS,A.REMARK,A.RES_TYPE,A.RES_ORDER,A.URL,A.RES_ICO,A.PARENT_ID,A.CREATED_TIME,A.CREATED_USERID,A.UPDATED_TIME,A.UPDATED_USERID
+		FROM CW_GE_USER_ROLE_REF C LEFT JOIN CW_GE_ROLE_RESOURCE_REF B ON C.ROLE_ID = B.ROLE_ID
+			LEFT JOIN CW_GE_RESOURCE A ON B.RESOURCE_ID = A.RESOURCE_ID
+		WHERE A.STATUS = 1
+			AND C.USER_ID = #{userId, jdbcType=VARCHAR}
+			<if test="appId != null and appId != ''">
+				AND A.APP_ID= #{appId, jdbcType=VARCHAR}
+			</if>
+
+	</select>
+	
+	<select id="pages" parameterType="com.ss.spider.system.resource.model.Resource" resultMap="BaseResourceMap">
+		select RESOURCE_ID, APP_ID, RES_CODE, RES_CANME, RES_ENAME, STATUS, REMARK, RES_TYPE, 
+			   RES_ORDER, URL, RES_ICO, PARENT_ID, CREATED_TIME, CREATED_USERID, UPDATED_TIME, 
+			   UPDATED_USERID, DELETED_TIME, DELETED_USERID
+		  from CW_GE_RESOURCE
+		 where 1 = 1
+		 <if test="appId != null and appId != ''">
+		 	and APP_ID = #{appId, jdbcType=VARCHAR}
+		 </if>
+		 
+		 <if test="resCode != null and resCode != ''">
+		 	and RES_CODE like CONCAT('%', #{resCode, jdbcType=VARCHAR}, '%')
+		 </if>
+		 
+		 <if test="resCanme != null and resCanme != ''">
+		 	and RES_CANME like CONCAT('%', #{resCanme, jdbcType=VARCHAR}, '%')
+		 </if>
+		 
+		 <if test="resEname != null and resEname != ''">
+		 	and RES_ENAME like CONCAT('%', #{resEname, jdbcType=VARCHAR}, '%')
+		 </if>
+		 
+		 <if test="parentId != null and parentId != ''">
+		 	and PARENT_ID = #{parentId, jdbcType=VARCHAR}
+		 </if>
+		 
+		 <if test="resType != null">
+		 	and RES_TYPE = #{resType, jdbcType=VARCHAR}
+		 </if>
+		 
+		 <choose>
+		 	<when test="status != null">
+		 		and STATUS = #{status, jdbcType=INTEGER}
+		 	</when>
+		 	<otherwise>
+		 		and STATUS in(0, 1)
+		 	</otherwise>
+		 </choose>
+		 
+		 order by RES_ORDER asc, CREATED_TIME desc
+	</select>
+	
+	
+	<select id="list" parameterType="com.ss.spider.system.resource.model.Resource" resultMap="BaseResourceMap">
+		select RESOURCE_ID, APP_ID, RES_CODE, RES_CANME, RES_ENAME, STATUS, REMARK, RES_TYPE, 
+			   RES_ORDER, URL, RES_ICO, PARENT_ID, CREATED_TIME, CREATED_USERID, UPDATED_TIME, 
+			   UPDATED_USERID, DELETED_TIME, DELETED_USERID
+		  from CW_GE_RESOURCE
+		 where 1 = 1
+		 <if test="resourceId != null and resourceId != ''">
+		 	and RESOURCE_ID = #{resourceId, jdbcType=VARCHAR}
+		 </if>
+		 
+		 <if test="appId != null and appId != ''">
+		 	and APP_ID = #{appId, jdbcType=VARCHAR}
+		 </if>
+		 
+		 <if test="resCode != null and resCode != ''">
+		 	and RES_CODE like CONCAT('%', #{resCode, jdbcType=VARCHAR}, '%')
+		 </if>
+		 
+		 <if test="parentId != null and parentId != ''">
+		 	<choose>
+		 		<when test="parentId eq '-1'">
+		 			and PARENT_ID is null
+		 		</when>
+		 		<otherwise>
+		 			and PARENT_ID = #{parentId, jdbcType=VARCHAR}
+		 		</otherwise>
+		 	</choose>
+		 </if>
+		 
+		 <if test="resCanme != null and resCanme != ''">
+		 	and RES_CANME like CONCAT('%', #{resCanme, jdbcType=VARCHAR}, '%')
+		 </if>
+		 
+		 <if test="resEname != null and resEname != ''">
+		 	and RES_ENAME like CONCAT('%', #{resEname, jdbcType=VARCHAR}, '%')
+		 </if>
+		 
+		 <if test="resType != null">
+		 	and RES_TYPE = #{resType, jdbcType=VARCHAR}
+		 </if>
+		 
+		 <choose>
+		 	<when test="status != null">
+		 		and STATUS = #{status, jdbcType=INTEGER}
+		 	</when>
+		 	<otherwise>
+		 		and STATUS in(0, 1)
+		 	</otherwise>
+		 </choose>
+	</select>
+
+	<select id="gets" parameterType="map" resultMap="BaseResourceMap">
+		select RESOURCE_ID, APP_ID, RES_CODE, RES_CANME, RES_ENAME, STATUS, REMARK, RES_TYPE, 
+			   RES_ORDER, URL, RES_ICO, PARENT_ID, CREATED_TIME, CREATED_USERID, UPDATED_TIME, 
+			   UPDATED_USERID, DELETED_TIME, DELETED_USERID
+		  from CW_GE_RESOURCE
+		 where 1 = 1
+		<choose>
+			<when test="resourceId != null and resourceId != ''">
+				and RESOURCE_ID = #{resourceId, jdbcType=VARCHAR}
+			</when>
+			<when test="resourceIds != null">
+				and RESOURCE_ID in
+				<foreach collection="resourceIds" item="item" open="(" close=")" separator=",">
+					#{item, jdbcType=VARCHAR}
+				</foreach>
+			</when>
+		</choose>
+		 
+		<choose>
+			<when test="status != null">
+				and STATUS = #{status, jdbcType=INTEGER}
+			</when>
+			<otherwise>
+				and STATUS in(0, 1)
+			</otherwise>
+		</choose>
+		
+		<if test="resType != null">
+			and RES_TYPE = #{resType, jdbcType=VARCHAR}
+		</if>
+		
+		<if test="appId != null and appId != ''">
+			and APP_ID = #{appId, jdbcType=VARCHAR}
+		</if>
+		 
+		<if test="resCode != null and resCode != ''">
+			and RES_CODE = #{resCode, jdbcType=VARCHAR}
+		</if>
+		 
+		<if test="resCanme != null and resCanme != ''">
+			and RES_CANME = #{resCanme, jdbcType=VARCHAR}
+		</if>
+		 
+		<if test="resEname != null and resEname != ''">
+			and RES_ENAME = #{resEname, jdbcType=VARCHAR}
+		</if>
+		 
+		<if test="parentId != null and parentId != ''">
+			and PARENT_ID = #{parentId, jdbcType=VARCHAR}
+		</if> 
+	</select>
+	
+	<insert id="save" parameterType="com.ss.spider.system.resource.model.Resource">
+		insert into CW_GE_RESOURCE(RESOURCE_ID, APP_ID, RES_CODE, RES_CANME, RES_ENAME, STATUS, REMARK, RES_TYPE, 
+			   RES_ORDER, URL, RES_ICO, PARENT_ID, CREATED_TIME, CREATED_USERID, UPDATED_TIME, UPDATED_USERID)
+		values(#{resourceId, jdbcType=VARCHAR},			#{appId, jdbcType=VARCHAR},				#{resCode, jdbcType=VARCHAR},
+			   #{resCanme, jdbcType=VARCHAR},			#{resEname, jdbcType=VARCHAR},			#{status, jdbcType=INTEGER},
+			   #{remark, jdbcType=VARCHAR},				#{resType, jdbcType=INTEGER},			#{resOrder, jdbcType=INTEGER},
+			   #{url, jdbcType=VARCHAR},				#{resIco, jdbcType=VARCHAR},			#{parentId, jdbcType=VARCHAR},
+			   #{createdTime, jdbcType=BIGINT},			#{createdUserid, jdbcType=VARCHAR},		#{updatedTime, jdbcType=BIGINT},
+			   #{updatedUserid, jdbcType=VARCHAR})
+	</insert>
+	
+	<update id="update" parameterType="com.ss.spider.system.resource.model.Resource">
+		update CW_GE_RESOURCE
+		   set RES_CODE  = #{resCode, jdbcType=VARCHAR},
+		       RES_CANME = #{resCanme, jdbcType=VARCHAR},
+			   RES_ENAME = #{resEname, jdbcType=VARCHAR},
+			   STATUS    = #{status, jdbcType=INTEGER},
+			   REMARK    = #{remark, jdbcType=VARCHAR},
+			   RES_TYPE  = #{resType, jdbcType=INTEGER},
+			   RES_ORDER = #{resOrder, jdbcType=INTEGER},
+			   URL       = #{url, jdbcType=VARCHAR},
+			   RES_ICO   = #{resIco, jdbcType=VARCHAR},
+			   PARENT_ID      = #{parentId, jdbcType=VARCHAR},
+			   UPDATED_TIME   = #{updatedTime, jdbcType=BIGINT},		
+			   UPDATED_USERID = #{updatedUserid, jdbcType=VARCHAR}		
+		 where RESOURCE_ID    = #{resourceId, jdbcType=VARCHAR}
+	</update>
+	
+	<update id="discard" parameterType="map">
+		update CW_GE_RESOURCE
+		   set STATUS = -1,
+		   	   DELETED_TIME = #{deletedTime, jdbcType=BIGINT},
+		       DELETED_USERID = #{deletedUserid, jdbcType=VARCHAR}
+		<where>
+			<choose>
+				<when test="resourceId != null and resourceId != ''">
+					RESOURCE_ID = #{resourceId, jdbcType=VARCHAR}
+				</when>
+				<when test="resourceIds != null">
+					RESOURCE_ID in
+					<foreach collection="resourceIds" item="item" open="(" close=")" separator=",">
+						#{item, jdbcType=VARCHAR}
+					</foreach>
+				</when>
+				<otherwise>
+					1 != 1
+				</otherwise>
+			</choose>
+		</where>
+	</update>
+	
+	<delete id="remove" parameterType="map">
+		delete from CW_GE_RESOURCE
+		<where>
+			<choose>
+				<when test="resourceId != null and resourceId != ''">
+					RESOURCE_ID = #{resourceId, jdbcType=VARCHAR}
+				</when>
+				<when test="resourceIds != null">
+					RESOURCE_ID in
+					<foreach collection="resourceIds" item="item" open="(" close=")" separator=",">
+						#{item, jdbcType=VARCHAR}
+					</foreach>
+				</when>
+				<otherwise>
+					1 != 1
+				</otherwise>
+			</choose>
+		</where>
+	</delete>
+</mapper>

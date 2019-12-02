@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.mapper.LocalCameraMapper">
+
+	<!--条件查询推流离线设备信息-->
+	<select id="findByCodeOffLine" resultType="com.ss.model.Camera">
+		SELECT cameraId, cameraIp, streamSource, flowState FROM cw_base_camera WHERE cameraId = #{code} AND state = 0 AND flowState = 0
+	</select>
+
+	<!--条件查询推流在线设备信息-->
+	<select id="findByCodeOnLine" resultType="com.ss.model.Camera">
+		SELECT cameraId, cameraIp, streamSource, flowState FROM cw_base_camera WHERE cameraId = #{code} AND state = 0 AND flowState = 1
+	</select>
+
+	<!--修改设备推流为在线-->
+	<update id="online">
+		update cw_base_camera set flowState = 1 WHERE cameraId = #{code}
+	</update>
+
+	<!--修改设备推流为离线-->
+	<update id="offline">
+		update cw_base_camera set flowState = 0 WHERE cameraId = #{code}
+	</update>
+
+	<!--查询所有推流离线设备信息-->
+	<select id="findStopCamera" resultType="com.ss.model.Camera">
+		SELECT cameraId FROM cw_base_camera WHERE flowState = 0 AND state = 0 AND streamSource IS NOT NULL
+	</select>
+
+	<!--查询所有推流在线设备信息-->
+	<select id="findPushCamera" resultType="com.ss.model.Camera">
+		SELECT cameraId FROM cw_base_camera WHERE flowState = 1 AND state = 0 AND streamSource IS NOT NULL
+	</select>
+
+	<!--条件查询抽帧离线设备信息-->
+	<select id="findByCodeOffCut" resultType="com.ss.model.Camera">
+		SELECT cameraId, cameraIp, streamSource, flowState FROM cw_base_camera WHERE cameraId = #{code} AND state = 0 AND cutFlowState = 0 AND cameraType != 2
+	</select>
+
+	<!--条件查询抽帧在线设备信息-->
+	<select id="findByCodeOnCut" resultType="com.ss.model.Camera">
+		SELECT cameraId, cameraIp, streamSource, flowState FROM cw_base_camera WHERE cameraId = #{code} AND state = 0 AND cutFlowState = 1
+	</select>
+
+	<!--修改设备抽帧为在线-->
+	<update id="cutOnline">
+		update cw_base_camera set cutFlowState = 1 WHERE cameraId = #{code}
+	</update>
+
+	<!--修改设备抽帧为离线-->
+	<update id="cutOffline">
+		update cw_base_camera set cutFlowState = 0 WHERE cameraId = #{code}
+	</update>
+
+	<!--查询所有抽帧离线设备信息-->
+	<select id="findCutStopCamera" resultType="com.ss.model.Camera">
+		SELECT cameraId FROM cw_base_camera WHERE cutFlowState = 0 AND state = 0 AND cameraType != 2 AND streamSource IS NOT NULL
+	</select>
+
+	<!--查询所有抽帧在线设备信息-->
+	<select id="findCutCamera" resultType="com.ss.model.Camera">
+		SELECT cameraId FROM cw_base_camera WHERE cutFlowState = 1 AND cameraType != 2 AND state = 0 AND streamSource IS NOT NULL
+	</select>
+
+    <!--查询所有运行中设备信息-->
+    <select id="runCamera" resultType="com.ss.model.Camera">
+        SELECT cameraId FROM cw_base_camera WHERE state = 0 AND streamSource IS NOT NULL
+    </select>
+
+</mapper>

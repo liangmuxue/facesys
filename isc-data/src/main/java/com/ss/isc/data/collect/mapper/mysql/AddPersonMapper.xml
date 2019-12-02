@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.isc.data.collect.mapper.AddPersonMapper">
+	  
+	<select id="getAddPeopleCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT
+		COUNT(t.addPersonId)
+		FROM
+			cw_add_person_collect t
+		INNER JOIN (
+			SELECT
+				addPersonId,
+				MAX(updateTime) AS updateTime
+			FROM
+				cw_add_person_collect t
+			GROUP BY
+				addPersonId
+		) tmp ON t.addPersonId = tmp.addPersonId AND t.updateTime = tmp.updateTime
+		  LEFT JOIN cw_add_person t1 ON t1.id = t.addPersonId
+		 <where>
+		         t1.state =1
+            <if test="villageCode !=null and villageCode !=''">
+                AND t1.villageId = #{villageCode}
+            </if>
+            <if test="days !=null">
+            	AND <![CDATA[ t.days >=#{days}]]>
+            </if>
+        </where> 
+	</select>
+
+	<select id="getAddPersonById"
+		resultType="com.ss.isc.data.collect.common.model.AddPerson">
+		SELECT t1.* FROM cw_add_person t1
+		LEFT JOIN cw_base_people t2 ON t1.peopleId = t2.peopleId
+		LEFT JOIN cw_base_village t3 ON t1.villageId = t3.id
+		WHERE t1.id = #{id}
+	</select>
+
+	<update id="updateAddPersonById" parameterType="Map">
+		UPDATE
+		cw_add_person
+		SET remark=#{remark}, state=#{state}, updateTime = NOW()
+		WHERE id =#{id}
+	</update>
+
+	<select id="findTopAddPerson" resultType="com.ss.isc.data.collect.common.model.AddPerson">
+		SELECT * FROM `cw_add_person` 
+		<where>
+			<if test="villageCode != null and villageCode != ''">
+				 villageId =#{villageCode}
+			</if>
+		</where>
+		ORDER BY days desc
+		LIMIT 1,5
+	</select>
+	
+	
+	<select id="findAddPersonDetails" parameterType="com.ss.isc.data.collect.common.model.AddPersonCollect"
+		resultType="com.ss.isc.data.collect.common.dto.AddPersonDetailVO">
+		SELECT
+			t1.captureId,
+			t1.captureUrlFull,
+			t1.panoramaUrlFull,
+		    t1.captureTime,
+			t2.cameraName,
+			t2.installAdd
+		FROM
+			cw_add_person_detail t1
+		  LEFT JOIN cw_base_camera t2 on t1.deviceId = t2.cameraId
+		<where>
+			<if test="addPersonId != null and addPersonId != ''">
+				 t1.addPersonId = #{addPersonId}
+			</if>
+			<if test="dayBegin != null and dayBegin != ''">
+				AND t1.captureTime <![CDATA[>=#{dayBegin} ]]>
+			</if>
+			<if test="dayEnd != null and dayEnd != ''">
+				AND t1.captureTime  <![CDATA[<#{dayEnd} ]]>
+			</if>
+	   </where>
+	   ORDER BY  t1.captureTime DESC
+	</select>
+
+
+	<insert id="batchCompareAddPerson" parameterType="java.util.List">
+		INSERT INTO cw_add_person
+		  (`id`, `capturePath`,`panoramaPath`, `deviceNo`, `doorCode`, `doorName`, `villageId`, 
+		 `regionCode`, `state`, `keyState`, `excludeFlag`, `updateTime`,`lastCaptureTime`,
+		 `facePitch`,`faceYaw`,`faceRoll`,`facex`,`facey`,`faceWidth`,`faceHeight`) 
+		  VALUES
+		<foreach collection="list" item="item" index="index" separator=",">
+		( #{item.id},#{item.capturePath},#{item.panoramaPath},#{item.deviceNo}, #{item.doorCode}, 
+		#{item.doorName}, #{item.villageId}, #{item.regionCode}, #{item.state}, #{item.keyState}, #{item.excludeFlag},
+		now(),#{item.lastCaptureTime},#{item.facePitch}, #{item.faceYaw}, #{item.faceRoll}, #{item.facex}, #{item.facey}, 
+		#{item.faceWidth}, #{item.faceHeight})
+		</foreach>  
+		ON DUPLICATE KEY UPDATE 
+		capturePath=values(capturePath),
+		panoramaPath=values(panoramaPath),
+		updateTime=now(),
+		lastCaptureTime=values(lastCaptureTime),
+		facePitch=values(facePitch),
+		faceYaw=values(faceYaw),
+		faceRoll=values(faceRoll),
+		facex=values(facex),
+		facey=values(facey),
+		faceWidth=values(faceWidth),
+		faceHeight=values(faceHeight)
+    </insert>
+    
+	<insert id="batchInsertAddPersonDetail" parameterType="java.util.List">
+		INSERT INTO cw_add_person_detail
+		  (id,addPersonId,detailId,taskId,deviceId,captureUrl,captureUrlFull,captureTime,
+		   panoramaUrl,panoramaUrlFull,deviceName,deviceType,lng,lat,captureId,
+		   facePitch,faceYaw,faceRoll,facex,facey,faceWidth,faceHeight) 
+		  VALUES
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id},#{item.addPersonId},#{item.detailId},#{item.taskId},#{item.deviceId},#{item.captureUrl},
+		#{item.captureUrlFull},#{item.captureTime},#{item.panoramaUrl},#{item.panoramaUrlFull},#{item.deviceName},
+		#{item.deviceType},#{item.lng},#{item.lat},#{item.captureId},#{item.facePitch}, #{item.faceYaw}, #{item.faceRoll}, #{item.facex}, #{item.facey}, 
+		#{item.faceWidth}, #{item.faceHeight})
+		</foreach>  
+    </insert>
+
+	<select id="queryDayAddList" resultType="com.ss.isc.data.collect.common.model.AddPerson">
+		SELECT t1.* FROM cw_add_person t1 
+		WHERE t1.state = 1 or t1.state = 4
+	</select>
+	
+    <select id="queryDayAddDetailList" resultType="com.ss.isc.data.collect.common.model.AddPersonDetail">
+    	SELECT a1.* FROM cw_add_person_detail a1 INNER JOIN 
+		(
+		SELECT t1.id FROM cw_add_person t1,cw_add_person_collect t2
+		WHERE t1.id = t2.addPersonId AND t1.state = #{state} 
+		<![CDATA[AND t2.days >= ]]> #{days} GROUP BY t1.id
+		) a2 ON a1.addPersonId = a2.id 
+		WHERE a1.withState = 0
+	</select>
+    
+    <select id="queryTopAddPersonDetail"
+		resultType="com.ss.isc.data.collect.common.model.AddPersonDetail">
+		SELECT * FROM cw_add_person_detail 
+		WHERE addPersonId=#{addPersonId}
+		ORDER BY captureTime DESC LIMIT 1
+	</select>
+	
+	<!-- 疑似新增分页查询 -->
+	<select id="page" resultType="com.ss.isc.data.collect.common.dto.AddPersonDTO" parameterType="com.ss.isc.data.collect.common.web.AddPersonQuery">
+		SELECT
+			t1.id,
+			t1.capturePath,
+			t1.panoramaPath,
+			t1.peopleId,
+			t1.deviceNo,
+			t1.villageId AS villageCode,
+			t1.regionCode,
+			t1.state,
+			t1.keyState,
+			t1.excludeFlag,
+			t1.lastCaptureTime,
+			t.updateTime,
+			t1.facePitch,
+			t1.faceYaw,
+			t1.faceRoll,
+			t1.facex,
+			t1.facey,
+			t1.faceWidth,
+			t1.faceHeight,
+			t.days,
+			t2.villageName,
+			t2.address AS villageAddress,
+			t3.peopleName,
+			t3.residenceAddress,
+			t3.credentialNo,
+			e.enumName AS stateName
+		FROM
+			cw_add_person_collect t
+		INNER JOIN (
+			SELECT
+			temp.addPersonId,
+			MAX(temp.updateTime) AS updateTime
+		FROM
+			(
+				SELECT
+					addPersonId,updateTime
+				FROM	cw_add_person_collect
+				WHERE	<![CDATA[days >= #{days}]]>
+			) temp
+		    GROUP BY	temp.addPersonId	
+		) tmp ON t.addPersonId = tmp.addPersonId
+		AND t.updateTime = tmp.updateTime
+		LEFT JOIN cw_add_person t1 ON t1.id = t.addPersonId
+		LEFT JOIN cw_base_village t2 ON t1.villageId = t2.villageCode
+		LEFT JOIN cw_base_people t3 ON t1.peopleId = t3.peopleId
+		LEFT JOIN cw_base_enum e ON e.enumValue = t1.state AND enumType ="state"
+		<where>
+		        t1.id IS NOT NULL
+			    AND <![CDATA[t1.state !=4]]>
+			<if test="condition !=null and condition !=''">
+				AND t3.peopleName LIKE CONCAT('%', #{condition}, '%')
+				OR t3.credentialNo LIKE CONCAT('%', #{condition}, '%')
+				OR t3.phoneNo LIKE CONCAT('%', #{condition}, '%')
+			</if>
+			<if test="villageCode !=null and villageCode !=''">
+			    AND t1.villageId = #{villageCode}
+			</if>
+			<if test="state !=null">
+				AND t1.state = #{state}
+			</if>
+			<if test="beginTime != null">
+				AND  <![CDATA[t.updateTime >= #{beginTime}]]>
+			</if>
+			<if test="endTime != null">
+				AND  <![CDATA[t.updateTime <= #{endTime}]]>
+			</if>
+			<!-- <if test="days != null">
+				AND  <![CDATA[t.days >= #{days}]]>
+			</if> -->
+			<if test="sqlMap.dsf !=null">
+				AND FIND_IN_SET(t1.villageId,#{sqlMap.dsf})
+			</if>
+		</where>
+		ORDER BY t1.state ASC,t.updateTime DESC,t1.lastCaptureTime DESC
+	</select>
+	
+	<!-- 疑似新增人员更新 -->
+	<update id="update" parameterType="com.ss.isc.data.collect.common.model.AddPerson">
+		UPDATE cw_add_person
+		<set>
+		  <if test="peopleId !=null and peopleId !=''">
+		    peopleId =#{peopleId},
+		  </if>
+	      <if test="remark != null and  remark !=''" >
+	        remark = #{remark,jdbcType=VARCHAR},
+	      </if>
+	      <if test="state != null" >
+	        state = #{state,jdbcType=INTEGER},
+	      </if>
+	       <if test="updateTime != null" >
+	        updateTime = #{updateTime},
+	      </if>
+	      <if test="label != null and label !=''" >
+	        label = #{label}
+	      </if>
+	    </set>
+   		 where id = #{id,jdbcType=VARCHAR}
+    </update>
+  
+  	<select id="queryAccordDetail" resultType="com.ss.isc.data.collect.common.model.AddPersonDetail">
+		SELECT * FROM cw_add_person_detail WHERE 
+		<![CDATA[ DATE_FORMAT(captureTime, '%Y-%m-%d ')>=DATE_SUB(CURDATE(),INTERVAL #{dayBegin,jdbcType=INTEGER} DAY)
+		AND DATE_FORMAT(captureTime, '%Y-%m-%d ')<=DATE_SUB(CURDATE(),INTERVAL 2 DAY)]]>
+		AND addPersonId = #{addPersonId} 
+	</select>
+    
+    <select id="queryAddPersonDetCaptureIds" resultType="string">
+		SELECT captureId FROM cw_add_person_detail WHERE captureId is not null 
+		 and addPersonId = #{addPersonId} 
+	</select>
+
+	<!--条件查询疑似新增人员-->
+	<select id="findAddPerson" parameterType="com.ss.isc.data.collect.common.model.AddPerson" resultType="com.ss.isc.data.collect.common.model.AddPerson">
+		SELECT * FROM `cw_add_person`
+		<where>
+			<if test="capturePath != null and capturePath != ''">
+				AND capturePath =#{capturePath}
+			</if>
+			<if test="panoramaPath != null and panoramaPath != ''">
+				AND panoramaPath =#{panoramaPath}
+			</if>
+			<if test="deviceNo != null and deviceNo != ''">
+				AND deviceNo =#{deviceNo}
+			</if>
+			<if test="doorCode != null and doorCode != ''">
+				AND doorCode =#{doorCode}
+			</if>
+			<if test="doorName != null and doorName != ''">
+				AND doorName =#{doorName}
+			</if>
+			<if test="villageId != null and villageId != ''">
+				AND villageId =#{villageId}
+			</if>
+			<if test="regionCode != null and regionCode != ''">
+				AND regionCode =#{regionCode}
+			</if>
+			<if test="lastCaptureTime != null">
+				AND lastCaptureTime =#{lastCaptureTime}
+			</if>
+		</where>
+		LIMIT 0,1
+	</select>
+</mapper>

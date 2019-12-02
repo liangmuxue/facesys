@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.ss.isc.data.process.mapper.PeopleProcessMapper">
+
+	<select id="selectPeopleProcess"
+		parameterType="com.ss.isc.data.process.common.model.PeopleProcess"
+		resultType="com.ss.isc.data.process.common.model.PeopleProcess">
+		SELECT
+		t1.*, t2.NAME AS processUserName
+		FROM
+		cw_process_info
+		t1
+		LEFT JOIN cw_ge_user t2 ON t1.processUserId = t2.USER_ID
+		WHERE
+		recordId = #{recordId}
+		AND processType =#{processType}
+	</select>
+
+	<select id="addCount"
+		resultType="com.ss.isc.data.process.common.dto.WarningSumDTO">
+		SELECT
+		villageId AS villageCode,
+		COUNT(1) AS num
+		FROM
+		cw_add_person a
+		WHERE
+		<![CDATA[ a.days >=#{addPersonJudgedDays}]]>
+		AND state = 1
+		GROUP BY
+		villageId
+	</select>
+
+	<select id="leaveCount"
+		resultType="com.ss.isc.data.process.common.dto.WarningSumDTO">
+		SELECT
+		villageId AS villageCode,
+		COUNT(1) AS num
+		FROM
+		cw_leave_person a
+		WHERE
+		<![CDATA[ a.leaveDays >=#{leaveDays}]]>
+		AND a.state = 1
+		GROUP BY
+		villageId
+	</select>
+
+	<select id="frequencyCount"
+		resultType="com.ss.isc.data.process.common.dto.WarningSumDTO">
+		SELECT
+		villageId AS villageCode,
+		count(1) AS num
+		FROM
+		cw_frequency_person a
+		LEFT JOIN cw_add_person b ON a.id = b.id
+		GROUP BY
+		b.villageId
+	</select>
+
+	<select id="oldmanCount"
+		resultType="com.ss.isc.data.process.common.dto.WarningSumDTO">
+		SELECT
+		villageId AS villageCode,
+		count(1) AS num
+		FROM
+		cw_special_person a
+		LEFT JOIN cw_leave_person b ON a.peopleId = b.id
+		WHERE 
+		<![CDATA[ a.days >=#{oldMan}]]>
+		AND a.state = 1
+		GROUP BY
+		b.villageId
+	</select>
+
+
+	<select id="untreatedCount" resultType="int">
+		SELECT
+		count(*)
+		FROM
+		${s}
+		WHERE
+		state = 1
+		AND villageId =#{villageCode}
+	</select>
+
+	<select id="dealedCount" resultType="int">
+		SELECT
+		count(*)
+		FROM
+		${s}
+		WHERE
+		state IN (2, 3)
+		AND villageId =#{villageCode}
+	</select>
+
+	<!-- 车辆处置 处置表新增数据 -->
+	<insert id="addVehicleProcess"
+		parameterType="com.ss.isc.data.process.common.model.Vehicle">
+		INSERT INTO cw_process_info
+		(id, recordId, processType,
+		processUserId, processTime, remark, state, createTime, updateTime)
+		VALUES (#{processId}, #{handleId}, #{processType}, #{processUserId},
+		NOW(), #{remark}, #{status}, NOW(), NOW());
+	</insert>
+
+
+	<select id="untreatedCount1"
+		resultType="com.ss.isc.data.process.common.dto.WarningSumDTO">
+		SELECT
+		villageCode,
+		COUNT(1) AS num
+		FROM
+		${s}
+		WHERE
+		`status` = 1
+		GROUP BY
+		villageCode
+	</select>
+
+
+	<select id="dealedCount1"
+		resultType="com.ss.isc.data.process.common.dto.WarningSumDTO">
+		SELECT
+		villageCode,
+		COUNT(1) AS num
+		FROM
+		${s}
+		WHERE
+		`status` <![CDATA[!= ]]>
+		1
+		GROUP BY
+		villageCode
+	</select>
+
+
+
+
+
+
+	<select id="addUntreatedCount"
+		resultType="com.ss.isc.data.process.common.dto.WarningSumDTO">
+		SELECT
+		a.villageId AS villageCode,
+		count(1) AS num
+		FROM
+		cw_add_person a,
+		(select
+		addPersonId
+		from cw_add_person_collect
+		where
+		<![CDATA[ days >=#{addPersonJudgedDays}]]>
+		GROUP BY addPersonId) b
+		WHERE a.id = b.addPersonId
+		AND a.state = 1
+		GROUP
+		BY
+		a.villageId
+	</select>
+
+
+	<select id="addDealedCount"
+		resultType="com.ss.isc.data.process.common.dto.WarningSumDTO">
+		SELECT
+		a.villageId AS villageCode,
+		count(1) AS num
+		FROM
+		cw_add_person a,
+		(select
+		addPersonId
+		from cw_add_person_collect
+		where
+		<![CDATA[ days >=#{addPersonJudgedDays}]]>
+		GROUP BY addPersonId) b
+		WHERE a.id = b.addPersonId
+		AND a.state in (2,3)
+		GROUP BY
+		a.villageId
+	</select>
+
+	<select id="leaveUntreatedCount"
+		resultType="com.ss.isc.data.process.common.dto.WarningSumDTO">
+		SELECT
+		villageId AS villageCode,
+		count(1) AS num
+		FROM
+		cw_leave_person
+		WHERE
+		state = 1
+		AND
+		<![CDATA[ leaveDays >=#{leaveDays}]]>
+		GROUP BY
+		villageId
+	</select>
+
+	<select id="leaveDealedCount"
+		resultType="com.ss.isc.data.process.common.dto.WarningSumDTO">
+		SELECT
+		villageId AS villageCode,
+		count(1) AS num
+		FROM
+		cw_leave_person
+		WHERE
+		state in (2,3)
+		AND
+		<![CDATA[ leaveDays >=#{leaveDays}]]>
+		GROUP BY
+		villageId
+	</select>
+
+	<select id="frequencyUntreatedCount"
+		resultType="com.ss.isc.data.process.common.dto.WarningSumDTO">
+		SELECT
+		villageId AS villageCode,
+		COUNT(1) AS num
+		FROM
+		cw_frequency_record
+		a,
+		cw_add_person b
+		WHERE
+		a.addPersonId = b.id
+		AND a.state = 1
+		AND 
+		<![CDATA[ a.amount >=#{amountDays}]]>
+		GROUP BY
+		b.villageId
+	</select>
+
+	<select id="frequencyDealedCount"
+		resultType="com.ss.isc.data.process.common.dto.WarningSumDTO">
+		SELECT
+		villageId AS villageCode,
+		COUNT(1) AS num
+		FROM
+		cw_frequency_record
+		a,
+		cw_add_person b
+		WHERE
+		a.addPersonId = b.id
+		AND a.state in (2,3)
+		AND 
+		<![CDATA[ a.amount >=#{amountDays}]]>
+		GROUP BY
+		b.villageId
+	</select>
+
+	<select id="oldmanuntreatedCount"
+		resultType="com.ss.isc.data.process.common.dto.WarningSumDTO">
+		SELECT
+		villageId AS villageCode,
+		COUNT(1) AS num
+		FROM
+		cw_special_person a,
+		cw_leave_person b
+		WHERE
+		a.recordId = b.id
+		AND a.state = 1
+		AND 
+		<![CDATA[ days >=#{oldMan}]]>
+		GROUP BY
+		b.villageId
+	</select>
+
+	<select id="oldmandealedCount"
+		resultType="com.ss.isc.data.process.common.dto.WarningSumDTO">
+		SELECT
+		villageId AS villageCode,
+		COUNT(1) AS num
+		FROM
+		cw_special_person a,
+		cw_leave_person b
+		WHERE
+		a.recordId = b.id
+		AND a.state in (2,3)
+		AND 
+		<![CDATA[ days >=#{oldMan}]]>
+		GROUP BY
+		b.villageId
+	</select>
+
+
+	<select id="alarmUntreatedCount"
+		parameterType="java.lang.String"
+		resultType="com.ss.isc.data.process.common.dto.WarningSumDTO">
+		SELECT
+		COUNT(1) AS num,
+		camera.villageCode AS villageCode
+		FROM
+		`cw_alarm_record` record
+		LEFT JOIN cw_alarm_record_detail rdetail ON record.alarmId =
+		rdetail.alarmId
+		LEFT JOIN cw_base_camera camera ON record.deviceId = camera.cameraId
+		WHERE
+		record.state = 1
+		AND rdetail.topSeq = 0
+		AND record.monitorType = 1
+		<if test="libraryIdsString != null">
+			AND FIND_IN_SET(rdetail.facedbId, #{libraryIdsString})
+		</if>
+		GROUP BY
+		camera.villageCode
+	</select>
+
+
+	<select id="alarmdealedCount"
+		parameterType="java.lang.String"
+		resultType="com.ss.isc.data.process.common.dto.WarningSumDTO">
+		SELECT
+		COUNT(1) AS num,
+		camera.villageCode AS villageCode
+		FROM
+		`cw_alarm_record` record
+		LEFT JOIN cw_alarm_record_detail rdetail ON record.alarmId =
+		rdetail.alarmId
+		LEFT JOIN cw_base_camera camera ON record.deviceId = camera.cameraId
+		WHERE
+		record.state != 1
+		AND rdetail.topSeq = 0
+		AND record.monitorType = 1
+		<if test="libraryIdsString != null">
+			AND FIND_IN_SET(rdetail.facedbId, #{libraryIdsString})
+		</if>
+		GROUP BY
+		camera.villageCode
+	</select>
+
+
+	<!-- 新增未处置的人口预警信息为有效 -->
+	<insert id="insertUntreatedPeople" parameterType="com.ss.isc.data.process.common.web.PeopleProcessVO">
+		INSERT INTO cw_process_info
+		SELECT CONCAT(REPLACE(UUID(),'-',''),REPLACE(unix_timestamp(current_timestamp(3)),'.','')), id, 5, #{processUserId}, NOW(), '人口预警一键处置有效', 2, '', NOW(), NOW()
+		FROM cw_alarm_record WHERE state = 1
+	</insert>
+	<!-- 新增未处置的车辆预警信息为有效 -->
+	<insert id="insertUntreatedVehicle" parameterType="com.ss.isc.data.process.common.web.PeopleProcessVO">
+		INSERT INTO cw_process_info
+		SELECT CONCAT(REPLACE(UUID(),'-',''),REPLACE(unix_timestamp(current_timestamp(3)),'.','')), id, 6, #{processUserId}, NOW(), '车辆感知发现一键处置有效', 2, '', NOW(), NOW()
+		FROM cw_vehicle_discovery where STATUS = 1
+		UNION ALL
+		SELECT CONCAT(REPLACE(UUID(),'-',''),REPLACE(unix_timestamp(current_timestamp(3)),'.','')), id, 7, #{processUserId}, NOW(), '车辆感知离开一键处置有效', 2, '', NOW(), NOW()
+		FROM cw_vehicle_leave where STATUS = 1
+		UNION ALL
+		SELECT CONCAT(REPLACE(UUID(),'-',''),REPLACE(unix_timestamp(current_timestamp(3)),'.','')), id, 8, #{processUserId}, NOW(), '车辆感知滞留一键处置有效', 2, '', NOW(), NOW()
+		FROM cw_vehicle_retention where STATUS = 1
+	</insert>
+
+</mapper>

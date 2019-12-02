@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.ss.isc.data.baseinfo.mapper.AuthorityMapper">
+
+	<select id="findAuthority" resultType="java.lang.String">
+		SELECT
+			RESOURCE_ID,
+			ROLE_ID
+		FROM
+			cw_ge_role_resource_ref
+		WHERE
+			ROLE_ID IN (
+				SELECT
+					ROLE_ID
+				FROM
+					cw_ge_user_role_ref
+				WHERE
+					USER_ID = #{userId}
+			)
+		AND RESOURCE_ID IN (
+			SELECT
+				RESOURCE_ID
+			FROM
+				cw_ge_resource
+			WHERE
+				RES_CODE IN (
+					SELECT
+						RES_CODE
+					FROM
+						cw_ge_resource_ref
+					WHERE
+						URL = #{url}
+				)
+		)
+		LIMIT 0, 1
+	</select>
+	
+	<select id="findUserAuthority" resultType="com.ss.isc.data.baseinfo.common.model.UserAuthority">
+		SELECT
+			USER_ID AS 'userId',
+			`NAME` AS 'name',
+			LOGIN_NAME AS 'loginName',
+			ORG_ID AS 'orgId'
+		FROM
+			cw_ge_user
+		WHERE
+			`STATUS` = 1
+	</select>
+
+</mapper>

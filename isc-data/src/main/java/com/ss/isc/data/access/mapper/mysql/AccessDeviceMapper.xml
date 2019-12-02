@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ss.isc.data.resource.mapper.AccessDeviceMapper">
+
+    <select id="findAccessDevice" resultType="com.ss.isc.data.resource.common.model.AccessDevice">
+        SELECT * FROM cw_base_accessdevice
+        <where>
+            isDelete = 0
+            <if test="villageCode !=null and villageCode !=''">
+                AND villageCode =#{villageCode}
+            </if>
+            <if test="sqlMap.dsf != null and sqlMap.dsf !=''">
+                and ${sqlMap.dsf}
+            </if>
+        </where>
+    </select>
+
+</mapper>

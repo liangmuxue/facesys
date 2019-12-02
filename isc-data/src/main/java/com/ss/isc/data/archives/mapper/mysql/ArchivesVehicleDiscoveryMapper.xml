@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.isc.data.archives.mapper.ArchivesVehicleDiscoveryMapper">
+
+	<!-- 根据主表id查询最大子表id -->
+	<select id="getDiscoveryDetailId"
+     	parameterType="com.ss.isc.data.archives.common.model.VehicleDiscovery"
+     	resultType="java.lang.String">
+		SELECT
+			MAX(id)
+		FROM
+			cw_vehicle_discovery_detail
+		<where>
+			discoveryId = #{id}
+		</where>
+     </select>
+     
+      <!-- 1主表 -->
+     <update id="updateDiscoveryFirstMaster" parameterType="java.util.List">
+         <foreach collection="list" item="item" separator=";">
+			UPDATE cw_vehicle_discovery 
+			SET 
+				days = days+1,
+			<if test="item.plateNoPicUrl != null and item.plateNoPicUrl != ''">
+					plateNoPicUrl = #{item.plateNoPicUrl},
+			</if>
+			<if test="item.platePicUrl != null and item.platePicUrl != ''">
+					platePicUrl = #{item.platePicUrl},
+			</if>
+			<if test="item.inOutTime != null">
+					inOutTime = #{item.inOutTime}
+			</if>
+			<where>
+				<if test="item.id != '' and item.id != ''">
+				 id = #{item.id}
+				</if>
+			</where>
+         </foreach>    
+     </update>
+     
+      <!-- 1更新子表updateTime -->
+     <update id="updateDiscoveryFirstSlave" parameterType="java.util.List">
+         <foreach collection="list" item="item" separator=";">
+			UPDATE cw_vehicle_discovery_detail
+			SET dayEnd = #{item.dayEnd},
+			days = days+1
+			<where>
+				id = #{item.detailId}    
+			</where>   
+         </foreach>    
+     </update>
+     
+     <!-- 2主表更新 -->
+     <update id="updateDiscoveryThirdMaster"
+     	parameterType="java.util.List">
+     	<foreach collection="list" item="item" separator=";">
+			UPDATE cw_vehicle_discovery 
+			SET days = #{item.days},
+				flag = 0,
+				plateNoPicUrl = #{item.plateNoPicUrl},
+				platePicUrl = #{item.platePicUrl},
+				inOutTime = #{item.inOutTime}
+			<where>
+				id = #{item.id}
+			</where>
+        </foreach>    
+     </update>
+     <!-- 2子表新增一条数据 -->
+    <insert id ="insertsDiscoveryThirdSlave" parameterType="java.util.List" >
+            <selectKey resultType ="java.lang.Integer" keyProperty= "id"
+                 order= "AFTER">
+                SELECT LAST_INSERT_ID()
+            </selectKey>
+        	INSERT INTO cw_vehicle_discovery_detail (
+				discoveryId,
+				days,
+				dayBegin,
+				dayEnd
+			)
+			VALUES
+            <foreach collection ="list" item="item" index= "index" separator =",">
+                (
+                #{item.id},
+                #{item.days},
+                #{item.dayBegin},
+                #{item.dayEnd}
+                )
+            </foreach>
+     </insert>
+	
+	<!-- 3 schedule 车辆感知离开 批量新增 -->
+    <insert id ="insertsDiscovery" parameterType="java.util.List" >
+           INSERT INTO cw_vehicle_discovery (
+           		id,
+				tollgateID,
+				cameraId,
+				villageCode,
+				plateNumber,
+				inOutTime,
+				platePicUrl,
+				plateNoPicUrl,
+				channelName,
+				days,
+				status
+			)
+			VALUES
+            <foreach collection ="list" item="item" index= "index" separator =",">
+                (
+                #{item.thirdId},
+                #{item.tollgateID},
+                #{item.cameraId},
+                #{item.villageCode},
+                #{item.plateNumber},
+                #{item.inOutTime},
+                #{item.platePicUrl},
+                #{item.plateNoPicUrl},
+                #{item.channelName},
+                #{item.days},
+                1
+                )
+            </foreach>
+     </insert>
+     
+     <!-- 3子表新增数据 -->
+     <insert id ="insertsDiscoveryRecordSlave" parameterType="java.util.List" >
+        <selectKey resultType ="java.lang.Integer" keyProperty= "id"
+             order= "AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        	INSERT INTO cw_vehicle_discovery_detail (
+				discoveryId,
+				days,
+				dayBegin,
+				dayEnd
+			)
+			VALUES
+			<foreach collection ="list" item="item" index= "index" separator =",">
+				(
+				#{item.thirdId},
+				#{item.days},
+                #{item.dayBegin},
+                #{item.dayEnd}
+                )
+			</foreach>
+     </insert>
+     
+     <!-- 4主表修改flag -->
+     <update id="updateDiscoveryByFlag" parameterType="java.util.List">
+     	<foreach collection="list" item="item" separator=";">
+			UPDATE cw_vehicle_discovery 
+			SET flag = 1
+			<where>
+				id = #{item.id}
+			</where>
+        </foreach>    
+     </update>
+     
+</mapper>

@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.isc.data.collect.mapper.LeavePersonMapper">
+
+	<!-- 疑似离开统计 -->
+	<select id="getLeavePeopleCount"
+		parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT COUNT(id) FROM cw_leave_person
+		<where>
+		     <![CDATA[state !=4]]>
+		        AND state =1
+			<if test="villageCode !=null and villageCode !=''">
+				AND villageId = #{villageCode}
+			</if>
+			<if test="leaveDays !=null and leaveDays !=''">
+				AND <![CDATA[leaveDays >=#{leaveDays}]]>
+			</if>
+		</where>
+	</select>
+
+
+	<select id="queryLeaveList"
+		resultType="com.ss.isc.data.collect.common.model.LeavePerson">
+		SELECT @rownum :=@rownum + 1 AS
+		rowNum,t1.*,t3.villageName,t2.peopleName,t2.credentialNo,t2.residenceAddress
+		FROM cw_leave_person t1
+		LEFT JOIN cw_base_people t2 ON t1.peopleId =
+		t2.peopleId
+		LEFT JOIN cw_base_village t3 ON t1.villageId =
+		t3.villageCode,
+		(SELECT
+		@rownum := 0) r
+		<where>
+			<if test="villageName != null and villageName != ''">
+				and t3.villageName like CONCAT('%', #{villageName}, '%')
+			</if>
+			<if test="userName != null and userName != ''">
+				and t2.peopleName like CONCAT('%', #{userName}, '%')
+			</if>
+			<if test="state != null and state != ''">
+				<!-- <if test="state != 0"> -->
+				and t1.state = #{state}
+				<!-- </if> -->
+			</if>
+			<if
+				test="beginTime != null and beginTime != '' and endTime != null and endTime != ''">
+				and t1.createdTime BETWEEN DATE_FORMAT(#{beginTime}, '%Y-%m-%d
+				%H:%i:%S') and DATE_FORMAT(#{endTime},'%Y-%m-%d %H:%i:%S')
+			</if>
+		</where>
+	</select>
+
+
+	<select id="getLeavePersonById"
+		resultType="com.ss.isc.data.collect.common.model.LeavePerson">
+		SELECT t1.*,t3.villageName,t2.peopleName FROM
+		cw_leave_person t1
+		LEFT JOIN cw_base_people t2 ON t1.peopleId =
+		t2.peopleId
+		LEFT JOIN cw_base_village t3 ON t1.villageId = t3.id
+		WHERE
+		t1.id = #{id}
+	</select>
+
+	<update id="updateLeavePersonById" parameterType="map">
+		UPDATE
+		cw_leave_person
+		SET remark =#{remark},
+		state=#{state},
+		updateTime =
+		NOW(),
+		leaveDays = (
+		SELECT
+		to_days(NOW()) - to_days(#{createdTime})
+		)
+		WHERE
+		id = #{id}
+	</update>
+
+
+	<select id="queryLeaveListByState"
+		resultType="com.ss.isc.data.collect.common.model.LeavePerson">
+		SELECT t1.* FROM cw_leave_person t1 
+		WHERE TO_DAYS(NOW()) - TO_DAYS(updateTime) = 1
+			<if test="state !=null">
+				and t1.state = #{state}
+			</if>
+			<if test="villageCode !=null">
+				and t1.villageId = #{villageCode}
+			</if>
+	</select>
+
+	<insert id="batchCompareLeavePerson"
+		parameterType="java.util.List">
+		INSERT INTO cw_leave_person
+		(id,address,capturePath,panoramaPath,state,leaveDays,updateTime,
+		peopleId,villageId,lastCaptureTime,facePitch,faceYaw,faceRoll,
+		facex,facey,faceWidth,faceHeight)
+		VALUES
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			( #{item.id},#{item.address},#{item.capturePath},
+			#{item.panoramaPath}, #{item.state},#{item.leaveDays},now(),#{item.peopleId}, 
+			#{item.villageId},#{item.lastCaptureTime},#{item.facePitch}, #{item.faceYaw}, 
+			#{item.faceRoll}, #{item.facex}, #{item.facey}, #{item.faceWidth}, #{item.faceHeight}
+			)
+		</foreach>
+		ON DUPLICATE KEY UPDATE
+		leaveDays=values(leaveDays),
+		capturePath=values(capturePath),
+		panoramaPath=values(panoramaPath),
+		state=values(state),
+		updateTime=now(),
+		lastCaptureTime=values(lastCaptureTime),
+		facePitch=values(facePitch),
+		faceYaw=values(faceYaw),
+		faceRoll=values(faceRoll),
+		facex=values(facex),
+		facey=values(facey),
+		faceWidth=values(faceWidth),
+		faceHeight=values(faceHeight)
+	</insert>
+
+	<insert id="batchInsertLeavePersonDetail"
+		parameterType="java.util.List">
+		INSERT INTO cw_leave_person_detail
+		(leaveId,villageId,capturePath,panoramaPath,captureId,panoramaId,
+		captureTime,deviceId,deviceName,deviceAddress,lng,lat,recogScore,
+		facePitch,faceYaw,faceRoll,facex,facey,faceWidth,faceHeight)
+		VALUES
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.leaveId},#{item.villageId},#{item.capturePath},#{item.panoramaPath},
+			#{item.captureId},#{item.panoramaId},#{item.captureTime},#{item.deviceId},
+			#{item.deviceName},#{item.deviceAddress},#{item.lng},#{item.lat},#{item.recogScore},
+			#{item.facePitch}, #{item.faceYaw}, #{item.faceRoll}, #{item.facex}, #{item.facey}, 
+			#{item.faceWidth}, #{item.faceHeight})
+		</foreach>
+	</insert>
+
+	<select id="page" parameterType="com.ss.isc.data.collect.common.web.LeavePersonQuery" resultType="com.ss.isc.data.collect.common.model.LeavePerson">
+		SELECT
+			t1.*,
+			t2.peopleName,
+			t2.credentialNo,
+			t2.phoneNo,
+			t2.residenceDetailAddres AS residenceAddress,
+			e.enumName AS stateName
+		FROM
+			cw_leave_person t1
+		LEFT JOIN cw_base_people t2 ON t1.peopleId = t2.peopleId
+		LEFT JOIN cw_base_enum e ON e.enumValue = t1.state AND enumType ="state"
+		<where>
+			 <![CDATA[t1.state !=4]]>
+			<if test="leaveDays !=null">
+				AND <![CDATA[t1.leaveDays >=#{leaveDays}]]>
+			</if>
+			<if test="condition !=null and condition !=''">
+				AND t2.peopleName LIKE CONCAT('%', #{condition}, '%')
+				OR t2.credentialNo LIKE CONCAT('%', #{condition}, '%')
+				OR t2.phoneNo LIKE CONCAT('%', #{condition}, '%')
+			</if>
+			<if test="state !=null and state !=''">
+				AND t1.state = #{state}
+			</if>
+			<if test="beginTime != null">
+				AND  <![CDATA[t1.updateTime >= #{beginTime}]]>
+			</if>
+			<if test="endTime != null">
+				AND  <![CDATA[t1.updateTime <= #{endTime}]]>
+			</if>
+			<if test="sqlMap.dsf !=null">
+				AND FIND_IN_SET(t1.villageId,#{sqlMap.dsf})
+			</if>
+		</where>
+		ORDER BY t1.state,t1.updateTime DESC,t2.id DESC
+	</select>
+	
+	<update id="update" parameterType="com.ss.isc.data.collect.common.model.LeavePerson">
+		UPDATE cw_leave_person
+		<set>
+	      <if test="remark != null and  remark !=''" >
+	        remark = #{remark,jdbcType=VARCHAR},
+	      </if>
+	      <if test="state != null" >
+	        state = #{state,jdbcType=INTEGER},
+	      </if>
+	    </set>
+   		 where id = #{id,jdbcType=VARCHAR}
+    </update>
+
+	<update id="updateLeaveState">
+		UPDATE cw_leave_person 
+		SET state = #{state,jdbcType=INTEGER},updateTime = now() 
+		WHERE peopleId = #{pId} and state = 1
+	</update>
+	<!--查询疑似离开人员备注-->
+	<select id="findLeavePersonResult" parameterType="java.lang.String" resultType="com.ss.isc.data.collect.common.model.LeavePerson">
+		SELECT remark FROM cw_leave_person WHERE id = #{id}
+	</select>
+</mapper>

@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ss.isc.data.resource.mapper.DeviceMapper">
+
+    <!--查询包含设备的区划树信息-->
+    <select id="findDeviceRegion" resultType="com.ss.isc.data.resource.common.dto.RegionTree">
+		SELECT
+		t1.cameraId AS 'regionId',
+		t1.cameraId AS 'regionCode',
+		t1.cameraName AS 'regionName',
+		t1.villageCode AS 'parentId',
+		t1.createTime AS 'createdTime',
+		t1.gisType,
+		t1.lon,
+		t1.lat,
+		t1.cameraType AS state,
+		8 AS 'regionType',
+		t1.updateTime
+		FROM
+		cw_base_camera t1
+		LEFT JOIN cw_base_village t2 ON t1.villageCode = t2.villageCode
+		WHERE t1.state=0 AND t1.villageCode IS NOT NULL
+	</select>
+
+	<!--查询布控预警信息-->
+	<select id="findAlarm" parameterType="com.ss.isc.data.collect.common.dto.AlarmDTO" resultType="com.ss.isc.data.collect.common.web.AlarmRecordVO">
+		SELECT
+		record.id,
+		record.captureUrlFull,
+		record.state,
+		camera.cameraName,
+		camera.villageCode,
+		record.alarmTime,
+		rdetail.simScore,
+		rdetail.faceUrlFull,
+		rdetail.facedbName,
+		rdetail.faceName,
+		IFNULL(TIMESTAMPDIFF(
+		YEAR,
+		str_to_date(
+		rdetail.faceBirthday,
+		'%Y%m%d'
+		),
+		CURDATE()
+		),record.age)
+		AS age
+		FROM
+		`cw_alarm_record` record FORCE INDEX(idx_mad)
+		LEFT JOIN cw_alarm_record_detail rdetail FORCE INDEX(idx_tsffm) ON record.alarmId = rdetail.alarmId
+		LEFT JOIN cw_base_camera camera ON record.deviceId = camera.cameraId
+		<where>
+			<if test="topSeq != null">
+				rdetail.topSeq = #{topSeq}
+			</if>
+			<if test="controllerNO != null and controllerNO != ''">
+				AND rdetail.faceCardId = #{controllerNO}
+			</if>
+			<if test="monitorType != null and monitorType != ''">
+				AND record.monitorType = #{monitorType}
+			</if>
+			<if test="cameraIdsString != null">
+				AND FIND_IN_SET(record.deviceId, #{cameraIdsString})
+			</if>
+			<if test="libraryIdsString != null">
+				AND FIND_IN_SET(rdetail.facedbId, #{libraryIdsString})
+			</if>
+			ORDER BY  record.state, record.alarmTime DESC
+		</where>
+		LIMIT 0,10
+	</select>
+	<!--查询设备拉流地址-->
+	<select id="findCameraUrl" resultType="com.ss.isc.data.resource.common.model.Camera">
+		SELECT id, streamSource FROM cw_base_camera WHERE cameraId = #{cameraId}
+	</select>
+	<!--查询存在设备的小区-->
+	<select id="findVillageCodes" resultType="java.lang.String">
+		SELECT GROUP_CONCAT(villageCode SEPARATOR ',') AS villageCodes FROM (SELECT villageCode FROM cw_base_camera GROUP BY villageCode) AS temp
+	</select>
+	<!--查询存在设备的区划-->
+	<select id="findOrgCodes" resultType="java.lang.String">
+		SELECT GROUP_CONCAT(orgCode SEPARATOR ',') AS orgCodes FROM (SELECT villageCode, orgCode FROM cw_base_village GROUP BY orgCode) AS temp
+		WHERE FIND_IN_SET(villageCode, #{villageCodes})
+	</select>
+	<!--查询存在设备的市-->
+	<select id="findCityCodes" resultType="java.lang.String">
+		SELECT GROUP_CONCAT(PARENT_ID SEPARATOR ',') AS cityCodes FROM (SELECT REGION_CODE, PARENT_ID FROM cw_ge_region_info GROUP BY REGION_CODE) AS temp
+		WHERE FIND_IN_SET(REGION_CODE, #{orgCodes})
+	</select>
+	<!--查询市信息-->
+	<select id="findCity" resultType="com.ss.isc.data.resource.common.dto.RegionTree">
+		SELECT
+		t1.REGION_ID AS 'regionId',
+		t1.REGION_CODE AS 'regionCode',
+		t1.REGION_NAME AS 'regionName',
+		t1.PARENT_ID AS 'parentId',
+		t1.CREATED_TIME AS 'createdTime',
+		t1.gisCenter,
+		t1.gisArea,
+		t1.gisType,
+		t1.pinyin,
+		t1.regionType,
+		t1.updateTime
+		FROM
+		cw_ge_region_info t1
+		WHERE t1.state=1
+		AND FIND_IN_SET(t1.REGION_ID , #{regionIds})
+	</select>
+	<!--查询行政区划树信息-->
+	<select id="findRegion" resultType="com.ss.isc.data.resource.common.dto.RegionTree">
+		SELECT
+		t1.REGION_ID AS 'regionId',
+		t1.REGION_CODE AS 'regionCode',
+		t1.REGION_NAME AS 'regionName',
+		t1.PARENT_ID AS 'parentId',
+		t1.CREATED_TIME AS 'createdTime',
+		t1.gisCenter,
+		t1.gisArea,
+		t1.gisType,
+		t1.pinyin,
+		t1.regionType,
+		t1.updateTime
+		FROM
+		cw_ge_region_info t1
+		WHERE t1.state=1
+		AND FIND_IN_SET(t1.REGION_CODE , #{regions})
+	</select>
+	<!--查询小区信息-->
+	<select id="findVillageRegion" resultType="com.ss.isc.data.resource.common.dto.RegionTree">
+		SELECT
+		t1.villageCode AS 'regionId',
+		t1.villageCode AS 'regionCode',
+		t1.villageName AS 'regionName',
+		t2.REGION_NAME,
+		t2.REGION_ID AS
+		'parentId',
+		t1.createTime AS 'createdTime',
+		t1.gisCenter,
+		t1.gisArea,
+		t1.gisType,
+		t1.lon,
+		t1.lat,
+		t1.pinyin,
+		7 AS 'regionType',
+		t1.updateTime
+		FROM
+		cw_base_village t1
+		LEFT JOIN cw_ge_region_info t2 ON t1.orgCode =
+		t2.REGION_CODE
+		WHERE t1.state=0
+		AND FIND_IN_SET(t1.villageCode,#{villageCodes})
+	</select>
+</mapper>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.isc.data.system.mapper.SystemRegionMapper">
+
+	<select id="findParentList"
+		parameterType="java.lang.String"
+		resultType="com.ss.isc.data.system.common.model.Region">
+		SELECT
+			*
+		FROM
+			`cw_ge_region_info`
+		<where>
+			<if test="regionCode != null and regionCode != ''">
+				REGION_CODE = #{regionCode}
+			</if>
+			AND STATE = 1;
+		</where>
+	</select>
+	
+	<select id="getCameraIds"
+		parameterType="java.lang.String"
+		resultType="java.lang.String">
+		SELECT
+			cameraId
+		FROM
+			cw_base_camera camera
+		<where>
+			FIND_IN_SET(
+				camera.villageCode,
+				(
+					SELECT
+						REGION_ID
+					FROM
+						cw_relation_organization_region
+					WHERE
+						ORG_ID = (
+							SELECT
+								ORG_ID
+							FROM
+								cw_ge_user
+							WHERE
+								USER_ID = #{userId}
+						)
+				)
+			)
+		</where>
+	</select>
+
+
+</mapper>

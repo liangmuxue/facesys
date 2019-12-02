@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.isc.data.trail.mapper.WifiCollectDataMapper">
+
+	<select id="macTrajectory"
+		resultType="com.ss.isc.data.trail.common.dto.WifiCollectDataDTO"
+		parameterType="com.ss.isc.data.trail.common.web.WifiCollectDataVO">
+		SELECT
+			t1.*,
+			t1.lon AS lng,
+			t2.detailAddress AS collectAddress
+			
+		FROM
+			cw_wifi_collect t1
+		LEFT JOIN cw_wifi_device t2 ON t1.deviceId = t2.deviceId
+		<where>
+			<if test="collectTimeB !=null">
+                <![CDATA[t1.collectTime >= #{collectTimeB}]]>
+			</if>
+			<if test="collectTimeE !=null">
+                <![CDATA[ and t1.collectTime  <=#{collectTimeE}  ]]>
+			</if>
+			<if test="collectMac !=null and collectMac !=''">
+               and t1.collectMac =#{collectMac}
+            </if>
+            <if test="villageCode !=null">
+		       AND FIND_IN_SET(t1.villageCode,#{villageCode})
+		     </if>
+		</where>
+		ORDER BY t1.collectTime DESC
+	</select>
+
+</mapper>

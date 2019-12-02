@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.isc.data.collect.mapper.FacedbMapper">
+
+	<!-- 查询人像库列表 -->
+	<select id="getFacedbList" parameterType="com.ss.isc.data.collect.common.model.Facedb" resultType="com.ss.isc.data.collect.common.model.Facedb">
+		SELECT
+			facedb.id,
+			facedb.name,
+			facedb.model,
+			facedb.type,
+			facedbType.enumName AS typeName,
+			facedb.remark,
+			facedb.facedb_id AS facedbId,
+			facedb.create_time AS createTime,
+			facedb.create_user AS createUser,
+			facedb.update_time AS updateTime,
+			facedb.update_user AS updateUser,
+			facedb.delete_time AS deleteTime,
+			facedb.delete_user AS deleteUser,
+			facedb.delete_flag AS deleteFlag
+		FROM
+			ss_facedb_info facedb
+		LEFT JOIN
+			cw_base_enum facedbType ON facedbType.enumType = 'FACEDB_TYPE' AND facedb.type = facedbType.enumValue
+		<where>
+			facedb.delete_flag = '0'
+			<if test="model != null and model != ''">
+				AND facedb.model = #{model}
+			</if>
+			<if test="type != null and type != ''">
+				AND facedb.type = #{type}
+			</if>
+			<if test="types != null and types != ''">
+				AND FIND_IN_SET(facedb.type,#{types})
+			</if>
+			<if test="name != null and name != ''">
+				AND facedb.name LIKE CONCAT('%', #{name}, '%')
+			</if>
+			ORDER BY facedb.name
+		</where>
+	</select>
+
+</mapper>

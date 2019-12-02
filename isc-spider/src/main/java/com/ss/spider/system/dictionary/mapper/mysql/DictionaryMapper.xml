@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.spider.system.dictionary.mapper.DictionaryMapper">
+
+    <resultMap id="BaseResultMap" type="com.ss.spider.system.dictionary.model.Dictionary">
+        <id      property="dicId"          column="DIC_ID"             jdbcType="VARCHAR"/>
+        <result  property="dicTypeCode"    column="DIC_TYPE_CODE"      jdbcType="VARCHAR"/>
+        <result  property="dicName"        column="DIC_NAME"           jdbcType="VARCHAR"/>
+        <result  property="dicValue"       column="DIC_VALUE"          jdbcType="VARCHAR"/>
+        <result  property="createdTime"    column="CREATED_TIME"       jdbcType="BIGINT"/>
+        <result  property="createdUserid"  column="CREATED_USERID"     jdbcType="VARCHAR"/>
+        <result  property="updatedTime"    column="UPDATED_TIME"  	   jdbcType="BIGINT"  />
+        <result  property="updatedUserid"  column="UPDATED_USERID"     jdbcType="VARCHAR" />
+
+    </resultMap>
+    
+    <select id="pages" parameterType="com.ss.spider.system.dictionary.model.Dictionary" resultMap="BaseResultMap">
+        select DIC_ID, DIC_TYPE_CODE, DIC_NAME, DIC_VALUE, CREATED_TIME, CREATED_USERID, UPDATED_TIME, UPDATED_USERID
+          from CW_GE_DICTIONARY
+        <where>
+            <if test="dicTypeCode != null and dicTypeCode != ''">
+                DIC_TYPE_CODE like concat('%', #{dicTypeCode, jdbcType=VARCHAR}, '%')
+            </if>
+            
+            <if test="dicName != null and dicName != ''">
+                and DIC_NAME like concat('%', #{dicName, jdbcType=VARCHAR}, '%')
+            </if>
+        </where>
+        order by CREATED_TIME desc
+    </select>
+
+    <select id="list" parameterType="com.ss.spider.system.dictionary.model.Dictionary" resultMap="BaseResultMap">
+        select DIC_ID, DIC_TYPE_CODE, DIC_NAME, DIC_VALUE, CREATED_TIME, CREATED_USERID, UPDATED_TIME, UPDATED_USERID
+          from CW_GE_DICTIONARY
+        <where>
+            <if test="dicTypeCode != null and dicTypeCode != ''">
+                DIC_TYPE_CODE like concat('%', #{dicTypeCode, jdbcType=VARCHAR}, '%')
+            </if>
+            
+            <if test="dicName != null and dicName != ''">
+                and DIC_NAME like concat('%', #{dicName, jdbcType=VARCHAR}, '%')
+            </if>
+        </where>
+    </select>
+    
+    <insert id="save" parameterType="com.ss.spider.system.dictionary.model.Dictionary">
+        insert into CW_GE_DICTIONARY(DIC_ID, DIC_TYPE_CODE, DIC_NAME, DIC_VALUE,
+               CREATED_TIME, CREATED_USERID, UPDATED_TIME, UPDATED_USERID)
+        values(#{dicId, jdbcType=VARCHAR},        #{dicTypeCode, jdbcType=VARCHAR},
+               #{dicName, jdbcType=VARCHAR},      #{dicValue, jdbcType=VARCHAR},
+               #{createdTime, jdbcType=VARCHAR},  #{createdUserid, jdbcType=VARCHAR},
+               #{updatedTime, jdbcType=VARCHAR},  #{updatedUserid, jdbcType=VARCHAR})
+    </insert>
+
+    <select id="gets" parameterType="java.util.Map" resultMap="BaseResultMap">
+        select DIC_ID, DIC_TYPE_CODE, DIC_NAME, DIC_VALUE, CREATED_TIME, CREATED_USERID, UPDATED_TIME, UPDATED_USERID
+          from CW_GE_DICTIONARY
+        where 1 = 1
+        <choose>
+            <when test="dicId != null and dicId != ''">
+                and DIC_ID = #{dicId, jdbcType=VARCHAR}
+            </when>
+            
+            <when test="dicIds != null">
+                and DIC_ID in
+                <foreach collection="dicIds" item="item" open="(" separator="," close=")">
+                    #{item, jdbcType=VARCHAR}
+                </foreach>
+            </when>
+        </choose>
+        
+        <if test="dicTypeCode != null and dicTypeCode != ''">
+            and DIC_TYPE_CODE = #{dicTypeCode, jdbcType=VARCHAR}
+        </if>
+    </select>
+
+    <update id="update" parameterType="com.ss.spider.system.dictionary.model.Dictionary">
+        update CW_GE_DICTIONARY
+           set UPDATED_TIME = #{updatedTime, jdbcType=BIGINT},
+			<if test="dicTypeCode != null and dicTypeCode != ''">
+			    DIC_TYPE_CODE = #{dicTypeCode, jdbcType=VARCHAR},
+			</if>
+			
+			<if test="dicName != null and dicName != ''">
+			    DIC_NAME = #{dicName, jdbcType=VARCHAR},
+			</if>
+			
+			<if test="dicValue != null and dicValue != ''">
+			    DIC_VALUE = #{dicValue, jdbcType=VARCHAR},
+			</if>
+             UPDATED_USERID = #{updatedUserid, jdbcType=VARCHAR}
+       where DIC_ID = #{dicId, jdbcType=VARCHAR}
+    </update>
+
+    <delete id="remove" parameterType="java.util.Map">
+        delete from CW_GE_DICTIONARY
+         where 1 = 1
+        <choose>
+            <when test="dicId != null and dicId != ''">
+                and DIC_ID = #{dicId, jdbcType=VARCHAR}
+            </when>
+            <when test="dicIds != null">
+                and DIC_ID in
+                <foreach collection="dicIds" item="item" open="(" separator="," close=")">
+                    #{item, jdbcType=VARCHAR}
+                </foreach>
+            </when>
+        </choose>
+    </delete>
+</mapper>

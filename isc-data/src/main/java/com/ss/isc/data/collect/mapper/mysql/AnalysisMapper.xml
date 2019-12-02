@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.isc.data.collect.mapper.IAnalysisMapper">
+
+	<!--夜间高频人员分页查询-->
+	<select id="frequencyNightPage" resultType="com.ss.isc.data.collect.common.dto.FrequencyNightDTO" parameterType="com.ss.isc.data.collect.common.web.FrequencyNightQuery">
+		SELECT
+		t1.id,
+		t1.capturePath,
+		t1.panoramaPath,
+		t1.peopleId,
+		t1.deviceNo,
+		t1.villageId,
+		t1.regionCode,
+		t1.state,
+		t1.keyState,
+		t1.excludeFlag,
+		t1.lastCaptureTime,
+		t.updateTime,
+		t1.facePitch,
+		t1.faceYaw,
+		t1.faceRoll,
+		t1.facex,
+		t1.facey,
+		t1.faceWidth,
+		t1.faceHeight,
+		t.amount,
+		t2.villageName,
+		t2.address AS villageAddress,
+		t3.peopleName,
+		t3.residenceAddress,
+		t3.credentialNo,
+		e.enumName AS stateName,
+		c.cameraName
+		FROM
+		cw_frequency_night_collect t
+		INNER JOIN (
+		SELECT
+		temp.frequencyPersonId,
+		MAX(temp.updateTime) AS updateTime
+		FROM
+		(
+		SELECT
+		frequencyPersonId,updateTime
+		FROM	cw_frequency_night_collect
+		WHERE	<![CDATA[amount >= #{amount}]]>
+		) temp
+		GROUP BY	temp.frequencyPersonId
+		) tmp ON t.frequencyPersonId = tmp.frequencyPersonId
+		AND t.updateTime = tmp.updateTime
+		LEFT JOIN cw_frequency_night t1 ON t1.id = t.frequencyPersonId
+		LEFT JOIN cw_base_village t2 ON t1.villageId = t2.villageCode
+		LEFT JOIN cw_base_people t3 ON t1.peopleId = t3.peopleId
+		LEFT JOIN cw_base_enum e ON e.enumValue = t1.state AND enumType ="state"
+		LEFT JOIN cw_base_camera c ON c.cameraId = t1.deviceNo
+		<where>
+			t1.id IS NOT NULL
+			AND <![CDATA[t1.state !=4]]>
+			<if test="state !=null">
+				AND t1.state = #{state}
+			</if>
+			<if test="beginTime != null">
+				AND  <![CDATA[t.updateTime >= #{beginTime}]]>
+			</if>
+			<if test="endTime != null">
+				AND  <![CDATA[t.updateTime <= #{endTime}]]>
+			</if>
+			<if test="sqlMap.dsf !=null">
+				AND FIND_IN_SET(t1.villageId,#{sqlMap.dsf})
+			</if>
+		</where>
+		ORDER BY t1.state ASC,t.updateTime DESC,t1.lastCaptureTime DESC
+	</select>
+
+	<!--长时间逗留人员分页查询-->
+	<select id="longtimeStayPage" parameterType="com.ss.isc.data.collect.common.web.LongtimeStayQuery" resultType="com.ss.isc.data.collect.common.dto.LongtimeStayDTO">
+		SELECT
+		t1.id,
+		t1.capturePath,
+		t1.panoramaPath,
+		t1.peopleId,
+		t1.deviceNo,
+		t1.villageId,
+		t1.regionCode,
+		t1.state,
+		t1.keyState,
+		t1.excludeFlag,
+		t1.lastCaptureTime,
+		t.updateTime,
+		t1.facePitch,
+		t1.faceYaw,
+		t1.faceRoll,
+		t1.facex,
+		t1.facey,
+		t1.faceWidth,
+		t1.faceHeight,
+		t.stayTime,
+		t2.villageName,
+		t2.address AS villageAddress,
+		t3.peopleName,
+		t3.residenceAddress,
+		t3.credentialNo,
+		e.enumName AS stateName,
+		c.cameraName
+		FROM
+		cw_longtime_stay_collect t
+		INNER JOIN (
+		SELECT
+		temp.stayPersonId,
+		MAX(temp.updateTime) AS updateTime
+		FROM
+		(
+		SELECT
+		stayPersonId,updateTime
+		FROM	cw_longtime_stay_collect
+		WHERE	<![CDATA[stayTime >= #{stayTime}]]>
+		) temp
+		GROUP BY	temp.stayPersonId
+		) tmp ON t.stayPersonId = tmp.stayPersonId
+		AND t.updateTime = tmp.updateTime
+		LEFT JOIN cw_longtime_stay t1 ON t1.id = t.stayPersonId
+		LEFT JOIN cw_base_village t2 ON t1.villageId = t2.villageCode
+		LEFT JOIN cw_base_people t3 ON t1.peopleId = t3.peopleId
+		LEFT JOIN cw_base_enum e ON e.enumValue = t1.state AND enumType ="state"
+		LEFT JOIN cw_base_camera c ON c.cameraId = t1.deviceNo
+		<where>
+			t1.id IS NOT NULL
+			AND <![CDATA[t1.state !=4]]>
+			<if test="state !=null">
+				AND t1.state = #{state}
+			</if>
+			<if test="beginTime != null">
+				AND  <![CDATA[t.updateTime >= #{beginTime}]]>
+			</if>
+			<if test="endTime != null">
+				AND  <![CDATA[t.updateTime <= #{endTime}]]>
+			</if>
+			<if test="sqlMap.dsf !=null">
+				AND FIND_IN_SET(t1.villageId,#{sqlMap.dsf})
+			</if>
+		</where>
+		ORDER BY t1.state ASC,t.updateTime DESC,t1.lastCaptureTime DESC
+	</select>
+
+	<select id="sensitiveTrafficPage" parameterType="com.ss.isc.data.collect.common.web.SensitiveTrafficQuery" resultType="com.ss.isc.data.collect.common.dto.SensitiveTrafficDTO">
+		SELECT
+		t1.id,
+		t1.capturePath,
+		t1.panoramaPath,
+		t1.peopleId,
+		t1.deviceNo,
+		t1.villageId,
+		t1.regionCode,
+		t1.state,
+		t1.keyState,
+		t1.excludeFlag,
+		t1.lastCaptureTime,
+		t.updateTime,
+		t1.facePitch,
+		t1.faceYaw,
+		t1.faceRoll,
+		t1.facex,
+		t1.facey,
+		t1.faceWidth,
+		t1.faceHeight,
+		t.amount,
+		t2.villageName,
+		t2.address AS villageAddress,
+		t3.peopleName,
+		t3.residenceAddress,
+		t3.credentialNo,
+		e.enumName AS stateName,
+		c.cameraName
+		FROM
+		cw_sensitive_traffic_collect t
+		INNER JOIN (
+		SELECT
+		temp.sensitivePersonId,
+		MAX(temp.updateTime) AS updateTime
+		FROM
+		(
+		SELECT
+		sensitivePersonId,updateTime
+		FROM	cw_sensitive_traffic_collect
+		WHERE	<![CDATA[amount >= #{amount}]]>
+		) temp
+		GROUP BY	temp.sensitivePersonId
+		) tmp ON t.sensitivePersonId = tmp.sensitivePersonId
+		AND t.updateTime = tmp.updateTime
+		LEFT JOIN cw_sensitive_traffic t1 ON t1.id = t.sensitivePersonId
+		LEFT JOIN cw_base_village t2 ON t1.villageId = t2.villageCode
+		LEFT JOIN cw_base_people t3 ON t1.peopleId = t3.peopleId
+		LEFT JOIN cw_base_enum e ON e.enumValue = t1.state AND enumType ="state"
+		LEFT JOIN cw_base_camera c ON c.cameraId = t1.deviceNo
+		<where>
+			t1.id IS NOT NULL
+			AND <![CDATA[t1.state !=4]]>
+			<if test="state !=null">
+				AND t1.state = #{state}
+			</if>
+			<if test="beginTime != null">
+				AND  <![CDATA[t.updateTime >= #{beginTime}]]>
+			</if>
+			<if test="endTime != null">
+				AND  <![CDATA[t.updateTime <= #{endTime}]]>
+			</if>
+			<if test="sqlMap.dsf !=null">
+				AND FIND_IN_SET(t1.villageId,#{sqlMap.dsf})
+			</if>
+		</where>
+		ORDER BY t1.state ASC,t.updateTime DESC,t1.lastCaptureTime DESC
+	</select>
+</mapper>

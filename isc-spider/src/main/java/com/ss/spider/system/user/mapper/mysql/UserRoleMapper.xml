@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.spider.system.user.mapper.UserRoleMapper">
+	<resultMap id="BaseUserRoleMap" type="com.ss.spider.system.user.model.UserRole">
+		<result column="USER_ID" 			property="userId" 				jdbcType="VARCHAR" />
+		<result column="ROLE_ID"  			property="roleId"  				jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="list" parameterType="com.ss.spider.system.user.model.UserRole" resultMap="BaseUserRoleMap">
+		select USER_ID, ROLE_ID
+		  from CW_GE_USER_ROLE_REF
+		 where 1 = 1
+		<if test="userId != null and userId != ''">
+			 and USER_ID = #{userId, jdbcType=VARCHAR}
+		</if>
+		
+		<if test="roleId != null and roleId != ''">
+			 and ROLE_ID = #{roleId, jdbcType=VARCHAR}
+		</if>
+	</select>
+	
+	<select id="total" parameterType="map" resultType="int">
+		select count(*)
+		  from CW_GE_USER_ROLE_REF
+		 where 1 = 1
+		<choose>
+			<when test="userId != null and userId != ''">
+				and USER_ID = #{userId, jdbcType=VARCHAR}
+			</when>
+			<when test="userIds = null">
+				and USER_ID in
+				<foreach collection="userIds" item="item" open="(" separator="," close=")">
+					#{item, jdbcType=VARCHAR}
+				</foreach>
+			</when>
+		</choose>
+		
+		<choose>
+			<when test="roleId != null and roleId != ''">
+				and ROLE_ID = #{roleId, jdbcType=VARCHAR}
+			</when>
+			<when test="roleIds != null">
+				and ROLE_ID in
+				<foreach collection="roleIds" item="item" open="(" separator="," close=")">
+					#{item, jdbcType=VARCHAR}
+				</foreach>
+			</when>
+		</choose>
+	</select>
+	
+	<insert id="save" parameterType="com.ss.spider.system.user.model.UserRole">
+		insert into CW_GE_USER_ROLE_REF(USER_ID, ROLE_ID)
+		values(#{userId, jdbcType=VARCHAR},			#{roleId, jdbcType=VARCHAR)
+	</insert>
+	<!--新建用户角色关联信息-->
+	<insert id="batchSave" parameterType="java.util.List">
+		insert into CW_GE_USER_ROLE_REF(USER_ID, ROLE_ID)
+		values
+		<foreach collection="list" item="item" index="index" separator=",">
+            (#{item.userId, jdbcType=VARCHAR}, 		#{item.roleId, jdbcType=VARCHAR})
+        </foreach>
+	</insert>
+	<!--删除用户拥有角色-->
+	<delete id="remove" parameterType="map">
+		delete from CW_GE_USER_ROLE_REF
+		<trim prefix=" where " prefixOverrides="and|or">
+			<choose>
+			 	<when test="userIds != null || roleIds != null">
+					<if test="userIds != null">
+						and USER_ID in
+						<foreach collection="userIds" item="item" open="(" separator="," close=")">
+							#{item, jdbcType=VARCHAR}
+						</foreach>
+					</if>
+					<if test="roleIds != null">
+						and ROLE_ID in
+						<foreach collection="roleIds" item="item" open="(" separator="," close=")">
+							#{item, jdbcType=VARCHAR}
+						</foreach>
+					</if>
+				</when>
+				<when test="userId != null">
+					and USER_ID = #{userId}
+				</when>
+				<otherwise>
+					and 1 != 1
+				</otherwise>
+			</choose>
+		</trim>
+	</delete>
+</mapper>
