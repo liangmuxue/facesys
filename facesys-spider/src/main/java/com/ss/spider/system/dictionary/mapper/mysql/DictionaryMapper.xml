@@ -7,10 +7,10 @@
         <result  property="dicTypeCode"    column="DIC_TYPE_CODE"      jdbcType="VARCHAR"/>
         <result  property="dicName"        column="DIC_NAME"           jdbcType="VARCHAR"/>
         <result  property="dicValue"       column="DIC_VALUE"          jdbcType="VARCHAR"/>
-        <result  property="createdTime"    column="CREATED_TIME"       jdbcType="BIGINT"/>
-        <result  property="createdUserid"  column="CREATED_USERID"     jdbcType="VARCHAR"/>
-        <result  property="updatedTime"    column="UPDATED_TIME"  	   jdbcType="BIGINT"  />
-        <result  property="updatedUserid"  column="UPDATED_USERID"     jdbcType="VARCHAR" />
+        <result  property="createTime"    column="CREATED_TIME"       jdbcType="BIGINT"/>
+        <result  property="createUserId"  column="CREATED_USERID"     jdbcType="VARCHAR"/>
+        <result  property="updateTime"    column="UPDATED_TIME"  	   jdbcType="BIGINT"  />
+        <result  property="updateUserId"  column="UPDATED_USERID"     jdbcType="VARCHAR" />
 
     </resultMap>
     
@@ -48,8 +48,8 @@
                CREATED_TIME, CREATED_USERID, UPDATED_TIME, UPDATED_USERID)
         values(#{dicId, jdbcType=VARCHAR},        #{dicTypeCode, jdbcType=VARCHAR},
                #{dicName, jdbcType=VARCHAR},      #{dicValue, jdbcType=VARCHAR},
-               #{createdTime, jdbcType=VARCHAR},  #{createdUserid, jdbcType=VARCHAR},
-               #{updatedTime, jdbcType=VARCHAR},  #{updatedUserid, jdbcType=VARCHAR})
+               #{createTime, jdbcType=VARCHAR},  #{createUserId, jdbcType=VARCHAR},
+               #{updateTime, jdbcType=VARCHAR},  #{updateUserId, jdbcType=VARCHAR})
     </insert>
 
     <select id="gets" parameterType="java.util.Map" resultMap="BaseResultMap">
@@ -76,7 +76,7 @@
 
     <update id="update" parameterType="com.ss.spider.system.dictionary.model.Dictionary">
         update CW_GE_DICTIONARY
-           set UPDATED_TIME = #{updatedTime, jdbcType=BIGINT},
+           set UPDATED_TIME = #{updateTime, jdbcType=BIGINT},
 			<if test="dicTypeCode != null and dicTypeCode != ''">
 			    DIC_TYPE_CODE = #{dicTypeCode, jdbcType=VARCHAR},
 			</if>
@@ -88,7 +88,7 @@
 			<if test="dicValue != null and dicValue != ''">
 			    DIC_VALUE = #{dicValue, jdbcType=VARCHAR},
 			</if>
-             UPDATED_USERID = #{updatedUserid, jdbcType=VARCHAR}
+             UPDATED_USERID = #{updateUserId, jdbcType=VARCHAR}
        where DIC_ID = #{dicId, jdbcType=VARCHAR}
     </update>
 

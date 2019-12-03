@@ -15,12 +15,12 @@
 		<result column="URL" 					property="url"    				jdbcType="VARCHAR" />
 		<result column="RES_ICO" 				property="resIco"    			jdbcType="VARCHAR" />
 		<result column="PARENT_ID" 				property="parentId"    			jdbcType="VARCHAR" />
-		<result column="CREATED_TIME"   		property="createdTime"      	jdbcType="BIGINT" />
-		<result column="CREATED_USERID"      	property="createdUserid"    	jdbcType="VARCHAR" />
-		<result column="UPDATED_TIME"    		property="updatedTime"    		jdbcType="BIGINT" />
-		<result column="UPDATED_USERID"    		property="updatedUserid"    	jdbcType="VARCHAR" />
-		<result column="DELETED_TIME"    		property="deletedTime"    		jdbcType="BIGINT" />
-		<result column="DELETED_USERID"    		property="deletedUserid"    	jdbcType="VARCHAR" />
+		<result column="CREATED_TIME"   		property="createTime"      	jdbcType="BIGINT" />
+		<result column="CREATED_USERID"      	property="createUserId"    	jdbcType="VARCHAR" />
+		<result column="UPDATED_TIME"    		property="updateTime"    		jdbcType="BIGINT" />
+		<result column="UPDATED_USERID"    		property="updateUserId"    	jdbcType="VARCHAR" />
+		<result column="DELETED_TIME"    		property="deleteTime"    		jdbcType="BIGINT" />
+		<result column="DELETED_USERID"    		property="deleteUserId"    	jdbcType="VARCHAR" />
 	</resultMap>
 	<!--查询用户资源列表-->
 	<select id="query" parameterType="map" resultMap="BaseResourceMap">
@@ -189,8 +189,8 @@
 			   #{resCanme, jdbcType=VARCHAR},			#{resEname, jdbcType=VARCHAR},			#{status, jdbcType=INTEGER},
 			   #{remark, jdbcType=VARCHAR},				#{resType, jdbcType=INTEGER},			#{resOrder, jdbcType=INTEGER},
 			   #{url, jdbcType=VARCHAR},				#{resIco, jdbcType=VARCHAR},			#{parentId, jdbcType=VARCHAR},
-			   #{createdTime, jdbcType=BIGINT},			#{createdUserid, jdbcType=VARCHAR},		#{updatedTime, jdbcType=BIGINT},
-			   #{updatedUserid, jdbcType=VARCHAR})
+			   #{createTime, jdbcType=BIGINT},			#{createUserId, jdbcType=VARCHAR},		#{updateTime, jdbcType=BIGINT},
+			   #{updateUserId, jdbcType=VARCHAR})
 	</insert>
 	
 	<update id="update" parameterType="com.ss.spider.system.resource.model.Resource">
@@ -205,16 +205,16 @@
 			   URL       = #{url, jdbcType=VARCHAR},
 			   RES_ICO   = #{resIco, jdbcType=VARCHAR},
 			   PARENT_ID      = #{parentId, jdbcType=VARCHAR},
-			   UPDATED_TIME   = #{updatedTime, jdbcType=BIGINT},		
-			   UPDATED_USERID = #{updatedUserid, jdbcType=VARCHAR}		
+			   UPDATED_TIME   = #{updateTime, jdbcType=BIGINT},
+			   UPDATED_USERID = #{updateUserId, jdbcType=VARCHAR}
 		 where RESOURCE_ID    = #{resourceId, jdbcType=VARCHAR}
 	</update>
 	
 	<update id="discard" parameterType="map">
 		update CW_GE_RESOURCE
 		   set STATUS = -1,
-		   	   DELETED_TIME = #{deletedTime, jdbcType=BIGINT},
-		       DELETED_USERID = #{deletedUserid, jdbcType=VARCHAR}
+		   	   DELETED_TIME = #{deleteTime, jdbcType=BIGINT},
+		       DELETED_USERID = #{deleteUserId, jdbcType=VARCHAR}
 		<where>
 			<choose>
 				<when test="resourceId != null and resourceId != ''">

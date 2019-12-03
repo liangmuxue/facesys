@@ -103,8 +103,8 @@ public class OrganizationController extends AbstractController {
 
         org.setStatus(Integer.valueOf(StatusEnum.EFFECT.getCode()));
         org.setIsLinkage(Short.valueOf((short) StatusEnum.INVALID.getCode()));
-        org.setCreatedTime(Long.valueOf(DateUtils.getCurrentTime()));
-        org.setUpdatedTime(Long.valueOf(DateUtils.getCurrentTime()));
+        org.setCreateTime(Long.valueOf(DateUtils.getCurrentTime()));
+        org.setUpdateTime(Long.valueOf(DateUtils.getCurrentTime()));
 
         try {
             resp.setData(this.organizationService.save(org));
@@ -137,7 +137,7 @@ public class OrganizationController extends AbstractController {
 
         org.setStatus(Integer.valueOf(StatusEnum.EFFECT.getCode()));
         org.setIsLinkage(Short.valueOf((short) StatusEnum.INVALID.getCode()));
-        org.setUpdatedTime(Long.valueOf(DateUtils.getCurrentTime()));
+        org.setUpdateTime(Long.valueOf(DateUtils.getCurrentTime()));
 
         try {
             this.organizationService.update(org);

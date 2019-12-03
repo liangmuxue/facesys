@@ -8,7 +8,6 @@ import com.ss.spider.system.dictionary.form.DictionaryForm;
 import com.ss.spider.system.dictionary.form.DictionaryQuery;
 import com.ss.spider.system.dictionary.model.Dictionary;
 import com.ss.spider.system.dictionary.service.DictionaryService;
-import com.ss.tools.ArraysUtils;
 import com.ss.tools.DateUtils;
 import com.ss.tools.UUIDUtils;
 import com.github.pagehelper.Page;
@@ -88,7 +87,7 @@ public class DictionaryController extends AbstractController {
         BeanUtils.copyProperties(form, dictionary);
 
         dictionary.setDicId(UUIDUtils.getUUID());
-        dictionary.setCreatedTime(Long.valueOf(DateUtils.getCurrentTime()));
+        dictionary.setCreateTime(Long.valueOf(DateUtils.getCurrentTime()));
 
         try {
             this.dictionaryService.save(dictionary);
@@ -118,7 +117,7 @@ public class DictionaryController extends AbstractController {
 
         Dictionary dictionary = new Dictionary();
         BeanUtils.copyProperties(form, dictionary);
-        dictionary.setUpdatedTime(Long.valueOf(DateUtils.getCurrentTime()));
+        dictionary.setUpdateTime(Long.valueOf(DateUtils.getCurrentTime()));
 
         try {
             this.dictionaryService.update(dictionary);

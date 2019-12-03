@@ -4,34 +4,38 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.Column;
 
-
+/**
+ * DTEntity
+ *
+ * @author FrancisYs
+ * @date 2019/12/3
+ * @email yaoshuai@ss-cas.com
+ */
 public class DTEntity extends UTEntity {
 
     private static final long serialVersionUID = -8468026284722424273L;
-    @Column(name = "DELETED_TIME")
-    private Long deletedTime;
-    @Column(name = "DELETED_USERID")
-    private String deletedUserid;
+
+    @Column(name = "delete_time")
+    private Long deleteTime;
+    @Column(name = "delete_user_id")
+    private String deleteUserId;
 
     @JsonIgnore
-    public Long getDeletedTime() {
-        return this.deletedTime;
+    public Long getDeleteTime() {
+        return this.deleteTime;
     }
 
-
-    public void setDeletedTime(Long deletedTime) {
-        this.deletedTime = deletedTime;
+    public void setDeleteTime(Long deleteTime) {
+        this.deleteTime = deleteTime;
     }
-
 
     @JsonIgnore
-    public String getDeletedUserid() {
-        return this.deletedUserid;
+    public String getDeleteUserId() {
+        return this.deleteUserId;
     }
 
-
-    public void setDeletedUserid(String deletedUserid) {
-        this.deletedUserid = deletedUserid;
+    public void setDeleteUserId(String deleteUserId) {
+        this.deleteUserId = deleteUserId;
     }
 
 }

@@ -277,7 +277,7 @@
 		FROM
 		cw_add_person
 		WHERE
-		createdTime BETWEEN DATE_SUB(CURDATE(), INTERVAL 1
+		createTime BETWEEN DATE_SUB(CURDATE(), INTERVAL 1
 		DAY)
 		AND DATE_FORMAT(now(), '%Y-%m-%d')
 	</select>
@@ -288,7 +288,7 @@
 		FROM
 		cw_leave_person
 		WHERE
-		createdTime BETWEEN DATE_SUB(CURDATE(), INTERVAL
+		createTime BETWEEN DATE_SUB(CURDATE(), INTERVAL
 		1 DAY)
 		AND DATE_FORMAT(now(), '%Y-%m-%d')
 	</select>

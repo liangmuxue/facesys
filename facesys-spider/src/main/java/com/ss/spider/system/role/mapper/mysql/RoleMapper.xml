@@ -9,12 +9,12 @@
 		<result column="STATUS" 				property="status"    			jdbcType="INTEGER" />
 		<result column="REMARK"   				property="remark"      			jdbcType="VARCHAR" />
 		<result column="INIT_FLAG" 				property="initFlag"    			jdbcType="INTEGER" />
-		<result column="CREATED_TIME"   		property="createdTime"      	jdbcType="BIGINT" />
-		<result column="CREATED_USERID"      	property="createdUserid"    	jdbcType="VARCHAR" />
-		<result column="UPDATED_TIME"    		property="updatedTime"    		jdbcType="BIGINT" />
-		<result column="UPDATED_USERID"    		property="updatedUserid"    	jdbcType="VARCHAR" />
-		<result column="DELETED_TIME"    		property="deletedTime"    		jdbcType="BIGINT" />
-		<result column="DELETED_USERID"    		property="deletedUserid"    	jdbcType="VARCHAR" />
+		<result column="CREATED_TIME"   		property="createTime"      	jdbcType="BIGINT" />
+		<result column="CREATED_USERID"      	property="createUserId"    	jdbcType="VARCHAR" />
+		<result column="UPDATED_TIME"    		property="updateTime"    		jdbcType="BIGINT" />
+		<result column="UPDATED_USERID"    		property="updateUserId"    	jdbcType="VARCHAR" />
+		<result column="DELETED_TIME"    		property="deleteTime"    		jdbcType="BIGINT" />
+		<result column="DELETED_USERID"    		property="deleteUserId"    	jdbcType="VARCHAR" />
 	</resultMap>
 	<!--权限角色分页查询-->
 	<select id="pages" parameterType="com.ss.spider.system.role.model.Role" resultMap="BaseRoleMap">
@@ -126,8 +126,8 @@
 		insert into CW_GE_ROLE(ROLE_ID, ROLE_CNAME, ROLE_ENAME, STATUS, REMARK, 
 		       CREATED_TIME, CREATED_USERID, UPDATED_TIME, UPDATED_USERID)
 		values(#{roleId, jdbcType=VARCHAR},				#{roleCname, jdbcType=VARCHAR},			#{roleEname, jdbcType=VARCHAR},
-			   #{status, jdbcType=INTEGER},				#{remark, jdbcType=VARCHAR},			#{createdTime, jdbcType=BIGINT},		
-			   #{createdUserid, jdbcType=VARCHAR},		#{updatedTime, jdbcType=BIGINT},		#{updatedUserid, jdbcType=VARCHAR})
+			   #{status, jdbcType=INTEGER},				#{remark, jdbcType=VARCHAR},			#{createTime, jdbcType=BIGINT},
+			   #{createUserId, jdbcType=VARCHAR},		#{updateTime, jdbcType=BIGINT},		#{updateUserId, jdbcType=VARCHAR})
 	</insert>
 	<!--修改权限角色-->
 	<update id="update" parameterType="com.ss.spider.system.role.model.Role">
@@ -136,16 +136,16 @@
 		       ROLE_ENAME = #{roleEname, jdbcType=VARCHAR},
 			   STATUS      = #{status, jdbcType=INTEGER},
 			   REMARK	   = #{remark, jdbcType=VARCHAR},				
-			   UPDATED_TIME   = #{updatedTime, jdbcType=BIGINT},		
-			   UPDATED_USERID = #{updatedUserid, jdbcType=VARCHAR}		
+			   UPDATED_TIME   = #{updateTime, jdbcType=BIGINT},
+			   UPDATED_USERID = #{updateUserId, jdbcType=VARCHAR}
 		 where ROLE_ID = #{roleId, jdbcType=VARCHAR}
 	</update>
 	<!--权限角色逻辑删除-->
 	<update id="discard" parameterType="map">
 		update CW_GE_ROLE
 		   set STATUS = -1,
-		   	   DELETED_TIME   = #{deletedTime, jdbcType=BIGINT},
-		       DELETED_USERID = #{deletedUserid, jdbcType=VARCHAR}
+		   	   DELETED_TIME   = #{deleteTime, jdbcType=BIGINT},
+		       DELETED_USERID = #{deleteUserId, jdbcType=VARCHAR}
 		<where>
 			<choose>
 				<when test="roleId != null and roleId != ''">

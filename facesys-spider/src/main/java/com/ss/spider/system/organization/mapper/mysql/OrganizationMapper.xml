@@ -14,10 +14,10 @@
 		<result column="STATUS"    			property="status"    			jdbcType="INTEGER" />
 		<result column="PARENT_ID"    		property="parentId"    			jdbcType="VARCHAR" />
 		<result column="DEPARTH"    			property="departh"    			jdbcType="VARCHAR" />
-		<result column="CREATED_TIME"    	property="createdTime"    		jdbcType="BIGINT" />
-		<result column="CREATED_USERID"    	property="createdUserid"    	jdbcType="VARCHAR" />
-		<result column="UPDATED_TIME"    	property="updatedTime"    		jdbcType="BIGINT" />
-		<result column="UPDATED_USERID"    	property="updatedUserid"    	jdbcType="VARCHAR" />
+		<result column="CREATED_TIME"    	property="createTime"    		jdbcType="BIGINT" />
+		<result column="CREATED_USERID"    	property="createUserId"    	jdbcType="VARCHAR" />
+		<result column="UPDATED_TIME"    	property="updateTime"    		jdbcType="BIGINT" />
+		<result column="UPDATED_USERID"    	property="updateUserId"    	jdbcType="VARCHAR" />
 		<result column="REMARK"    			property="remark"    			jdbcType="VARCHAR" />
 		<result column="LINK_MAN_NAME"    	property="linkManName"    		jdbcType="VARCHAR" />
 		<result column="LINK_MAN_DEPT"    	property="linkManDept"    		jdbcType="VARCHAR" />
@@ -25,8 +25,8 @@
 		<result column="LINK_MAN_TEL"    	property="linkManTel"    		jdbcType="VARCHAR" />
 		<result column="LINK_MAN_FAX"    	property="linkManFax"    		jdbcType="VARCHAR" />
 		<result column="LINK_MAN_EMAIL"    	property="linkManEmail"    		jdbcType="VARCHAR" />
-		<result column="DELETED_TIME"    	property="deletedTime"    		jdbcType="BIGINT" />
-		<result column="DELETED_USERID"    	property="deletedUserid"    	jdbcType="VARCHAR" />
+		<result column="DELETED_TIME"    	property="deleteTime"    		jdbcType="BIGINT" />
+		<result column="DELETED_USERID"    	property="deleteUserId"    	jdbcType="VARCHAR" />
 		<result column="FROM_SYSTEM"    		property="fromSystem"    		jdbcType="VARCHAR" />
 		<result column="IS_LINKAGE"    		property="isLinkage"    		jdbcType="SMALLINT" />
 	</resultMap>
@@ -206,8 +206,8 @@
 			and LINK_MAN_EMAIL like CONCAT('%', #{linkManEmail, jdbcType=VARCHAR}, '%')
 		</if>
 
-		<if test="updatedTime != null and updatedTime != ''">
-			and UPDATED_TIME >=  #{updatedTime, jdbcType=DECIMAL}
+		<if test="updateTime != null and updateTime != ''">
+			and UPDATED_TIME >=  #{updateTime, jdbcType=DECIMAL}
 		</if>
 		<if test="isLinkage != null ">
 			and IS_LINKAGE = #{isLinkage, jdbcType=SMALLINT}
@@ -357,11 +357,11 @@
 		values(#{orgId, jdbcType=VARCHAR}, 				#{orgCode, jdbcType=VARCHAR},			#{orgCname, jdbcType=VARCHAR},
 			   #{orgEname, jdbcType=VARCHAR},			#{address, jdbcType=VARCHAR},			#{zipCode, jdbcType=VARCHAR},
 			   #{telephone, jdbcType=VARCHAR},			#{fax, jdbcType=VARCHAR},				#{status, jdbcType=INTEGER},
-			   #{parentId, jdbcType=VARCHAR},			#{departh, jdbcType=VARCHAR},			#{createdTime, jdbcType=BIGINT},
-			   #{createdUserid, jdbcType=VARCHAR},		#{updatedTime, jdbcType=BIGINT},		#{updatedUserid, jdbcType=VARCHAR},
+			   #{parentId, jdbcType=VARCHAR},			#{departh, jdbcType=VARCHAR},			#{createTime, jdbcType=BIGINT},
+			   #{createUserId, jdbcType=VARCHAR},		#{updateTime, jdbcType=BIGINT},		#{updateUserId, jdbcType=VARCHAR},
 			   #{remark, jdbcType=VARCHAR},				#{linkManName, jdbcType=VARCHAR},		#{linkManDept, jdbcType=VARCHAR},
 			   #{linkManPos, jdbcType=VARCHAR},			#{linkManTel, jdbcType=VARCHAR},		#{linkManFax, jdbcType=VARCHAR},
-			   #{linkManEmail, jdbcType=VARCHAR},		#{deletedTime, jdbcType=BIGINT},		#{deletedUserid, jdbcType=VARCHAR},
+			   #{linkManEmail, jdbcType=VARCHAR},		#{deleteTime, jdbcType=BIGINT},		#{deleteUserId, jdbcType=VARCHAR},
 			   #{fromSystem, jdbcType=VARCHAR}, #{isLinkage, jdbcType=SMALLINT})
 	</insert>
 	
@@ -377,8 +377,8 @@
 			   STATUS    = #{status, jdbcType=INTEGER},
 			   PARENT_ID = #{parentId, jdbcType=VARCHAR},			
 			   DEPARTH   = #{departh, jdbcType=VARCHAR},			
-			   UPDATED_TIME   = #{updatedTime, jdbcType=BIGINT},		
-			   UPDATED_USERID = #{updatedUserid, jdbcType=VARCHAR},
+			   UPDATED_TIME   = #{updateTime, jdbcType=BIGINT},
+			   UPDATED_USERID = #{updateUserId, jdbcType=VARCHAR},
 			   REMARK         = #{remark, jdbcType=VARCHAR},				
 			   LINK_MAN_NAME  = #{linkManName, jdbcType=VARCHAR},		
 			   LINK_MAN_DEPT  = #{linkManDept, jdbcType=VARCHAR},
@@ -394,8 +394,8 @@
 	<update id="discard" parameterType="map">
 		update CW_GE_ORGANIZATION
 		   set STATUS         = -1,
-			   DELETED_TIME   = #{deletedTime, jdbcType=BIGINT},			
-			   DELETED_USERID = #{deletedUserid, jdbcType=VARCHAR}
+			   DELETED_TIME   = #{deleteTime, jdbcType=BIGINT},
+			   DELETED_USERID = #{deleteUserId, jdbcType=VARCHAR}
 		<where>
 			<choose>
 			 	<when test="orgId != null and orgId != ''">
@@ -460,9 +460,9 @@
 		#{organizationExpList.parentId,jdbcType=VARCHAR}, #{organizationExpList.linkManName,jdbcType=VARCHAR}, #{organizationExpList.linkManDept,jdbcType=VARCHAR},
 		#{organizationExpList.linkManPos,jdbcType=VARCHAR}, #{organizationExpList.linkManTel,jdbcType=VARCHAR}, #{organizationExpList.linkManFax,jdbcType=VARCHAR},
 		#{organizationExpList.linkManEmail,jdbcType=VARCHAR}, #{organizationExpList.fromSystem,jdbcType=VARCHAR}, #{organizationExpList.isLinkage,jdbcType=SMALLINT},
-		#{organizationExpList.remark,jdbcType=VARCHAR}, #{organizationExpList.createdTime,jdbcType=DECIMAL}, #{organizationExpList.createdUserid,jdbcType=VARCHAR},
-		#{organizationExpList.updatedTime,jdbcType=DECIMAL}, #{organizationExpList.updatedUserid,jdbcType=VARCHAR}, #{organizationExpList.deletedTime,jdbcType=DECIMAL},
-		#{organizationExpList.deletedUserid,jdbcType=VARCHAR}, #{organizationExpList.departh,jdbcType=LONGVARCHAR})
+		#{organizationExpList.remark,jdbcType=VARCHAR}, #{organizationExpList.createTime,jdbcType=DECIMAL}, #{organizationExpList.createUserId,jdbcType=VARCHAR},
+		#{organizationExpList.updateTime,jdbcType=DECIMAL}, #{organizationExpList.updateUserId,jdbcType=VARCHAR}, #{organizationExpList.deleteTime,jdbcType=DECIMAL},
+		#{organizationExpList.deleteUserId,jdbcType=VARCHAR}, #{organizationExpList.departh,jdbcType=LONGVARCHAR})
 		</foreach>
 	</insert>
 

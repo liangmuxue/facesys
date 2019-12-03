@@ -2,32 +2,36 @@ package com.ss.entity;
 
 import javax.persistence.Column;
 
-
+/**
+ * CTEntity
+ *
+ * @author FrancisYs
+ * @date 2019/12/3
+ * @email yaoshuai@ss-cas.com
+ */
 public class CTEntity implements ITableEntity {
 
     private static final long serialVersionUID = 5396928504857978911L;
-    @Column(name = "CREATED_TIME")
-    private Long createdTime;
-    @Column(name = "CREATED_USERID")
-    private String createdUserid;
 
-    public Long getCreatedTime() {
-        return this.createdTime;
+    @Column(name = "create_time")
+    private Long createTime;
+    @Column(name = "create_user_id")
+    private String createUserId;
+
+    public Long getCreateTime() {
+        return this.createTime;
     }
 
-
-    public void setCreatedTime(Long createdTime) {
-        this.createdTime = createdTime;
+    public void setCreateTime(Long createTime) {
+        this.createTime = createTime;
     }
 
-
-    public String getCreatedUserid() {
-        return this.createdUserid;
+    public String getCreateUserId() {
+        return this.createUserId;
     }
 
-
-    public void setCreatedUserid(String createdUserid) {
-        this.createdUserid = createdUserid;
+    public void setCreateUserId(String createUserId) {
+        this.createUserId = createUserId;
     }
 
 }

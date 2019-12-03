@@ -35,7 +35,7 @@
         parentId,
         STATE AS state,
         REMARK AS remark,
-        CREATED_TIME AS createdTime,
+        CREATED_TIME AS createTime,
         REGION_ID AS regionId
         FROM
         cw_ge_region_info
@@ -59,7 +59,7 @@
 		gisArea,
 		gisCenter,
 		gisType,
-		CREATED_TIME AS createdTime,
+		CREATED_TIME AS createTime,
 		pinyin,
 		regionType,
 		updateTime
@@ -83,7 +83,7 @@
 		t1.villageName AS 'regionName',
 		t2.REGION_NAME,
 		t2.REGION_ID AS 'parentId',
-		t1.createTime AS 'createdTime',
+		t1.createTime AS 'createTime',
 		t1.gisCenter,
 		t1.gisArea,
 		t1.gisType,
@@ -110,7 +110,7 @@
         t1.PARENT_ID AS parentId,
         t1.STATE AS
         state,
-        t1.CREATED_TIME AS createdTime,
+        t1.CREATED_TIME AS createTime,
         t2.lon,
         t2.lat
         FROM
@@ -142,7 +142,7 @@
         PARENT_ID AS parentId,
         STATE AS state,
         REMARK AS remark,
-        CREATED_TIME AS createdTime,
+        CREATED_TIME AS createTime,
         gisArea AS gisArea,
         gisCenter AS gisCenter,
         gisType AS gisType,
@@ -187,7 +187,7 @@
 		#{pinyin},
 		#{thirdId},
 		#{regionType},
-		#{createdTime}
+		#{createTime}
 		);
 	</insert>
 
@@ -260,7 +260,7 @@
         `PARENT_ID` as parentId,
         `STATE` as state,
         `REMARK` as remark,
-        `CREATED_TIME` as createdTime,
+        `CREATED_TIME` as createTime,
         `gisCenter`,
         `gisArea`,
         `gisType`,
@@ -308,7 +308,7 @@
 		`PARENT_ID` as parentId,
 		`STATE` as state,
 		`REMARK` as remark,
-		`CREATED_TIME` as createdTime,
+		`CREATED_TIME` as createTime,
 		`gisCenter`,
 		`gisArea`,
 		`gisType`,
@@ -338,7 +338,7 @@
             `PARENT_ID` as parentId,
             `STATE` as state,
             `REMARK` as remark,
-            `CREATED_TIME` as createdTime,
+            `CREATED_TIME` as createTime,
             `gisCenter`,
             `gisArea`,
             `gisType`,

@@ -148,8 +148,8 @@ public class UserController extends AbstractController {
         User user = new User();
         BeanUtils.copyProperties(para, user);
         user.setStatus(StatusEnum.EFFECT.getCode());
-        user.setCreatedTime(DateUtils.getCurrentTime());
-        user.setUpdatedTime(DateUtils.getCurrentTime());
+        user.setCreateTime(DateUtils.getCurrentTime());
+        user.setUpdateTime(DateUtils.getCurrentTime());
         try {
             if (!StringUtils.isEmpty(para.getPictureUrl())) {
                 boolean checkBase64 = Base64ImageUtils.isCheckBase64(para.getPictureUrl(), Constants.IMAGE_TYPE.split(","));
@@ -212,8 +212,8 @@ public class UserController extends AbstractController {
         user = new User();
         user.setUserId(para.getOpUserId());
         user.setPassword(para.getNewPassword());
-        user.setUpdatedUserid(para.getUpdatedUserid());
-        user.setUpdatedTime(DateUtils.getCurrentTime());
+        user.setUpdateUserId(para.getUpdatedUserid());
+        user.setUpdateTime(DateUtils.getCurrentTime());
         try {
             this.userService.updateNotNull(user);
         } catch (MyBatisSystemException | DataAccessResourceFailureException e) {
@@ -261,8 +261,8 @@ public class UserController extends AbstractController {
         User user = new User();
         user.setUserId(para.getOpUserId());
         user.setPassword(para.getNewPassword());
-        user.setUpdatedUserid(para.getUpdatedUserid());
-        user.setUpdatedTime(DateUtils.getCurrentTime());
+        user.setUpdateUserId(para.getUpdatedUserid());
+        user.setUpdateTime(DateUtils.getCurrentTime());
         try {
             //修改密码
             this.userService.updateNotNull(user);
@@ -300,7 +300,7 @@ public class UserController extends AbstractController {
         }
         User user = new User();
         BeanUtils.copyProperties(para, user);
-        user.setUpdatedTime(DateUtils.getCurrentTime());
+        user.setUpdateTime(DateUtils.getCurrentTime());
         user.setUserId(para.getOpUserId());
         try {
             if (!StringUtils.isEmpty(para.getPictureUrl())) {
@@ -412,8 +412,8 @@ public class UserController extends AbstractController {
         User user = new User();
         BeanUtils.copyProperties(para, user);
         user.setUserId(para.getOpUserId());
-        user.setUpdatedTime(DateUtils.getCurrentTime());
-        user.setUpdatedUserid(user.getUserId());
+        user.setUpdateTime(DateUtils.getCurrentTime());
+        user.setUpdateUserId(user.getUserId());
         try {
             //修改个人信息
             this.userService.editMyUserInfo(user);

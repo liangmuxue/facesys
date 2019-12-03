@@ -45,7 +45,7 @@
 			</if>
 			<if
 				test="beginTime != null and beginTime != '' and endTime != null and endTime != ''">
-				and t1.createdTime BETWEEN DATE_FORMAT(#{beginTime}, '%Y-%m-%d
+				and t1.createTime BETWEEN DATE_FORMAT(#{beginTime}, '%Y-%m-%d
 				%H:%i:%S') and DATE_FORMAT(#{endTime},'%Y-%m-%d %H:%i:%S')
 			</if>
 		</where>
@@ -72,7 +72,7 @@
 		NOW(),
 		leaveDays = (
 		SELECT
-		to_days(NOW()) - to_days(#{createdTime})
+		to_days(NOW()) - to_days(#{createTime})
 		)
 		WHERE
 		id = #{id}

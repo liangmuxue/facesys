@@ -2,142 +2,284 @@ package com.ss.spider.system.organization.model;
 
 import com.ss.entity.DTEntity;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
-
-@Table(name = "CW_GE_ORGANIZATION")
+/**
+ * 单位表实体映射
+ *
+ * @author FrancisYs
+ * @date 2019/12/3
+ * @email yaoshuai@ss-cas.com
+ */
+@Table(name = "cw_ge_organization")
 public class Organization extends DTEntity {
 
     private static final long serialVersionUID = -5245102590723486068L;
+
+    /**
+     * 单位ID
+     */
     @Id
-    @Column(name = "ORG_ID")
+    @Column(name = "org_id")
     private String orgId;
-    @Column(name = "ORG_CODE")
+    /**
+     * 单位编号
+     */
+    @Column(name = "org_code")
     private String orgCode;
-    @Column(name = "ORG_CNAME")
+    /**
+     * 单位中文名
+     */
+    @Column(name = "org_cname")
     private String orgCname;
-    @Column(name = "ORG_ENAME")
+    /**
+     * 单位英文名
+     */
+    @Column(name = "org_ename")
     private String orgEname;
-    @Column(name = "ADDRESS")
+    /**
+     * 地址
+     */
+    @Column(name = "address")
     private String address;
-    @Column(name = "ZIP_CODE")
+    /**
+     * 邮编
+     */
+    @Column(name = "zip_code")
     private String zipCode;
-    @Column(name = "TELEPHONE")
+    /**
+     * 联系电话
+     */
+    @Column(name = "telephone")
     private String telephone;
-    @Column(name = "FAX")
+    /**
+     * 邮箱地址
+     */
+    @Column(name = "email")
+    private String email;
+    /**
+     * 传真
+     */
+    @Column(name = "fax")
     private String fax;
-    @Column(name = "STATUS")
+    /**
+     * 状态[1 有效|0 无效|-1 删除]
+     */
+    @Column(name = "status")
     private Integer status;
-    @Column(name = "PARENT_ID")
+    /**
+     * 上级单位ID
+     */
+    @Column(name = "parent_id")
     private String parentId;
-    @Column(name = "DEPARTH")
+    @Column(name = "departh")
     private String departh;
-    @Column(name = "REMARK")
+    /**
+     * 备注信息
+     */
+    @Column(name = "remark")
     private String remark;
-    @Column(name = "LINK_MAN_NAME")
+    @Column(name = "link_man_name")
     private String linkManName;
-    @Column(name = "LINK_MAN_DEPT")
+    @Column(name = "link_man_dept")
     private String linkManDept;
-    @Column(name = "LINK_MAN_POS")
+    @Column(name = "link_man_pos")
     private String linkManPos;
-    @Column(name = "LINK_MAN_TEL")
+    @Column(name = "link_man_tel")
     private String linkManTel;
-    @Column(name = "LINK_MAN_FAX")
+    @Column(name = "link_man_fax")
     private String linkManFax;
-    @Column(name = "LINK_MAN_EMAIL")
+    @Column(name = "link_man_email")
     private String linkManEmail;
-    @Column(name = "FROM_SYSTEM")
+    @Column(name = "from_system")
     private String fromSystem;
-    @Column(name = "IS_LINKAGE")
+    @Column(name = "is_linkage")
     private Short isLinkage;
 
-    private String parentName;
+    @Transient
+    private List<Organization> children = new ArrayList<>();
 
-    private String updatedUserid;
 
-    private String deletedUserid;
-
-    private String createdUserid;
-
-    private Long createdTime;
-
-    private Long updatedTime;
-
-    private Long deletedTime;
-
-    @Override
-    public Long getCreatedTime() {
-        return createdTime;
+    public String getOrgId() {
+        return this.orgId;
     }
 
-    @Override
-    public void setCreatedTime(Long createdTime) {
-        this.createdTime = createdTime;
+    public void setOrgId(String orgId) {
+        this.orgId = orgId;
     }
 
-    @Override
-    public Long getUpdatedTime() {
-        return updatedTime;
+    public String getOrgCode() {
+        return this.orgCode;
     }
 
-    @Override
-    public void setUpdatedTime(Long updatedTime) {
-        this.updatedTime = updatedTime;
+    public void setOrgCode(String orgCode) {
+        this.orgCode = orgCode;
     }
 
-    @Override
-    public Long getDeletedTime() {
-        return deletedTime;
+    public String getOrgCname() {
+        return this.orgCname;
     }
 
-    @Override
-    public void setDeletedTime(Long deletedTime) {
-        this.deletedTime = deletedTime;
+    public void setOrgCname(String orgCname) {
+        this.orgCname = orgCname;
     }
 
-    @Override
-    public String getUpdatedUserid() {
-        return updatedUserid;
+    public String getOrgEname() {
+        return this.orgEname;
     }
 
-    @Override
-    public void setUpdatedUserid(String updatedUserid) {
-        this.updatedUserid = updatedUserid;
+    public void setOrgEname(String orgEname) {
+        this.orgEname = orgEname;
     }
 
-    @Override
-    public String getDeletedUserid() {
-        return deletedUserid;
+    public String getAddress() {
+        return this.address;
     }
 
-    @Override
-    public void setDeletedUserid(String deletedUserid) {
-        this.deletedUserid = deletedUserid;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
-    @Override
-    public String getCreatedUserid() {
-        return createdUserid;
+    public String getZipCode() {
+        return this.zipCode;
     }
 
-    @Override
-    public void setCreatedUserid(String createdUserid) {
-        this.createdUserid = createdUserid;
+    public void setZipCode(String zipCode) {
+        this.zipCode = zipCode;
     }
 
-    public String getParentName() {
-        return parentName;
+    public String getTelephone() {
+        return this.telephone;
     }
 
-    public void setParentName(String parentName) {
-        this.parentName = parentName;
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
     }
 
-    public List<Organization> children;
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getFax() {
+        return this.fax;
+    }
+
+    public void setFax(String fax) {
+        this.fax = fax;
+    }
+
+    public Integer getStatus() {
+        return this.status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public String getParentId() {
+        return this.parentId;
+    }
+
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
+    }
+
+    public String getDeparth() {
+        return this.departh;
+    }
+
+    public void setDeparth(String departh) {
+        this.departh = departh;
+    }
+
+    public String getRemark() {
+        return this.remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public String getLinkManName() {
+        return this.linkManName;
+    }
+
+    public void setLinkManName(String linkManName) {
+        this.linkManName = linkManName;
+    }
+
+    public String getLinkManDept() {
+        return this.linkManDept;
+    }
+
+    public void setLinkManDept(String linkManDept) {
+        this.linkManDept = linkManDept;
+    }
+
+    public String getLinkManPos() {
+        return this.linkManPos;
+    }
+
+    public void setLinkManPos(String linkManPos) {
+        this.linkManPos = linkManPos;
+    }
+
+    public String getLinkManTel() {
+        return this.linkManTel;
+    }
+
+    public void setLinkManTel(String linkManTel) {
+        this.linkManTel = linkManTel;
+    }
+
+    public String getLinkManFax() {
+        return this.linkManFax;
+    }
+
+    public void setLinkManFax(String linkManFax) {
+        this.linkManFax = linkManFax;
+    }
+
+    public String getLinkManEmail() {
+        return this.linkManEmail;
+    }
+
+    public void setLinkManEmail(String linkManEmail) {
+        this.linkManEmail = linkManEmail;
+    }
+
+    public String getFromSystem() {
+        return this.fromSystem;
+    }
+
+    public void setFromSystem(String fromSystem) {
+        this.fromSystem = fromSystem;
+    }
+
+    public Short getIsLinkage() {
+        return this.isLinkage;
+    }
+
+    public void setIsLinkage(Short isLinkage) {
+        this.isLinkage = isLinkage;
+    }
+
+    public List<String> getDeparthList() {
+        if (this.departh == null || "".equals(this.departh)) {
+            return null;
+        }
+        return Arrays.asList(this.departh.split(","));
+    }
 
     public List<Organization> getChildren() {
         return children;
@@ -147,258 +289,30 @@ public class Organization extends DTEntity {
         this.children = children;
     }
 
-    public String getOrgId() {
-        return this.orgId;
-    }
-
-
-    public void setOrgId(String orgId) {
-        this.orgId = orgId;
-    }
-
-
-    public String getOrgCode() {
-        return this.orgCode;
-    }
-
-
-    public void setOrgCode(String orgCode) {
-        this.orgCode = orgCode;
-    }
-
-
-    public String getOrgCname() {
-        return this.orgCname;
-    }
-
-
-    public void setOrgCname(String orgCname) {
-        this.orgCname = orgCname;
-    }
-
-
-    public String getOrgEname() {
-        return this.orgEname;
-    }
-
-
-    public void setOrgEname(String orgEname) {
-        this.orgEname = orgEname;
-    }
-
-
-    public String getAddress() {
-        return this.address;
-    }
-
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-
-    public String getZipCode() {
-        return this.zipCode;
-    }
-
-
-    public void setZipCode(String zipCode) {
-        this.zipCode = zipCode;
-    }
-
-
-    public String getTelephone() {
-        return this.telephone;
-    }
-
-
-    public void setTelephone(String telephone) {
-        this.telephone = telephone;
-    }
-
-
-    public String getFax() {
-        return this.fax;
-    }
-
-
-    public void setFax(String fax) {
-        this.fax = fax;
-    }
-
-
-    public Integer getStatus() {
-        return this.status;
-    }
-
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-
-    public String getParentId() {
-        return this.parentId;
-    }
-
-
-    public void setParentId(String parentId) {
-        this.parentId = parentId;
-    }
-
-
-    public String getDeparth() {
-        return this.departh;
-    }
-
-
-    public void setDeparth(String departh) {
-        this.departh = departh;
-    }
-
-
-    public String getRemark() {
-        return this.remark;
-    }
-
-
-    public void setRemark(String remark) {
-        this.remark = remark;
-    }
-
-
-    public String getLinkManName() {
-        return this.linkManName;
-    }
-
-
-    public void setLinkManName(String linkManName) {
-        this.linkManName = linkManName;
-    }
-
-
-    public String getLinkManDept() {
-        return this.linkManDept;
-    }
-
-
-    public void setLinkManDept(String linkManDept) {
-        this.linkManDept = linkManDept;
-    }
-
-
-    public String getLinkManPos() {
-        return this.linkManPos;
-    }
-
-
-    public void setLinkManPos(String linkManPos) {
-        this.linkManPos = linkManPos;
-    }
-
-
-    public String getLinkManTel() {
-        return this.linkManTel;
-    }
-
-
-    public void setLinkManTel(String linkManTel) {
-        this.linkManTel = linkManTel;
-    }
-
-
-    public String getLinkManFax() {
-        return this.linkManFax;
-    }
-
-
-    public void setLinkManFax(String linkManFax) {
-        this.linkManFax = linkManFax;
-    }
-
-
-    public String getLinkManEmail() {
-        return this.linkManEmail;
-    }
-
-
-    public void setLinkManEmail(String linkManEmail) {
-        this.linkManEmail = linkManEmail;
-    }
-
-
-    public String getFromSystem() {
-        return this.fromSystem;
-    }
-
-
-    public void setFromSystem(String fromSystem) {
-        this.fromSystem = fromSystem;
-    }
-
-
-    public Short getIsLinkage() {
-        return this.isLinkage;
-    }
-
-
-    public void setIsLinkage(Short isLinkage) {
-        this.isLinkage = isLinkage;
-    }
-
-
-    public List<String> getDeparthList() {
-        if (this.departh == null || "".equals(this.departh)) {
-            return null;
-        }
-        return Arrays.asList(this.departh.split(","));
-    }
-
-
+    @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("Organization:{");
-        sb.append("\"orgId\":\"")
-                .append(this.orgId).append('"');
-        sb.append(",\"orgCode\":\"")
-                .append(this.orgCode).append('"');
-        sb.append(",\"orgCname\":\"")
-                .append(this.orgCname).append('"');
-        sb.append(",\"orgEname\":\"")
-                .append(this.orgEname).append('"');
-        sb.append(",\"address\":\"")
-                .append(this.address).append('"');
-        sb.append(",\"zipCode\":\"")
-                .append(this.zipCode).append('"');
-        sb.append(",\"telephone\":\"")
-                .append(this.telephone).append('"');
-        sb.append(",\"fax\":\"")
-                .append(this.fax).append('"');
-        sb.append(",\"status\":")
-                .append(this.status);
-        sb.append(",\"parentId\":\"")
-                .append(this.parentId).append('"');
-        sb.append(",\"departh\":\"")
-                .append(this.departh).append('"');
-        sb.append(",\"remark\":\"")
-                .append(this.remark).append('"');
-        sb.append(",\"linkManName\":\"")
-                .append(this.linkManName).append('"');
-        sb.append(",\"linkManDept\":\"")
-                .append(this.linkManDept).append('"');
-        sb.append(",\"linkManPos\":\"")
-                .append(this.linkManPos).append('"');
-        sb.append(",\"linkManTel\":\"")
-                .append(this.linkManTel).append('"');
-        sb.append(",\"linkManFax\":\"")
-                .append(this.linkManFax).append('"');
-        sb.append(",\"linkManEmail\":\"")
-                .append(this.linkManEmail).append('"');
-        sb.append(",\"fromSystem\":\"")
-                .append(this.fromSystem).append('"');
-        sb.append(",\"isLinkage\":")
-                .append(this.isLinkage);
-        sb.append('}');
-        return sb.toString();
+        return "Organization{" +
+                "orgId='" + orgId + '\'' +
+                ", orgCode='" + orgCode + '\'' +
+                ", orgCname='" + orgCname + '\'' +
+                ", orgEname='" + orgEname + '\'' +
+                ", address='" + address + '\'' +
+                ", zipCode='" + zipCode + '\'' +
+                ", telephone='" + telephone + '\'' +
+                ", fax='" + fax + '\'' +
+                ", status=" + status +
+                ", parentId='" + parentId + '\'' +
+                ", departh='" + departh + '\'' +
+                ", remark='" + remark + '\'' +
+                ", linkManName='" + linkManName + '\'' +
+                ", linkManDept='" + linkManDept + '\'' +
+                ", linkManPos='" + linkManPos + '\'' +
+                ", linkManTel='" + linkManTel + '\'' +
+                ", linkManFax='" + linkManFax + '\'' +
+                ", linkManEmail='" + linkManEmail + '\'' +
+                ", fromSystem='" + fromSystem + '\'' +
+                ", isLinkage=" + isLinkage +
+                '}';
     }
 
 }
