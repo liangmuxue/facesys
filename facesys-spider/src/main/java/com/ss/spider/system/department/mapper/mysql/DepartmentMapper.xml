@@ -10,15 +10,15 @@
 		<result column="DEPART_ENAME"   		property="departEname"      		jdbcType="VARCHAR" />
 		<result column="REMARK"      			property="remark"    				jdbcType="VARCHAR" />
 		<result column="STATUS"    				property="status"    				jdbcType="INTEGER" />
-		<result column="CREATED_TIME"    		property="createdTime"    			jdbcType="BIGINT" />
-		<result column="CREATED_USERID"    		property="createdUserid"    		jdbcType="VARCHAR" />
-		<result column="UPDATED_TIME"    		property="updatedTime"    			jdbcType="BIGINT" />
-		<result column="UPDATED_USERID"    		property="updatedUserid"    		jdbcType="VARCHAR" />
+		<result column="CREATED_TIME"    		property="createTime"    			jdbcType="BIGINT" />
+		<result column="CREATED_USERID"    		property="createUserId"    		jdbcType="VARCHAR" />
+		<result column="UPDATED_TIME"    		property="updateTime"    			jdbcType="BIGINT" />
+		<result column="UPDATED_USERID"    		property="updateUserId"    		jdbcType="VARCHAR" />
 		<result column="LINK_MAN_NAME"    		property="linkManName"    			jdbcType="VARCHAR" />
 		<result column="LINK_MAN_TEL"    		property="linkManTel"    			jdbcType="VARCHAR" />
 		<result column="LINK_MAN_FAX"    		property="linkManFax"    			jdbcType="VARCHAR" />
-		<result column="DELETED_TIME"    		property="deletedTime"    			jdbcType="BIGINT" />
-		<result column="DELETED_USERID"    		property="deletedUserid"    		jdbcType="VARCHAR" />
+		<result column="DELETED_TIME"    		property="deleteTime"    			jdbcType="BIGINT" />
+		<result column="DELETED_USERID"    		property="deleteUserId"    		jdbcType="VARCHAR" />
 	</resultMap>
 	
 	<select id="pages" parameterType="com.ss.spider.system.department.model.Department" resultMap="BaseDeparementMap">
@@ -195,8 +195,8 @@
 			   CREATED_TIME, CREATED_USERID, UPDATED_TIME, UPDATED_USERID, LINK_MAN_NAME, LINK_MAN_TEL, LINK_MAN_FAX)
 		values(#{departId, jdbcType=VARCHAR},			#{orgId, jdbcType=VARCHAR},				#{departCode, jdbcType=VARCHAR},
 			   #{departCname, jdbcType=VARCHAR},		#{departEname, jdbcType=VARCHAR},		#{remark, jdbcType=VARCHAR},
-			   #{status, jdbcType=INTEGER},				#{createdTime, jdbcType=BIGINT},		#{createdUserid, jdbcType=VARCHAR},
-			   #{updatedTime, jdbcType=BIGINT},			#{updatedUserid, jdbcType=VARCHAR},		#{linkManName, jdbcType=VARCHAR},
+			   #{status, jdbcType=INTEGER},				#{createTime, jdbcType=BIGINT},		#{createUserId, jdbcType=VARCHAR},
+			   #{updateTime, jdbcType=BIGINT},			#{updateUserId, jdbcType=VARCHAR},		#{linkManName, jdbcType=VARCHAR},
 			   #{linkManTel, jdbcType=VARCHAR},			#{linkManFax, jdbcType=VARCHAR})
 	</insert>
 	
@@ -208,8 +208,8 @@
 		   	   DEPART_CODE  = #{departCode, jdbcType=VARCHAR},
 			   DEPART_CNAME = #{departCname, jdbcType=VARCHAR},		
 			   DEPART_ENAME = #{departEname, jdbcType=VARCHAR},		
-			   UPDATED_TIME   = #{updatedTime, jdbcType=BIGINT},			
-			   UPDATED_USERID = #{updatedUserid, jdbcType=VARCHAR},		
+			   UPDATED_TIME   = #{updateTime, jdbcType=BIGINT},
+			   UPDATED_USERID = #{updateUserId, jdbcType=VARCHAR},
 			   LINK_MAN_NAME  = #{linkManName, jdbcType=VARCHAR},
 			   LINK_MAN_TEL   = #{linkManTel, jdbcType=VARCHAR},			
 			   LINK_MAN_FAX   = #{linkManFax, jdbcType=VARCHAR}
@@ -219,8 +219,8 @@
 	<update id="discard" parameterType="map">
 		update CW_GE_DEPARTMENT
 		   set STATUS = -1,
-		   	   DELETED_TIME = #{deletedTime, jdbcType=BIGINT},
-		       DELETED_USERID = #{deletedUserid, jdbcType=VARCHAR}
+		   	   DELETED_TIME = #{deleteTime, jdbcType=BIGINT},
+		       DELETED_USERID = #{deleteUserId, jdbcType=VARCHAR}
 		<trim prefix=" where " prefixOverrides="and|or">
 			<choose>
 				<when test="(departId != null and departId != '') or departIds != null or

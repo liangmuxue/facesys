@@ -9,7 +9,7 @@
 		<result column="APP_ICO" 			property="appIco"    			jdbcType="VARCHAR" />
 		<result column="REMARK"   			property="remark"      			jdbcType="VARCHAR" />
 		<result column="VERSION"      		property="version"    			jdbcType="VARCHAR" />
-		<result column="CREATED_TIME"    	property="createdTime"    		jdbcType="BIGINT" />
+		<result column="CREATED_TIME"    	property="createTime"    		jdbcType="BIGINT" />
 	</resultMap>
 	
 	<select id="pages" parameterType="com.ss.spider.system.application.model.AppSystem" resultMap="BaseAppSystemMap">
@@ -89,7 +89,7 @@
 		insert into CW_APP_SYSTEM(APP_ID, CODE, NAME, APP_ICO, REMARK, VERSION, CREATED_TIME)
 		values(#{appId, jdbcType=VARCHAR},		#{code, jdbcType=VARCHAR},		#{name, jdbcType=VARCHAR},
 			   #{appIco, jdbcType=VARCHAR},		#{remark, jdbcType=VARCHAR},	#{version, jdbcType=VARCHAR},
-			   #{createdTime, jdbcType=BIGINT})
+			   #{createTime, jdbcType=BIGINT})
 	</insert>
 	
 	<update id="update" parameterType="com.ss.spider.system.application.model.AppSystem">

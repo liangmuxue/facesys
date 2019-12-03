@@ -88,7 +88,7 @@ public class DictionaryDataController extends AbstractController {
         BeanUtils.copyProperties(form, dictionary);
 
         dictionary.setId(UUIDUtils.getUUID());
-        dictionary.setCreatedTime(Long.valueOf(DateUtils.getCurrentTime()));
+        dictionary.setCreateTime(Long.valueOf(DateUtils.getCurrentTime()));
 
         try {
             this.dictionaryDataService.save(dictionary);
@@ -118,7 +118,7 @@ public class DictionaryDataController extends AbstractController {
 
         DictionaryData dictionary = new DictionaryData();
         BeanUtils.copyProperties(form, dictionary);
-        dictionary.setUpdatedTime(Long.valueOf(DateUtils.getCurrentTime()));
+        dictionary.setUpdateTime(Long.valueOf(DateUtils.getCurrentTime()));
 
         try {
             this.dictionaryDataService.update(dictionary);

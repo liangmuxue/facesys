@@ -112,8 +112,8 @@ public class RoleController extends AbstractController {
             role.setStatus(StatusEnum.EFFECT.getCode());
         }
         role.setInitFlag(SystemInitFlagEnum.NO.getCode());
-        role.setCreatedTime(DateUtils.getCurrentTime());
-        role.setUpdatedTime(DateUtils.getCurrentTime());
+        role.setCreateTime(DateUtils.getCurrentTime());
+        role.setUpdateTime(DateUtils.getCurrentTime());
         try {
             //添加角色
             resp.setData(this.roleService.save(role));
@@ -142,7 +142,7 @@ public class RoleController extends AbstractController {
         ResponseEntity<String> resp = validite(bindingResult);
         Role role = new Role();
         BeanUtils.copyProperties(para, role);
-        role.setUpdatedTime(DateUtils.getCurrentTime());
+        role.setUpdateTime(DateUtils.getCurrentTime());
         try {
             //修改角色
             this.roleService.update(role);

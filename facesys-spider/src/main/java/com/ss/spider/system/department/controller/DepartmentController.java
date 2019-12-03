@@ -94,8 +94,8 @@ public class DepartmentController extends AbstractController {
         BeanUtils.copyProperties(para, depart);
 
         depart.setStatus(Integer.valueOf(StatusEnum.EFFECT.getCode()));
-        depart.setCreatedTime(Long.valueOf(DateUtils.getCurrentTime()));
-        depart.setUpdatedTime(Long.valueOf(DateUtils.getCurrentTime()));
+        depart.setCreateTime(Long.valueOf(DateUtils.getCurrentTime()));
+        depart.setUpdateTime(Long.valueOf(DateUtils.getCurrentTime()));
 
         try {
             resp.setData(this.departmentService.save(depart));
@@ -126,7 +126,7 @@ public class DepartmentController extends AbstractController {
         BeanUtils.copyProperties(para, depart);
 
 
-        depart.setUpdatedTime(Long.valueOf(DateUtils.getCurrentTime()));
+        depart.setUpdateTime(Long.valueOf(DateUtils.getCurrentTime()));
         depart.setStatus(Integer.valueOf(StatusEnum.EFFECT.getCode()));
 
         try {

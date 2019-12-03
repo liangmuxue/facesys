@@ -111,8 +111,8 @@ public class ResourceController extends AbstractController {
 
 
         res.setResourceId(UUIDUtils.getUUID());
-        res.setCreatedTime(Long.valueOf(DateUtils.getCurrentTime()));
-        res.setUpdatedTime(Long.valueOf(DateUtils.getCurrentTime()));
+        res.setCreateTime(Long.valueOf(DateUtils.getCurrentTime()));
+        res.setUpdateTime(Long.valueOf(DateUtils.getCurrentTime()));
 
         try {
             resp.setData(this.resourceService.save(res));
@@ -142,7 +142,7 @@ public class ResourceController extends AbstractController {
 
         Resource res = new Resource();
         BeanUtils.copyProperties(para, res);
-        res.setUpdatedTime(Long.valueOf(DateUtils.getCurrentTime()));
+        res.setUpdateTime(Long.valueOf(DateUtils.getCurrentTime()));
 
         try {
             this.resourceService.update(res);
