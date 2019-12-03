@@ -4,11 +4,17 @@ import com.ss.request.Pagination;
 import com.ss.valide.APIGetsGroup;
 import org.hibernate.validator.constraints.NotBlank;
 
-
+/**
+ * DepartQuery
+ *
+ * @author FrancisYs
+ * @date 2019/12/3
+ * @email yaoshuai@ss-cas.com
+ */
 public class DepartQuery extends Pagination {
 
     private static final long serialVersionUID = -1L;
-    @NotBlank(message = "{depart.ids.empty}", groups = {APIGetsGroup.class})
+    @NotBlank(message = "{depart.id.empty}", groups = {APIGetsGroup.class})
     private String departId;
     private String orgIds;
     private String departCode;

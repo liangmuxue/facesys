@@ -1,197 +1,148 @@
 package com.ss.spider.system.department.form;
 
-import java.io.Serializable;
-
+import com.ss.valide.APIAddGroup;
+import com.ss.valide.APIDeltGroup;
+import com.ss.valide.APIEditGroup;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 
+import java.io.Serializable;
 
+/**
+ * DepartForm
+ *
+ * @author FrancisYs
+ * @date 2019/12/3
+ * @email yaoshuai@ss-cas.com
+ */
 public class DepartForm implements Serializable {
 
     private static final long serialVersionUID = -1L;
-    @NotBlank(message = "{depart.ids.empty}", groups = {com.ss.valide.APIDeltGroup.class})
+    @NotBlank(message = "{depart.ids.empty}", groups = {APIDeltGroup.class})
     private String departIds;
-    @NotBlank(message = "{depart.ids.empty}", groups = {com.ss.valide.APIEditGroup.class})
-    @Length(min = 1, max = 32, message = "{depart.ids.length}", groups = {com.ss.valide.APIEditGroup.class})
+    @NotBlank(message = "{depart.id.empty}", groups = {APIEditGroup.class})
+    @Length(min = 1, max = 32, message = "{depart.id.length}", groups = {APIEditGroup.class})
     private String departId;
-    @NotBlank(message = "{deleted.user.empty}", groups = {com.ss.valide.APIDeltGroup.class})
-    @Length(min = 1, max = 32, message = "{deleted.user.length}", groups = {com.ss.valide.APIDeltGroup.class})
-    private String deletedUserid;
-    @NotBlank(message = "{org.ids.empty}", groups = {com.ss.valide.APIAddGroup.class, com.ss.valide.APIEditGroup.class})
-    @Length(min = 1, max = 32, message = "{org.ids.length}", groups = {com.ss.valide.APIAddGroup.class, com.ss.valide.APIEditGroup.class})
+    @NotBlank(message = "{depart.orgId.empty}", groups = {APIAddGroup.class})
+    @Length(min = 1, max = 32, message = "{depart.orgId.length}", groups = {APIAddGroup.class})
     private String orgId;
-    @NotBlank(message = "{depart.code.empty}", groups = {com.ss.valide.APIAddGroup.class, com.ss.valide.APIEditGroup.class})
-    @Length(min = 1, max = 20, message = "{depart.code.length}", groups = {com.ss.valide.APIAddGroup.class, com.ss.valide.APIEditGroup.class})
+    @NotBlank(message = "{depart.code.empty}", groups = {APIAddGroup.class, APIEditGroup.class})
+    @Length(min = 1, max = 20, message = "{depart.code.length}", groups = {APIAddGroup.class, APIEditGroup.class})
     private String departCode;
-    @NotBlank(message = "{depart.cname.empty}", groups = {com.ss.valide.APIAddGroup.class, com.ss.valide.APIEditGroup.class})
-    @Length(min = 1, max = 30, message = "{depart.cname.length}", groups = {com.ss.valide.APIAddGroup.class, com.ss.valide.APIEditGroup.class})
+    @NotBlank(message = "{depart.cname.empty}", groups = {APIAddGroup.class, APIEditGroup.class})
+    @Length(min = 1, max = 30, message = "{depart.cname.length}", groups = {APIAddGroup.class, APIEditGroup.class})
     private String departCname;
-    @NotBlank(message = "{updated.user.empty}", groups = {com.ss.valide.APIAddGroup.class, com.ss.valide.APIEditGroup.class})
-    @Length(min = 1, max = 32, message = "{updated.user.length}", groups = {com.ss.valide.APIAddGroup.class, com.ss.valide.APIEditGroup.class})
-    private String updatedUserid;
-    @NotBlank(message = "{created.user.empty}", groups = {com.ss.valide.APIAddGroup.class})
-    @Length(min = 1, max = 32, message = "{created.user.length}", groups = {com.ss.valide.APIAddGroup.class})
-    private String createdUserid;
-    @Length(max = 50, message = "{depart.ename.length}", groups = {com.ss.valide.APIAddGroup.class, com.ss.valide.APIEditGroup.class})
+    @NotBlank(message = "{depart.user.empty}", groups = {APIAddGroup.class, APIEditGroup.class, APIDeltGroup.class})
+    @Length(min = 1, max = 32, message = "{depart.user.length}", groups = {APIAddGroup.class, APIEditGroup.class, APIDeltGroup.class})
+    private String userId;
+    @Length(max = 50, message = "{depart.ename.length}", groups = {APIAddGroup.class, APIEditGroup.class})
     private String departEname;
-    @Length(max = 120, message = "{depart.remark.length}", groups = {com.ss.valide.APIAddGroup.class, com.ss.valide.APIEditGroup.class})
+    @Length(max = 120, message = "{depart.remark.length}", groups = {APIAddGroup.class, APIEditGroup.class})
     private String remark;
-    @Length(max = 30, message = "{depart.linkManName.length}", groups = {com.ss.valide.APIAddGroup.class, com.ss.valide.APIEditGroup.class})
+    @Length(max = 30, message = "{depart.linkManName.length}", groups = {APIAddGroup.class, APIEditGroup.class})
     private String linkManName;
-    @Length(max = 20, message = "{depart.linkManTel.length}", groups = {com.ss.valide.APIAddGroup.class, com.ss.valide.APIEditGroup.class})
+    @Length(max = 20, message = "{depart.linkManTel.length}", groups = {APIAddGroup.class, APIEditGroup.class})
     private String linkManTel;
-    @Length(max = 20, message = "{depart.linkManFax.length}", groups = {com.ss.valide.APIAddGroup.class, com.ss.valide.APIEditGroup.class})
+    @Length(max = 20, message = "{depart.linkManFax.length}", groups = {APIAddGroup.class, APIEditGroup.class})
     private String linkManFax;
     private int thorough = 0;
 
 
-    private String userId;
-
-
-    public String getDepartId() {
-        return this.departId;
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
     }
-
-
-    public void setDepartId(String departId) {
-        this.departId = departId;
-    }
-
 
     public String getDepartIds() {
-        return this.departIds;
+        return departIds;
     }
-
 
     public void setDepartIds(String departIds) {
         this.departIds = departIds;
     }
 
-
-    public String getDeletedUserid() {
-        return this.deletedUserid;
+    public String getDepartId() {
+        return departId;
     }
 
-
-    public void setDeletedUserid(String deletedUserid) {
-        this.deletedUserid = deletedUserid;
+    public void setDepartId(String departId) {
+        this.departId = departId;
     }
-
 
     public String getOrgId() {
-        return this.orgId;
+        return orgId;
     }
-
 
     public void setOrgId(String orgId) {
         this.orgId = orgId;
     }
 
-
     public String getDepartCode() {
-        return this.departCode;
+        return departCode;
     }
-
 
     public void setDepartCode(String departCode) {
         this.departCode = departCode;
     }
 
-
     public String getDepartCname() {
-        return this.departCname;
+        return departCname;
     }
-
 
     public void setDepartCname(String departCname) {
         this.departCname = departCname;
     }
 
-
-    public String getUpdatedUserid() {
-        return this.updatedUserid;
-    }
-
-
-    public void setUpdatedUserid(String updatedUserid) {
-        this.updatedUserid = updatedUserid;
-    }
-
-
-    public String getCreatedUserid() {
-        return this.createdUserid;
-    }
-
-
-    public void setCreatedUserid(String createdUserid) {
-        this.createdUserid = createdUserid;
-    }
-
-
     public String getDepartEname() {
-        return this.departEname;
+        return departEname;
     }
-
 
     public void setDepartEname(String departEname) {
         this.departEname = departEname;
     }
 
-
     public String getRemark() {
-        return this.remark;
+        return remark;
     }
-
 
     public void setRemark(String remark) {
         this.remark = remark;
     }
 
-
     public String getLinkManName() {
-        return this.linkManName;
+        return linkManName;
     }
-
 
     public void setLinkManName(String linkManName) {
         this.linkManName = linkManName;
     }
 
-
     public String getLinkManTel() {
-        return this.linkManTel;
+        return linkManTel;
     }
-
 
     public void setLinkManTel(String linkManTel) {
         this.linkManTel = linkManTel;
     }
 
-
     public String getLinkManFax() {
-        return this.linkManFax;
+        return linkManFax;
     }
-
 
     public void setLinkManFax(String linkManFax) {
         this.linkManFax = linkManFax;
     }
 
-
     public int getThorough() {
-        return this.thorough;
+        return thorough;
     }
-
 
     public void setThorough(int thorough) {
         this.thorough = thorough;
     }
 
-
     public String getUserId() {
-        return this.userId;
+        return userId;
     }
-
 
     public void setUserId(String userId) {
         this.userId = userId;

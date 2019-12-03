@@ -3,6 +3,7 @@ package com.ss.spider.system.organization.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.ss.enums.StatusEnum;
 import com.ss.exception.ServiceException;
+import com.ss.facesys.util.StringUtils;
 import com.ss.service.AbstractSsServiceImpl;
 import com.ss.spider.system.department.mapper.DepartmentMapper;
 import com.ss.spider.system.department.model.Department;
@@ -26,7 +27,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import tk.mybatis.mapper.entity.Example;
 
@@ -69,7 +69,7 @@ public class OrganizationServiceImpl extends AbstractSsServiceImpl<Organization>
     public List<Organization> list(Organization org) {
         Example example = new Example(Organization.class);
         example.createCriteria().andEqualTo("status", StatusEnum.EFFECT.getCode());
-        example.setOrderByClause("CREATED_TIME desc, ORG_CODE asc");
+        example.setOrderByClause("create_time desc, org_code asc");
         return organizationMapper.selectByExample(example);
     }
 
@@ -87,7 +87,7 @@ public class OrganizationServiceImpl extends AbstractSsServiceImpl<Organization>
         PageHelper.startPage(pageIndex, pageSize);
         Example example = this.entityToExample(org);
         example.getOredCriteria().get(0).andEqualTo("status", StatusEnum.EFFECT.getCode());
-        example.setOrderByClause("CREATED_TIME desc, ORG_CODE asc");
+        example.setOrderByClause("create_time desc, org_code asc");
         return organizationMapper.selectByExample(example);
     }
 
@@ -149,11 +149,11 @@ public class OrganizationServiceImpl extends AbstractSsServiceImpl<Organization>
      *
      * @param entity
      */
-    private void duplicateCheck(final Organization entity, boolean insert) throws ServiceException {
+    private void duplicateCheck(final Organization entity) throws ServiceException {
         Example example = new Example(Organization.class);
         example.createCriteria().orEqualTo("orgCode", entity.getOrgCode()).orEqualTo("orgCname", entity.getOrgCname());
         example.and().andEqualTo("status", StatusEnum.EFFECT.getCode());
-        if (!insert) {
+        if (StringUtils.isNotBlank(entity.getOrgId())){
             example.and().andNotEqualTo("orgId", entity.getOrgId());
         }
         List<Organization> nameAndCodeList = organizationMapper.selectByExample(example);
@@ -173,7 +173,7 @@ public class OrganizationServiceImpl extends AbstractSsServiceImpl<Organization>
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class})
     public String save(final Organization entity) throws ServiceException {
-        duplicateCheck(entity, true);
+        duplicateCheck(entity);
         entity.setOrgId(getNewOrgId());
         this.organizationMapper.insertSelective(entity);
         return entity.getOrgId();
@@ -189,7 +189,7 @@ public class OrganizationServiceImpl extends AbstractSsServiceImpl<Organization>
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class})
     public int update(final Organization entity) throws ServiceException {
-        duplicateCheck(entity, false);
+        duplicateCheck(entity);
         return this.organizationMapper.updateByPrimaryKeySelective(entity);
     }
 
@@ -436,10 +436,10 @@ public class OrganizationServiceImpl extends AbstractSsServiceImpl<Organization>
             }
             //取出顶级父节点数据
             for (OrganizationExp org : dataList) {
-                if (!StringUtils.hasText(org.getParentName()) || "null".equals(org.getParentName())) {
-                    org.setOrgId(UUIDUtils.getUUID());
-                    parentList.add(org);
-                }
+//                if (!StringUtils.hasText(org.getParentName()) || "null".equals(org.getParentName())) {
+//                    org.setOrgId(UUIDUtils.getUUID());
+//                    parentList.add(org);
+//                }
             }
             ListHandle(parentList, dataList);
             this.organizationMapper.insertOrg(dataList);
