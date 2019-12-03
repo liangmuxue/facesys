@@ -69,7 +69,7 @@ public class OrganizationServiceImpl extends AbstractSsServiceImpl<Organization>
     public List<Organization> list(Organization org) {
         Example example = new Example(Organization.class);
         example.createCriteria().andEqualTo("status", StatusEnum.EFFECT.getCode());
-        example.setOrderByClause("CREATED_TIME desc, ORG_CODE asc");
+        example.setOrderByClause("create_time desc, org_code asc");
         return organizationMapper.selectByExample(example);
     }
 
@@ -87,7 +87,7 @@ public class OrganizationServiceImpl extends AbstractSsServiceImpl<Organization>
         PageHelper.startPage(pageIndex, pageSize);
         Example example = this.entityToExample(org);
         example.getOredCriteria().get(0).andEqualTo("status", StatusEnum.EFFECT.getCode());
-        example.setOrderByClause("CREATED_TIME desc, ORG_CODE asc");
+        example.setOrderByClause("create_time desc, org_code asc");
         return organizationMapper.selectByExample(example);
     }
 

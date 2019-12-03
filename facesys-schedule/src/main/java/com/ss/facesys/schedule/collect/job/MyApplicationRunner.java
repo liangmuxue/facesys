@@ -1,7 +1,6 @@
 package com.ss.facesys.schedule.collect.job;
 
 import com.ss.facesys.data.baseinfo.common.job.StockSimpleJob;
-import com.ss.facesys.schedule.st.job.PerceptDataLookDayJob;
 import com.ss.facesys.util.DateUtil;
 import com.ss.facesys.util.autoconfigure.JobProperties;
 import com.ss.facesys.util.constant.CacheConstant;
@@ -123,7 +122,7 @@ public class MyApplicationRunner implements ApplicationRunner {
 
         /* ***********感知增量*************************/
         //过车-日统计
-        this.stockSimpleJob.addSimpleJobScheduler(PerceptDataLookDayJob.class, JobProperties.getDataLookDay(), tc, sp, true);
+//        this.stockSimpleJob.addSimpleJobScheduler(PerceptDataLookDayJob.class, JobProperties.getDataLookDay(), tc, sp, true);
 
         //过车-周统计
         //this.stockSimpleJob.addSimpleJobScheduler(PerceptDataLookWeekJob.class, JobProperties.getDataLookWeek(), tc, sp, true);

@@ -7,7 +7,6 @@ import tk.mybatis.mapper.common.Mapper;
 import tk.mybatis.mapper.entity.Example;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
@@ -46,7 +45,7 @@ public abstract class AbstractSsServiceImpl<T> implements SsService<T> {
                 if ((value = get.invoke(entity)) != null && !"".equals(value)) {
                     criteria.andEqualTo(property, value);
                 }
-            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ignored) {
+            } catch (Exception ignored) {
             }
         }
         return example;
