@@ -1,6 +1,7 @@
 package com.ss.spider.system.user.service.impl;
 
 import com.ss.exception.ServiceException;
+import com.ss.facesys.util.constant.CommonConstant;
 import com.ss.service.AbstractSsServiceImpl;
 import com.ss.spider.system.resource.model.Resource;
 import com.ss.spider.system.resource.service.ResourceService;
@@ -77,12 +78,22 @@ public class UserServiceImpl extends AbstractSsServiceImpl<User> implements User
     @Qualifier("resourceService")
     private ResourceService<Resource> resourceService;
 
+    /**
+     * 生成用户编号
+     * @return
+     * @throws ServiceException
+     */
     @Override
     public String getNewUsrId() throws ServiceException {
         String nextVal = this.appSequenceService.getNextVal(USR_SEQ_CODE, '0', 8);
         return DateUtils.parseDate(new Date()) + nextVal;
     }
 
+    /**
+     * 查询账户信息
+     * @param args
+     * @return
+     */
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<User> gets(Map<String, Object> args) {
@@ -95,6 +106,13 @@ public class UserServiceImpl extends AbstractSsServiceImpl<User> implements User
         return this.userMapper.list(entity);
     }
 
+    /**
+     * 分页查询账户列表
+     * @param entity
+     * @param pageIndex
+     * @param pageSize
+     * @return
+     */
     @Override
     @Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
     public List<User> pages(User entity, int pageIndex, int pageSize) {
@@ -125,23 +143,22 @@ public class UserServiceImpl extends AbstractSsServiceImpl<User> implements User
     }
 
     /**
-     * 获取用户详情信息
+     * 获取账户详情信息
      * @param userId
      * @return
      */
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public User getById(final String userId) {
-        //查询用户信息
         Map<String, Object> params = new HashMap<String, Object>() {
             {
                 put("userId", userId);
             }
         };
-        //查询用户信息
+        //查询账户信息
         List<User> list = this.userMapper.gets(params);
         for (User user : list) {
-            //查询用户拥有角色
+            //查询账户拥有角色
             List<String> rlist = this.userMapper.rlist(user.getUserId());
             user.setRoleIds(rlist);
         }
@@ -149,7 +166,7 @@ public class UserServiceImpl extends AbstractSsServiceImpl<User> implements User
     }
 
     /**
-     * 新增用户
+     * 新增账户
      * @param entity
      * @param roleIds
      * @return
@@ -160,13 +177,13 @@ public class UserServiceImpl extends AbstractSsServiceImpl<User> implements User
     public String save(final User entity, List<String> roleIds) throws ServiceException {
         saveImagetoNas(entity);
         //查询用户信息
-        List<User> list = this.userMapper.gets(new HashMap<String, Object>(1) {
+        List<User> list = this.userMapper.gets(new HashMap<String, Object>(CommonConstant.COMMON_1) {
             {
                 put("loginName", entity.getLoginName());
             }
         });
         if (!CollectionUtils.isEmpty(list)) {
-            throw new ServiceException("用户账号[" + entity.getLoginName() + "]已存在");
+            throw new ServiceException("账户账号[" + entity.getLoginName() + "]已存在");
         }
         if (!StringUtils.isEmpty(entity.getWorkCode())) {
             User user = new User();
@@ -174,11 +191,11 @@ public class UserServiceImpl extends AbstractSsServiceImpl<User> implements User
             //查询用户信息
             list = this.userMapper.list(user);
             if (!CollectionUtils.isEmpty(list)) {
-                throw new ServiceException("用户警号[" + entity.getWorkCode() + "]已存在");
+                throw new ServiceException("账户警号[" + entity.getWorkCode() + "]已存在");
             }
         }
-        entity.setSalt(UUIDUtils.getRangeString(5));
         entity.setUserId(getNewUsrId());
+        //entity.setSalt(UUIDUtils.getRangeString(CommonConstant.COMMON_5));
         //String password = this.bcrypt.encode(entity.getPassword() + entity.getSalt());
         //entity.setPassword(password);
         List<UserRole> userRolelist = new ArrayList<UserRole>();
@@ -189,16 +206,16 @@ public class UserServiceImpl extends AbstractSsServiceImpl<User> implements User
             userRolelist.add(userRole);
         }
         try {
-            //新建用户角色关联信息
+            //新建账户角色关联信息
             this.userRoleMapper.batchSave(userRolelist);
-            //新建用户
+            //新建账户
             this.userMapper.save(entity);
         } catch (Exception e) {
-            String message = "新增用户失败";
+            String message = "新增账户失败";
             if (e instanceof org.springframework.dao.DuplicateKeyException) {
-                message = "由于以前已存在该用户,并且可能有历史数据,所以不能以现有账号再次创建,请重新填写账号.";
+                message = "由于以前已存在该账户,并且可能有历史数据,所以不能以现有账号再次创建,请重新填写账号.";
             }
-            this.logger.error("新增用户失败,原因:", e);
+            this.logger.error("新增账户失败,原因:", e);
             throw new ServiceException(message, e);
         }
         return entity.getUserId();
@@ -220,7 +237,7 @@ public class UserServiceImpl extends AbstractSsServiceImpl<User> implements User
     }
 
     /**
-     * 重置用户密码
+     * 重置账户密码
      * @param entity
      * @return
      * @throws ServiceException
@@ -231,13 +248,13 @@ public class UserServiceImpl extends AbstractSsServiceImpl<User> implements User
         try {
             return this.userMapper.updateNotNull(entity);
         } catch (Exception e) {
-            this.logger.error("修改用户信息失败,原因:", e);
-            throw new ServiceException("修改用户信息失败", e);
+            this.logger.error("修改账户信息失败,原因:", e);
+            throw new ServiceException("修改账户信息失败", e);
         }
     }
 
     /**
-     * 修改用户信息
+     * 修改账户信息
      * @param entity
      * @param roleIds
      * @return
@@ -249,18 +266,18 @@ public class UserServiceImpl extends AbstractSsServiceImpl<User> implements User
         saveImagetoNas(entity);
         Example example = new Example(User.class);
         example.createCriteria().andNotEqualTo("userId", entity.getUserId()).andEqualTo("loginName", entity.getLoginName());
-        //查询用户
+        //查询账户
         List<User> users = this.userMapper.selectByExample(example);
         if (CollectionUtils.isNotEmpty(users)) {
-            throw new ServiceException("用户账号[" + entity.getLoginName() + "]已存在");
+            throw new ServiceException("账户账号[" + entity.getLoginName() + "]已存在");
         }
         if (!StringUtils.isEmpty(entity.getWorkCode())) {
             User user = new User();
             user.setWorkCode(entity.getWorkCode());
-            //查询用户信息
+            //查询账户信息
             users = this.userMapper.list(user);
             if (!CollectionUtils.isEmpty(users) && !((User) users.get(0)).getUserId().equals(entity.getUserId())) {
-                throw new ServiceException("用户警号[" + entity.getWorkCode() + "]已存在");
+                throw new ServiceException("账户警号[" + entity.getWorkCode() + "]已存在");
             }
         } else if (entity.getWorkCode() == null) {
             entity.setWorkCode("");
@@ -273,19 +290,19 @@ public class UserServiceImpl extends AbstractSsServiceImpl<User> implements User
             userRolelist.add(userRole);
         }
         try {
-            //删除用户拥有角色
+            //删除账户拥有角色
             this.userRoleMapper.remove(new HashMap<String, Object>() {
                 {
                     put("userId", entity.getUserId());
                 }
             });
-            //添加用户拥有角色
+            //添加账户拥有角色
             this.userRoleMapper.batchSave(userRolelist);
-            //修改用户信息
+            //修改账户信息
             return this.userMapper.updateByPrimaryKeySelective(entity);
         } catch (Exception e) {
-            this.logger.error("修改用户信息失败,原因:", e);
-            throw new ServiceException("修改用户信息失败", e);
+            this.logger.error("修改账户信息失败,原因:", e);
+            throw new ServiceException("修改账户信息失败", e);
         }
     }
 
@@ -466,6 +483,12 @@ public class UserServiceImpl extends AbstractSsServiceImpl<User> implements User
         return Integer.valueOf(count);
     }
 
+    /**
+     * 账户启用停用
+     * @param userIds
+     * @param status
+     * @throws ServiceException
+     */
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class})
     public void opStatus(List<String> userIds, Integer status) throws ServiceException {
@@ -473,12 +496,12 @@ public class UserServiceImpl extends AbstractSsServiceImpl<User> implements User
         example.createCriteria().andIn("userId", userIds);
         List<User> users = this.userMapper.selectByExample(example);
         if (CollectionUtils.isEmpty(users)) {
-            throw new ServiceException("用户启用停用失败 没有该用户ID: " + (String) userIds.get(0) + " 请检查后再试.");
+            throw new ServiceException("账户启用停用失败 没有该账户ID: " + (String) userIds.get(0) + " 请检查后再试.");
         }
         Set<String> collect = (Set) users.stream().map(User::getUserId).collect(Collectors.toSet());
         List<String> result = (List) userIds.stream().filter(userId -> !collect.contains(userId)).collect(Collectors.toList());
         if (CollectionUtils.isNotEmpty(result)) {
-            throw new ServiceException("用户启用停用失败 失败的用户ID: " + (String) result.get(0) + " 请检查后再试.");
+            throw new ServiceException("账户启用停用失败 失败的账户ID: " + (String) result.get(0) + " 请检查后再试.");
         }
         User user = new User();
         example.clear();

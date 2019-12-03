@@ -20,7 +20,7 @@ public interface UserRoleMapper extends SsMapper<UserRole> {
     int save(UserRole paramUserRole);
 
     /**
-     * 新建用户角色关联信息
+     * 新建账户角色关联信息
      * @param paramList
      * @return
      */

@@ -13,48 +13,55 @@ import com.ss.spider.system.resource.model.Resource;
 import com.ss.spider.system.resource.model.ResourceTree;
 import org.apache.commons.lang3.StringUtils;
 
-
-@Table(name = "CW_GE_USER")
+/**
+ * 用户
+ * @author chao
+ * @create 2019/12/3
+ * @email lishuangchao@ss-cas.com
+ **/
+@Table(name = "cw_ge_user")
 public class User extends DTEntity {
 
     private static final long serialVersionUID = -5335331512374529436L;
     @Id
-    @Column(name = "USER_ID")
+    @Column(name = "user_id")
     private String userId;
-    @Column(name = "DEPART_ID")
+    @Column(name = "depart_id")
     private String departId;
-    @Column(name = "ORG_ID")
+    @Column(name = "org_id")
     private String orgId;
-    @Column(name = "WORK_CODE")
+    @Column(name = "work_code")
     private String workCode;
-    @Column(name = "LOGIN_NAME")
+    @Column(name = "login_name")
     private String loginName;
-    @Column(name = "PASSWORD")
+    @Column(name = "password")
     private String password;
-    @Column(name = "SALT")
+    @Column(name = "salt")
     private String salt;
-    @Column(name = "NAME")
+    @Column(name = "name")
     private String name;
-    @Column(name = "SEX")
+    @Column(name = "sex")
     private Integer sex;
-    @Column(name = "BRITHDAY")
+    @Column(name = "brithday")
     private String brithday;
-    @Column(name = "APP_ON_OFF")
+    @Column(name = "app_on_off")
     private Integer appOnOff;
-    @Column(name = "STATUS")
+    @Column(name = "status")
     private Integer status;
-    @Column(name = "POSITION")
+    @Column(name = "position")
     private String position;
-    @Column(name = "EMAIL")
+    @Column(name = "email")
     private String email;
-    @Column(name = "PHONE_NUMBER")
+    @Column(name = "phone_number")
     private String phoneNumber;
-    @Column(name = "PICTURE_URL")
+    @Column(name = "picture_url")
     private String pictureUrl;
-    @Column(name = "REMARK")
+    @Column(name = "remark")
     private String remark;
-    @Column(name = "INIT_FLAG")
+    @Column(name = "init_flag")
     private Integer initFlag;
+    @Column(name = "ip")
+    private String ip;
     @Transient
     private String roleName;
     @Transient
@@ -64,7 +71,8 @@ public class User extends DTEntity {
     @Transient
     private List<ResourceTree> children;
     @Transient
-    private List<Resource> resourceList;;
+    private List<Resource> resourceList;
+    ;
 
     public List<String> getOrgIds() {
         return this.orgIds;
@@ -296,5 +304,13 @@ public class User extends DTEntity {
 
     public void setResourceList(List<Resource> resourceList) {
         this.resourceList = resourceList;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
     }
 }

@@ -6,7 +6,7 @@ import org.hibernate.validator.constraints.NotBlank;
 /**
 * 用户
 * @author chao
-* @create 2019/10/10
+* @create 2019/12/3
 * @email lishuangchao@ss-cas.com
 **/
 public class UserQuery extends Pagination {
