@@ -5,7 +5,6 @@ import com.ss.annotation.OpLog;
 import com.ss.controller.AbstractController;
 import com.ss.enums.OperaTypeEnum;
 import com.ss.enums.StatusEnum;
-import com.ss.exception.ServiceException;
 import com.ss.response.PageEntity;
 import com.ss.response.ResponseEntity;
 import com.ss.spider.log.constants.ModuleCode;
@@ -13,16 +12,12 @@ import com.ss.spider.system.department.form.DepartForm;
 import com.ss.spider.system.department.form.DepartQuery;
 import com.ss.spider.system.department.model.Department;
 import com.ss.spider.system.department.service.DepartmentService;
-import com.ss.spider.system.user.model.User;
-import com.ss.spider.system.user.service.UserService;
 import com.ss.tools.ArraysUtils;
 import com.ss.tools.DateUtils;
-import com.ss.valide.APIPageGroup;
-import org.mybatis.spring.MyBatisSystemException;
+import com.ss.valide.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -45,12 +40,10 @@ import java.util.List;
 public class DepartmentController extends AbstractController {
 
     private final DepartmentService<Department> departmentService;
-    private final UserService<User> userService;
 
     @Autowired
-    public DepartmentController(@Qualifier("departmentService") DepartmentService<Department> departmentService, @Qualifier("userService") UserService<User> userService) {
+    public DepartmentController(@Qualifier("departmentService") DepartmentService<Department> departmentService) {
         this.departmentService = departmentService;
-        this.userService = userService;
     }
 
     /**
@@ -93,110 +86,106 @@ public class DepartmentController extends AbstractController {
         return resp;
     }
 
+    /**
+     * 查询部门详情信息
+     *
+     * @param para
+     * @param bindingResult
+     * @return
+     * @throws BindException
+     */
     @RequestMapping(value = {"/get"}, method = {RequestMethod.POST})
     @OpLog(model = ModuleCode.SYSTEM, desc = "查询部门详情信息", type = OperaTypeEnum.SELECT)
-    public ResponseEntity<Department> get(@RequestBody @Validated({com.ss.valide.APIGetsGroup.class}) DepartQuery para, BindingResult bindingResult) throws BindException {
+    public ResponseEntity<Department> get(@RequestBody @Validated({APIGetsGroup.class}) DepartQuery para, BindingResult bindingResult) throws BindException {
         ResponseEntity<Department> resp = validite(bindingResult);
         resp.setData(this.departmentService.get(para.getDepartId()));
-
         return resp;
     }
 
-
+    /**
+     * 新增部门
+     *
+     * @param para
+     * @param bindingResult
+     * @return
+     * @throws BindException
+     */
     @RequestMapping(value = {"/save"}, method = {RequestMethod.POST})
     @OpLog(model = ModuleCode.SYSTEM, desc = "新增部门信息", type = OperaTypeEnum.ADD)
-    public ResponseEntity<String> save(@RequestBody @Validated({com.ss.valide.APIAddGroup.class}) DepartForm para, BindingResult bindingResult) throws BindException {
+    public ResponseEntity<String> save(@RequestBody @Validated({APIAddGroup.class}) DepartForm para, BindingResult bindingResult) throws BindException {
         ResponseEntity<String> resp = validite(bindingResult);
-
         Department depart = new Department();
         BeanUtils.copyProperties(para, depart);
-
-        depart.setStatus(Integer.valueOf(StatusEnum.EFFECT.getCode()));
-        depart.setCreateTime(Long.valueOf(DateUtils.getCurrentTime()));
-        depart.setUpdateTime(Long.valueOf(DateUtils.getCurrentTime()));
-
+        long currentTime = DateUtils.getCurrentTime();
+        depart.setStatus(StatusEnum.EFFECT.getCode());
+        depart.setCreateTime(currentTime);
+        depart.setUpdateTime(currentTime);
+        depart.setCreateUserId(para.getUserId());
+        depart.setUpdateUserId(para.getUserId());
         try {
             resp.setData(this.departmentService.save(depart));
-        } catch (MyBatisSystemException e) {
-            this.logger.error("保存部门信息失败,原因：", e);
-            throw e;
-        } catch (DataAccessResourceFailureException e) {
-            this.logger.error("保存部门信息失败,原因：", e);
-            throw e;
         } catch (Exception e) {
             this.logger.error("保存部门信息失败,原因：", e);
             resp = createFailResponse();
             resp.setMessage(e.getMessage());
-
             return resp;
         }
-
         return resp;
     }
 
-
+    /**
+     * 修改部门
+     *
+     * @param para
+     * @param bindingResult
+     * @return
+     * @throws BindException
+     */
     @RequestMapping(value = {"/edit"}, method = {RequestMethod.POST})
     @OpLog(model = ModuleCode.SYSTEM, desc = "修改部门信息", type = OperaTypeEnum.EDIT)
-    public ResponseEntity<String> edit(@RequestBody @Validated({com.ss.valide.APIEditGroup.class}) DepartForm para, BindingResult bindingResult) throws BindException {
+    public ResponseEntity<String> edit(@RequestBody @Validated({APIEditGroup.class}) DepartForm para, BindingResult bindingResult) throws BindException {
         ResponseEntity<String> resp = validite(bindingResult);
-
         Department depart = new Department();
         BeanUtils.copyProperties(para, depart);
-
-
-        depart.setUpdateTime(Long.valueOf(DateUtils.getCurrentTime()));
-        depart.setStatus(Integer.valueOf(StatusEnum.EFFECT.getCode()));
-
+        depart.setStatus(StatusEnum.EFFECT.getCode());
+        depart.setUpdateTime(DateUtils.getCurrentTime());
+        depart.setUpdateUserId(para.getUserId());
         try {
             this.departmentService.update(depart);
-        } catch (MyBatisSystemException e) {
-            this.logger.error("修改部门信息失败,原因：", e);
-            throw e;
-        } catch (DataAccessResourceFailureException e) {
-            this.logger.error("修改部门信息失败,原因：", e);
-            throw e;
         } catch (Exception e) {
             this.logger.error("修改部门信息失败,原因：", e);
             resp = createFailResponse();
             resp.setMessage(e.getMessage());
-
             return resp;
         }
-
         return resp;
     }
 
-
+    /**
+     * 删除部门
+     *
+     * @param para
+     * @param bindingResult
+     * @return
+     * @throws BindException
+     */
     @RequestMapping(value = {"/delete"}, method = {RequestMethod.POST})
     @OpLog(model = ModuleCode.SYSTEM, desc = "删除部门信息", type = OperaTypeEnum.DELETE)
-    public ResponseEntity<String> delete(@RequestBody @Validated({com.ss.valide.APIDeltGroup.class}) DepartForm para, BindingResult bindingResult) throws BindException {
+    public ResponseEntity<String> delete(@RequestBody @Validated({APIDeltGroup.class}) DepartForm para, BindingResult bindingResult) throws BindException {
         ResponseEntity<String> resp = validite(bindingResult);
         List<String> departIds = ArraysUtils.asList(para.getDepartIds());
-
         try {
-            Integer count = this.userService.getUserCountByDepartIds(departIds);
-            if (count.intValue() > 0) {
-                throw new ServiceException("当前删除的部门还有人员存在,请先移除人员之后操作.");
-            }
             if (para.getThorough() == 0) {
-                this.departmentService.discard(departIds, para.getDeletedUserid());
+                this.departmentService.discard(departIds, para.getUserId());
             } else {
                 this.departmentService.delete(departIds);
             }
-        } catch (MyBatisSystemException e) {
-            this.logger.error("删除部门信息失败,原因：", e);
-            throw e;
-        } catch (DataAccessResourceFailureException e) {
-            this.logger.error("删除部门信息失败,原因：", e);
-            throw e;
         } catch (Exception e) {
             this.logger.error("删除部门信息失败，原因：", e);
             resp = createFailResponse();
             resp.setMessage(e.getMessage());
-
             return resp;
         }
-
         return resp;
     }
 
