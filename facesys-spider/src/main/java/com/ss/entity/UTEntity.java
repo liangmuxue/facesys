@@ -2,32 +2,27 @@ package com.ss.entity;
 
 import javax.persistence.Column;
 
-
 public class UTEntity extends CTEntity {
 
     private static final long serialVersionUID = 8860879316446668472L;
-    @Column(name = "UPDATED_TIME")
-    private Long updatedTime;
-    @Column(name = "UPDATED_USERID")
-    private String updatedUserid;
+    @Column(name = "update_time")
+    private Long updateTime;
+    @Column(name = "update_user_id")
+    private String updateUserId;
 
-    public Long getUpdatedTime() {
-        return this.updatedTime;
+    public Long getUpdateTime() {
+        return updateTime;
     }
 
-
-    public void setUpdatedTime(Long updatedTime) {
-        this.updatedTime = updatedTime;
+    public void setUpdateTime(Long updateTime) {
+        this.updateTime = updateTime;
     }
 
-
-    public String getUpdatedUserid() {
-        return this.updatedUserid;
+    public String getUpdateUserId() {
+        return updateUserId;
     }
 
-
-    public void setUpdatedUserid(String updatedUserid) {
-        this.updatedUserid = updatedUserid;
+    public void setUpdateUserId(String updateUserId) {
+        this.updateUserId = updateUserId;
     }
-
 }
