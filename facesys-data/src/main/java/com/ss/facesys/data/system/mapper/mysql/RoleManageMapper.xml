@@ -5,13 +5,13 @@
 <mapper namespace="com.ss.facesys.data.system.mapper.RoleManageMapper">
 	<!--查询用户拥有角色-->
 	<select id="list" parameterType="com.ss.facesys.data.system.common.model.Role" resultType="com.ss.facesys.data.system.common.model.Role">
-		SELECT r.ROLE_CNAME AS roleCName,rr.ROLE_ID AS roleId
+		SELECT r.role_cname AS roleCName,rr.role_id AS roleId
 		FROM cw_ge_role r
-		LEFT JOIN cw_ge_user_role_ref rr ON rr.ROLE_ID = r.ROLE_ID
-		LEFT JOIN cw_ge_user u ON u.USER_ID = rr.USER_ID
+		LEFT JOIN cw_ge_user_role_ref rr ON rr.role_id = r.role_id
+		LEFT JOIN cw_ge_user u ON u.user_id = rr.user_id
 		<where> 
 			<if test="userId != null and userId != ''">
-				u.`USER_ID` = #{userId}
+				u.`user_id` = #{userId}
 			</if>
 		</where>
 	</select>

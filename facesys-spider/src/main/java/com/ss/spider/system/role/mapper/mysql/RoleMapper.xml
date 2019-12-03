@@ -52,32 +52,32 @@
 	
 	<!--查询角色-->
 	<select id="list" parameterType="com.ss.spider.system.role.model.Role" resultMap="BaseRoleMap">
-		select ROLE_ID, ROLE_CNAME, ROLE_ENAME, STATUS, REMARK, INIT_FLAG, CREATED_TIME, CREATED_USERID, 
-		       UPDATED_TIME, UPDATED_USERID, DELETED_TIME, DELETED_USERID
+		select role_id, role_cname, role_ename, status, remark, init_flag, create_time, create_user_id,
+		       update_time, update_user_id, delete_time, delete_user_id
 		  from CW_GE_ROLE
 		 where 1 = 1
 		 <if test="roleId != null and roleId != ''">
-		 	and ROLE_ID = #{roleId, jdbcType=VARCHAR}
+		 	and role_id = #{roleId, jdbcType=VARCHAR}
 		 </if>
 		 
 		 <if test="roleCname != null and roleCname != ''">
-		 	and ROLE_CNAME = #{roleCname, jdbcType=VARCHAR}
+		 	and role_cname = #{roleCname, jdbcType=VARCHAR}
 		 </if>
 		 
 		 <if test="roleEname != null and roleEname != ''">
-		 	and ROLE_ENAME = #{roleEname, jdbcType=VARCHAR}
+		 	and role_ename = #{roleEname, jdbcType=VARCHAR}
 		 </if>
 		 
 		 <if test="initFlag != null and initFlag != ''">
-		 	and INIT_FLAG = #{initFlag, jdbcType=INTEGER}
+		 	and init_flag = #{initFlag, jdbcType=INTEGER}
 		 </if>
 		 
 		 <choose>
 		 	<when test="status != null">
-		 		and STATUS = #{status, jdbcType=INTEGER}
+		 		and status = #{status, jdbcType=INTEGER}
 		 	</when>
 		 	<otherwise>
-		 		and STATUS in(0, 1)
+		 		and status in(0, 1)
 		 	</otherwise>
 		 </choose>
 	</select>

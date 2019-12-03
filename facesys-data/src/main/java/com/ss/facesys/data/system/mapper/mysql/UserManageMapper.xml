@@ -3,45 +3,65 @@
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ss.facesys.data.system.mapper.UserManageMapper">
-	<!--查询用户列表-->
+	<!--查询账户列表-->
 	<select id="pages" parameterType="com.ss.facesys.data.system.common.model.User" resultType="com.ss.facesys.data.system.common.model.User">
-		SELECT
-			u.USER_ID AS userId,
-			u.LOGIN_NAME AS loginName,
-			u.`NAME` AS NAME,
-			u.PHONE_NUMBER AS phoneNumber,
-			u.WORK_CODE AS workCode,
-			u.CREATED_USERID AS createUserId,
-			u.CREATED_TIME AS createTime,
-			o.ORG_CNAME AS orgName,
-			u.SEX AS sex,
-			u.BRITHDAY AS birthday,
-			u.EMAIL AS email,
-			u.ORG_ID AS orgId,
-			u2.`LOGIN_NAME` AS createdName,
-			u.BRITHDAY AS birthday
-		FROM
+		select
+			u.user_id AS userId,
+			u.login_name AS loginName,
+			u.`name`,
+			u.phone_number AS phoneNumber,
+			u.work_code AS workCode,
+			u.create_user_id AS createUserId,
+			u.create_time AS createTime,
+			o.org_cname AS orgName,
+			u.sex AS sex,
+			u.brithday AS birthday,
+			u.email AS email,
+			u.org_id AS orgId,
+			u.brithday AS birthday,
+			u.status,
+			d.depart_cname AS departCName,
+			e.enumName AS statusName
+		from
 			cw_ge_user u
-		LEFT JOIN cw_ge_organization o ON u.ORG_ID = o.ORG_ID
-		LEFT JOIN cw_ge_user u2 ON u.CREATED_USERID = u2.`USER_ID`
+		left join cw_ge_organization o on u.org_id = o.org_id
+		left join cw_ge_department d on u.depart_id = d.depart_id
+		left join cw_ge_user_role_ref urr on u.user_id = urr.user_id
+		left join cw_ge_role gr on urr.role_id = gr.role_id
+		left join cw_base_enum e on u.status = e.enumValue and e.enumType = "USER_STATUS"
 		<where>
-				u.`STATUS` = 1
 			<if test="orgId != null and orgId != ''">
-				AND u.ORG_ID = #{orgId}
+				and u.org_id = #{orgId, jdbcType=VARCHAR}
 			</if>
+
 			<if test="loginName != null and loginName != ''">
-				AND u.LOGIN_NAME LIKE CONCAT('%',#{loginName},'%')
+				and u.login_name like CONCAT('%', #{loginName, jdbcType=VARCHAR}, '%')
 			</if>
+
+			<if test="workCode != null and workCode != ''">
+				and u.work_code like CONCAT('%', #{workCode, jdbcType=VARCHAR}, '%')
+			</if>
+
 			<if test="name != null and name != ''">
-				AND u.`NAME` LIKE CONCAT('%',#{name},'%')
+				and u.name like CONCAT('%', #{name, jdbcType=VARCHAR}, '%')
 			</if>
+
 			<if test="phoneNumber != null and phoneNumber != ''">
-				AND u.PHONE_NUMBER LIKE CONCAT('%',#{phoneNumber},'%')
+				and u.phone_number like CONCAT('%', #{phoneNumber, jdbcType=VARCHAR}, '%')
 			</if>
-			<if test="condition !=null and condition !=''">
-				AND u.`NAME` LIKE CONCAT('%',#{condition},'%')
-				OR u.LOGIN_NAME LIKE CONCAT('%',#{condition},'%')
-				OR u.PHONE_NUMBER LIKE CONCAT('%',#{condition},'%')
+
+			<choose>
+				<when test="status != null">
+					and u.status = #{status, jdbcType=INTEGER}
+				</when>
+				<otherwise>
+					and u.status in(0, 1)
+				</otherwise>
+			</choose>
+
+			<if test="roleName != null and roleName != ''">
+				and (gr.role_cname like CONCAT('%', #{roleName, jdbcType=VARCHAR}, '%')
+				or gr.role_ename like CONCAT('%', #{roleName, jdbcType=VARCHAR}, '%') )
 			</if>
 		</where>
 	</select>

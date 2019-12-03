@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
-* 用户分页列表
+* 账户
 * @author chao
 * @create 2019/10/10
 * @email lishuangchao@ss-cas.com
@@ -27,20 +27,25 @@ public class UserManageServiceImpl implements IUserManageService {
   @Autowired
   private RoleManageMapper roleMapper;
 
+  /**
+   * 账户分页列表
+   * @param dto
+   * @return
+   */
   @Override
   public List<User> pages(User dto) {
     PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
-    //查询用户信息
+    //查询账户信息
     List<User> uList = this.userManageMapper.pages(dto);
     for (User user : uList) {
-      Role roleDTO = new Role();
-      roleDTO.setUserId(user.getUserId());
-      //查询用户拥有角色
-      List<Role> rList = this.roleMapper.list(roleDTO);
+      Role role = new Role();
+      role.setUserId(user.getUserId());
+      //查询账户拥有角色
+      List<Role> rList = this.roleMapper.list(role);
       StringBuffer roleName = new StringBuffer();
       Iterator<Role> iterator = rList.iterator();
       while(iterator.hasNext()){
-        Role temp = (Role) iterator.next();
+        Role temp = iterator.next();
         roleName.append(temp.getRoleCName());
         if(iterator.hasNext()){
           roleName.append(",");

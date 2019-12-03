@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.ss.tools.FileUtils;
 import com.sun.org.apache.xpath.internal.operations.Mod;
 import org.apache.commons.collections.CollectionUtils;
 import org.mybatis.spring.MyBatisSystemException;
@@ -265,7 +266,7 @@ public class UserController extends AbstractController {
         User user = new User();
         user.setUserId(para.getOpUserId());
         user.setPassword(para.getNewPassword());
-        user.setUpdateUserId(para.getUpdatedUserId());
+        user.setUpdateUserId(para.getUpdateUserId());
         user.setUpdateTime(DateUtils.getCurrentTime());
         try {
             //修改密码
