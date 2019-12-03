@@ -172,18 +172,6 @@ public class VehicleRecord
   public void setPlateNoPicUrl(String plateNoPicUrl) { this.plateNoPicUrl = plateNoPicUrl; }
 
   
-  public Date getCreateTime() { return this.createTime; }
-
-  
-  public void setCreateTime(Date createTime) { this.createTime = createTime; }
-
-  
-  public Date getUpdateTime() { return this.updateTime; }
-
-  
-  public void setUpdateTime(Date updateTime) { this.updateTime = updateTime; }
-
-  
   public Integer getWithState() { return this.withState; }
 
   

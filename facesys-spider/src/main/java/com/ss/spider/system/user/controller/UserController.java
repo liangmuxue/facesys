@@ -7,10 +7,12 @@ import com.ss.enums.CommonEnumClass;
 import com.ss.enums.OperaTypeEnum;
 import com.ss.enums.StatusEnum;
 import com.ss.exception.ServiceException;
+import com.ss.facesys.util.constant.CommonConstant;
 import com.ss.response.PageEntity;
 import com.ss.response.ResponseEntity;
 import com.ss.spider.interceptor.cache.beans.CacheUserInfo;
 import com.ss.spider.interceptor.service.UserInfoCacheService;
+import com.ss.spider.log.constants.ModuleCode;
 import com.ss.spider.system.organization.service.OrganizationService;
 import com.ss.spider.system.user.form.PasswordForm;
 import com.ss.spider.system.user.form.ResetPasswordForm;
@@ -30,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.sun.org.apache.xpath.internal.operations.Mod;
 import org.apache.commons.collections.CollectionUtils;
 import org.mybatis.spring.MyBatisSystemException;
 import org.springframework.beans.BeanUtils;
@@ -46,9 +49,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 /**
-* 用户相关操作
+* 账户相关操作
 * @author chao
-* @create 2019/10/10
+* @create 2019/12/3
 * @email lishuangchao@ss-cas.com
 **/
 @RestController
@@ -62,23 +65,24 @@ public class UserController extends AbstractController {
     private UserInfoCacheService userInfoCacheService;
     @Autowired
     private OrganizationService organizationService;
-    private BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
+    //private BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
 
-
+    /**
+     * 分页查询账户列表
+     * @param para
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = {"/pages"}, method = {RequestMethod.POST})
-    @OpLog(model = "70005", desc = "分页查询用户列表", type = OperaTypeEnum.SELECT)
+    @OpLog(model = ModuleCode.SYSTEM, desc = "分页查询账户列表", type = OperaTypeEnum.SEARCH)
     public ResponseEntity<PageEntity<User>> pages(@RequestBody UserQuery para) throws Exception {
         int currPage = getPageIndex(para);
         int pageSize = getPageSize(para);
-
         User user = new User();
         BeanUtils.copyProperties(para, user);
-
         Page<User> data = (Page) this.userService.pages(user, currPage, pageSize);
-
         ResponseEntity<PageEntity<User>> resp = createSuccResponse();
         resp.setData(new PageEntity(data));
-
         return resp;
     }
 
@@ -112,7 +116,7 @@ public class UserController extends AbstractController {
      * @throws BindException
      */
     @RequestMapping(value = {"/get"}, method = {RequestMethod.POST})
-    @OpLog(model = "70005", desc = "获取用户详情信息及权限列表", type = OperaTypeEnum.SELECT)
+    @OpLog(model = ModuleCode.SYSTEM, desc = "获取用户详情信息及权限列表", type = OperaTypeEnum.SELECT)
     public ResponseEntity<User> get(@RequestBody @Validated({com.ss.valide.APIGetsGroup.class}) UserQuery para, BindingResult bindingResult) throws BindException {
         ResponseEntity<User> resp = validite(bindingResult);
         resp.setData(this.userService.get(para.getOpUserId()));
@@ -127,7 +131,7 @@ public class UserController extends AbstractController {
      * @throws BindException
      */
     @RequestMapping(value = {"/getById"}, method = {RequestMethod.POST})
-    @OpLog(model = "70005", desc = "获取用户详情信息", type = OperaTypeEnum.SELECT)
+    @OpLog(model = ModuleCode.SYSTEM, desc = "获取账户详情信息", type = OperaTypeEnum.SELECT)
     public ResponseEntity<User> getById(@RequestBody @Validated({com.ss.valide.APIGetsGroup.class}) UserQuery para, BindingResult bindingResult) throws BindException {
         ResponseEntity<User> resp = validite(bindingResult);
         resp.setData(this.userService.getById(para.getOpUserId()));
@@ -135,14 +139,14 @@ public class UserController extends AbstractController {
     }
 
     /**
-     * 新增用户信息
+     * 新增账户信息
      * @param para
      * @param bindingResult
      * @return
      * @throws Exception
      */
     @RequestMapping(value = {"/save"}, method = {RequestMethod.POST})
-    @OpLog(model = "70005", desc = "新增用户信息", type = OperaTypeEnum.ADD)
+    @OpLog(model = ModuleCode.SYSTEM, desc = "新增账户信息", type = OperaTypeEnum.ADD)
     public ResponseEntity<String> save(@RequestBody @Validated({com.ss.valide.APIAddGroup.class}) UserForm para, BindingResult bindingResult) throws Exception {
         ResponseEntity<String> resp = validite(bindingResult);
         User user = new User();
@@ -154,7 +158,7 @@ public class UserController extends AbstractController {
             if (!StringUtils.isEmpty(para.getPictureUrl())) {
                 boolean checkBase64 = Base64ImageUtils.isCheckBase64(para.getPictureUrl(), Constants.IMAGE_TYPE.split(","));
                 if (!checkBase64) {
-                    this.logger.error("新增用户信息失败,图片base64数据上传错误!错误码：{},错误描述：{},图片Base64：{}",
+                    this.logger.error("新增账户信息失败,图片base64数据上传错误!错误码：{},错误描述：{},图片Base64：{}",
                             CommonEnumClass.CommonInterfaceEnum.USER_IMG_DATA_ERROR.getKey(),
                             CommonEnumClass.CommonInterfaceEnum.USER_IMG_DATA_ERROR.getValue(),
                             para.getPictureUrl());
@@ -164,10 +168,10 @@ public class UserController extends AbstractController {
             //新增用户
             resp.setData(this.userService.save(user, ArraysUtils.asList(para.getRoleIds())));
         } catch (MyBatisSystemException | DataAccessResourceFailureException e) {
-            this.logger.error("新增用户基本信息失败,原因：", e);
+            this.logger.error("新增账户基本信息失败,原因：", e);
             throw e;
         } catch (Exception e) {
-            this.logger.error("新增用户基本信息失败,原因：", e);
+            this.logger.error("新增账户基本信息失败,原因：", e);
             resp = createFailResponse();
             resp.setMessage(e.getMessage());
             return resp;
@@ -231,18 +235,18 @@ public class UserController extends AbstractController {
     }
 
     /**
-     * 重置用户密码
+     * 重置账户密码
      * @param para
      * @param bindingResult
      * @return
      * @throws BindException
      */
     @RequestMapping(value = {"/resetpassword"}, method = {RequestMethod.POST})
-    @OpLog(model = "70005", desc = "重置用户密码", type = OperaTypeEnum.EDIT)
+    @OpLog(model = ModuleCode.SYSTEM, desc = "重置账户密码", type = OperaTypeEnum.EDIT)
     public ResponseEntity<String> resetpassword(@RequestBody @Validated final ResetPasswordForm para, BindingResult bindingResult) throws BindException {
         ResponseEntity<String> resp = validite(bindingResult);
         //查询用户信息
-        List<User> list = this.userService.gets(new HashMap<String, Object>(1) {
+        List<User> list = this.userService.gets(new HashMap<String, Object>(CommonConstant.COMMON_1) {
             {
                 put("userId", para.getOpUserId());
             }
@@ -261,16 +265,16 @@ public class UserController extends AbstractController {
         User user = new User();
         user.setUserId(para.getOpUserId());
         user.setPassword(para.getNewPassword());
-        user.setUpdateUserId(para.getUpdatedUserid());
+        user.setUpdateUserId(para.getUpdatedUserId());
         user.setUpdateTime(DateUtils.getCurrentTime());
         try {
             //修改密码
             this.userService.updateNotNull(user);
         } catch (MyBatisSystemException | DataAccessResourceFailureException e) {
-            this.logger.error("重置用户密码失败,原因：", e);
+            this.logger.error("重置账户密码失败,原因：", e);
             throw e;
         } catch (Exception e) {
-            this.logger.error("重置用户密码失败,原因：", e);
+            this.logger.error("重置账户密码失败,原因：", e);
             resp = createFailResponse();
             resp.setMessage(e.getMessage());
 
@@ -281,22 +285,20 @@ public class UserController extends AbstractController {
     }
 
     /**
-     * 修改用户信息
+     * 修改账户信息
      * @param para
      * @param bindingResult
      * @return
      * @throws Exception
      */
     @RequestMapping(value = {"/edit"}, method = {RequestMethod.POST})
-    @OpLog(model = "70005", desc = "修改用户信息", type = OperaTypeEnum.EDIT)
+    @OpLog(model = ModuleCode.SYSTEM, desc = "修改账户信息", type = OperaTypeEnum.EDIT)
     public ResponseEntity<String> edit(@RequestBody @Validated({com.ss.valide.APIEditGroup.class}) UserForm para, BindingResult bindingResult) throws Exception {
         ResponseEntity<String> resp = validite(bindingResult);
         if ("1000".equals(para.getOpUserId())){
-            if (!"1".equals(para.getRoleIds())){
-                resp = createFailResponse();
-                resp.setMessage("初始用户权限不能修改！");
-                return resp;
-            }
+            resp = createFailResponse();
+            resp.setMessage("系统账户不能修改！");
+            return resp;
         }
         User user = new User();
         BeanUtils.copyProperties(para, user);
@@ -306,20 +308,20 @@ public class UserController extends AbstractController {
             if (!StringUtils.isEmpty(para.getPictureUrl())) {
                 boolean checkBase64 = Base64ImageUtils.isCheckBase64(para.getPictureUrl(), Constants.IMAGE_TYPE.split(","));
                 if (!checkBase64) {
-                    this.logger.error("修改用户信息失败,图片base64数据上传错误!错误码：{},错误描述：{},图片Base64：{}",
+                    this.logger.error("修改账户信息失败,图片base64数据上传错误!错误码：{},错误描述：{},图片Base64：{}",
                             CommonEnumClass.CommonInterfaceEnum.USER_IMG_DATA_ERROR.getKey(),
                             CommonEnumClass.CommonInterfaceEnum.USER_IMG_DATA_ERROR.getValue(),
                             para.getPictureUrl());
                     throw new ServiceException(CommonEnumClass.CommonInterfaceEnum.USER_IMG_DATA_ERROR);
                 }
             }
-            //修改用户信息
+            //修改账户信息
             this.userService.update(user, ArraysUtils.asList(para.getRoleIds()));
         } catch (MyBatisSystemException | DataAccessResourceFailureException e) {
-            this.logger.error("修改用户基本信息失败,原因：", e);
+            this.logger.error("修改账户基本信息失败,原因：", e);
             throw e;
         } catch (Exception e) {
-            this.logger.error("修改用户基本信息失败,原因：", e);
+            this.logger.error("修改账户基本信息失败,原因：", e);
             resp = createFailResponse();
             resp.setMessage(e.getMessage());
             return resp;
@@ -363,22 +365,25 @@ public class UserController extends AbstractController {
         return resp;
     }
 
-
+    /**
+     * 账户启用停用
+     * @param para
+     * @param bindingResult
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = {"/opStatus"}, method = {RequestMethod.POST})
-    @OpLog(model = "70005", desc = "切换用户状态", type = OperaTypeEnum.EDIT)
-    public ResponseEntity<String> opStatus(
-            @RequestBody @Validated({com.ss.valide.APIOpStatusGroup.class}) UserForm para,
-            BindingResult bindingResult) throws Exception {
+    @OpLog(model = ModuleCode.SYSTEM, desc = "切换账户状态", type = OperaTypeEnum.EDIT)
+    public ResponseEntity<String> opStatus(@RequestBody @Validated({com.ss.valide.APIOpStatusGroup.class}) UserForm para, BindingResult bindingResult) throws Exception {
         ResponseEntity<String> resp = validite(bindingResult);
         List<String> userIds = ArraysUtils.asList(para.getUserIds());
-
         try {
             this.userService.opStatus(userIds, para.getStatus());
         } catch (MyBatisSystemException | DataAccessResourceFailureException e) {
-            this.logger.error("用户启用停用失败,原因：", e);
+            this.logger.error("账户启用停用失败,原因：", e);
             throw e;
         } catch (Exception e) {
-            this.logger.error("用户启用停用失败，原因：", e);
+            this.logger.error("账户启用停用失败，原因：", e);
             resp = createFailResponse();
             resp.setMessage(e.getMessage());
         }

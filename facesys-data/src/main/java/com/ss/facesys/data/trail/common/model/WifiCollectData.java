@@ -51,8 +51,6 @@ public class WifiCollectData
   private Integer gisType;
   private String collectMac;
   private Date collectTime;
-  private Date createTime;
-  private Date updateTime;
   
   public Integer getId() { return this.id; }
 
@@ -101,15 +99,4 @@ public class WifiCollectData
   
   public void setCollectTime(Date collectTime) { this.collectTime = collectTime; }
 
-  
-  public Date getCreateTime() { return this.createTime; }
-
-  
-  public void setCreateTime(Date createTime) { this.createTime = createTime; }
-
-  
-  public Date getUpdateTime() { return this.updateTime; }
-
-  
-  public void setUpdateTime(Date updateTime) { this.updateTime = updateTime; }
 }

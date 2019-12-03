@@ -52,35 +52,35 @@
 		insert into CW_GE_USER_ROLE_REF(USER_ID, ROLE_ID)
 		values(#{userId, jdbcType=VARCHAR},			#{roleId, jdbcType=VARCHAR)
 	</insert>
-	<!--新建用户角色关联信息-->
+	<!--新建账户角色关联信息-->
 	<insert id="batchSave" parameterType="java.util.List">
-		insert into CW_GE_USER_ROLE_REF(USER_ID, ROLE_ID)
+		insert into cw_ge_user_role_ref(user_id, role_id)
 		values
 		<foreach collection="list" item="item" index="index" separator=",">
-            (#{item.userId, jdbcType=VARCHAR}, 		#{item.roleId, jdbcType=VARCHAR})
+            (#{item.userId, jdbcType=VARCHAR}, #{item.roleId, jdbcType=VARCHAR})
         </foreach>
 	</insert>
-	<!--删除用户拥有角色-->
+	<!--删除账户拥有角色-->
 	<delete id="remove" parameterType="map">
-		delete from CW_GE_USER_ROLE_REF
+		delete from cw_ge_user_role_ref
 		<trim prefix=" where " prefixOverrides="and|or">
 			<choose>
 			 	<when test="userIds != null || roleIds != null">
 					<if test="userIds != null">
-						and USER_ID in
+						and user_id in
 						<foreach collection="userIds" item="item" open="(" separator="," close=")">
 							#{item, jdbcType=VARCHAR}
 						</foreach>
 					</if>
 					<if test="roleIds != null">
-						and ROLE_ID in
+						and role_id in
 						<foreach collection="roleIds" item="item" open="(" separator="," close=")">
 							#{item, jdbcType=VARCHAR}
 						</foreach>
 					</if>
 				</when>
 				<when test="userId != null">
-					and USER_ID = #{userId}
+					and user_id = #{userId}
 				</when>
 				<otherwise>
 					and 1 != 1

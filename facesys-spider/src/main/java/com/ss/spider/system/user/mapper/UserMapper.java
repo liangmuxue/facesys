@@ -9,35 +9,45 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
-
+/**
+* 账户管理
+* @author chao
+* @create 2019/12/3
+* @email lishuangchao@ss-cas.com
+**/
 @Mapper
 @Component
 public interface UserMapper extends SsMapper<User> {
     /**
-     * 查询用户信息
+     * 查询账户信息
      * @param paramMap
      * @return
      */
     List<User> gets(Map<String, Object> paramMap);
 
     /**
-     * 查询用户信息
+     * 查询账户信息
      * @param paramUser
      * @return
      */
     List<User> list(User paramUser);
 
+    /**
+     * 分页查询账户列表
+     * @param paramUser
+     * @return
+     */
     List<User> pages(User paramUser);
 
     /**
-     * 新建用户
+     * 新建账户
      * @param paramUser
      * @return
      */
     int save(User paramUser);
 
     /**
-     * 重置用户密码
+     * 重置账户密码
      * @param paramUser
      * @return
      */
@@ -50,7 +60,7 @@ public interface UserMapper extends SsMapper<User> {
     int discard(Map<String, Object> paramMap);
 
     /**
-     * 查询用户拥有角色
+     * 查询账户拥有角色
      * @param userId
      * @return
      */

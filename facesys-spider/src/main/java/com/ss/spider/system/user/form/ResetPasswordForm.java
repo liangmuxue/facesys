@@ -4,8 +4,12 @@ import java.io.Serializable;
 
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
-
-
+/**
+* 账户密码
+* @author chao
+* @create 2019/12/3
+* @email lishuangchao@ss-cas.com
+**/
 public class ResetPasswordForm implements Serializable {
 
     private static final long serialVersionUID = -1L;
@@ -18,7 +22,7 @@ public class ResetPasswordForm implements Serializable {
     private String newPassword;
     @NotBlank(message = "{updated.user.empty}")
     @Length(min = 1, max = 32, message = "{updated.user.length}")
-    public String updatedUserid;
+    public String updatedUserId;
 
     public String getOpUserId() {
         return this.opUserId;
@@ -50,13 +54,13 @@ public class ResetPasswordForm implements Serializable {
     }
 
 
-    public String getUpdatedUserid() {
-        return this.updatedUserid;
+    public String getUpdatedUserId() {
+        return this.updatedUserId;
     }
 
 
-    public void setUpdatedUserid(String updatedUserid) {
-        this.updatedUserid = updatedUserid;
+    public void setUpdatedUserId(String updatedUserId) {
+        this.updatedUserId = updatedUserId;
     }
 
 }
