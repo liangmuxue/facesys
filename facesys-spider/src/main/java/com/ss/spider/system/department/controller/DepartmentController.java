@@ -1,5 +1,6 @@
 package com.ss.spider.system.department.controller;
 
+import com.github.pagehelper.Page;
 import com.ss.annotation.OpLog;
 import com.ss.controller.AbstractController;
 import com.ss.enums.OperaTypeEnum;
@@ -7,6 +8,7 @@ import com.ss.enums.StatusEnum;
 import com.ss.exception.ServiceException;
 import com.ss.response.PageEntity;
 import com.ss.response.ResponseEntity;
+import com.ss.spider.log.constants.ModuleCode;
 import com.ss.spider.system.department.form.DepartForm;
 import com.ss.spider.system.department.form.DepartQuery;
 import com.ss.spider.system.department.model.Department;
@@ -15,10 +17,7 @@ import com.ss.spider.system.user.model.User;
 import com.ss.spider.system.user.service.UserService;
 import com.ss.tools.ArraysUtils;
 import com.ss.tools.DateUtils;
-import com.github.pagehelper.Page;
-
-import java.util.List;
-
+import com.ss.valide.APIPageGroup;
 import org.mybatis.spring.MyBatisSystemException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,51 +31,70 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 
+/**
+ * 部门管理
+ *
+ * @author FrancisYs
+ * @date 2019/12/3
+ * @email yaoshuai@ss-cas.com
+ */
 @RestController
 @RequestMapping({"/depart"})
 public class DepartmentController extends AbstractController {
 
+    private final DepartmentService<Department> departmentService;
+    private final UserService<User> userService;
+
     @Autowired
-    @Qualifier("departmentService")
-    private DepartmentService<Department> departmentService;
-    @Autowired
-    @Qualifier("userService")
-    private UserService<User> userService;
-
-    @RequestMapping(value = {"/pages"}, method = {RequestMethod.POST})
-    @OpLog(model = "70004", desc = "分页查询部门信息列表", type = OperaTypeEnum.SELECT)
-    public ResponseEntity<PageEntity<Department>> pages(@RequestBody DepartQuery para) throws BindException {
-        int currPage = getPageIndex(para);
-        int pageSize = getPageSize(para);
-
-        Department depart = new Department();
-        BeanUtils.copyProperties(para, depart);
-        depart.setOrgIdList(para.getOrgIds());
-
-        Page<Department> data = (Page) this.departmentService.pages(depart, currPage, pageSize);
-
-        ResponseEntity<PageEntity<Department>> resp = createSuccResponse();
-        resp.setData(new PageEntity(data));
-
-        return resp;
+    public DepartmentController(@Qualifier("departmentService") DepartmentService<Department> departmentService, @Qualifier("userService") UserService<User> userService) {
+        this.departmentService = departmentService;
+        this.userService = userService;
     }
 
-
+    /**
+     * 查询部门信息列表
+     *
+     * @param para
+     * @return
+     */
     @RequestMapping(value = {"/list"}, method = {RequestMethod.POST})
-    public ResponseEntity<List<Department>> list(@RequestBody DepartQuery para) throws BindException {
+    @OpLog(model = ModuleCode.SYSTEM, desc = "查询部门信息列表", type = OperaTypeEnum.SELECT)
+    public ResponseEntity<List<Department>> list(@RequestBody DepartQuery para) {
+        ResponseEntity<List<Department>> resp = createSuccResponse();
         Department depart = new Department();
         BeanUtils.copyProperties(para, depart);
-        depart.setOrgIdList(para.getOrgIds());
+        depart.setOrgIdList(ArraysUtils.asList(para.getOrgIds()));
         List<Department> data = this.departmentService.list(depart);
-        ResponseEntity<List<Department>> resp = createSuccResponse();
         resp.setData(data);
         return resp;
     }
 
+    /**
+     * 分页查询部门信息列表
+     *
+     * @param para
+     * @param bindingResult
+     * @return
+     * @throws BindException
+     */
+    @RequestMapping(value = {"/pages"}, method = {RequestMethod.POST})
+    @OpLog(model = ModuleCode.SYSTEM, desc = "分页查询部门信息列表", type = OperaTypeEnum.SELECT)
+    public ResponseEntity<PageEntity<Department>> pages(@RequestBody @Validated({APIPageGroup.class}) DepartQuery para, BindingResult bindingResult) throws BindException {
+        ResponseEntity<PageEntity<Department>> resp = validite(bindingResult);
+        Department depart = new Department();
+        BeanUtils.copyProperties(para, depart);
+        depart.setOrgIdList(ArraysUtils.asList(para.getOrgIds()));
+        int currPage = getPageIndex(para);
+        int pageSize = getPageSize(para);
+        Page<Department> data = (Page) this.departmentService.pages(depart, currPage, pageSize);
+        resp.setData(new PageEntity(data));
+        return resp;
+    }
 
     @RequestMapping(value = {"/get"}, method = {RequestMethod.POST})
-    @OpLog(model = "70004", desc = "查询部门详情信息", type = OperaTypeEnum.SELECT)
+    @OpLog(model = ModuleCode.SYSTEM, desc = "查询部门详情信息", type = OperaTypeEnum.SELECT)
     public ResponseEntity<Department> get(@RequestBody @Validated({com.ss.valide.APIGetsGroup.class}) DepartQuery para, BindingResult bindingResult) throws BindException {
         ResponseEntity<Department> resp = validite(bindingResult);
         resp.setData(this.departmentService.get(para.getDepartId()));
@@ -86,7 +104,7 @@ public class DepartmentController extends AbstractController {
 
 
     @RequestMapping(value = {"/save"}, method = {RequestMethod.POST})
-    @OpLog(model = "70004", desc = "新增部门信息", type = OperaTypeEnum.ADD)
+    @OpLog(model = ModuleCode.SYSTEM, desc = "新增部门信息", type = OperaTypeEnum.ADD)
     public ResponseEntity<String> save(@RequestBody @Validated({com.ss.valide.APIAddGroup.class}) DepartForm para, BindingResult bindingResult) throws BindException {
         ResponseEntity<String> resp = validite(bindingResult);
 
@@ -118,7 +136,7 @@ public class DepartmentController extends AbstractController {
 
 
     @RequestMapping(value = {"/edit"}, method = {RequestMethod.POST})
-    @OpLog(model = "70004", desc = "修改部门信息", type = OperaTypeEnum.EDIT)
+    @OpLog(model = ModuleCode.SYSTEM, desc = "修改部门信息", type = OperaTypeEnum.EDIT)
     public ResponseEntity<String> edit(@RequestBody @Validated({com.ss.valide.APIEditGroup.class}) DepartForm para, BindingResult bindingResult) throws BindException {
         ResponseEntity<String> resp = validite(bindingResult);
 
@@ -150,7 +168,7 @@ public class DepartmentController extends AbstractController {
 
 
     @RequestMapping(value = {"/delete"}, method = {RequestMethod.POST})
-    @OpLog(model = "70004", desc = "删除部门信息", type = OperaTypeEnum.DELETE)
+    @OpLog(model = ModuleCode.SYSTEM, desc = "删除部门信息", type = OperaTypeEnum.DELETE)
     public ResponseEntity<String> delete(@RequestBody @Validated({com.ss.valide.APIDeltGroup.class}) DepartForm para, BindingResult bindingResult) throws BindException {
         ResponseEntity<String> resp = validite(bindingResult);
         List<String> departIds = ArraysUtils.asList(para.getDepartIds());

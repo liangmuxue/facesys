@@ -14,8 +14,21 @@ public interface DepartmentService<Department> extends SsService<Department> {
 
     Department get(String paramString);
 
+    /**
+     * 查询部门信息列表
+     * @param paramDepartment
+     * @return
+     */
     List<Department> list(Department paramDepartment);
 
+    /**
+     * 分页查询部门信息列表
+     *
+     * @param paramDepartment
+     * @param paramInt1
+     * @param paramInt2
+     * @return
+     */
     List<Department> pages(Department paramDepartment, int paramInt1, int paramInt2);
 
     String save(Department paramDepartment) throws ServiceException;

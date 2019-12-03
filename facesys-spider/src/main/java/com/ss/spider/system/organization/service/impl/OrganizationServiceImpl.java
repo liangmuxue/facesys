@@ -1,5 +1,6 @@
 package com.ss.spider.system.organization.service.impl;
 
+import com.github.pagehelper.PageHelper;
 import com.ss.enums.StatusEnum;
 import com.ss.exception.ServiceException;
 import com.ss.service.AbstractSsServiceImpl;
@@ -10,16 +11,9 @@ import com.ss.spider.system.organization.model.Organization;
 import com.ss.spider.system.organization.model.OrganizationExp;
 import com.ss.spider.system.organization.service.OrganizationService;
 import com.ss.spider.system.sequence.model.AppSequence;
-import com.ss.spider.system.sequence.model.SysSeqEnum;
 import com.ss.spider.system.sequence.service.AppSequenceService;
 import com.ss.tools.DateUtils;
 import com.ss.tools.UUIDUtils;
-import com.github.pagehelper.PageHelper;
-
-import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -34,23 +28,27 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import tk.mybatis.mapper.entity.Example;
 
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
 
+/**
+ * 单位管理
+ *
+ * @author FrancisYs
+ * @date 2019/12/3
+ * @email yaoshuai@ss-cas.com
+ */
 @Service("organizationService")
 public class OrganizationServiceImpl extends AbstractSsServiceImpl<Organization> implements OrganizationService<Organization> {
 
-    private static final String ORG_SEQ_CODE = SysSeqEnum.ORG_ID_SEQ.getCode();
     private static OrganizationServiceImpl poi = null;
-
-
     @Autowired
     private OrganizationMapper organizationMapper;
-
-
     @Autowired
     private DepartmentMapper departmentMapper;
-
-
     @Autowired
     @Qualifier("appSequenceService")
     private AppSequenceService<AppSequence> appSequenceService;
@@ -60,61 +58,176 @@ public class OrganizationServiceImpl extends AbstractSsServiceImpl<Organization>
         return UUIDUtils.getUUID();
     }
 
+    /**
+     * 查询单位列表
+     *
+     * @param org
+     * @return
+     */
+    @Override
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public List<Organization> list(Organization org) {
+        Example example = new Example(Organization.class);
+        example.createCriteria().andEqualTo("status", StatusEnum.EFFECT.getCode());
+        example.setOrderByClause("CREATED_TIME desc, ORG_CODE asc");
+        return organizationMapper.selectByExample(example);
+    }
+
+    /**
+     * 查询单位分页列表
+     *
+     * @param org
+     * @param pageIndex
+     * @param pageSize
+     * @return
+     */
     @Override
     @Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
     public List<Organization> pages(Organization org, int pageIndex, int pageSize) {
         PageHelper.startPage(pageIndex, pageSize);
-        return this.organizationMapper.pages(org);
+        Example example = this.entityToExample(org);
+        example.getOredCriteria().get(0).andEqualTo("status", StatusEnum.EFFECT.getCode());
+        example.setOrderByClause("CREATED_TIME desc, ORG_CODE asc");
+        return organizationMapper.selectByExample(example);
     }
 
+    /**
+     * 查询单位树
+     *
+     * @return
+     */
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public List<Organization> list(Organization org) {
-        //首先拿到全部数据
-        List<Organization> deptList = organizationMapper.list(org);
+    public List<Organization> treeData() {
+        Example example = new Example(Organization.class);
+        example.createCriteria().andEqualTo("status", StatusEnum.EFFECT.getCode());
+        example.orderBy("orgCname").asc();
+        List<Organization> organizations = organizationMapper.selectByExample(example);
+        return createOrgTree(organizations);
+    }
 
-        //该集合用于接受第一个节点的数据
-        List<Organization> mapList = new ArrayList<>();
-
-        //得到第一个接点的数据
-        for (int i = 0; i < deptList.size(); i++) {
-            if (deptList.get(i).getParentId() == null || "".equals(deptList.get(i).getParentId())) {
-                mapList.add(deptList.get(i));
+    private List<Organization> createOrgTree(List<Organization> organizationList) {
+        if (CollectionUtils.isEmpty(organizationList)) {
+            return null;
+        }
+        // 创建根节点
+        Organization root = new Organization();
+        // 组装Map数据
+        Map<String, Organization> dataMap = new HashMap<>(16);
+        for (Organization organization : organizationList) {
+            dataMap.put(organization.getOrgId(), organization);
+        }
+        // 组装树形结构
+        Set<Map.Entry<String, Organization>> entrySet = dataMap.entrySet();
+        for (Map.Entry<String, Organization> entry : entrySet) {
+            Organization currentNode = entry.getValue();
+            if (StringUtils.isEmpty(currentNode.getParentId()) || "0".equals(currentNode.getParentId())) {
+                root.getChildren().add(currentNode);
+            } else {
+                dataMap.get(currentNode.getParentId()).getChildren().add(currentNode);
             }
         }
-        //调用getDe方法
-        List<Organization> result = getDe(mapList);
-        return result;
+        return root.getChildren();
     }
 
-    public List<Organization> getDe(List<Organization> mapList) {
-        //核心代码,递归调用
-        for (int i = 0; i < mapList.size(); i++) {
-            //如果该数据有子节点,则执行
-            if (organizationMapper.getDept(mapList.get(i).getOrgId(), mapList.get(i).getStatus()) != null) {
-                List<Organization> map = organizationMapper.getDept(mapList.get(i).getOrgId(), mapList.get(i).getStatus());
-                for(int j = 0; j < map.size(); j++){
-                    map.get(j).setParentName(mapList.get(i).getOrgCname());
-                }
-                mapList.get(i).setChildren(map);
-                getDe(map);
-            }
-        }
-        return mapList;
-    }
-
-    @Override
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public List<Organization> gets(Map<String, Object> args) {
-        return this.organizationMapper.gets(args);
-    }
-
+    /**
+     * 查询单位信息
+     *
+     * @param orgId
+     * @return
+     */
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public Organization get(final String orgId) {
-        return get(new HashMap<String, Object>() {
+        Organization organization = new Organization();
+        organization.setOrgId(orgId);
+        return organizationMapper.selectByPrimaryKey(organization);
+    }
 
-        });
+    /**
+     * 校验是否单位编号或者名称是否重复
+     *
+     * @param entity
+     */
+    private void duplicateCheck(final Organization entity, boolean insert) throws ServiceException {
+        Example example = new Example(Organization.class);
+        example.createCriteria().orEqualTo("orgCode", entity.getOrgCode()).orEqualTo("orgCname", entity.getOrgCname());
+        example.and().andEqualTo("status", StatusEnum.EFFECT.getCode());
+        if (!insert) {
+            example.and().andNotEqualTo("orgId", entity.getOrgId());
+        }
+        List<Organization> nameAndCodeList = organizationMapper.selectByExample(example);
+        if (CollectionUtils.isNotEmpty(nameAndCodeList)) {
+            String message = (nameAndCodeList.get(0).getOrgCode().equals(entity.getOrgCode()) ? "单位编号[" + entity.getOrgCode() : "单位名称[" + entity.getOrgCname()) + "]已存在";
+            throw new ServiceException(message);
+        }
+    }
+
+    /**
+     * 新增单位信息
+     *
+     * @param entity
+     * @return
+     * @throws ServiceException
+     */
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class})
+    public String save(final Organization entity) throws ServiceException {
+        duplicateCheck(entity, true);
+        entity.setOrgId(getNewOrgId());
+        this.organizationMapper.insertSelective(entity);
+        return entity.getOrgId();
+    }
+
+    /**
+     * 修改单位信息
+     *
+     * @param entity
+     * @return
+     * @throws ServiceException
+     */
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class})
+    public int update(final Organization entity) throws ServiceException {
+        duplicateCheck(entity, false);
+        return this.organizationMapper.updateByPrimaryKeySelective(entity);
+    }
+
+    /**
+     * 批量逻辑删除
+     *
+     * @param orgIds
+     * @param userId
+     * @return
+     * @throws ServiceException
+     */
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class})
+    public int discard(final List<String> orgIds, final String userId) throws ServiceException {
+        // 更新字段
+        Organization param = new Organization();
+        param.setDeleteTime(System.currentTimeMillis());
+        param.setDeleteUserId(userId);
+        param.setStatus(StatusEnum.EXPIRE.getCode());
+        // 更新条件
+        Example example = new Example(Organization.class);
+        example.createCriteria().andIn("orgId", orgIds);
+        return organizationMapper.updateByExampleSelective(param, example);
+    }
+
+    /**
+     * 批量物理删除
+     *
+     * @param orgIds
+     * @return
+     * @throws ServiceException
+     */
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class})
+    public int delete(final List<String> orgIds) throws ServiceException {
+        Example example = new Example(Organization.class);
+        example.createCriteria().andIn("orgId", orgIds);
+        return organizationMapper.deleteByExample(example);
     }
 
 
@@ -124,74 +237,9 @@ public class OrganizationServiceImpl extends AbstractSsServiceImpl<Organization>
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class})
-    public String save(final Organization entity) throws ServiceException {
-        List<Organization> nameAndCodeList = this.organizationMapper.selectNameAndCode(entity);
-
-        for (Organization organization : nameAndCodeList) {
-            if (organization.getOrgCname() != null) {
-                throw new ServiceException("单位编号[" + entity.getOrgCode() + "]已存在");
-            }
-
-            if (organization.getOrgCode() != null) {
-                throw new ServiceException("单位名称[" + entity.getOrgCname() + "]已存在");
-            }
-        }
-        entity.setOrgId(getNewOrgId());
-        try {
-            if (StringUtils.hasText(entity.getParentId())) {
-                Organization parent = this.organizationMapper.selectDeparth(entity.getParentId(), entity.getStatus());
-                entity.setDeparth(parent.getDeparth() + "|" + entity.getOrgId());
-            } else {
-                Organization org = new Organization();
-                org.setParentId("-1");
-                List<Organization> roots = list(org);
-                if (CollectionUtils.isNotEmpty(roots)) {
-                    throw new ServiceException("系统只能存在一个顶级单位");
-                }
-                entity.setDeparth(entity.getOrgId());
-            }
-
-            this.organizationMapper.save(entity);
-        } catch (Exception e) {
-            this.logger.error("新增组织结构失败，原因：", e);
-            if (e instanceof ServiceException) {
-                throw e;
-            }
-            throw new ServiceException("新增组织结构失败", e);
-        }
-
-        return entity.getOrgId();
-    }
-
-    @Override
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class})
-    public int update(final Organization entity) throws ServiceException {
-        List<Organization> nameAndCodeList = this.organizationMapper.selectNameAndCode(entity);
-
-        for (Organization organization : nameAndCodeList) {
-            if (organization.getOrgCname() != null) {
-                throw new ServiceException("单位编号[" + entity.getOrgCode() + "]已存在");
-            }
-
-            if (organization.getOrgCode() != null) {
-                throw new ServiceException("单位名称[" + entity.getOrgCname() + "]已存在");
-            }
-        }
-
-        if (StringUtils.hasText(entity.getParentId())) {
-            Organization parent = this.organizationMapper.selectDeparth(entity.getParentId(), entity.getStatus());
-            entity.setDeparth(parent.getDeparth() + "|" + entity.getOrgId());
-        } else {
-            entity.setDeparth(entity.getOrgId());
-        }
-
-        try {
-            return this.organizationMapper.update(entity);
-        } catch (Exception e) {
-            this.logger.error("变更组织单位信息失败，原因：", e);
-            throw new ServiceException("变更组织单位信息失败", e);
-        }
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public List<Organization> gets(Map<String, Object> args) {
+        return this.organizationMapper.gets(args);
     }
 
     @Override
@@ -211,25 +259,6 @@ public class OrganizationServiceImpl extends AbstractSsServiceImpl<Organization>
     @Override
     public List<Organization> gets(final List<String> orgIds) {
         return gets(new HashMap<String, Object>(1) {
-
-        });
-    }
-
-    @Override
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class})
-    public int discard(final List<String> orgIds, final String userId) throws ServiceException {
-        long timestamp = System.currentTimeMillis();
-        Map map = new HashMap();
-        map.put("deletedTime", timestamp);
-        map.put("deletedUserid", userId);
-        map.put("orgIds", orgIds);
-        return this.organizationMapper.discard(map);
-    }
-
-    @Override
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class})
-    public int delete(final List<String> orgIds) throws ServiceException {
-        return delete(new HashMap<String, Object>(1) {
 
         });
     }
@@ -340,7 +369,7 @@ public class OrganizationServiceImpl extends AbstractSsServiceImpl<Organization>
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class})
-    public int insertOrg(MultipartFile file,String userId) {
+    public int insertOrg(MultipartFile file, String userId) {
         try {
             this.organizationMapper.deleteTreeData();
             POIFSFileSystem pois = new POIFSFileSystem(file.getInputStream());
@@ -479,4 +508,5 @@ public class OrganizationServiceImpl extends AbstractSsServiceImpl<Organization>
         }
         return value;
     }
+
 }

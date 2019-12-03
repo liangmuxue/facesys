@@ -1,28 +1,28 @@
 package com.ss.spider.system.department.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.ss.enums.StatusEnum;
 import com.ss.exception.ServiceException;
+import com.ss.facesys.util.StringUtils;
 import com.ss.service.AbstractSsServiceImpl;
 import com.ss.spider.system.department.mapper.DepartmentMapper;
 import com.ss.spider.system.department.model.Department;
 import com.ss.spider.system.department.service.DepartmentService;
 import com.ss.tools.UUIDUtils;
-import com.github.pagehelper.PageHelper;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import tk.mybatis.mapper.entity.Example;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 @Service("departmentService")
-public class DepartmentServiceImpl
-        extends AbstractSsServiceImpl<Department>
-        implements DepartmentService<Department> {
+public class DepartmentServiceImpl extends AbstractSsServiceImpl<Department> implements DepartmentService<Department> {
 
     @Autowired
     private DepartmentMapper departmentMapper;
@@ -33,17 +33,48 @@ public class DepartmentServiceImpl
         return this.departmentMapper.gets(args);
     }
 
+    /**
+     * 查询部门信息列表
+     * @param entity
+     * @return
+     */
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<Department> list(Department entity) {
-        return this.departmentMapper.list(entity);
+        Example example = new Example(Department.class);
+        example.createCriteria()
+                .andEqualTo("status", StatusEnum.EFFECT.getCode());
+        if (CollectionUtils.isNotEmpty(entity.getOrgIdList())) {
+            example.and().andIn("orgId", entity.getOrgIdList());
+        }
+        if (StringUtils.isNotBlank(entity.getDepartCname())) {
+            example.and().andLike("departCname", entity.getDepartCname());
+        }
+        return departmentMapper.selectByExample(example);
     }
 
+    /**
+     * 分页查询部门信息列表
+     *
+     * @param entity
+     * @param pageIndex
+     * @param pageSize
+     * @return
+     */
     @Override
     @Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
     public List<Department> pages(Department entity, int pageIndex, int pageSize) {
         PageHelper.startPage(pageIndex, pageSize);
-        return this.departmentMapper.pages(entity);
+        Example example = new Example(Department.class);
+        example.createCriteria()
+                .andEqualTo("status", StatusEnum.EFFECT.getCode());
+        if (CollectionUtils.isNotEmpty(entity.getOrgIdList())) {
+            example.and().andIn("orgId", entity.getOrgIdList());
+        }
+        if (StringUtils.isNotBlank(entity.getDepartCname())) {
+            example.and().andLike("departCname", entity.getDepartCname());
+        }
+        return departmentMapper.selectByExample(example);
     }
 
     @Override

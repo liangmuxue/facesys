@@ -2,13 +2,14 @@ package com.ss.spider.system.organization.model;
 
 import com.ss.entity.DTEntity;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.StringJoiner;
 
 /**
  * 单位表实体映射
@@ -58,11 +59,6 @@ public class Organization extends DTEntity {
      */
     @Column(name = "telephone")
     private String telephone;
-    /**
-     * 邮箱地址
-     */
-    @Column(name = "email")
-    private String email;
     /**
      * 传真
      */
@@ -160,14 +156,6 @@ public class Organization extends DTEntity {
 
     public void setTelephone(String telephone) {
         this.telephone = telephone;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public String getFax() {
@@ -291,28 +279,29 @@ public class Organization extends DTEntity {
 
     @Override
     public String toString() {
-        return "Organization{" +
-                "orgId='" + orgId + '\'' +
-                ", orgCode='" + orgCode + '\'' +
-                ", orgCname='" + orgCname + '\'' +
-                ", orgEname='" + orgEname + '\'' +
-                ", address='" + address + '\'' +
-                ", zipCode='" + zipCode + '\'' +
-                ", telephone='" + telephone + '\'' +
-                ", fax='" + fax + '\'' +
-                ", status=" + status +
-                ", parentId='" + parentId + '\'' +
-                ", departh='" + departh + '\'' +
-                ", remark='" + remark + '\'' +
-                ", linkManName='" + linkManName + '\'' +
-                ", linkManDept='" + linkManDept + '\'' +
-                ", linkManPos='" + linkManPos + '\'' +
-                ", linkManTel='" + linkManTel + '\'' +
-                ", linkManFax='" + linkManFax + '\'' +
-                ", linkManEmail='" + linkManEmail + '\'' +
-                ", fromSystem='" + fromSystem + '\'' +
-                ", isLinkage=" + isLinkage +
-                '}';
+        return new StringJoiner(", ", Organization.class.getSimpleName() + "[", "]")
+                .add("orgId='" + orgId + "'")
+                .add("orgCode='" + orgCode + "'")
+                .add("orgCname='" + orgCname + "'")
+                .add("orgEname='" + orgEname + "'")
+                .add("address='" + address + "'")
+                .add("zipCode='" + zipCode + "'")
+                .add("telephone='" + telephone + "'")
+                .add("fax='" + fax + "'")
+                .add("status=" + status)
+                .add("parentId='" + parentId + "'")
+                .add("departh='" + departh + "'")
+                .add("remark='" + remark + "'")
+                .add("linkManName='" + linkManName + "'")
+                .add("linkManDept='" + linkManDept + "'")
+                .add("linkManPos='" + linkManPos + "'")
+                .add("linkManTel='" + linkManTel + "'")
+                .add("linkManFax='" + linkManFax + "'")
+                .add("linkManEmail='" + linkManEmail + "'")
+                .add("fromSystem='" + fromSystem + "'")
+                .add("isLinkage=" + isLinkage)
+                .add("children=" + children)
+                .toString();
     }
 
 }
