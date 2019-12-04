@@ -32,12 +32,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.sun.org.apache.xpath.internal.operations.Mod;
 import org.apache.commons.collections.CollectionUtils;
 import org.mybatis.spring.MyBatisSystemException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
@@ -157,8 +159,8 @@ public class UserController extends AbstractController {
                 boolean checkBase64 = Base64ImageUtils.isCheckBase64(para.getPictureUrl(), Constants.IMAGE_TYPE.split(","));
                 if (!checkBase64) {
                     this.logger.error("新增账户信息失败,图片base64数据上传错误!错误码：{},错误描述：{},图片Base64：{}",
-                            CommonEnumClass.CommonInterfaceEnum.USER_IMG_DATA_ERROR.getCode(),
-                            CommonEnumClass.CommonInterfaceEnum.USER_IMG_DATA_ERROR.getDesc(),
+                            CommonEnumClass.CommonInterfaceEnum.USER_IMG_DATA_ERROR.getKey(),
+                            CommonEnumClass.CommonInterfaceEnum.USER_IMG_DATA_ERROR.getValue(),
                             para.getPictureUrl());
                     throw new ServiceException(CommonEnumClass.CommonInterfaceEnum.USER_IMG_DATA_ERROR);
                 }
@@ -307,8 +309,8 @@ public class UserController extends AbstractController {
                 boolean checkBase64 = Base64ImageUtils.isCheckBase64(para.getPictureUrl(), Constants.IMAGE_TYPE.split(","));
                 if (!checkBase64) {
                     this.logger.error("修改账户信息失败,图片base64数据上传错误!错误码：{},错误描述：{},图片Base64：{}",
-                            CommonEnumClass.CommonInterfaceEnum.USER_IMG_DATA_ERROR.getCode(),
-                            CommonEnumClass.CommonInterfaceEnum.USER_IMG_DATA_ERROR.getDesc(),
+                            CommonEnumClass.CommonInterfaceEnum.USER_IMG_DATA_ERROR.getKey(),
+                            CommonEnumClass.CommonInterfaceEnum.USER_IMG_DATA_ERROR.getValue(),
                             para.getPictureUrl());
                     throw new ServiceException(CommonEnumClass.CommonInterfaceEnum.USER_IMG_DATA_ERROR);
                 }

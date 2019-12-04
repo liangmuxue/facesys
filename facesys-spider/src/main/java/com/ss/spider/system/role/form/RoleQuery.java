@@ -4,9 +4,9 @@ import com.ss.request.Pagination;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
-* 权限管理-角色
+* 角色管理
 * @author chao
-* @create 2019/10/8
+* @create 2019/12/4
 * @email lishuangchao@ss-cas.com
 **/
 public class RoleQuery extends Pagination {

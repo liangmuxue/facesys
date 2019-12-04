@@ -6,9 +6,9 @@ import com.ss.spider.system.resource.model.ResourceTree;
 import com.ss.spider.system.role.form.RoleResourceQuery;
 import java.util.List;
 /**
-* 角色权限操作
+* 角色资源操作
 * @author chao
-* @create 2019/10/9
+* @create 2019/12/4
 * @email lishuangchao@ss-cas.com
 **/
 public interface RoleResourceService<RoleResource> extends SsService<RoleResource> {
@@ -25,7 +25,7 @@ public interface RoleResourceService<RoleResource> extends SsService<RoleResourc
     int save(RoleResource paramRoleResource) throws ServiceException;
 
     /**
-     * 添加权限
+     * 添加角色资源
      * @param paramList1
      * @param paramList2
      * @return
@@ -36,7 +36,7 @@ public interface RoleResourceService<RoleResource> extends SsService<RoleResourc
     int delete(RoleResource paramRoleResource) throws ServiceException;
 
     /**
-     * 删除权限
+     * 删除角色权限
      * @param paramList
      * @return
      * @throws ServiceException

@@ -13,6 +13,7 @@ import com.github.pagehelper.Page;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ss.spider.log.constants.ModuleCode;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,9 +21,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
-* 用户分页列表
+* 账户
 * @author chao
-* @create 2019/10/10
+* @create 2019/12/3
 * @email lishuangchao@ss-cas.com
 **/
 @RestController
@@ -32,8 +33,16 @@ public class UserManageController extends BaseController {
     @Resource
     private IUserManageService userManageService;
 
+    /**
+     * 账户分页查询
+     * @param request
+     * @param dto
+     * @param bindingResult
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = {"/pages"}, method = {RequestMethod.POST})
-    @OpLog(model = "70005", desc = "用户管理分页", type = OperaTypeEnum.SEARCH)
+    @OpLog(model = ModuleCode.SYSTEM, desc = "账户分页查询", type = OperaTypeEnum.SEARCH)
     public ResponseEntity<PageEntity<User>> pages(HttpServletRequest request, @RequestBody User dto, BindingResult bindingResult) throws Exception {
         try {
             //查询用户列表

@@ -11,13 +11,13 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 
-@Table(name = "CW_GE_ROLE_RESOURCE_REF")
+@Table(name = "cw_ge_role_resource_ref")
 public class RoleResource implements ITableEntity {
 
     private static final long serialVersionUID = 7290152023086866656L;
-    @Column(name = "ROLE_ID")
+    @Column(name = "role_id")
     private String roleId;
-    @Column(name = "RESOURCE_ID")
+    @Column(name = "resource_id")
     private String resourceId;
     @Transient
     private List<String> resourceIds;

@@ -22,7 +22,7 @@ public class ResetPasswordForm implements Serializable {
     private String newPassword;
     @NotBlank(message = "{updated.user.empty}")
     @Length(min = 1, max = 32, message = "{updated.user.length}")
-    public String updatedUserId;
+    public String updateUserId;
 
     public String getOpUserId() {
         return this.opUserId;
@@ -54,13 +54,13 @@ public class ResetPasswordForm implements Serializable {
     }
 
 
-    public String getUpdatedUserId() {
-        return this.updatedUserId;
+    public String getUpdateUserId() {
+        return this.updateUserId;
     }
 
 
-    public void setUpdatedUserId(String updatedUserId) {
-        this.updatedUserId = updatedUserId;
+    public void setUpdateUserId(String updateUserId) {
+        this.updateUserId = updateUserId;
     }
 
 }

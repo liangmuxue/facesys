@@ -4,6 +4,7 @@ import com.ss.annotation.OpLog;
 import com.ss.controller.AbstractController;
 import com.ss.enums.OperaTypeEnum;
 import com.ss.response.ResponseEntity;
+import com.ss.spider.log.constants.ModuleCode;
 import com.ss.spider.system.resource.model.Resource;
 import com.ss.spider.system.resource.model.ResourceTree;
 import com.ss.spider.system.resource.service.ResourceService;
@@ -71,7 +72,7 @@ public class RoleResourceController extends AbstractController {
      * @throws Exception
      */
     @RequestMapping(value = {"/tree"}, method = {RequestMethod.POST})
-    @OpLog(model = "70001", desc = "查询角色资源列表", type = OperaTypeEnum.SELECT)
+    @OpLog(model = ModuleCode.SYSTEM, desc = "查询角色资源列表", type = OperaTypeEnum.SELECT)
     public ResponseEntity<List<ResourceTree>> tree(@RequestBody RoleResourceQuery para) throws Exception {
         ResponseEntity<List<ResourceTree>> resp = createSuccResponse();
         //查询角色资源列表
@@ -150,36 +151,35 @@ public class RoleResourceController extends AbstractController {
     }
 
     /**
-     * 修改角色权限
+     * 修改角色资源
      * @param para
      * @param bindingResult
      * @return
      * @throws BindException
      */
     @RequestMapping(value = {"/edit"}, method = {RequestMethod.POST})
-    @OpLog(model = "70001", desc = "修改角色权限", type = OperaTypeEnum.ADD)
+    @OpLog(model = ModuleCode.SYSTEM, desc = "修改角色资源", type = OperaTypeEnum.EDIT)
     public ResponseEntity<String> edit(@RequestBody @Validated({com.ss.valide.APIEditGroup.class}) RoleResourceForm para, BindingResult bindingResult) throws BindException {
         ResponseEntity<String> resp = validite(bindingResult);
         if ("1".equals(para.getRoleId())){
             resp = createFailResponse();
-            resp.setMessage("初始角色权限不能修改！");
+            resp.setMessage("初始角色资源不能修改！");
             return resp;
         }
-        //得到要添加的权限
+        //得到要添加的资源
         List<String> resourceIds = ArraysUtils.asList(para.getResourceIds());
-        //确定修改角色
-        String roleId = para.getRoleId();
         List<RoleResource> list = new ArrayList<RoleResource>();
+        String roleId = para.getRoleId();
         for (String resourceId : resourceIds) {
             RoleResource roleResource = new RoleResource();
-            roleResource.setResourceId(resourceId);
             roleResource.setRoleId(roleId);
+            roleResource.setResourceId(resourceId);
             list.add(roleResource);
         }
         try {
-            //删除权限
+            //删除角色资源
             this.roleResourceService.delete(list);
-            //添加权限
+            //添加角色资源
             this.roleResourceService.batchSave(list, resourceIds);
         } catch (MyBatisSystemException | DataAccessResourceFailureException e) {
             this.logger.error("角色修改资源失败,原因：", e);

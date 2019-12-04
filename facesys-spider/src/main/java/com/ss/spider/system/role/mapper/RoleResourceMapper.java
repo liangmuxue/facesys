@@ -37,7 +37,7 @@ public interface RoleResourceMapper extends SsMapper<RoleResource> {
     int batchSave(List<RoleResource> paramList);
 
     /**
-     * 删除角色与资源关联信息
+     * 删除角色资源
      * @param paramMap
      * @return
      */

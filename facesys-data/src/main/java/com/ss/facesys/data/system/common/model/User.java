@@ -6,62 +6,64 @@ import javax.persistence.Column;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 /**
-* 用户实体类
+* 账户实体类
 * @author chao
-* @create 2019/10/10
+* @create 2019/12/3
 * @email lishuangchao@ss-cas.com
 **/
 @Table(name = "cw_ge_user")
 public class User implements Serializable {
   private static final long serialVersionUID = 6035225092199121479L;
-  @Column(name = "USER_ID")
+  @Column(name = "user_id")
   private String userId;
-  @Column(name = "DEPART_ID")
+  @Column(name = "depart_id")
   private String departId;
-  @Column(name = "ORG_ID")
+  @Column(name = "org_id")
   private String orgId;
-  @Column(name = "WORK_CODE")
+  @Column(name = "work_code")
   private String workCode;
-  @Column(name = "LOGIN_NAME")
+  @Column(name = "login_name")
   private String loginName;
-  @Column(name = "PASSWORD")
+  @Column(name = "password")
   private String password;
-  @Column(name = "SALT")
+  @Column(name = "salt")
   private String salt;
-  @Column(name = "NAME")
+  @Column(name = "name")
   private String name;
-  @Column(name = "SEX")
+  @Column(name = "sex")
   private Double sex;
-  @Column(name = "BRITHDAY")
+  @Column(name = "brithday")
   private String birthday;
-  @Column(name = "APP_ON_OFF")
+  @Column(name = "app_on_off")
   private Double appOnOff;
-  @Column(name = "STATUS")
+  @Column(name = "status")
   private Double status;
-  @Column(name = "POSITION")
+  @Column(name = "position")
   private String position;
-  @Column(name = "EMAIL")
+  @Column(name = "email")
   private String email;
-  @Column(name = "PHONE_NUMBER")
+  @Column(name = "phone_number")
   private String phoneNumber;
-  @Column(name = "PICTURE_URL")
+  @Column(name = "picture_url")
   private String pictureUrl;
-  @Column(name = "REMARK")
+  @Column(name = "remark")
   private String remark;
-  @Column(name = "INIT_FLAG")
+  @Column(name = "init_flag")
   private Double initFlag;
-  @Column(name = "CREATED_TIME")
-  private Double createdTime;
-  @Column(name = "CREATED_USERID")
-  private String createdUserid;
-  @Column(name = "UPDATED_TIME")
-  private Double updatedTime;
-  @Column(name = "UPDATED_USERID")
-  private String updatedUserId;
-  @Column(name = "DELETED_TIME")
-  private Double deletedTime;
-  @Column(name = "DELETED_USERID")
-  private String deletedUserId;
+  @Column(name = "ip")
+  private String ip;
+  @Column(name = "create_time")
+  private Double createTime;
+  @Column(name = "create_user_id")
+  private String createUserId;
+  @Column(name = "update_time")
+  private Double updateTime;
+  @Column(name = "update_user_id")
+  private String updateUserId;
+  @Column(name = "delete_time")
+  private Double deleteTime;
+  @Column(name = "delete_user_id")
+  private String deleteUserId;
   @Transient
   private String orgName;
   @Transient
@@ -80,191 +82,266 @@ public class User implements Serializable {
   private String condition;
   @Transient
   private String opUserId;
-  
-  public String getUserId() { return this.userId; }
+  @Transient
+  private String departCName;
+  @Transient
+  private String statusName;
 
-  
-  public void setUserId(String userId) { this.userId = userId; }
+  public String getUserId() {
+    return userId;
+  }
 
-  
-  public String getDepartId() { return this.departId; }
+  public void setUserId(String userId) {
+    this.userId = userId;
+  }
 
-  
-  public void setDepartId(String departId) { this.departId = departId; }
+  public String getDepartId() {
+    return departId;
+  }
 
-  
-  public String getOrgId() { return this.orgId; }
+  public void setDepartId(String departId) {
+    this.departId = departId;
+  }
 
-  
-  public void setOrgId(String orgId) { this.orgId = orgId; }
+  public String getOrgId() {
+    return orgId;
+  }
 
-  
-  public String getWorkCode() { return this.workCode; }
+  public void setOrgId(String orgId) {
+    this.orgId = orgId;
+  }
 
-  
-  public void setWorkCode(String workCode) { this.workCode = workCode; }
+  public String getWorkCode() {
+    return workCode;
+  }
 
-  
-  public String getLoginName() { return this.loginName; }
+  public void setWorkCode(String workCode) {
+    this.workCode = workCode;
+  }
 
-  
-  public void setLoginName(String loginName) { this.loginName = loginName; }
+  public String getLoginName() {
+    return loginName;
+  }
 
-  
-  public String getPassword() { return this.password; }
+  public void setLoginName(String loginName) {
+    this.loginName = loginName;
+  }
 
-  
-  public void setPassword(String password) { this.password = password; }
+  public String getPassword() {
+    return password;
+  }
 
-  
-  public String getSalt() { return this.salt; }
+  public void setPassword(String password) {
+    this.password = password;
+  }
 
-  
-  public void setSalt(String salt) { this.salt = salt; }
+  public String getSalt() {
+    return salt;
+  }
 
-  
-  public String getName() { return this.name; }
+  public void setSalt(String salt) {
+    this.salt = salt;
+  }
 
-  
-  public void setName(String name) { this.name = name; }
+  public String getName() {
+    return name;
+  }
 
-  
-  public Double getSex() { return this.sex; }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-  
-  public void setSex(Double sex) { this.sex = sex; }
+  public Double getSex() {
+    return sex;
+  }
 
-  
-  public String getBirthday() { return this.birthday; }
+  public void setSex(Double sex) {
+    this.sex = sex;
+  }
 
-  
-  public void setBirthday(String birthday) { this.birthday = birthday; }
+  public String getBirthday() {
+    return birthday;
+  }
 
-  
-  public Double getAppOnOff() { return this.appOnOff; }
+  public void setBirthday(String birthday) {
+    this.birthday = birthday;
+  }
 
-  
-  public void setAppOnOff(Double appOnOff) { this.appOnOff = appOnOff; }
+  public Double getAppOnOff() {
+    return appOnOff;
+  }
 
-  
-  public Double getStatus() { return this.status; }
+  public void setAppOnOff(Double appOnOff) {
+    this.appOnOff = appOnOff;
+  }
 
-  
-  public void setStatus(Double status) { this.status = status; }
+  public Double getStatus() {
+    return status;
+  }
 
-  
-  public String getPosition() { return this.position; }
+  public void setStatus(Double status) {
+    this.status = status;
+  }
 
-  
-  public void setPosition(String position) { this.position = position; }
+  public String getPosition() {
+    return position;
+  }
 
-  
-  public String getEmail() { return this.email; }
+  public void setPosition(String position) {
+    this.position = position;
+  }
 
-  
-  public void setEmail(String email) { this.email = email; }
+  public String getEmail() {
+    return email;
+  }
 
-  
-  public String getPhoneNumber() { return this.phoneNumber; }
+  public void setEmail(String email) {
+    this.email = email;
+  }
 
-  
-  public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+  public String getPhoneNumber() {
+    return phoneNumber;
+  }
 
-  
-  public String getPictureUrl() { return this.pictureUrl; }
+  public void setPhoneNumber(String phoneNumber) {
+    this.phoneNumber = phoneNumber;
+  }
 
-  
-  public void setPictureUrl(String pictureUrl) { this.pictureUrl = pictureUrl; }
+  public String getPictureUrl() {
+    return pictureUrl;
+  }
 
-  
-  public String getRemark() { return this.remark; }
+  public void setPictureUrl(String pictureUrl) {
+    this.pictureUrl = pictureUrl;
+  }
 
-  
-  public void setRemark(String remark) { this.remark = remark; }
+  public String getRemark() {
+    return remark;
+  }
 
-  
-  public Double getInitFlag() { return this.initFlag; }
+  public void setRemark(String remark) {
+    this.remark = remark;
+  }
 
-  
-  public void setInitFlag(Double initFlag) { this.initFlag = initFlag; }
+  public Double getInitFlag() {
+    return initFlag;
+  }
 
-  
-  public Double getCreatedTime() { return this.createdTime; }
+  public void setInitFlag(Double initFlag) {
+    this.initFlag = initFlag;
+  }
 
-  
-  public void setCreatedTime(Double createdTime) { this.createdTime = createdTime; }
+  public String getIp() {
+    return ip;
+  }
 
-  
-  public String getCreatedUserid() { return this.createdUserid; }
+  public void setIp(String ip) {
+    this.ip = ip;
+  }
 
-  
-  public void setCreatedUserid(String createdUserid) { this.createdUserid = createdUserid; }
+  public Double getCreateTime() {
+    return createTime;
+  }
 
-  
-  public Double getUpdatedTime() { return this.updatedTime; }
+  public void setCreateTime(Double createTime) {
+    this.createTime = createTime;
+  }
 
-  
-  public void setUpdatedTime(Double updatedTime) { this.updatedTime = updatedTime; }
+  public String getCreateUserId() {
+    return createUserId;
+  }
 
-  
-  public Double getDeletedTime() { return this.deletedTime; }
+  public void setCreateUserId(String createUserId) {
+    this.createUserId = createUserId;
+  }
 
-  
-  public void setDeletedTime(Double deletedTime) { this.deletedTime = deletedTime; }
+  public Double getUpdateTime() {
+    return updateTime;
+  }
 
-  
-  public String getDeletedUserId() { return this.deletedUserId; }
+  public void setUpdateTime(Double updateTime) {
+    this.updateTime = updateTime;
+  }
 
-  
-  public void setDeletedUserId(String deletedUserId) { this.deletedUserId = deletedUserId; }
+  public String getUpdateUserId() {
+    return updateUserId;
+  }
 
-  
-  public String getOrgName() { return this.orgName; }
+  public void setUpdateUserId(String updateUserId) {
+    this.updateUserId = updateUserId;
+  }
 
-  
-  public void setOrgName(String orgName) { this.orgName = orgName; }
+  public Double getDeleteTime() {
+    return deleteTime;
+  }
 
-  
-  public String getRoleName() { return this.roleName; }
+  public void setDeleteTime(Double deleteTime) {
+    this.deleteTime = deleteTime;
+  }
 
-  
-  public void setRoleName(String roleName) { this.roleName = roleName; }
+  public String getDeleteUserId() {
+    return deleteUserId;
+  }
 
-  
-  public Integer getCurrentPage() { return this.currentPage; }
+  public void setDeleteUserId(String deleteUserId) {
+    this.deleteUserId = deleteUserId;
+  }
 
-  
-  public void setCurrentPage(Integer currentPage) { this.currentPage = currentPage; }
+  public String getOrgName() {
+    return orgName;
+  }
 
-  
-  public Integer getPageSize() { return this.pageSize; }
+  public void setOrgName(String orgName) {
+    this.orgName = orgName;
+  }
 
-  
-  public void setPageSize(Integer pageSize) { this.pageSize = pageSize; }
+  public String getRoleName() {
+    return roleName;
+  }
 
-  
-  public String getRoleId() { return this.roleId; }
+  public void setRoleName(String roleName) {
+    this.roleName = roleName;
+  }
 
-  
-  public void setRoleId(String roleId) { this.roleId = roleId; }
+  public String getRoleId() {
+    return roleId;
+  }
 
-  
-  public String getUpdatedUserId() { return this.updatedUserId; }
+  public void setRoleId(String roleId) {
+    this.roleId = roleId;
+  }
 
-  
-  public void setUpdatedUserId(String updatedUserId) { this.updatedUserId = updatedUserId; }
+  public Integer getCurrentPage() {
+    return currentPage;
+  }
 
-  
-  public String getCreatedName() { return this.createdName; }
+  public void setCurrentPage(Integer currentPage) {
+    this.currentPage = currentPage;
+  }
 
-  
-  public void setCreatedName(String createdName) { this.createdName = createdName; }
+  public Integer getPageSize() {
+    return pageSize;
+  }
 
-  
-  public List<Role> getrList() { return this.rList; }
+  public void setPageSize(Integer pageSize) {
+    this.pageSize = pageSize;
+  }
 
-  
-  public void setrList(List<Role> rList) { this.rList = rList; }
+  public String getCreatedName() {
+    return createdName;
+  }
+
+  public void setCreatedName(String createdName) {
+    this.createdName = createdName;
+  }
+
+  public List<Role> getrList() {
+    return rList;
+  }
+
+  public void setrList(List<Role> rList) {
+    this.rList = rList;
+  }
 
   public String getCondition() {
     return condition;
@@ -280,5 +357,21 @@ public class User implements Serializable {
 
   public void setOpUserId(String opUserId) {
     this.opUserId = opUserId;
+  }
+
+  public String getDepartCName() {
+    return departCName;
+  }
+
+  public void setDepartCName(String departCName) {
+    this.departCName = departCName;
+  }
+
+  public String getStatusName() {
+    return statusName;
+  }
+
+  public void setStatusName(String statusName) {
+    this.statusName = statusName;
   }
 }

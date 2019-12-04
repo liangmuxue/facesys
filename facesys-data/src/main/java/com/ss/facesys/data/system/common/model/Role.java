@@ -6,164 +6,137 @@ import javax.persistence.Column;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 @Table(name = "cw_ge_role")
-public class Role
-  implements Serializable
-{
+public class Role implements Serializable {
   private static final long serialVersionUID = 8289085421555788631L;
-  @Column(name = "ROLE_ID")
+  @Column(name = "role_id")
   private String roleId;
-  @Column(name = "ROLE_CNAME")
+  @Column(name = "role_cname")
   private String roleCName;
-  @Column(name = "ROLE_ENAME")
+  @Column(name = "role_ename")
   private String roleEName;
-  @Column(name = "STATUS")
+  @Column(name = "status")
   private BigDecimal status;
-  @Column(name = "REMARK")
+  @Column(name = "remark")
   private String remark;
-  @Column(name = "INIT_FLAG")
+  @Column(name = "init_flag")
   private BigDecimal initFlag;
-  @Column(name = "CREATED_TIME")
-  private BigDecimal createdTime;
-  @Column(name = "CREATED_USERID")
-  private String createdUserId;
-  @Column(name = "UPDATED_TIME")
+  @Column(name = "create_time")
+  private BigDecimal createTime;
+  @Column(name = "create_user_id")
+  private String createUserId;
+  @Column(name = "update_time")
   private BigDecimal updatedTime;
-  @Column(name = "UPDATED_USERID")
-  private String updatedUserId;
-  @Column(name = "DELETED_TIME")
-  private BigDecimal deletedTime;
-  @Column(name = "DELETED_USERID")
-  private String deletedUserId;
+  @Column(name = "update_user_id")
+  private String updateUserId;
+  @Column(name = "delete_time")
+  private BigDecimal deleteTime;
+  @Column(name = "delete_user_id")
+  private String deleteUserId;
   @Transient
   private String userId;
-  
-  public String getRoleId() { return this.roleId; }
 
-  
-  public void setRoleId(String roleId) { this.roleId = roleId; }
+  public String getRoleId() {
+    return roleId;
+  }
 
-  
-  public String getRoleCName() { return this.roleCName; }
+  public void setRoleId(String roleId) {
+    this.roleId = roleId;
+  }
 
-  
-  public void setRoleCName(String roleCName) { this.roleCName = roleCName; }
+  public String getRoleCName() {
+    return roleCName;
+  }
 
-  
-  public String getRoleEName() { return this.roleEName; }
+  public void setRoleCName(String roleCName) {
+    this.roleCName = roleCName;
+  }
 
-  
-  public void setRoleEName(String roleEName) { this.roleEName = roleEName; }
+  public String getRoleEName() {
+    return roleEName;
+  }
 
-  
-  public BigDecimal getStatus() { return this.status; }
+  public void setRoleEName(String roleEName) {
+    this.roleEName = roleEName;
+  }
 
-  
-  public void setStatus(BigDecimal status) { this.status = status; }
+  public BigDecimal getStatus() {
+    return status;
+  }
 
-  
-  public String getRemark() { return this.remark; }
+  public void setStatus(BigDecimal status) {
+    this.status = status;
+  }
 
-  
-  public void setRemark(String remark) { this.remark = remark; }
+  public String getRemark() {
+    return remark;
+  }
 
-  
-  public BigDecimal getInitFlag() { return this.initFlag; }
+  public void setRemark(String remark) {
+    this.remark = remark;
+  }
 
-  
-  public void setInitFlag(BigDecimal initFlag) { this.initFlag = initFlag; }
+  public BigDecimal getInitFlag() {
+    return initFlag;
+  }
 
-  
-  public BigDecimal getCreatedTime() { return this.createdTime; }
+  public void setInitFlag(BigDecimal initFlag) {
+    this.initFlag = initFlag;
+  }
 
-  
-  public void setCreatedTime(BigDecimal createdTime) { this.createdTime = createdTime; }
+  public BigDecimal getCreateTime() {
+    return createTime;
+  }
 
-  
-  public String getCreatedUserId() { return this.createdUserId; }
+  public void setCreateTime(BigDecimal createTime) {
+    this.createTime = createTime;
+  }
 
-  
-  public void setCreatedUserId(String createdUserId) { this.createdUserId = createdUserId; }
+  public String getCreateUserId() {
+    return createUserId;
+  }
 
-  
-  public BigDecimal getUpdatedTime() { return this.updatedTime; }
+  public void setCreateUserId(String createUserId) {
+    this.createUserId = createUserId;
+  }
 
-  
-  public void setUpdatedTime(BigDecimal updatedTime) { this.updatedTime = updatedTime; }
+  public BigDecimal getUpdatedTime() {
+    return updatedTime;
+  }
 
-  
-  public String getUpdatedUserId() { return this.updatedUserId; }
+  public void setUpdatedTime(BigDecimal updatedTime) {
+    this.updatedTime = updatedTime;
+  }
 
-  
-  public void setUpdatedUserId(String updatedUserId) { this.updatedUserId = updatedUserId; }
+  public String getUpdateUserId() {
+    return updateUserId;
+  }
 
-  
-  public BigDecimal getDeletedTime() { return this.deletedTime; }
+  public void setUpdateUserId(String updateUserId) {
+    this.updateUserId = updateUserId;
+  }
 
-  
-  public void setDeletedTime(BigDecimal deletedTime) { this.deletedTime = deletedTime; }
+  public BigDecimal getDeleteTime() {
+    return deleteTime;
+  }
 
-  
-  public String getDeletedUserId() { return this.deletedUserId; }
+  public void setDeleteTime(BigDecimal deleteTime) {
+    this.deleteTime = deleteTime;
+  }
 
-  
-  public void setDeletedUserId(String deletedUserId) { this.deletedUserId = deletedUserId; }
+  public String getDeleteUserId() {
+    return deleteUserId;
+  }
 
-  
-  public String getUserId() { return this.userId; }
+  public void setDeleteUserId(String deleteUserId) {
+    this.deleteUserId = deleteUserId;
+  }
 
-  
-  public void setUserId(String userId) { this.userId = userId; }
+  public String getUserId() {
+    return userId;
+  }
+
+  public void setUserId(String userId) {
+    this.userId = userId;
+  }
 }

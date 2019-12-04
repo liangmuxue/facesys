@@ -5,13 +5,18 @@ import com.ss.service.SsService;
 
 import java.util.List;
 import java.util.Map;
-
+/**
+* 角色相关
+* @author chao
+* @create 2019/12/4
+* @email lishuangchao@ss-cas.com
+**/
 public interface RoleService<Role> extends SsService<Role> {
 
     List<Role> gets(Map<String, Object> paramMap);
 
     /**
-     * 通过主键获取角色信息
+     * 查看角色信息
      * @param paramString
      * @return
      */
@@ -27,7 +32,7 @@ public interface RoleService<Role> extends SsService<Role> {
     List<Role> list(Role paramRole);
 
     /**
-     * 权限角色分页查询
+     * 角色分页查询
      * @param paramRole
      * @param paramInt1
      * @param paramInt2
@@ -36,7 +41,7 @@ public interface RoleService<Role> extends SsService<Role> {
     List<Role> pages(Role paramRole, int paramInt1, int paramInt2);
 
     /**
-     * 添加权限角色
+     * 添加角色
      * @param paramRole
      * @return
      * @throws ServiceException
@@ -44,7 +49,7 @@ public interface RoleService<Role> extends SsService<Role> {
     String save(Role paramRole) throws ServiceException;
 
     /**
-     * 修改权限角色
+     * 修改角色
      * @param paramRole
      * @return
      * @throws ServiceException
