@@ -54,6 +54,15 @@ public abstract class AbstractController {
         return baseFailResult;
     }
 
+    /**
+     * 创建通用请求失败响应对象：包含响应内容
+     */
+    public <T> ResponseEntity<T> createFailResponse(String message) {
+        ResponseEntity<T> baseFailResult = GeneratorResult.genErrorResult();
+        baseFailResult.setMessage(message);
+        return baseFailResult;
+    }
+
     /**  */
     protected void addBindingError(String field, String errorCode, Object[] args, BindingResult bindingResult) {
         bindingResult.rejectValue(field, errorCode, this.messageSource.getMessage(errorCode, args, errorCode, LocaleContextHolder.getLocale()));

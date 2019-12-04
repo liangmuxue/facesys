@@ -229,10 +229,10 @@ public class ImportExcel {
                         } else if (valType == java.util.Date.class) {
                             val = DateUtil.getJavaDate(((Double) val).doubleValue());
                         } else if (ef.fieldType() != Class.class) {
-                            val = ef.fieldType().getMethod("getValue", new Class[]{String.class}).invoke(null, new Object[]{val.toString()});
+                            val = ef.fieldType().getMethod("getDesc", new Class[]{String.class}).invoke(null, new Object[]{val.toString()});
                         } else {
 
-                            val = Class.forName(getClass().getName().replaceAll(getClass().getSimpleName(), "fieldtype." + valType.getSimpleName() + "Type")).getMethod("getValue", new Class[]{String.class}).invoke(null, new Object[]{val.toString()});
+                            val = Class.forName(getClass().getName().replaceAll(getClass().getSimpleName(), "fieldtype." + valType.getSimpleName() + "Type")).getMethod("getDesc", new Class[]{String.class}).invoke(null, new Object[]{val.toString()});
                         }
 
                     } catch (Exception ex) {

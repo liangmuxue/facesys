@@ -86,7 +86,7 @@ public class AsyncLogging {
                     Method method = info.getResult().getClass().getMethod("getFullCode", new Class[0]);
                     Object code = method.invoke(info.getResult(), new Object[0]);
 
-                    if (CommonEnumClass.CommonInterfaceEnum.SUCCESS.getKey().equals(code)) {
+                    if (CommonEnumClass.CommonInterfaceEnum.SUCCESS.getCode().equals(code)) {
                         insertDTO.setIsSuccess(Short.valueOf((short) OperaStateEnum.SUCC.getCode()));
                     } else {
 

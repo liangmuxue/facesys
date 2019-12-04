@@ -25,22 +25,22 @@ public class ServiceExceptionUtils {
 
 
     public static void handle(Logger logger, String desc, IResultCode resultCode) throws ServiceException {
-        logger.error(getDesc(desc).concat("错误码: {},错误描述：{}"), resultCode.getKey(), resultCode.getValue());
+        logger.error(getDesc(desc).concat("错误码: {},错误描述：{}"), resultCode.getCode(), resultCode.getDesc());
         doThrow(resultCode);
     }
 
 
     public static void handle(Logger logger, IResultCode resultCode) throws ServiceException {
-        logger.error("错误码: {},错误描述：{}", resultCode.getKey(), resultCode.getValue());
+        logger.error("错误码: {},错误描述：{}", resultCode.getCode(), resultCode.getDesc());
         doThrow(resultCode);
     }
 
 
     public static void handle(Logger logger, IResultCode resultCode, Object... args) throws ServiceException {
         try {
-            logger.error("错误码: {},错误描述：{}", resultCode.getKey(), String.format(resultCode.getValue(), args));
+            logger.error("错误码: {},错误描述：{}", resultCode.getCode(), String.format(resultCode.getDesc(), args));
         } catch (Exception e) {
-            logger.error("错误码: {},错误描述：{}", resultCode.getKey(), resultCode.getValue());
+            logger.error("错误码: {},错误描述：{}", resultCode.getCode(), resultCode.getDesc());
         }
         doThrow(resultCode, args);
     }
@@ -48,9 +48,9 @@ public class ServiceExceptionUtils {
 
     public static void handle(Logger logger, String desc, IResultCode resultCode, Object... args) throws ServiceException {
         try {
-            logger.error(getDesc(desc).concat("错误码: {},错误描述：{}"), resultCode.getKey(), String.format(resultCode.getValue(), args));
+            logger.error(getDesc(desc).concat("错误码: {},错误描述：{}"), resultCode.getCode(), String.format(resultCode.getDesc(), args));
         } catch (Exception e) {
-            logger.error(getDesc(desc).concat("错误码: {},错误描述：{}"), resultCode.getKey(), resultCode.getValue());
+            logger.error(getDesc(desc).concat("错误码: {},错误描述：{}"), resultCode.getCode(), resultCode.getDesc());
         }
         doThrow(resultCode, args);
     }

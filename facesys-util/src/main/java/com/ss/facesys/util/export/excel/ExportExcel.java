@@ -264,7 +264,7 @@ public class ExportExcel {
             if (val == null) {
                 cell.setCellValue("");
             } else if (fieldType != Class.class) {
-                cell.setCellValue((String) fieldType.getMethod("setValue", new Class[]{Object.class}).invoke(null, new Object[]{val}));
+                cell.setCellValue((String) fieldType.getMethod("setDesc", new Class[]{Object.class}).invoke(null, new Object[]{val}));
             } else if (val instanceof String) {
                 cell.setCellValue((String) val);
             } else if (val instanceof Integer) {
@@ -284,7 +284,7 @@ public class ExportExcel {
                 cellFormatString = "yyyy-MM-dd HH:mm";
             } else {
                 cell.setCellValue((String) Class.forName(getClass().getName().replaceAll(getClass().getSimpleName(), "fieldtype." + val
-                        .getClass().getSimpleName() + "Type")).getMethod("setValue", new Class[]{Object.class}).invoke(null, new Object[]{val}));
+                        .getClass().getSimpleName() + "Type")).getMethod("setDesc", new Class[]{Object.class}).invoke(null, new Object[]{val}));
             }
 
             if (val != null) {

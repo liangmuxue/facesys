@@ -7,8 +7,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * GeneratorResult：结果工具类
+ *
  * @author FrancisYs
- * @date 2019/8/13
+ * @date 2019/12/4
  * @email yaoshuai@ss-cas.com
  */
 public class GeneratorResult {
@@ -49,7 +50,7 @@ public class GeneratorResult {
 
 
     public static <T> ResponseEntity<T> genSuccessResult() {
-        return genResult(CommonEnumClass.CommonInterfaceEnum.SUCCESS.getKey(), null, CommonEnumClass.CommonInterfaceEnum.SUCCESS.getValue());
+        return genResult(CommonEnumClass.CommonInterfaceEnum.SUCCESS.getCode(), null, CommonEnumClass.CommonInterfaceEnum.SUCCESS.getDesc());
     }
 
 

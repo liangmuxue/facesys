@@ -1,33 +1,15 @@
 package com.ss.spider.interceptor.filter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ss.enums.CommonEnumClass;
 import com.ss.response.ResponseEntity;
 import com.ss.spider.interceptor.cache.beans.CacheUserInfo;
 import com.ss.spider.interceptor.config.properties.CwResourceFilterProperties;
 import com.ss.spider.interceptor.requestwrapper.CwHttpServletRequestWrapper;
 import com.ss.spider.interceptor.service.UserInfoCacheService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import javax.crypto.spec.SecretKeySpec;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.DatatypeConverter;
-
 import org.mybatis.spring.MyBatisSystemException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +17,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+
+import javax.crypto.spec.SecretKeySpec;
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.DatatypeConverter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 
 public class CwInterceptorFilter implements Filter {
@@ -180,7 +173,7 @@ public class CwInterceptorFilter implements Filter {
         httpResponse.setHeader("Content-type", "application/json;charset=UTF-8");
 
         ServletOutputStream servletOutputStream = httpResponse.getOutputStream();
-        servletOutputStream.write(this.mapper.writeValueAsString(new ResponseEntity(CommonEnumClass.CommonInterfaceEnum.DATABASE_ERROR.getKey(), CommonEnumClass.CommonInterfaceEnum.DATABASE_ERROR.getValue())).getBytes("UTF-8"));
+        servletOutputStream.write(this.mapper.writeValueAsString(new ResponseEntity(CommonEnumClass.CommonInterfaceEnum.DATABASE_ERROR.getCode(), CommonEnumClass.CommonInterfaceEnum.DATABASE_ERROR.getDesc())).getBytes("UTF-8"));
         servletOutputStream.flush();
         servletOutputStream.close();
     }
@@ -192,7 +185,7 @@ public class CwInterceptorFilter implements Filter {
         httpResponse.setHeader("Content-type", "application/json;charset=UTF-8");
 
         ServletOutputStream servletOutputStream = httpResponse.getOutputStream();
-        servletOutputStream.write(this.mapper.writeValueAsString(new ResponseEntity(CommonEnumClass.CommonInterfaceEnum.UNKNOWN_FAIL.getKey(), CommonEnumClass.CommonInterfaceEnum.UNKNOWN_FAIL.getValue())).getBytes("UTF-8"));
+        servletOutputStream.write(this.mapper.writeValueAsString(new ResponseEntity(CommonEnumClass.CommonInterfaceEnum.UNKNOWN_FAIL.getCode(), CommonEnumClass.CommonInterfaceEnum.UNKNOWN_FAIL.getDesc())).getBytes("UTF-8"));
         servletOutputStream.flush();
         servletOutputStream.close();
     }
@@ -204,7 +197,7 @@ public class CwInterceptorFilter implements Filter {
         httpResponse.setHeader("Content-type", "application/json;charset=UTF-8");
 
         ServletOutputStream servletOutputStream = httpResponse.getOutputStream();
-        servletOutputStream.write(this.mapper.writeValueAsString(new ResponseEntity(CommonEnumClass.CommonInterfaceEnum.DATA_ACCESS_RESOURCE_FAILURE.getKey(), CommonEnumClass.CommonInterfaceEnum.DATA_ACCESS_RESOURCE_FAILURE.getValue())).getBytes("UTF-8"));
+        servletOutputStream.write(this.mapper.writeValueAsString(new ResponseEntity(CommonEnumClass.CommonInterfaceEnum.DATA_ACCESS_RESOURCE_FAILURE.getCode(), CommonEnumClass.CommonInterfaceEnum.DATA_ACCESS_RESOURCE_FAILURE.getDesc())).getBytes("UTF-8"));
         servletOutputStream.flush();
         servletOutputStream.close();
     }
@@ -216,7 +209,7 @@ public class CwInterceptorFilter implements Filter {
         httpResponse.setHeader("Content-type", "application/json;charset=UTF-8");
 
         ServletOutputStream servletOutputStream = httpResponse.getOutputStream();
-        servletOutputStream.write(this.mapper.writeValueAsString(new ResponseEntity(CommonEnumClass.CommonInterfaceEnum.TOKEN_EXPIRES.getKey(), CommonEnumClass.CommonInterfaceEnum.TOKEN_EXPIRES.getValue())).getBytes("UTF-8"));
+        servletOutputStream.write(this.mapper.writeValueAsString(new ResponseEntity(CommonEnumClass.CommonInterfaceEnum.TOKEN_EXPIRES.getCode(), CommonEnumClass.CommonInterfaceEnum.TOKEN_EXPIRES.getDesc())).getBytes("UTF-8"));
         servletOutputStream.flush();
         servletOutputStream.close();
     }
@@ -228,7 +221,7 @@ public class CwInterceptorFilter implements Filter {
         httpResponse.setHeader("Content-type", "application/json;charset=UTF-8");
 
         ServletOutputStream servletOutputStream = httpResponse.getOutputStream();
-        servletOutputStream.write(this.mapper.writeValueAsString(new ResponseEntity(CommonEnumClass.CommonInterfaceEnum.UNAUTHORIZED_ACCESS.getKey(), CommonEnumClass.CommonInterfaceEnum.UNAUTHORIZED_ACCESS.getValue())).getBytes("UTF-8"));
+        servletOutputStream.write(this.mapper.writeValueAsString(new ResponseEntity(CommonEnumClass.CommonInterfaceEnum.UNAUTHORIZED_ACCESS.getCode(), CommonEnumClass.CommonInterfaceEnum.UNAUTHORIZED_ACCESS.getDesc())).getBytes("UTF-8"));
         servletOutputStream.flush();
         servletOutputStream.close();
     }

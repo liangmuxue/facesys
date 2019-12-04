@@ -43,30 +43,30 @@ public class AjaxAwareAuthenticationFailureHandler implements AuthenticationFail
         ResponseEntity<String> resp = GeneratorResult.genResult(HttpStatus.UNAUTHORIZED.value(), "Authentication failed");
         if (e instanceof org.springframework.security.core.userdetails.UsernameNotFoundException) {
             response.setStatus(HttpStatus.OK.value());
-            resp = GeneratorResult.genResult(CommonEnumClass.CommonInterfaceEnum.INVALID_ACCOUNT_PASSWORD.getKey(), CommonEnumClass.CommonInterfaceEnum.INVALID_ACCOUNT_PASSWORD.getValue());
+            resp = GeneratorResult.genResult(CommonEnumClass.CommonInterfaceEnum.INVALID_ACCOUNT_PASSWORD.getCode(), CommonEnumClass.CommonInterfaceEnum.INVALID_ACCOUNT_PASSWORD.getDesc());
         } else if (e instanceof org.springframework.security.authentication.BadCredentialsException) {
             response.setStatus(HttpStatus.OK.value());
-            resp = GeneratorResult.genResult(CommonEnumClass.CommonInterfaceEnum.INVALID_ACCOUNT_PASSWORD.getKey(), CommonEnumClass.CommonInterfaceEnum.INVALID_ACCOUNT_PASSWORD.getValue());
+            resp = GeneratorResult.genResult(CommonEnumClass.CommonInterfaceEnum.INVALID_ACCOUNT_PASSWORD.getCode(), CommonEnumClass.CommonInterfaceEnum.INVALID_ACCOUNT_PASSWORD.getDesc());
         } else if (e instanceof com.ss.spider.security.exception.ExpiredTokenException) {
             response.setStatus(HttpStatus.OK.value());
-            resp = GeneratorResult.genResult(CommonEnumClass.CommonInterfaceEnum.TOKEN_EXPIRES.getKey(), CommonEnumClass.CommonInterfaceEnum.TOKEN_EXPIRES.getValue());
+            resp = GeneratorResult.genResult(CommonEnumClass.CommonInterfaceEnum.TOKEN_EXPIRES.getCode(), CommonEnumClass.CommonInterfaceEnum.TOKEN_EXPIRES.getDesc());
         } else if (e instanceof com.ss.spider.security.exception.RefreshTokenException) {
             response.setStatus(HttpStatus.OK.value());
-            resp = GeneratorResult.genResult(CommonEnumClass.CommonInterfaceEnum.REFRESH_TOKEN_EXPIRES.getKey(), CommonEnumClass.CommonInterfaceEnum.REFRESH_TOKEN_EXPIRES.getValue());
+            resp = GeneratorResult.genResult(CommonEnumClass.CommonInterfaceEnum.REFRESH_TOKEN_EXPIRES.getCode(), CommonEnumClass.CommonInterfaceEnum.REFRESH_TOKEN_EXPIRES.getDesc());
         } else if (e instanceof org.springframework.security.authentication.DisabledException) {
             response.setStatus(HttpStatus.OK.value());
-            resp = GeneratorResult.genResult(CommonEnumClass.CommonInterfaceEnum.USER_IS_DISABLED.getKey(), CommonEnumClass.CommonInterfaceEnum.USER_IS_DISABLED.getValue());
+            resp = GeneratorResult.genResult(CommonEnumClass.CommonInterfaceEnum.USER_IS_DISABLED.getCode(), CommonEnumClass.CommonInterfaceEnum.USER_IS_DISABLED.getDesc());
         } else if (e instanceof com.ss.spider.security.exception.NotSupportedException) {
             resp.setMessage(e.getMessage());
         } else if (e instanceof com.ss.spider.security.exception.DatabaseException) {
             response.setStatus(HttpStatus.OK.value());
-            resp = GeneratorResult.genResult(CommonEnumClass.CommonInterfaceEnum.DATABASE_ERROR.getKey(), CommonEnumClass.CommonInterfaceEnum.DATABASE_ERROR.getValue());
+            resp = GeneratorResult.genResult(CommonEnumClass.CommonInterfaceEnum.DATABASE_ERROR.getCode(), CommonEnumClass.CommonInterfaceEnum.DATABASE_ERROR.getDesc());
         } else if (e instanceof org.springframework.security.authentication.AuthenticationServiceException) {
             response.setStatus(HttpStatus.OK.value());
-            resp = GeneratorResult.genResult(CommonEnumClass.CommonInterfaceEnum.REFRESH_TOKEN_EXPIRES.getKey(), CommonEnumClass.CommonInterfaceEnum.REFRESH_TOKEN_EXPIRES.getValue());
+            resp = GeneratorResult.genResult(CommonEnumClass.CommonInterfaceEnum.REFRESH_TOKEN_EXPIRES.getCode(), CommonEnumClass.CommonInterfaceEnum.REFRESH_TOKEN_EXPIRES.getDesc());
         } else {
             this.logger.error("未知的鉴权异常", e);
-            resp = GeneratorResult.genResult(CommonEnumClass.CommonInterfaceEnum.ACCESS_DENIED.getKey(), CommonEnumClass.CommonInterfaceEnum.ACCESS_DENIED.getValue());
+            resp = GeneratorResult.genResult(CommonEnumClass.CommonInterfaceEnum.ACCESS_DENIED.getCode(), CommonEnumClass.CommonInterfaceEnum.ACCESS_DENIED.getDesc());
         }
         this.objectMapper.writeValue(response.getWriter(), resp);
     }

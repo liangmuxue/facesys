@@ -22,7 +22,7 @@
 		parameterType="java.lang.String"
 		resultType="com.ss.facesys.data.collect.common.dto.PopulationSta">
 		SELECT
-		cbe.enumValue AS "value",
+		cbe.enumValue AS "desc",
 		cbe.enumName AS "label",
 		cbe.enumType AS "type",
 		COUNT(1) AS "num"
@@ -47,7 +47,7 @@
 		parameterType="java.lang.String"
 		resultType="com.ss.facesys.data.collect.common.dto.PopulationSta">
 		SELECT
-		cbe.enumValue AS "value",
+		cbe.enumValue AS "desc",
 		cbe.enumName AS "label",
 		cbe.enumType AS "type",
 		COUNT(1) AS "num"
@@ -72,7 +72,7 @@
 		parameterType="java.lang.String"
 		resultType="com.ss.facesys.data.collect.common.dto.PopulationSta">
 		  SELECT * FROM (
-			SELECT cbe.enumValue AS "value", cbe.enumName AS "label", cbe.enumType AS "type",
+			SELECT cbe.enumValue AS "desc", cbe.enumName AS "label", cbe.enumType AS "type",
 			 IFNULL(SUM(cbp.num),0) AS "num"
 			 FROM  cw_base_enum cbe
 			 LEFT JOIN (
@@ -99,7 +99,7 @@
 			GROUP BY  cbp.label
 			ORDER BY  num DESC, cbe.enumValue
 			LIMIT 0,10
-			) cbpe ORDER BY value
+			) cbpe ORDER BY desc
 		 
 	</select>
 

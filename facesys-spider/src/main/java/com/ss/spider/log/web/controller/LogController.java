@@ -78,8 +78,8 @@ public class LogController extends AbstractController {
         checkTime(para, bindingResult);
         ResponseEntity<String> res = validite(bindingResult);
         if (StringUtils.isBlank(para.getUserId())) {
-            res.setCode(CommonEnumClass.CommonInterfaceEnum.ACCOUNT_IS_LANDED_ELSEWHERE.getKey());
-            res.setMessage(CommonEnumClass.CommonInterfaceEnum.ACCOUNT_IS_LANDED_ELSEWHERE.getValue());
+            res.setCode(CommonEnumClass.CommonInterfaceEnum.ACCOUNT_IS_LANDED_ELSEWHERE.getCode());
+            res.setMessage(CommonEnumClass.CommonInterfaceEnum.ACCOUNT_IS_LANDED_ELSEWHERE.getDesc());
             return res;
         }
         QueryDTO queryDTO = new QueryDTO();

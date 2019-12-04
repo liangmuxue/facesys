@@ -40,7 +40,7 @@ public class DepartmentServiceImpl extends AbstractSsServiceImpl<Department> imp
             example.and().andIn("orgId", entity.getOrgIdList());
         }
         if (StringUtils.isNotBlank(entity.getDepartCname())) {
-            example.and().andLike("departCname", entity.getDepartCname());
+            example.and().andLike("departCname", like(entity.getDepartCname()));
         }
         return departmentMapper.selectByExample(example);
     }
@@ -83,7 +83,8 @@ public class DepartmentServiceImpl extends AbstractSsServiceImpl<Department> imp
     public Department get(final String departId) {
         Department department = new Department();
         department.setDepartId(departId);
-        return departmentMapper.selectByPrimaryKey(department);
+        department.setStatus(StatusEnum.EFFECT.getCode());
+        return departmentMapper.selectOne(department);
     }
 
     /**

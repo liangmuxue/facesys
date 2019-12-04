@@ -51,7 +51,7 @@ public class RefreshTokenEndpoint extends AbstractController {
 
 
         if (!validToken(tokenPayload, this.jwtSettings.getTokenSigningKey())) {
-            return new ResponseEntity(CommonEnumClass.CommonInterfaceEnum.REFRESH_TOKEN_EXPIRES.getKey(), CommonEnumClass.CommonInterfaceEnum.REFRESH_TOKEN_EXPIRES.getValue());
+            return new ResponseEntity(CommonEnumClass.CommonInterfaceEnum.REFRESH_TOKEN_EXPIRES.getCode(), CommonEnumClass.CommonInterfaceEnum.REFRESH_TOKEN_EXPIRES.getDesc());
         }
 
 

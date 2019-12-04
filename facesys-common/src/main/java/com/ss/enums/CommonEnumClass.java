@@ -122,12 +122,12 @@ public class CommonEnumClass {
         }
 
         @Override
-        public String getKey() {
+        public String getCode() {
             return this.key;
         }
 
         @Override
-        public String getValue() {
+        public String getDesc() {
             return this.value;
         }
 

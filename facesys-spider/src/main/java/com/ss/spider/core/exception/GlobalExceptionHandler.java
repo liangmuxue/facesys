@@ -5,15 +5,6 @@ import com.ss.exception.ServiceException;
 import com.ss.response.ArgumentInvalidResult;
 import com.ss.response.GeneratorResult;
 import com.ss.response.ResponseEntity;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.ValidationException;
-
 import org.mybatis.spring.MyBatisSystemException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +24,14 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.NoHandlerFoundException;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.ValidationException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 
 @ControllerAdvice
@@ -63,7 +62,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({NoHandlerFoundException.class})
     public ResponseEntity<String> handleNoHandlerFoundException(NoHandlerFoundException e) {
         this.logger.error("请求地址不存在,e：{}", e);
-        return GeneratorResult.genResult(CommonEnumClass.CommonInterfaceEnum.UNKNOWN_FAIL.getKey(), "not found request url:".concat(e.getRequestURL()));
+        return GeneratorResult.genResult(CommonEnumClass.CommonInterfaceEnum.UNKNOWN_FAIL.getCode(), "not found request url:".concat(e.getRequestURL()));
     }
 
 
@@ -94,7 +93,7 @@ public class GlobalExceptionHandler {
         }
 
 
-        ResponseEntity<String> resp = GeneratorResult.genResult(CommonEnumClass.CommonInterfaceEnum.PARAM_ERROR.getKey(), CommonEnumClass.CommonInterfaceEnum.PARAM_ERROR.getValue());
+        ResponseEntity<String> resp = GeneratorResult.genResult(CommonEnumClass.CommonInterfaceEnum.PARAM_ERROR.getCode(), CommonEnumClass.CommonInterfaceEnum.PARAM_ERROR.getDesc());
         resp.setError(invalidArguments);
 
         return resp;
@@ -135,14 +134,14 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler({MyBatisSystemException.class})
     public ResponseEntity<String> handlePersistenceException(MyBatisSystemException e) {
-        return GeneratorResult.genResult(CommonEnumClass.CommonInterfaceEnum.DATABASE_ERROR.getKey(), CommonEnumClass.CommonInterfaceEnum.DATABASE_ERROR.getValue());
+        return GeneratorResult.genResult(CommonEnumClass.CommonInterfaceEnum.DATABASE_ERROR.getCode(), CommonEnumClass.CommonInterfaceEnum.DATABASE_ERROR.getDesc());
     }
 
 
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler({DataAccessResourceFailureException.class})
     public ResponseEntity<String> handleDataAccessResourceFailureException(DataAccessResourceFailureException e) {
-        return GeneratorResult.genResult(CommonEnumClass.CommonInterfaceEnum.DATA_ACCESS_RESOURCE_FAILURE.getKey(), CommonEnumClass.CommonInterfaceEnum.DATA_ACCESS_RESOURCE_FAILURE.getValue());
+        return GeneratorResult.genResult(CommonEnumClass.CommonInterfaceEnum.DATA_ACCESS_RESOURCE_FAILURE.getCode(), CommonEnumClass.CommonInterfaceEnum.DATA_ACCESS_RESOURCE_FAILURE.getDesc());
     }
 
 
@@ -170,9 +169,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({Exception.class})
     public ResponseEntity<String> handleException(Exception e) {
         this.logger.error("Unknown error : ", e);
-        String errorCode = CommonEnumClass.CommonInterfaceEnum.UNKNOWN_FAIL.getKey();
+        String errorCode = CommonEnumClass.CommonInterfaceEnum.UNKNOWN_FAIL.getCode();
         try {
-            String message = this.messageSource.getMessage(errorCode, null, CommonEnumClass.CommonInterfaceEnum.UNKNOWN_FAIL.getValue(), LocaleContextHolder.getLocale());
+            String message = this.messageSource.getMessage(errorCode, null, CommonEnumClass.CommonInterfaceEnum.UNKNOWN_FAIL.getDesc(), LocaleContextHolder.getLocale());
             return GeneratorResult.genResult(errorCode, message);
         } catch (Exception exception) {
 

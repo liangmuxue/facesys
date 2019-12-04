@@ -141,7 +141,8 @@ public class OrganizationServiceImpl extends AbstractSsServiceImpl<Organization>
     public Organization get(final String orgId) {
         Organization organization = new Organization();
         organization.setOrgId(orgId);
-        return organizationMapper.selectByPrimaryKey(organization);
+        organization.setStatus(StatusEnum.EFFECT.getCode());
+        return organizationMapper.selectOne(organization);
     }
 
     /**

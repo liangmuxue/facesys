@@ -71,7 +71,7 @@ public class ApplicationViidFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
         httpResponse.setHeader("Content-type", "application/json;charset=UTF-8");
         ServletOutputStream servletOutputStream = httpResponse.getOutputStream();
-        servletOutputStream.write(this.mapper.writeValueAsString(new ResponseEntity(CommonEnumClass.CommonInterfaceEnum.UNAUTHORIZED_ACCESS.getKey(), CommonEnumClass.CommonInterfaceEnum.UNAUTHORIZED_ACCESS.getValue())).getBytes("UTF-8"));
+        servletOutputStream.write(this.mapper.writeValueAsString(new ResponseEntity(CommonEnumClass.CommonInterfaceEnum.UNAUTHORIZED_ACCESS.getCode(), CommonEnumClass.CommonInterfaceEnum.UNAUTHORIZED_ACCESS.getDesc())).getBytes("UTF-8"));
         servletOutputStream.flush();
         servletOutputStream.close();
     }

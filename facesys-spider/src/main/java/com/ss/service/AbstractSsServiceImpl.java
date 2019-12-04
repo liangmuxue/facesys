@@ -51,4 +51,8 @@ public abstract class AbstractSsServiceImpl<T> implements SsService<T> {
         return example;
     }
 
+    protected String like(String target) {
+        return "%" + target + "%";
+    }
+
 }

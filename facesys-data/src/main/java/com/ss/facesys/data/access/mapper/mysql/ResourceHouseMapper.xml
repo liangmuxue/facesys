@@ -28,7 +28,7 @@
         t2.enumType AS 'type',
         t2.enumName AS 'label',
         t2.enumValue AS
-        'value',
+        'desc',
         COUNT(id) AS 'number'
         FROM
         cw_base_house t1

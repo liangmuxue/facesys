@@ -5,6 +5,7 @@ import com.ss.annotation.OpLog;
 import com.ss.controller.AbstractController;
 import com.ss.enums.OperaTypeEnum;
 import com.ss.enums.StatusEnum;
+import com.ss.facesys.util.StringUtils;
 import com.ss.response.PageEntity;
 import com.ss.response.ResponseEntity;
 import com.ss.spider.log.constants.ModuleCode;
@@ -58,7 +59,9 @@ public class DepartmentController extends AbstractController {
         ResponseEntity<List<Department>> resp = createSuccResponse();
         Department depart = new Department();
         BeanUtils.copyProperties(para, depart);
-        depart.setOrgIdList(ArraysUtils.asList(para.getOrgIds()));
+        if (StringUtils.isNotBlank(para.getOrgIds())) {
+            depart.setOrgIdList(ArraysUtils.asList(para.getOrgIds()));
+        }
         List<Department> data = this.departmentService.list(depart);
         resp.setData(data);
         return resp;
@@ -78,7 +81,9 @@ public class DepartmentController extends AbstractController {
         ResponseEntity<PageEntity<Department>> resp = validite(bindingResult);
         Department depart = new Department();
         BeanUtils.copyProperties(para, depart);
-        depart.setOrgIdList(ArraysUtils.asList(para.getOrgIds()));
+        if (StringUtils.isNotBlank(para.getOrgIds())) {
+            depart.setOrgIdList(ArraysUtils.asList(para.getOrgIds()));
+        }
         int currPage = getPageIndex(para);
         int pageSize = getPageSize(para);
         Page<Department> data = (Page) this.departmentService.pages(depart, currPage, pageSize);

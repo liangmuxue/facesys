@@ -62,27 +62,27 @@ public class ServiceException extends BaseException {
 
 
     public ServiceException(IResultCode resultCode) {
-        super(resultCode.getValue());
-        setCode(resultCode.getKey());
+        super(resultCode.getDesc());
+        setCode(resultCode.getCode());
     }
 
 
     public ServiceException(IResultCode resultCode, Throwable cause) {
-        super(resultCode.getValue(), cause);
-        setCode(resultCode.getKey());
+        super(resultCode.getDesc(), cause);
+        setCode(resultCode.getCode());
     }
 
 
     public ServiceException(IResultCode resultCode, Object[] args) {
-        super(messageFormat(resultCode.getValue(), args));
-        setCode(resultCode.getKey());
+        super(messageFormat(resultCode.getDesc(), args));
+        setCode(resultCode.getCode());
         setArgs(args);
     }
 
 
     public ServiceException(IResultCode resultCode, Object[] args, Throwable cause) {
-        super(messageFormat(resultCode.getValue(), args), cause);
-        setCode(resultCode.getKey());
+        super(messageFormat(resultCode.getDesc(), args), cause);
+        setCode(resultCode.getCode());
         setArgs(args);
     }
 
