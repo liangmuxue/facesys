@@ -8,7 +8,12 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Component;
-
+/**
+* 角色管理
+* @author chao
+* @create 2019/12/4
+* @email lishuangchao@ss-cas.com
+**/
 @Component
 @Mapper
 public interface RoleMapper extends SsMapper<Role> {
@@ -27,21 +32,21 @@ public interface RoleMapper extends SsMapper<Role> {
     List<Role> list(Role paramRole);
 
     /**
-     * 权限角色分页查询
+     * 角色分页查询
      * @param paramRole
      * @return
      */
     List<Role> pages(Role paramRole);
 
     /**
-     * 添加权限角色
+     * 添加角色
      * @param paramRole
      * @return
      */
     int save(Role paramRole);
 
     /**
-     * 修改权限角色
+     * 修改角色
      * @param paramRole
      * @return
      */

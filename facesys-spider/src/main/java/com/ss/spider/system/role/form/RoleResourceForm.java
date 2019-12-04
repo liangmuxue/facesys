@@ -6,9 +6,9 @@ import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
-* 角色权限
+* 角色资源
 * @author chao
-* @create 2019/10/8
+* @create 2019/12/4
 * @email lishuangchao@ss-cas.com
 **/
 public class RoleResourceForm implements Serializable {

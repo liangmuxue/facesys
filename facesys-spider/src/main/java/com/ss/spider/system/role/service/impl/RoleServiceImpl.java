@@ -1,6 +1,7 @@
 package com.ss.spider.system.role.service.impl;
 
 import com.ss.exception.ServiceException;
+import com.ss.facesys.util.constant.CommonConstant;
 import com.ss.service.AbstractSsServiceImpl;
 import com.ss.spider.system.role.mapper.RoleMapper;
 import com.ss.spider.system.role.mapper.RoleResourceMapper;
@@ -25,7 +26,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import tk.mybatis.mapper.entity.Example;
 
-
+/**
+* 角色管理
+* @author chao
+* @create 2019/12/4
+* @email lishuangchao@ss-cas.com
+**/
 @Service("roleService")
 public class RoleServiceImpl
         extends AbstractSsServiceImpl<Role>
@@ -59,7 +65,7 @@ public class RoleServiceImpl
     }
 
     /**
-     * 权限角色分页查询
+     * 角色分页查询
      * @param entity
      * @param pageIndex
      * @param pageSize
@@ -83,7 +89,7 @@ public class RoleServiceImpl
     }
 
     /**
-     * 通过主键获取角色信息
+     * 查看角色信息
      * @param roleId
      * @return
      */
@@ -107,7 +113,7 @@ public class RoleServiceImpl
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class})
     public String save(final Role args) throws ServiceException {
         //验证角色名称是否存在
-        if (get(new HashMap<String, Object>(1) {
+        if (get(new HashMap<String, Object>(CommonConstant.COMMON_1) {
             {
                 put("roleCname", args.getRoleCname());
             }
@@ -127,7 +133,7 @@ public class RoleServiceImpl
     }
 
     /**
-     * 修改权限角色
+     * 修改角色
      * @param args
      * @return
      * @throws ServiceException

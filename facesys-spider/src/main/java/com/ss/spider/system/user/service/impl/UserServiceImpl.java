@@ -128,7 +128,7 @@ public class UserServiceImpl extends AbstractSsServiceImpl<User> implements User
     }
 
     /**
-     * 获取用户详情信息及权限列表
+     * 获取账户信息及路由权限
      * @param userId
      * @return
      */
@@ -368,15 +368,15 @@ public class UserServiceImpl extends AbstractSsServiceImpl<User> implements User
     }
 
     /**
-     * 通过主键获取用户信息
+     * 通过主键获取账户信息
      * @param params
      * @return
      */
     private User get(Map<String, Object> params) {
-        //查询用户信息
+        //查询账户信息
         List<User> list = this.userMapper.gets(params);
         for (User user : list) {
-            //查询用户拥有角色
+            //查询账户拥有角色
             List<String> rlist = this.userMapper.rlist(user.getUserId());
             user.setRoleIds(rlist);
         }
@@ -385,7 +385,7 @@ public class UserServiceImpl extends AbstractSsServiceImpl<User> implements User
             for (String roleId: list.get(0).getRoleIds()) {
                 RoleResource roleResource = new RoleResource();
                 roleResource.setRoleId(roleId);
-                //查询用户角色
+                //查询角色
                 List<RoleResource> roleResourceList = this.roleResourceService.list(roleResource);
                 if (allRoleResourceList == null){
                     allRoleResourceList = roleResourceList;
@@ -400,7 +400,7 @@ public class UserServiceImpl extends AbstractSsServiceImpl<User> implements User
             for (RoleResource rr : allRoleResourceList) {
                 resIds.add(rr.getResourceId());
             }
-            //查询权限列表
+            //查询资源列表
             resourceList = this.resourceService.gets(resIds);
         }
         //List<ResourceTree> resourceTrees = RoleResourceServiceImpl.treeList(resourceList);

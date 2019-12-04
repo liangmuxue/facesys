@@ -26,9 +26,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 /**
-* 角色权限操作
+* 角色资源操作
 * @author chao
-* @create 2019/10/9
+* @create 2019/12/4
 * @email lishuangchao@ss-cas.com
 **/
 @Service("roleResourceService")
@@ -42,7 +42,7 @@ public class RoleResourceServiceImpl extends AbstractSsServiceImpl<RoleResource>
     private ResourceService<Resource> resourceService;
 
     /**
-     * 查询权限列表
+     * 查询资源列表
      * @param entity
      * @return
      */
@@ -64,8 +64,8 @@ public class RoleResourceServiceImpl extends AbstractSsServiceImpl<RoleResource>
         BeanUtils.copyProperties(entity, roleResource);
         //查询权限列表
         List<RoleResource> roleResourceList = this.list(roleResource);
-        //查询用户资源列表
-        List<Resource> tree = this.resourceService.query(new HashMap<String, Object>() {{
+        //查询账户资源列表
+        List<Resource> tree = this.resourceService.query(new HashMap<String, Object>(CommonConstant.COMMON_1) {{
             put("userId", entity.getUserId());
         }});
         //确定资源列表中拥有的权限
@@ -92,7 +92,7 @@ public class RoleResourceServiceImpl extends AbstractSsServiceImpl<RoleResource>
     }
 
     /**
-     * 添加角色权限
+     * 添加角色资源
      * @param list
      * @param resourceIds
      * @return
@@ -118,7 +118,7 @@ public class RoleResourceServiceImpl extends AbstractSsServiceImpl<RoleResource>
             List<RoleResource> resources = (List) map.get(roleId);
             List rList = resources.stream().map(RoleResource::getResourceId).collect(Collectors.toList());
             entity.setResourceIds(rList);
-            //查询权限
+            //查询资源
             List<RoleResource> exists = this.roleResourceMapper.list(entity);
             if (CollectionUtils.isNotEmpty(exists)) {
                 for (RoleResource resource : exists) {
@@ -151,7 +151,7 @@ public class RoleResourceServiceImpl extends AbstractSsServiceImpl<RoleResource>
     }
 
     /**
-     * 删除角色权限
+     * 删除角色资源
      * @param list
      * @return
      * @throws ServiceException
@@ -163,7 +163,7 @@ public class RoleResourceServiceImpl extends AbstractSsServiceImpl<RoleResource>
             for (RoleResource item : list) {
                 Map<String, Object> temp = new HashMap<>();
                 temp.put("roleId", item.getRoleId());
-                //删除权限
+                //删除资源
                 this.roleResourceMapper.remove(temp);
             }
         } catch (Exception e) {

@@ -49,6 +49,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import tk.mybatis.mapper.util.StringUtil;
+
 /**
 * 账户相关操作
 * @author chao
@@ -110,17 +112,22 @@ public class UserController extends AbstractController {
     }
 
     /**
-     * 获取用户详情信息及权限列表
+     * 获取账户信息及路由权限
      * @param para
      * @param bindingResult
      * @return
      * @throws BindException
      */
     @RequestMapping(value = {"/get"}, method = {RequestMethod.POST})
-    @OpLog(model = ModuleCode.SYSTEM, desc = "获取用户详情信息及权限列表", type = OperaTypeEnum.SELECT)
-    public ResponseEntity<User> get(@RequestBody @Validated({com.ss.valide.APIGetsGroup.class}) UserQuery para, BindingResult bindingResult) throws BindException {
+    @OpLog(model = ModuleCode.SYSTEM, desc = "获取账户信息及路由权限", type = OperaTypeEnum.SELECT)
+    public ResponseEntity<User> get(@RequestBody UserQuery para, BindingResult bindingResult) throws BindException {
         ResponseEntity<User> resp = validite(bindingResult);
-        resp.setData(this.userService.get(para.getOpUserId()));
+        if (StringUtil.isEmpty(para.getOpUserId())){
+            resp = createFailResponse();
+            resp.setMessage("账户编号不能为空!");
+        } else {
+            resp.setData(this.userService.get(para.getOpUserId()));
+        }
         return resp;
     }
 

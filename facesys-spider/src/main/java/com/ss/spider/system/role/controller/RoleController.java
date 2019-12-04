@@ -7,6 +7,7 @@ import com.ss.enums.StatusEnum;
 import com.ss.enums.SystemInitFlagEnum;
 import com.ss.response.PageEntity;
 import com.ss.response.ResponseEntity;
+import com.ss.spider.log.constants.ModuleCode;
 import com.ss.spider.system.role.form.RoleForm;
 import com.ss.spider.system.role.form.RoleQuery;
 import com.ss.spider.system.role.model.Role;
@@ -33,7 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
 * 权限角色
 * @author chao
-* @create 2019/10/8
+* @create 2019/12/4
 * @email lishuangchao@ss-cas.com
 **/
 @RestController
@@ -45,12 +46,12 @@ public class RoleController extends AbstractController {
     private RoleService<Role> roleService;
 
     /**
-     * 权限角色分页查询
+     * 角色分页查询
      * @param para
      * @return
      */
     @RequestMapping(value = {"/pages"}, method = {RequestMethod.POST})
-    @OpLog(model = "70006", desc = "分页查询角色列表", type = OperaTypeEnum.SELECT)
+    @OpLog(model = ModuleCode.SYSTEM, desc = "分页查询角色列表", type = OperaTypeEnum.SEARCH)
     public ResponseEntity<PageEntity<Role>> pages(@RequestBody RoleQuery para) {
         int currPage = getPageIndex(para);
         int pageSize = getPageSize(para);
@@ -80,14 +81,14 @@ public class RoleController extends AbstractController {
     }
 
     /**
-     * 通过主键获取角色信息
+     * 查看角色信息
      * @param para
      * @param bindingResult
      * @return
      * @throws BindException
      */
     @RequestMapping(value = {"/get"}, method = {RequestMethod.POST})
-    @OpLog(model = "70006", desc = "获取角色信息", type = OperaTypeEnum.SELECT)
+    @OpLog(model = ModuleCode.SYSTEM, desc = "查看角色信息", type = OperaTypeEnum.SELECT)
     public ResponseEntity<Role> get(@RequestBody @Validated({com.ss.valide.APIGetsGroup.class}) RoleQuery para, BindingResult bindingResult) throws BindException {
         ResponseEntity<Role> resp = validite(bindingResult);
         resp.setData(this.roleService.get(para.getRoleId()));
@@ -95,22 +96,18 @@ public class RoleController extends AbstractController {
     }
 
     /**
-     * 添加权限角色
+     * 添加角色
      * @param para
      * @param bindingResult
      * @return
      * @throws BindException
      */
     @RequestMapping(value = {"/save"}, method = {RequestMethod.POST})
-    @OpLog(model = "70006", desc = "新增角色信息", type = OperaTypeEnum.ADD)
+    @OpLog(model = ModuleCode.SYSTEM, desc = "新增角色信息", type = OperaTypeEnum.ADD)
     public ResponseEntity<String> save(@RequestBody @Validated({com.ss.valide.APIAddGroup.class}) RoleForm para, BindingResult bindingResult) throws BindException {
         ResponseEntity<String> resp = validite(bindingResult);
         Role role = new Role();
         BeanUtils.copyProperties(para, role);
-        if (role.getStatus() == null) {
-            //设置状态为启用
-            role.setStatus(StatusEnum.EFFECT.getCode());
-        }
         role.setInitFlag(SystemInitFlagEnum.NO.getCode());
         role.setCreateTime(DateUtils.getCurrentTime());
         role.setUpdateTime(DateUtils.getCurrentTime());
@@ -130,14 +127,14 @@ public class RoleController extends AbstractController {
     }
 
     /**
-     * 修改权限角色
+     * 修改角色
      * @param para
      * @param bindingResult
      * @return
      * @throws BindException
      */
     @RequestMapping(value = {"/edit"}, method = {RequestMethod.POST})
-    @OpLog(model = "70006", desc = "修改角色信息", type = OperaTypeEnum.EDIT)
+    @OpLog(model = ModuleCode.SYSTEM, desc = "修改角色信息", type = OperaTypeEnum.EDIT)
     public ResponseEntity<String> edit(@RequestBody @Validated({com.ss.valide.APIEditGroup.class}) RoleForm para, BindingResult bindingResult) throws BindException {
         ResponseEntity<String> resp = validite(bindingResult);
         Role role = new Role();
@@ -145,14 +142,14 @@ public class RoleController extends AbstractController {
         role.setUpdateTime(DateUtils.getCurrentTime());
         try {
             //修改角色
-            this.roleService.update(role);
+            int result = this.roleService.update(role);
+            resp.setData(String.valueOf(result));
         } catch (Exception e) {
             this.logger.error("编辑角色基本信息失败,原因：", e);
             resp = createFailResponse();
             resp.setMessage(e.getMessage());
             return resp;
         }
-
         return resp;
     }
 
@@ -164,7 +161,7 @@ public class RoleController extends AbstractController {
      * @throws BindException
      */
     @RequestMapping(value = {"/opStatus"}, method = {RequestMethod.POST})
-    @OpLog(model = "70006", desc = "切换角色状态", type = OperaTypeEnum.EDIT)
+    @OpLog(model = ModuleCode.SYSTEM, desc = "切换角色状态", type = OperaTypeEnum.EDIT)
     public ResponseEntity<String> opStatus(@RequestBody @Validated({com.ss.valide.APIOpStatusGroup.class}) RoleForm para, BindingResult bindingResult) throws BindException {
         ResponseEntity<String> resp = validite(bindingResult);
         List<String> roleIds = ArraysUtils.asList(para.getRoleIds());
@@ -211,7 +208,7 @@ public class RoleController extends AbstractController {
             }
             if (para.getThorough() == 0) {
                 //逻辑删除
-                this.roleService.discard(roleIds, para.getDeletedUserid());
+                this.roleService.discard(roleIds, para.getDeleteUserId());
             } else {
                 //物理删除
                 this.roleService.delete(roleIds);

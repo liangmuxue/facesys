@@ -4,30 +4,33 @@ import com.ss.entity.DTEntity;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
-* 权限管理-角色实体类
+* 角色管理
 * @author chao
-* @create 2019/10/8
+* @create 2019/12/4
 * @email lishuangchao@ss-cas.com
 **/
-@Table(name = "CW_GE_ROLE")
+@Table(name = "cw_ge_role")
 public class Role extends DTEntity {
 
     private static final long serialVersionUID = 1613920438649631685L;
     @Id
-    @Column(name = "ROLE_ID")
+    @Column(name = "role_id")
     private String roleId;
-    @Column(name = "ROLE_CNAME")
+    @Column(name = "role_cname")
     private String roleCname;
-    @Column(name = "ROLE_ENAME")
+    @Column(name = "role_ename")
     private String roleEname;
-    @Column(name = "STATUS")
+    @Column(name = "status")
     private Integer status;
-    @Column(name = "REMARK")
+    @Column(name = "remark")
     private String remark;
-    @Column(name = "INIT_FLAG")
+    @Column(name = "init_flag")
     private Integer initFlag;
+    @Transient
+    private String statusName;
 
     public String getRoleId() {
         return this.roleId;
@@ -89,8 +92,16 @@ public class Role extends DTEntity {
     }
 
 
+    @Override
     public String toString() {
         return "Role [roleId=" + this.roleId + ", roleCname=" + this.roleCname + ", roleEname=" + this.roleEname + ", status=" + this.status + ", remark=" + this.remark + ", initFlag=" + this.initFlag + "]";
     }
 
+    public String getStatusName() {
+        return statusName;
+    }
+
+    public void setStatusName(String statusName) {
+        this.statusName = statusName;
+    }
 }

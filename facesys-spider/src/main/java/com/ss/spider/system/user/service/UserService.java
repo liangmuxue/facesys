@@ -6,7 +6,12 @@ import com.ss.spider.system.user.service.vo.UserFuzzyMatchVO;
 
 import java.util.List;
 import java.util.Map;
-
+/**
+* 用户操作
+* @author chao
+* @create 2019/12/4
+* @email lishuangchao@ss-cas.com
+**/
 public interface UserService<User> extends SsService<User> {
 
     String getNewUsrId() throws ServiceException;
@@ -21,7 +26,7 @@ public interface UserService<User> extends SsService<User> {
     List<User> gets(List<String> paramList);
 
     /**
-     * 获取用户详情信息及权限列表
+     * 获取账户信息及路由权限
      * @param paramString
      * @return
      */
