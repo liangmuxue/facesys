@@ -1,5 +1,6 @@
 package com.ss.spider.system.user.controller;
 
+import com.github.pagehelper.Page;
 import com.ss.annotation.OpLog;
 import com.ss.common.Constants;
 import com.ss.controller.AbstractController;
@@ -14,32 +15,19 @@ import com.ss.spider.interceptor.cache.beans.CacheUserInfo;
 import com.ss.spider.interceptor.service.UserInfoCacheService;
 import com.ss.spider.log.constants.ModuleCode;
 import com.ss.spider.system.organization.service.OrganizationService;
-import com.ss.spider.system.user.form.PasswordForm;
-import com.ss.spider.system.user.form.ResetPasswordForm;
-import com.ss.spider.system.user.form.UpdateMyUserForm;
-import com.ss.spider.system.user.form.UserForm;
-import com.ss.spider.system.user.form.UserQuery;
+import com.ss.spider.system.user.form.*;
 import com.ss.spider.system.user.model.User;
 import com.ss.spider.system.user.service.UserService;
 import com.ss.spider.system.user.service.vo.UserFuzzyMatchVO;
 import com.ss.tools.ArraysUtils;
 import com.ss.tools.Base64ImageUtils;
 import com.ss.tools.DateUtils;
-import com.github.pagehelper.Page;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.sun.org.apache.xpath.internal.operations.Mod;
 import org.apache.commons.collections.CollectionUtils;
 import org.mybatis.spring.MyBatisSystemException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessResourceFailureException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
@@ -48,6 +36,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 /**
 * 账户相关操作
 * @author chao
@@ -159,8 +152,8 @@ public class UserController extends AbstractController {
                 boolean checkBase64 = Base64ImageUtils.isCheckBase64(para.getPictureUrl(), Constants.IMAGE_TYPE.split(","));
                 if (!checkBase64) {
                     this.logger.error("新增账户信息失败,图片base64数据上传错误!错误码：{},错误描述：{},图片Base64：{}",
-                            CommonEnumClass.CommonInterfaceEnum.USER_IMG_DATA_ERROR.getKey(),
-                            CommonEnumClass.CommonInterfaceEnum.USER_IMG_DATA_ERROR.getValue(),
+                            CommonEnumClass.CommonInterfaceEnum.USER_IMG_DATA_ERROR.getCode(),
+                            CommonEnumClass.CommonInterfaceEnum.USER_IMG_DATA_ERROR.getDesc(),
                             para.getPictureUrl());
                     throw new ServiceException(CommonEnumClass.CommonInterfaceEnum.USER_IMG_DATA_ERROR);
                 }
@@ -265,7 +258,7 @@ public class UserController extends AbstractController {
         User user = new User();
         user.setUserId(para.getOpUserId());
         user.setPassword(para.getNewPassword());
-        user.setUpdateUserId(para.getUpdatedUserId());
+        user.setUpdateUserId(para.getUpdateUserId());
         user.setUpdateTime(DateUtils.getCurrentTime());
         try {
             //修改密码
@@ -309,8 +302,8 @@ public class UserController extends AbstractController {
                 boolean checkBase64 = Base64ImageUtils.isCheckBase64(para.getPictureUrl(), Constants.IMAGE_TYPE.split(","));
                 if (!checkBase64) {
                     this.logger.error("修改账户信息失败,图片base64数据上传错误!错误码：{},错误描述：{},图片Base64：{}",
-                            CommonEnumClass.CommonInterfaceEnum.USER_IMG_DATA_ERROR.getKey(),
-                            CommonEnumClass.CommonInterfaceEnum.USER_IMG_DATA_ERROR.getValue(),
+                            CommonEnumClass.CommonInterfaceEnum.USER_IMG_DATA_ERROR.getCode(),
+                            CommonEnumClass.CommonInterfaceEnum.USER_IMG_DATA_ERROR.getDesc(),
                             para.getPictureUrl());
                     throw new ServiceException(CommonEnumClass.CommonInterfaceEnum.USER_IMG_DATA_ERROR);
                 }
