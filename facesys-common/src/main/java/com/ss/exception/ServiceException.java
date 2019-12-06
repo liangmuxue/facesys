@@ -114,7 +114,7 @@ public class ServiceException extends BaseException {
         if (message == null) {
             return message;
         }
-        if (!message.contains("{0}")) {
+        if (!message.contains(MSG_FORMAT_TAG)) {
             return message;
         }
         return MessageFormat.format(message, args);

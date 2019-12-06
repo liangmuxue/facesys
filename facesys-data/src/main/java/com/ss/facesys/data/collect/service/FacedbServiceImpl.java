@@ -1,17 +1,19 @@
 package com.ss.facesys.data.collect.service;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.j7cai.common.util.JsonUtils;
+import com.ss.enums.StatusEnum;
+import com.ss.exception.ServiceException;
 import com.ss.facesys.data.access.client.IAccessService;
+import com.ss.facesys.data.access.common.dto.FaceDbDTO;
+import com.ss.facesys.data.baseinfo.common.util.EntityUtil;
 import com.ss.facesys.data.baseinfo.service.BaseServiceImpl;
 import com.ss.facesys.data.collect.client.IFacedbService;
 import com.ss.facesys.data.collect.common.model.Facedb;
 import com.ss.facesys.data.collect.common.model.FacedbPeople;
 import com.ss.facesys.data.collect.common.web.FacedbPeopleVO;
-import com.ss.facesys.data.collect.common.web.FacedbVO;
 import com.ss.facesys.data.collect.mapper.FacedbMapper;
 import com.ss.facesys.data.collect.mapper.FacedbPeopleMapper;
 import com.ss.facesys.data.resource.common.model.People;
@@ -20,6 +22,7 @@ import com.ss.facesys.data.resource.mapper.ResourcePeopleMapper;
 import com.ss.facesys.util.StringUtils;
 import com.ss.facesys.util.constant.CommonConstant;
 import com.ss.facesys.util.em.Enums;
+import com.ss.facesys.util.em.ResultCode;
 import com.ss.facesys.util.file.FileConstant;
 import com.ss.facesys.util.file.FilePropertiesUtil;
 import com.ss.facesys.util.file.FileUtil;
@@ -29,18 +32,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * FacedbServiceImpl
  *
  * @author FrancisYs
- * @date 2019/9/3
+ * @date 2019/12/5
  * @email yaoshuai@ss-cas.com
  */
 @Service
@@ -60,161 +61,206 @@ public class FacedbServiceImpl extends BaseServiceImpl implements IFacedbService
 
     /**
      * 查询人像库列表
+     *
      * @param facedb
      * @return
      */
     @Override
     public List<Facedb> getFacedbList(Facedb facedb) {
-        return facedbMapper.getFacedbList(facedb);
+        List<Facedb> facedbs = facedbMapper.select(facedb);
+        if (CollectionUtils.isNotEmpty(facedbs)) {
+            for (Facedb db : facedbs) {
+                // 字典值处理：monitorState、type
+                EntityUtil.dealDic(db, "monitorState-FACEDB_MONITOR_STATE-monitorStateName", "type-FACEDB_TYPE-typeName");
+            }
+        }
+        return facedbs;
     }
 
     /**
-     * 查询重点人员库分页列表
-     * @param vo
+     * 查询人像库分页列表
+     *
+     * @param facedb
      * @return
      */
     @Override
-    public List<Facedb> getFacedbPage(FacedbVO vo) {
+    public List<Facedb> getFacedbPage(Facedb facedb, int currentPage, int pageSize) {
         // 初始化分页查询条件
-        PageHelper.startPage(vo.getCurrentPage(), vo.getPageSize());
-        Facedb facedb = new Facedb();
-        BeanUtils.copyProperties(vo, facedb);
-        return facedbMapper.getFacedbList(facedb);
+        PageHelper.startPage(currentPage, pageSize);
+        Example example = new Example(Facedb.class);
+        example.createCriteria().andEqualTo("status", StatusEnum.EFFECT.getCode());
+        if (StringUtils.isNotBlank(facedb.getName())) {
+            example.and().andLike("name", like(facedb.getName()));
+        }
+        if (StringUtils.isNotBlank(facedb.getOrgId())) {
+            example.and().andEqualTo("orgId", facedb.getOrgId());
+        }
+        if (facedb.getMonitorState() != null) {
+            example.and().andEqualTo("monitorState", facedb.getMonitorState());
+        }
+        List<Facedb> facedbs = facedbMapper.selectByExample(example);
+        if (CollectionUtils.isNotEmpty(facedbs)) {
+            for (Facedb db : facedbs) {
+                // 字典值处理：monitorState、type
+                EntityUtil.dealDic(db, "monitorState-FACEDB_MONITOR_STATE-monitorStateName", "type-FACEDB_TYPE-typeName");
+            }
+        }
+        return facedbs;
     }
 
     /**
      * 根据实体中的属性进行查询，只能有一个返回值，查询条件使用等号
+     *
      * @param facedb
      * @return
      */
     @Override
     public Facedb selectOne(Facedb facedb) {
-        facedb.setDeleteFlag(CommonConstant.DELETE_FLAG_EXIST);
         return facedbMapper.selectOne(facedb);
     }
 
-    /**
-     * 新增重点人员库
-     * @param facedb
-     * @return
-     */
-    @Override
-    public Map<String, Object> insertFacedb(Facedb facedb) {
-        Map<String, Object> resultMap = new HashMap<>(CommonConstant.HASHMAP_INITIALCAPACITY);
-        resultMap.put(CommonConstant.SUCCESS_EN_CODE, true);
-        // 新增欧神人像库
-        this.logger.info("新增重点人员库：新增欧神人像库");
-        JSONObject oceanResult = accessService.facedInsert(JSONObject.toJSONString(facedb));
-        if (!StringUtils.checkSuccess(oceanResult)) {
-            resultMap.put(CommonConstant.SUCCESS_EN_CODE, false);
-            resultMap.put("message", oceanResult.getString("message"));
-            this.logger.info("新增欧神人像库失败，失败信息：" + oceanResult.getString("message"));
-            return resultMap;
+    private void duplicateCheck(Facedb facedb) throws ServiceException {
+        Example example = new Example(Facedb.class);
+        example.createCriteria()
+                .andEqualTo("status", StatusEnum.EFFECT.getCode())
+                .andEqualTo("name", facedb.getName());
+        if (facedb.getId() != null) {
+            example.and().andNotEqualTo("id", facedb.getId());
         }
-        // 新增社区人像库
-        this.logger.info("新增重点人员库：新增社区人像库");
-        Map<String, Object> idMap = new HashMap<>(CommonConstant.HASHMAP_INITIALCAPACITY);
-        String oceanId = oceanResult.getString("data");
-        facedb.setFacedbId(oceanId);
-        facedb.setCreateTime(System.currentTimeMillis());
-        facedb.setCreateUser(facedb.getUserIds());
-        try {
-            facedbMapper.insertSelective(facedb);
-        } catch (Exception e) {
-            this.logger.error("新增重点人员库：新增社区人像库失败", e);
-            JSONObject paramJson = new JSONObject();
-            JSONArray facedbIds = new JSONArray();
-            facedbIds.add(oceanId);
-            paramJson.put("facedbIds", facedbIds);
-            accessService.facedDelete(paramJson.toString());
-            resultMap.put(CommonConstant.SUCCESS_EN_CODE, false);
-            resultMap.put("message", "新增重点人员库：新增社区人像库失败：" + e.getMessage());
-            return resultMap;
+        if (CollectionUtils.isNotEmpty(facedbMapper.selectByExample(example))) {
+            throw new ServiceException(ResultCode.FACEDB_FACEDBNAME_EXIST);
         }
-        this.logger.info("新增重点人员库成功");
-        // 获取社区人像库主键
-        Facedb insert = new Facedb();
-        insert.setName(facedb.getName());
-        insert = facedbMapper.selectOne(insert);
-        idMap.put("id", insert.getId());
-        idMap.put("oceanId", oceanId);
-        resultMap.put("data", idMap);
-        return resultMap;
     }
 
     /**
-     * 修改重点人员库信息
+     * 新增人像库
+     *
      * @param facedb
      * @return
      */
     @Override
-    public Map<String, Object> updateFacedb(Facedb facedb) {
-        Map<String, Object> resultMap = new HashMap<>(CommonConstant.HASHMAP_INITIALCAPACITY);
-        resultMap.put(CommonConstant.SUCCESS_EN_CODE, true);
-        Facedb original = facedbMapper.selectByPrimaryKey(facedb);
-        // 修改欧神人像库
-        this.logger.info("修改重点人员库：修改欧神人像库");
-        JSONObject oceanParam = JSONObject.parseObject(JSONObject.toJSONString(facedb));
-        oceanParam.put("id", original.getFacedbId());
-        JSONObject oceanResult = accessService.updateFacedb(oceanParam.toJSONString());
-        if (!StringUtils.checkSuccess(oceanResult)) {
-            resultMap.put(CommonConstant.SUCCESS_EN_CODE, false);
-            resultMap.put("message", oceanResult.getString("message"));
-            this.logger.info("修改欧神人像库失败，失败信息：" + oceanResult.getString("message"));
-            return resultMap;
-        }
-        // 修改社区人像库
-        this.logger.info("修改重点人员库：修改社区人像库");
-        facedb.setUpdateTime(System.currentTimeMillis());
-        facedb.setUpdateUser(facedb.getUserIds());
-        try {
-            facedbMapper.updateByPrimaryKeySelective(facedb);
-        } catch (Exception e) {
-            this.logger.error("修改重点人员库：修改社区人像库失败", e);
-            oceanParam = JSONObject.parseObject(JSON.toJSONString(original));
-            oceanParam.put("id", original.getFacedbId());
-            accessService.updateFacedb(oceanParam.toJSONString());
-            resultMap.put(CommonConstant.SUCCESS_EN_CODE, false);
-            resultMap.put("message", "修改重点人员库：修改社区人像库失败：" + e.getMessage());
-            return resultMap;
-        }
-        this.logger.info("修改重点人员库成功");
-        // 返回人像库编号信息
-        Map<String, Object> idMap = new HashMap<>(CommonConstant.HASHMAP_INITIALCAPACITY);
-        idMap.put("id", facedb.getId());
-        idMap.put("oceanId", original.getFacedbId());
-        resultMap.put("data", idMap);
-        return resultMap;
+    public String insertFacedb(Facedb facedb) throws ServiceException {
+        duplicateCheck(facedb);
+        // 新增人像系统数据
+        facedbMapper.insertSelective(facedb);
+        // 新增汇聚平台数据
+        String vId = insertVplatFacedb(facedb);
+        // 更新人像系统数据
+        Facedb update = new Facedb();
+        update.setId(facedb.getId());
+        update.setFacedbId(vId);
+        facedbMapper.updateByPrimaryKeySelective(update);
+        return String.valueOf(facedb.getId());
     }
 
     /**
-     * 删除重点人员库
+     * 修改人像库
+     *
      * @param facedb
      * @return
      */
     @Override
-    public void deleteFacedb(Facedb facedb) throws Exception {
-        Facedb original = facedbMapper.selectByPrimaryKey(facedb);
-        // 删除社区人像库
-        this.logger.info("删除重点人员库：删除社区人像库");
-        facedb.setDeleteTime(System.currentTimeMillis());
-        facedb.setDeleteUser(facedb.getUserIds());
-        facedb.setDeleteFlag(CommonConstant.DELETE_FLAG_DELETE);
+    public void updateFacedb(Facedb facedb) throws ServiceException {
+        duplicateCheck(facedb);
+        // 更新人像系统数据
         facedbMapper.updateByPrimaryKeySelective(facedb);
-        // 删除欧神人像库
-        this.logger.info("删除重点人员库：删除欧神人像库");
-        JSONObject paramJson = new JSONObject();
-        JSONArray facedbIds = new JSONArray();
-        facedbIds.add(original.getFacedbId());
-        paramJson.put("facedbIds", facedbIds);
-        JSONObject oceanResult = accessService.facedDelete(paramJson.toString());
-        if (!StringUtils.checkSuccess(oceanResult)) {
-            throw new Exception("删除欧神人像库失败");
+        // 更新汇聚平台数据
+        updateVplatFacedb(facedb);
+    }
+
+    /**
+     * 删除人像库
+     *
+     * @param facedb
+     * @return
+     */
+    @Override
+    public void deleteFacedb(Facedb facedb) throws ServiceException {
+        // 校验底库是否布控
+        Facedb dbCheck = facedbMapper.selectByPrimaryKey(facedb);
+        if (dbCheck.getMonitorState() == CommonConstant.FACEDB_MONITOR_STATE_MONITORED) {
+            throw new ServiceException(ResultCode.FACEDB_DELETEFAIL_MONITOR);
+        }
+        // 删除人像系统数据
+        // TODO 先删除人像系统人像集数据
+
+        facedb.setFaceCount(0);
+        facedbMapper.updateByPrimaryKeySelective(facedb);
+
+        // 删除汇聚平台数据
+        deleteVplatFacedb(dbCheck.getFacedbId());
+    }
+
+    private String insertVplatFacedb(Facedb facedb) throws ServiceException {
+        FaceDbDTO dto = new FaceDbDTO();
+        String vId = null;
+        try {
+            BeanUtils.copyProperties(facedb, dto);
+            JSONObject oceanResult = accessService.facedInsert(JSONObject.toJSONString(dto));
+            if (StringUtils.checkSuccess(oceanResult)) {
+                vId = oceanResult.getString("data");
+            }
+        } catch (Exception e) {
+            throw new ServiceException(ResultCode.FACEDB_VPLAT_FAIL);
+        }
+        if (StringUtils.isBlank(vId)) {
+            throw new ServiceException(ResultCode.FACEDB_VPLAT_FAIL);
+        }
+        return vId;
+    }
+
+    private void updateVplatFacedb(Facedb facedb) throws ServiceException {
+        FaceDbDTO dto = new FaceDbDTO();
+        try {
+            BeanUtils.copyProperties(facedb, dto);
+            dto.setId(facedb.getFacedbId());
+            JSONObject oceanResult = accessService.updateFacedb(JSONObject.toJSONString(dto));
+            if (!StringUtils.checkSuccess(oceanResult)) {
+                throw new ServiceException(ResultCode.FACEDB_VPLAT_FAIL);
+            }
+        } catch (Exception e) {
+            throw new ServiceException(ResultCode.FACEDB_VPLAT_FAIL);
         }
     }
+
+    private void deleteVplatFacedb(String facedbId) throws ServiceException {
+        try {
+            JSONObject oceanResult = accessService.facedDelete(JSONObject.toJSONString(Collections.singletonList(facedbId)));
+            if (!StringUtils.checkSuccess(oceanResult)) {
+                throw new ServiceException(ResultCode.FACEDB_VPLAT_FAIL);
+            }
+        } catch (Exception e) {
+            throw new ServiceException(ResultCode.FACEDB_VPLAT_FAIL);
+        }
+    }
+
+    /**
+     * 人像库重提特征
+     *
+     * @param facedbId
+     * @param faceDBFaceStateInvalid
+     * @return
+     */
+    @Override
+    public void reFeature(String facedbId, Integer faceDBFaceStateInvalid) throws ServiceException {
+        try {
+            JSONObject param = new JSONObject();
+            param.put("id", facedbId);
+            param.put("faceDBFaceStateInvalid", faceDBFaceStateInvalid);
+            JSONObject oceanResult = accessService.reFeatureFacedb(param.toJSONString());
+            if (!StringUtils.checkSuccess(oceanResult)) {
+                throw new ServiceException(ResultCode.FACEDB_VPLAT_FAIL);
+            }
+        } catch (Exception e) {
+            throw new ServiceException(ResultCode.FACEDB_VPLAT_FAIL);
+        }
+    }
+
+
 
     /**
      * 查询重点人员列表
+     *
      * @param facedbPeople
      * @return
      */
@@ -226,6 +272,7 @@ public class FacedbServiceImpl extends BaseServiceImpl implements IFacedbService
 
     /**
      * 查询重点人员分页列表
+     *
      * @param vo
      * @return
      */
@@ -256,6 +303,7 @@ public class FacedbServiceImpl extends BaseServiceImpl implements IFacedbService
 
     /**
      * 新增重点人员
+     *
      * @param facedbPeople
      * @return
      */
@@ -318,6 +366,7 @@ public class FacedbServiceImpl extends BaseServiceImpl implements IFacedbService
 
     /**
      * 移除重点人员
+     *
      * @param facedbPeople
      * @return
      */
@@ -344,6 +393,7 @@ public class FacedbServiceImpl extends BaseServiceImpl implements IFacedbService
 
     /**
      * 新增欧神人像集
+     *
      * @param people
      * @param oceanFacedbId
      * @return
@@ -395,6 +445,7 @@ public class FacedbServiceImpl extends BaseServiceImpl implements IFacedbService
 
     /**
      * 删除欧神人像集
+     *
      * @param facedbFaceIds
      * @return
      */

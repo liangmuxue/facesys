@@ -1,5 +1,6 @@
 package com.ss.controller;
 
+import com.ss.facesys.util.em.ResultCode;
 import com.ss.request.Pagination;
 import com.ss.response.GeneratorResult;
 import com.ss.response.ResponseEntity;
@@ -60,6 +61,16 @@ public abstract class AbstractController {
     public <T> ResponseEntity<T> createFailResponse(String message) {
         ResponseEntity<T> baseFailResult = GeneratorResult.genErrorResult();
         baseFailResult.setMessage(message);
+        return baseFailResult;
+    }
+
+    /**
+     * 创建通用请求失败响应对象：包含自定义错误码及响应内容
+     */
+    public <T> ResponseEntity<T> createFailResponse(ResultCode resultCode) {
+        ResponseEntity<T> baseFailResult = GeneratorResult.genErrorResult();
+        baseFailResult.setCode(resultCode.getCode());
+        baseFailResult.setMessage(resultCode.getDesc());
         return baseFailResult;
     }
 

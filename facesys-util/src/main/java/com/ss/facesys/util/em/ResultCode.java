@@ -30,7 +30,11 @@ public enum ResultCode implements IResultCode {
     SEQUENCE_QUERY_FAIL("79902003", "获取序列编号异常"),
 
     ONETOONE_IMAGE_TYPE_ERROR("800011001", "图片上传格式配置错误"),
-    ONETOONE_VPLAT_RSP_ERROR("800011002", "汇聚平台返回数据异常");
+    ONETOONE_VPLAT_RSP_ERROR("800011002", "汇聚平台返回数据异常"),
+
+    FACEDB_FACEDBNAME_EXIST("800061001", "人像库名称已存在"),
+    FACEDB_DELETEFAIL_MONITOR("800061002", "人像库已布控,不能删除"),
+    FACEDB_VPLAT_FAIL("800061003", "汇聚平台人像库操作异常");
 
     private String code;
     private String desc;

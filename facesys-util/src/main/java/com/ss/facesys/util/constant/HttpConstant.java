@@ -117,6 +117,8 @@ public class HttpConstant {
     public static String FACEDB_DELETE = "/api/facedb/delete";
     /** 编辑人像库信息 */
     public static String FACEDB_UPDATE = "/api/facedb/update";
+    /** 人像库重提特征 */
+    public static String FACEDB_REFEATURE = "/api/facedb/reFeature";
 
 
     /* ************************************* 欧神基础数据类接口--> 人像集相关 ************************************* */

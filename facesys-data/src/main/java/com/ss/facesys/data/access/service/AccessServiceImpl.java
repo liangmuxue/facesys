@@ -146,6 +146,11 @@ public class AccessServiceImpl implements IAccessService {
         return OsProxyService.updateFacedb(paramJson);
     }
 
+    @Override
+    public JSONObject reFeatureFacedb(String paramJson) {
+        return OsProxyService.reFeatureFacedb(paramJson);
+    }
+
 
     /* ***************************************************** 欧神基础数据类接口--> 人像集相关 ***************************************************** */
 

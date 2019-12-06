@@ -369,17 +369,19 @@ public class ResultCode {
     public static final String RESOURCE_VEHICLE_PEOPLERELATION_FAILED_CODE = "70806067";
 
     /** 人像库列表查询失败编号 */
-    public static final String FACEDB_LIST_FAILED_CODE = "70807001";
+    public static final String FACEDB_LIST_FAILED_CODE = "800067001";
     /** 人像库分页列表查询失败编号 */
-    public static final String FACEDB_PAGE_FAILED_CODE = "70817001";
+    public static final String FACEDB_PAGE_FAILED_CODE = "800067002";
     /** 人像库明细查询失败编号 */
-    public static final String FACEDB_DETAIL_FAILED_CODE = "70807002";
+    public static final String FACEDB_DETAIL_FAILED_CODE = "800067003";
     /** 新增人像库失败编号 */
-    public static final String FACEDB_ADD_FAILED_CODE = "70807003";
+    public static final String FACEDB_ADD_FAILED_CODE = "800067004";
     /** 删除人像库失败编号 */
-    public static final String FACEDB_DELETE_FAILED_CODE = "70807004";
+    public static final String FACEDB_DELETE_FAILED_CODE = "800067005";
     /** 修改人像库失败编号 */
-    public static final String FACEDB_EDIT_FAILED_CODE = "70807005";
+    public static final String FACEDB_EDIT_FAILED_CODE = "800067006";
+    /** 重提人像库特征失败编号 */
+    public static final String FACEDB_REFEATURE_FAILED_CODE = "800067007";
 
     /** 人像集分页列表查询失败编号 */
     public static final String FACEDBFACE_PAGE_FAILED_CODE = "70807006";

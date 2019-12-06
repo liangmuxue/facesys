@@ -1,20 +1,25 @@
 package com.ss.facesys.data.collect.common.model;
 
+import com.ss.entity.DTEntity;
+import tk.mybatis.mapper.annotation.KeySql;
+import tk.mybatis.mapper.code.IdentityDialect;
+
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.io.Serializable;
+import java.util.StringJoiner;
 
 /**
  * Facedb 人像库信息
  *
  * @author FrancisYs
- * @date 2019/9/3
+ * @date 2019/12/5
  * @email yaoshuai@ss-cas.com
  */
 @Table(name = "ss_facedb_info")
-public class Facedb implements Serializable {
+public class Facedb extends DTEntity implements Serializable {
 
     private static final long serialVersionUID = 6398339553875137718L;
 
@@ -22,63 +27,48 @@ public class Facedb implements Serializable {
      * 主键id
      */
     @Id
+    @KeySql(dialect = IdentityDialect.MYSQL)
     private Integer id;
     /**
      * 人像库名称
      */
     private String name;
     /**
-     * 用途 [1-通用,2-通用+人口管理分析]
+     * 人像库用途，字典：FACEDB_MODEL
      */
     private Integer model;
     /**
-     * 标识类型：若model值为2，则此字段必填；对应字典类型：FACEDB_TYPE
+     * 人像库标识类型，字典类型：FACEDB_TYPE
      */
     private String type;
+    /**
+     * 人像数量
+     */
+    @Column(name = "face_count")
+    private Integer faceCount;
+    /**
+     * 布控状态，字典：FACEDB_MONITOR_STATE
+     */
+    @Column(name = "monitor_state")
+    private Integer monitorState;
     /**
      * 备注信息
      */
     private String remark;
+    /**
+     * 所属单位ID
+     */
+    @Column(name = "org_id")
+    private String orgId;
     /**
      * 欧神人像库id
      */
     @Column(name = "facedb_id")
     private String facedbId;
     /**
-     * 创建时间
+     * 数据状态，字典：DATA_STATUS
      */
-    @Column(name = "create_time")
-    private Long createTime;
-    /**
-     * 创建人编号
-     */
-    @Column(name = "create_user")
-    private String createUser;
-    /**
-     * 最后更新时间
-     */
-    @Column(name = "update_time")
-    private Long updateTime;
-    /**
-     * 最后更新人编号
-     */
-    @Column(name = "update_user")
-    private String updateUser;
-    /**
-     * 删除时间
-     */
-    @Column(name = "delete_time")
-    private Long deleteTime;
-    /**
-     * 删除人编号
-     */
-    @Column(name = "delete_user")
-    private String deleteUser;
-    /**
-     * 删除标识：0-未删除，1-已删除
-     */
-    @Column(name = "delete_flag")
-    private Integer deleteFlag;
+    private Integer status;
 
     /**
      * 标识中文描述
@@ -86,15 +76,16 @@ public class Facedb implements Serializable {
     @Transient
     private String typeName;
     /**
+     * 布控状态中文描述
+     */
+    @Transient
+    private String monitorStateName;
+    /**
      * 多个标识类型条件
      */
     @Transient
     private String types;
-    /**
-     * 当前用户编号
-     */
-    @Transient
-    private String userIds;
+
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
@@ -132,12 +123,36 @@ public class Facedb implements Serializable {
         this.type = type;
     }
 
+    public Integer getFaceCount() {
+        return faceCount;
+    }
+
+    public void setFaceCount(Integer faceCount) {
+        this.faceCount = faceCount;
+    }
+
+    public Integer getMonitorState() {
+        return monitorState;
+    }
+
+    public void setMonitorState(Integer monitorState) {
+        this.monitorState = monitorState;
+    }
+
     public String getRemark() {
         return remark;
     }
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public String getOrgId() {
+        return orgId;
+    }
+
+    public void setOrgId(String orgId) {
+        this.orgId = orgId;
     }
 
     public String getFacedbId() {
@@ -148,60 +163,12 @@ public class Facedb implements Serializable {
         this.facedbId = facedbId;
     }
 
-    public Long getCreateTime() {
-        return createTime;
+    public Integer getStatus() {
+        return status;
     }
 
-    public void setCreateTime(Long createTime) {
-        this.createTime = createTime;
-    }
-
-    public String getCreateUser() {
-        return createUser;
-    }
-
-    public void setCreateUser(String createUser) {
-        this.createUser = createUser;
-    }
-
-    public Long getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Long updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public String getUpdateUser() {
-        return updateUser;
-    }
-
-    public void setUpdateUser(String updateUser) {
-        this.updateUser = updateUser;
-    }
-
-    public Long getDeleteTime() {
-        return deleteTime;
-    }
-
-    public void setDeleteTime(Long deleteTime) {
-        this.deleteTime = deleteTime;
-    }
-
-    public String getDeleteUser() {
-        return deleteUser;
-    }
-
-    public void setDeleteUser(String deleteUser) {
-        this.deleteUser = deleteUser;
-    }
-
-    public Integer getDeleteFlag() {
-        return deleteFlag;
-    }
-
-    public void setDeleteFlag(Integer deleteFlag) {
-        this.deleteFlag = deleteFlag;
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 
     public String getTypeName() {
@@ -212,6 +179,14 @@ public class Facedb implements Serializable {
         this.typeName = typeName;
     }
 
+    public String getMonitorStateName() {
+        return monitorStateName;
+    }
+
+    public void setMonitorStateName(String monitorStateName) {
+        this.monitorStateName = monitorStateName;
+    }
+
     public String getTypes() {
         return types;
     }
@@ -220,34 +195,23 @@ public class Facedb implements Serializable {
         this.types = types;
     }
 
-    public String getUserIds() {
-        return userIds;
-    }
-
-    public void setUserIds(String userIds) {
-        this.userIds = userIds;
-    }
-
     @Override
     public String toString() {
-        return "Facedb{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", model=" + model +
-                ", type='" + type + '\'' +
-                ", remark='" + remark + '\'' +
-                ", facedbId='" + facedbId + '\'' +
-                ", createTime=" + createTime +
-                ", createUser='" + createUser + '\'' +
-                ", updateTime=" + updateTime +
-                ", updateUser='" + updateUser + '\'' +
-                ", deleteTime=" + deleteTime +
-                ", deleteUser='" + deleteUser + '\'' +
-                ", deleteFlag=" + deleteFlag +
-                ", typeName='" + typeName + '\'' +
-                ", types='" + types + '\'' +
-                ", userIds='" + userIds + '\'' +
-                '}';
+        return new StringJoiner(", ", Facedb.class.getSimpleName() + "[", "]")
+                .add("id=" + id)
+                .add("name='" + name + "'")
+                .add("model=" + model)
+                .add("type='" + type + "'")
+                .add("faceCount=" + faceCount)
+                .add("monitorState=" + monitorState)
+                .add("remark='" + remark + "'")
+                .add("orgId='" + orgId + "'")
+                .add("facedbId='" + facedbId + "'")
+                .add("status=" + status)
+                .add("typeName='" + typeName + "'")
+                .add("monitorStateName='" + monitorStateName + "'")
+                .add("types='" + types + "'")
+                .toString();
     }
 
 }

@@ -305,4 +305,13 @@ public class CommonConstant {
      */
     public static final short OCEAN_DEVICE_TYPE_TERMINAL = 4;
 
+    /**
+     * 人像库布控状态-未布控
+     */
+    public static final int FACEDB_MONITOR_STATE_TBM = 0;
+    /**
+     * 人像库布控状态-已布控
+     */
+    public static final int FACEDB_MONITOR_STATE_MONITORED = 1;
+
 }
