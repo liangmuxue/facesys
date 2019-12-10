@@ -4,7 +4,7 @@ import com.ss.tools.IResultCode;
 
 /**
  * ResultCode
- * 
+ *
  * @author FrancisYs
  * @date 2019/12/4
  * @email yaoshuai@ss-cas.com
@@ -34,7 +34,18 @@ public enum ResultCode implements IResultCode {
 
     FACEDB_FACEDBNAME_EXIST("800061001", "人像库名称已存在"),
     FACEDB_DELETEFAIL_MONITOR("800061002", "人像库已布控,不能删除"),
-    FACEDB_VPLAT_FAIL("800061003", "汇聚平台人像库操作异常");
+    FACEDB_VPLAT_FAIL("800061003", "汇聚平台人像库操作异常"),
+    FACEDB_FACESYS_INSERT_FAIL("800061004", "人像系统新增人像库数据失败：facedbMapper.insertSelective异常"),
+    FACEDB_FACESYS_UPDATE_FAIL("800061005", "人像系统更新人像库数据失败：facedbMapper.updateByPrimaryKeySelective异常"),
+    FACEDB_FACESYS_DELETE_FAIL("800061006", "人像系统逻辑删除人像库数据失败：facedbMapper.updateByPrimaryKeySelective异常"),
+
+    FACEDBFACE_CARDID_EXIST("800062001", "证件类型+证件号存在重复的人像集"),
+    FACEDBFACE_DELETEFAIL_MONITOR("800062002", "人像集已布控,不能删除"),
+    FACEDBFACE_VPLAT_FAIL("800062003", "汇聚平台人像集操作异常"),
+    FACEDBFACE_FACESYS_INSERT_FAIL("800062004", "人像系统新增人像集数据失败：facedbFaceMapper.insertSelective异常"),
+    FACEDBFACE_FACESYS_UPDATE_FAIL("800062005", "人像系统更新人像集数据失败：facedbFaceMapper.updateByPrimaryKeySelective异常"),
+    FACEDBFACE_FACESYS_DELETE_FAIL("800062006", "人像系统逻辑删除人像集数据失败：facedbFaceMapper.updateByPrimaryKeySelective异常"),
+    FACEDBFACE_FACESYS_BAT_DELETE_FAIL("800062007", "人像系统批量逻辑删除人像集数据失败：facedbFaceMapper.updateByExampleSelective异常");
 
     private String code;
     private String desc;

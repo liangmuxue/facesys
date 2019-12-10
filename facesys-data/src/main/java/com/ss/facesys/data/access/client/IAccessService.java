@@ -238,6 +238,14 @@ public interface IAccessService {
      */
     JSONObject facedbfaceUpdate(String paramString);
 
+    /**
+     * 人像集重提特征
+     *
+     * @param paramJson
+     * @return
+     */
+    JSONObject reFeatureFacedbFace(String paramJson);
+
 
     /* ***************************************************** 欧神应用类接口--> 布控相关 ***************************************************** */
 

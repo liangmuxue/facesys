@@ -16,47 +16,19 @@ import org.slf4j.LoggerFactory;
 public class DateUtil {
 
     private static Logger logger = LoggerFactory.getLogger(DateUtil.class);
-
-
     private static final String YEAR_FORMAT = "yyyy";
-
-
     private static final String DEFALT_DATE_FORMAT = "yyyy-MM-dd";
-
-
     private static final String DEFALT_HOUR_FORMAT = "HH";
-
-
     private static final String DEFALT_MINUTE_FORMAT = "mm";
-
-
     private static final String DEFALT_SECOND_FORMAT = "ss";
-
-
     private static final String DEFALT_HOURMIN_FORMAT = "HH:mm";
-
-
     private static final String DEFALT_HOURMINSECOND_FORMAT = "HH:mm:ss";
-
-
     private static final String DEFUALT_TIMESTAMPE_FORMAT = "yyyy-MM-dd hh:mm:ss sss";
-
-
     public static final String DATE_FORMATE_YYYYMMDDHHMMSSSSS = "yyyyMMddHHmmssSSS";
-
-
     private static final String DATE_FORMATE_YYYYMMDDHHMMSS = "yyyy-MM-dd HH:mm:ss";
-
-
     public static final String DATE_FORMATE_YYMMDD = "yyMMdd";
-
-
     public static final String DATE_FORMATE_YYYYMMDD = "yyyyMMdd";
-
-
     public static final String DATE_FORMATE_YYMMDDHHMMSS = "yyyyMMddHHmmss";
-
-
     public static final String DATE_TIME_STR = " 00:00:00";
 
     // 新增变量-ys-20190711
@@ -141,7 +113,7 @@ public class DateUtil {
     }
 
 
-    public static String formatTimeStampDefualt(Timestamp time) {
+    public static String formatTimeStampDefault(Timestamp time) {
         if (time == null) {
             return "";
         }
@@ -214,6 +186,20 @@ public class DateUtil {
         Calendar date = Calendar.getInstance();
         date.add(5, days);
         SimpleDateFormat simpleDate = new SimpleDateFormat(DEFALT_DATE_FORMAT);
+        return simpleDate.format(date.getTime());
+    }
+
+    /**
+     * 获取指定年限差后的日期
+     *
+     * @param years
+     * @param format 返回指定格式字符串，不指定默认格式 "yyyyMMdd"
+     * @return
+     */
+    public static String getDateAfterYears(int years, String format) {
+        Calendar date = Calendar.getInstance();
+        date.add(Calendar.YEAR, years);
+        SimpleDateFormat simpleDate = new SimpleDateFormat(StringUtils.isBlank(format) ? DATE_FORMATE_YYYYMMDD : format);
         return simpleDate.format(date.getTime());
     }
 

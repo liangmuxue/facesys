@@ -18,19 +18,17 @@ import java.util.StringJoiner;
  */
 public class FacedbForm {
 
-    @NotNull(message = "{facedb.id.empty}", groups = {APIEditGroup.class, APIDeltGroup.class})
+    @NotNull(message = "{facedb.id.empty}", groups = {APIEditGroup.class, APIDeltGroup.class, APIFeatureExtractionGroup.class})
     private Integer id;
     @NotBlank(message = "{facedb.name.empty}", groups = {APIAddGroup.class, APIEditGroup.class})
     private String name;
     @NotBlank(message = "{facedb.orgId.empty}", groups = {APIAddGroup.class, APIEditGroup.class})
     private String orgId;
-    @NotBlank(message = "{facedb.facedbId.empty}", groups = {APIEditGroup.class, APIFeatureExtractionGroup.class})
-    private String facedbId;
     @NotNull(message = "{facedb.model.empty}", groups = {APIAddGroup.class, APIEditGroup.class})
     private Integer model;
     private String type;
     private String remark;
-    @NotNull(message = "{userIds.empty}", groups = {APIAddGroup.class, APIEditGroup.class, APIDeltGroup.class})
+    @NotBlank(message = "{userIds.empty}", groups = {APIAddGroup.class, APIEditGroup.class, APIDeltGroup.class})
     private String userId;
     @NotNull(message = "{facedb.faceDBFaceStateInvalid.empty}", groups = {APIFeatureExtractionGroup.class})
     private Integer faceDBFaceStateInvalid;
@@ -57,14 +55,6 @@ public class FacedbForm {
 
     public void setOrgId(String orgId) {
         this.orgId = orgId;
-    }
-
-    public String getFacedbId() {
-        return facedbId;
-    }
-
-    public void setFacedbId(String facedbId) {
-        this.facedbId = facedbId;
     }
 
     public Integer getModel() {
@@ -113,7 +103,6 @@ public class FacedbForm {
                 .add("id=" + id)
                 .add("name='" + name + "'")
                 .add("orgId='" + orgId + "'")
-                .add("facedbId='" + facedbId + "'")
                 .add("model=" + model)
                 .add("type='" + type + "'")
                 .add("remark='" + remark + "'")

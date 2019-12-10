@@ -2,11 +2,8 @@ package com.ss.facesys.data.collect.client;
 
 import com.ss.exception.ServiceException;
 import com.ss.facesys.data.collect.common.model.Facedb;
-import com.ss.facesys.data.collect.common.model.FacedbPeople;
-import com.ss.facesys.data.collect.common.web.FacedbPeopleVO;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * IFacedbService
@@ -45,8 +42,8 @@ public interface IFacedbService {
      * 新增人像库
      *
      * @param facedb
-     * @throws ServiceException
      * @return
+     * @throws ServiceException
      */
     String insertFacedb(Facedb facedb) throws ServiceException;
 
@@ -54,8 +51,8 @@ public interface IFacedbService {
      * 修改人像库
      *
      * @param facedb
-     * @throws ServiceException
      * @return
+     * @throws ServiceException
      */
     void updateFacedb(Facedb facedb) throws ServiceException;
 
@@ -78,39 +75,12 @@ public interface IFacedbService {
      */
     void reFeature(String facedbId, Integer faceDBFaceStateInvalid) throws ServiceException;
 
-
-
     /**
-     * 查询重点人员列表
+     * 更新人像库人脸数量
      *
-     * @param facedbPeople
-     * @return
+     * @param facedbId
+     * @param num
      */
-    List<FacedbPeople> selectFacedbPeopleList(FacedbPeople facedbPeople);
-
-    /**
-     * 查询重点人员分页列表
-     *
-     * @param vo
-     * @return
-     */
-    List<FacedbPeopleVO> getFacedbPeoplePage(FacedbPeopleVO vo);
-
-    /**
-     * 新增重点人员
-     *
-     * @param facedbPeople
-     * @return
-     * @throws Exception
-     */
-    Map<String, Object> insertFacedbPeople(FacedbPeople facedbPeople) throws Exception;
-
-    /**
-     * 移除重点人员
-     *
-     * @param facedbPeople
-     * @return
-     */
-    Map<String, Object> deleteFacedbPeople(FacedbPeople facedbPeople);
+    void updateFaceCount(Integer facedbId, Integer num);
 
 }

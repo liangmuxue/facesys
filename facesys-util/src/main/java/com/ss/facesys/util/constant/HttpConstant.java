@@ -133,6 +133,8 @@ public class HttpConstant {
     public static String FACEDBFACE_DELETE = "/api/facedbface/delete";
     /** 编辑人像集信息 */
     public static String FACEDBFACE_UPDATE = "/api/facedbface/update";
+    /** 人像集重提特征 */
+    public static String FACEDBFACE_REFEATURE = "/api/facedbface/featureExtraction";
 
 
     /* ************************************* 欧神应用类接口--> 布控相关 ************************************* */

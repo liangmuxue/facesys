@@ -420,6 +420,17 @@ public class OsProxyService {
         return JSONObject.parseObject(resultString);
     }
 
+    /**
+     * 人像集重提特征
+     *
+     * @param paramJson
+     * @return
+     */
+    public static JSONObject reFeatureFacedbFace(String paramJson) {
+        String resultString = BaseHttpUtil.httpPost(paramJson, PropertiesUtil.getOshttp() + HttpConstant.FACEDBFACE_REFEATURE, null);
+        return JSONObject.parseObject(resultString);
+    }
+
 
     /* ***************************************************** 应用类接口--> 布控相关 ***************************************************** */
 

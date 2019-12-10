@@ -1,5 +1,6 @@
 package com.ss.facesys.web.manage.baseinfo.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.ss.controller.AbstractController;
 import com.ss.facesys.data.resource.client.IRegionService;
 import com.ss.facesys.data.resource.client.IVillageService;
@@ -8,20 +9,19 @@ import com.ss.facesys.util.constant.CommonConstant;
 import com.ss.facesys.util.jedis.JedisUtil;
 import com.ss.spider.system.user.model.User;
 import com.ss.tools.MD5Utils;
-import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.codec.digest.DigestUtils;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.annotation.Resource;
-
-import org.apache.commons.codec.digest.DigestUtils;
 
 /**
- * BaseController：controller通用基础父类
+ * controller通用基础父类
+ *
  * @author FrancisYs
- * @date 2019/8/13
+ * @date 2019/12/9
  * @email yaoshuai@ss-cas.com
  */
 public class BaseController extends AbstractController {
@@ -55,6 +55,7 @@ public class BaseController extends AbstractController {
 
     /**
      * 获取多个区划/小区下的全部小区条件："小区编号1","小区编号2","小区编号3"...
+     *
      * @param codes 多个区划/小区编号以逗号分隔
      * @return 全部小区编号
      */
@@ -72,7 +73,7 @@ public class BaseController extends AbstractController {
                     if (StringUtils.isNotBlank(regionVillages)) {
                         result.add(regionVillages);
                     }
-                } else if (villageService.findVillageByCode(code) != null){
+                } else if (villageService.findVillageByCode(code) != null) {
                     // 子条件为有效小区编号时直接加入结果集
                     result.add(code);
                 }
