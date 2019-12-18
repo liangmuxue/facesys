@@ -146,6 +146,14 @@ public interface IAccessService {
 
     JSONObject getCollectPages(String paramString);
 
+    /**
+     * 设备绑定引擎关系
+     *
+     * @param paramJson
+     * @return
+     */
+    JSONObject deviceEngineControl(String paramJson);
+
     /* ***************************************************** 欧神基础数据类接口--> 人像库相关 ***************************************************** */
 
     /**
@@ -194,6 +202,14 @@ public interface IAccessService {
      * @return
      */
     JSONObject reFeatureFacedb(String paramJson);
+
+    /**
+     * 人像库绑定引擎关系
+     *
+     * @param paramJson
+     * @return
+     */
+    JSONObject facedbEngineControl(String paramJson);
 
 
     /* ***************************************************** 欧神基础数据类接口--> 人像集相关 ***************************************************** */

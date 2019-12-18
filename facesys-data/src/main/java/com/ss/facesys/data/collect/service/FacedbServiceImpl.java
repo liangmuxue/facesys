@@ -13,9 +13,15 @@ import com.ss.facesys.data.collect.client.IFacedbfaceService;
 import com.ss.facesys.data.collect.common.model.Facedb;
 import com.ss.facesys.data.collect.common.model.FacedbFace;
 import com.ss.facesys.data.collect.mapper.FacedbMapper;
+import com.ss.facesys.data.engine.common.dto.FacedbEngineDTO;
+import com.ss.facesys.data.engine.common.model.FacedbEngine;
+import com.ss.facesys.data.engine.mapper.FacedbEngineMapper;
 import com.ss.facesys.util.StringUtils;
 import com.ss.facesys.util.constant.CommonConstant;
 import com.ss.facesys.util.em.ResultCode;
+import com.ss.spider.system.organization.mapper.OrganizationMapper;
+import com.ss.spider.system.organization.model.Organization;
+import com.ss.tools.DateUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -23,8 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -44,6 +49,11 @@ public class FacedbServiceImpl extends BaseServiceImpl implements IFacedbService
     private IFacedbfaceService facedbfaceService;
     @Resource
     private IAccessService accessService;
+    @Resource
+    private FacedbEngineMapper facedbEngineMapper;
+    @Resource
+    private OrganizationMapper organizationMapper;
+
 
     /**
      * 查询人像库列表
@@ -140,6 +150,12 @@ public class FacedbServiceImpl extends BaseServiceImpl implements IFacedbService
         } catch (Exception e) {
             throw new ServiceException(ResultCode.FACEDB_FACESYS_INSERT_FAIL);
         }
+        // 绑定引擎数据
+        FacedbEngine facedbEngine = new FacedbEngine();
+        facedbEngine.setFacedbIds(Collections.singletonList(facedb.getId()));
+        facedbEngine.setEngineType(CommonConstant.ENGINE_TYPE_FACE);
+        facedbEngine.setBindStatus(CommonConstant.ENGINE_BIND_STATUS);
+        this.bindEngineControl(facedbEngine);
         // 新增汇聚平台数据
         String vId = insertVplatFacedb(facedb);
         // 更新人像系统数据
@@ -198,6 +214,10 @@ public class FacedbServiceImpl extends BaseServiceImpl implements IFacedbService
         } catch (Exception e) {
             throw new ServiceException(ResultCode.FACEDB_FACESYS_DELETE_FAIL);
         }
+        // 删除绑定引擎数据
+        FacedbEngine facedbEngine = new FacedbEngine();
+        facedbEngine.setFacedbId(facedb.getId());
+        facedbEngineMapper.delete(facedbEngine);
         // 删除汇聚平台数据
         deleteVplatFacedb(dbCheck.getFacedbId());
     }
@@ -257,13 +277,22 @@ public class FacedbServiceImpl extends BaseServiceImpl implements IFacedbService
     /**
      * 人像库重提特征
      *
+     * @param id
      * @param facedbId
      * @param faceDBFaceStateInvalid
      * @return
      */
     @Override
-    public void reFeature(String facedbId, Integer faceDBFaceStateInvalid) throws ServiceException {
+    public void reFeature(Integer id, String facedbId, Integer faceDBFaceStateInvalid) throws ServiceException {
         try {
+            // 校验人像库是否绑定人脸引擎
+            FacedbEngine facedbEngine = new FacedbEngine();
+            facedbEngine.setFacedbId(id);
+            facedbEngine.setEngineType(CommonConstant.ENGINE_TYPE_FACE);
+            List<FacedbEngine> checkList = facedbEngineMapper.select(facedbEngine);
+            if (CollectionUtils.isEmpty(checkList)) {
+                throw new ServiceException(ResultCode.FACEDB_ENGINE_BIND_REF_NOT_EXIST);
+            }
             JSONObject param = new JSONObject();
             param.put("id", facedbId);
             param.put("faceDBFaceStateInvalid", faceDBFaceStateInvalid);
@@ -295,6 +324,165 @@ public class FacedbServiceImpl extends BaseServiceImpl implements IFacedbService
                 facedb.setFaceCount(facedb.getFaceCount() + num);
                 facedbMapper.updateByPrimaryKeySelective(facedb);
             }
+        }
+    }
+
+    /**
+     * 查询人像库绑定引擎列表
+     *
+     * @param engineDTO
+     * @return
+     */
+    @Override
+    public List<FacedbEngineDTO> engineList(FacedbEngineDTO engineDTO) {
+        List<FacedbEngineDTO> resultList = new ArrayList<>();
+        // 所属单位、人像库名称：转换为人像库id条件
+        Example example = new Example(FacedbEngine.class);
+        Example.Criteria criteria = example.createCriteria();
+        if (!StringUtils.isAllBlank(engineDTO.getOrgId(), engineDTO.getName())) {
+            Example facedbExp = new Example(Facedb.class);
+            facedbExp.createCriteria().andEqualTo("status", StatusEnum.EFFECT.getCode());
+            if (StringUtils.isNotBlank(engineDTO.getOrgId())) {
+                facedbExp.and().andEqualTo("orgId", engineDTO.getOrgId());
+            }
+            if (StringUtils.isNotBlank(engineDTO.getName())) {
+                facedbExp.and().andLike("name", like(engineDTO.getName()));
+            }
+            List<Facedb> facedbList = facedbMapper.selectByExample(facedbExp);
+            List<Integer> facedbIds = facedbList.stream().map(Facedb::getId).collect(Collectors.toList());
+            if (CollectionUtils.isEmpty(facedbIds)) {
+                facedbIds.add(-1);
+            }
+            criteria.andIn("facedbId", facedbIds);
+        }
+        List<FacedbEngine> facedbEngines = facedbEngineMapper.selectByExample(example);
+        // 返回处理
+        if (CollectionUtils.isNotEmpty(facedbEngines)) {
+            Map<Integer, List<FacedbEngine>> resMap = facedbEngines.stream().collect(Collectors.groupingBy(FacedbEngine::getFacedbId));
+            Example facedbSelExp = new Example(Facedb.class);
+            facedbSelExp.createCriteria().andEqualTo("status", StatusEnum.EFFECT.getCode()).andIn("id", resMap.keySet());
+            List<Facedb> facedbList = facedbMapper.selectByExample(facedbSelExp);
+            // 单位信息
+            Example orgExp = new Example(Organization.class);
+            orgExp.createCriteria().andIn("id", facedbList.stream().map(Facedb::getOrgId).collect(Collectors.toList()));
+            List<Organization> organizations = organizationMapper.selectByExample(orgExp);
+            Map<String, String> orgMap = organizations.stream().collect(Collectors.toMap(Organization::getOrgId, Organization::getOrgCname));
+            for (Facedb facedb : facedbList) {
+                FacedbEngineDTO facedbEngineDTO = new FacedbEngineDTO();
+                facedbEngineDTO.setFacedbId(facedb.getId());
+                facedbEngineDTO.setName(facedb.getName());
+                facedbEngineDTO.setOrgId(facedb.getOrgId());
+                facedbEngineDTO.setOrgCname(orgMap.get(facedb.getOrgId()));
+                facedbEngineDTO.setEngineTypeList(resMap.get(facedb.getId()).stream().map(FacedbEngine::getEngineType).collect(Collectors.toList()));
+                resultList.add(facedbEngineDTO);
+            }
+        }
+        return resultList;
+    }
+
+    /**
+     * 人像库绑定引擎关系
+     *
+     * @param facedbEngine
+     * @throws ServiceException
+     * @return
+     */
+    @Override
+    public String bindEngineControl(FacedbEngine facedbEngine) throws ServiceException {
+        // 查询有效的人像库条件
+        Example dbe = new Example(Facedb.class);
+        dbe.createCriteria().andEqualTo("status", StatusEnum.EFFECT.getCode()).andIn("id", facedbEngine.getFacedbIds());
+        List<Facedb> facedbs = facedbMapper.selectByExample(dbe);
+        if (CollectionUtils.isEmpty(facedbs)) {
+            throw new ServiceException(ResultCode.FACEDB_NOTEXIST);
+        }
+        // 获取操作目标数据集 <人像库ID, 汇聚平台人像库ID>
+        int engineType, bindStatus, count;
+        Map<Integer, String> targetMap = catchBindTarget(facedbs, engineType = facedbEngine.getEngineType(), bindStatus = facedbEngine.getBindStatus());
+        Set<Integer> targetIds = targetMap.keySet();
+        if (CollectionUtils.isEmpty(targetIds)) {
+            throw new ServiceException(ResultCode.FACEDB_ENGINE_BIND_NULLTARGET);
+        }
+        if (bindStatus == CommonConstant.ENGINE_BIND_STATUS) {
+            // 批量绑定
+            List<FacedbEngine> bindList = new ArrayList<>();
+            targetIds.forEach(facedbId -> {
+                FacedbEngine engine = new FacedbEngine();
+                engine.setFacedbId(facedbId);
+                engine.setEngineType(engineType);
+                engine.setCreateTime(DateUtils.getCurrentTime());
+                bindList.add(engine);
+            });
+            try {
+                count = facedbEngineMapper.insertList(bindList);
+            } catch (Exception e) {
+                throw new ServiceException(ResultCode.FACEDB_ENGINE_BIND_FAIL);
+            }
+        } else {
+            // 批量取消绑定
+            Example cancelBindExp = new Example(FacedbEngine.class);
+            cancelBindExp.createCriteria().andIn("facedbId", targetIds).andEqualTo("engineType", engineType);
+            try {
+                count = facedbEngineMapper.deleteByExample(cancelBindExp);
+            } catch (Exception e) {
+                throw new ServiceException(ResultCode.FACEDB_ENGINE_CANCEL_BIND_FAIL);
+            }
+        }
+        // 汇聚平台操作
+        vplatEngineControl((List<String>) targetMap.values(), engineType, bindStatus);
+        return "人像库与引擎绑定关系：成功将" + count + "条人像库数据"
+                + (bindStatus == CommonConstant.ENGINE_BIND_STATUS ? "绑定" : "取消绑定")
+                + EntityUtil.getEnumName("ENGINE_TYPE", String.valueOf(engineType));
+    }
+
+    /**
+     * 获取可做绑定/取消绑定的目标数据
+     *
+     * @param facedbList
+     * @param engineType
+     * @param bindStatus
+     * @return
+     */
+    private Map<Integer, String> catchBindTarget(List<Facedb> facedbList, Integer engineType, Integer bindStatus) {
+        Map<Integer, String> targetMap = new HashMap<>(facedbList.size());
+        if (CollectionUtils.isNotEmpty(facedbList)) {
+            Map<Integer, String> validMap = facedbList.stream().collect(Collectors.toMap(Facedb::getId, Facedb::getFacedbId));
+            Set<Integer> ids = validMap.keySet();
+            Example selectBindExp = new Example(FacedbEngine.class);
+            selectBindExp.createCriteria().andIn("facedbId", ids).andEqualTo("engineType", engineType);
+            List<FacedbEngine> bindList = facedbEngineMapper.selectByExample(selectBindExp);
+            Set<Integer> bindIds = bindList.stream().map(FacedbEngine::getFacedbId).collect(Collectors.toSet());
+            Set<Integer> notBindIds = ids.stream().filter(facedbId -> !bindIds.contains(facedbId)).collect(Collectors.toSet());
+            Set<Integer> targetIds = bindStatus == CommonConstant.ENGINE_BIND_STATUS ? notBindIds : bindIds;
+            targetIds.forEach(targetId -> {
+                targetMap.put(targetId, validMap.get(targetId));
+            });
+        }
+        return targetMap;
+    }
+
+    /**
+     * 汇聚平台引擎绑定调用
+     *
+     * @param facedbIds
+     * @param engineType
+     * @param bindStatus
+     * @throws ServiceException
+     */
+    private void vplatEngineControl(List<String> facedbIds, Integer engineType, Integer bindStatus) throws ServiceException {
+        try {
+            JSONObject param = new JSONObject();
+            param.put("facedbIds", facedbIds);
+            param.put("engineType", engineType);
+            param.put("bindStatus", bindStatus);
+            JSONObject oceanResult = accessService.facedbEngineControl(param.toJSONString());
+            if (!StringUtils.checkSuccess(oceanResult)) {
+                throw new ServiceException(oceanResult.getString("code"), oceanResult.getString("message"));
+            }
+        } catch (ServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ServiceException(ResultCode.FACEDB_VPLAT_ENGINE_CONTROL_FAIL);
         }
     }
 

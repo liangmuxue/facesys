@@ -119,6 +119,11 @@ public class AccessServiceImpl implements IAccessService {
         return OsProxyService.getCollectPages(parmJson);
     }
 
+    @Override
+    public JSONObject deviceEngineControl(String paramJson) {
+        return OsProxyService.deviceEngineControl(paramJson);
+    }
+
     /* ***************************************************** 欧神基础数据类接口--> 人像库相关 ***************************************************** */
 
     @Override
@@ -150,6 +155,12 @@ public class AccessServiceImpl implements IAccessService {
     public JSONObject reFeatureFacedb(String paramJson) {
         return OsProxyService.reFeatureFacedb(paramJson);
     }
+
+    @Override
+    public JSONObject facedbEngineControl(String paramJson) {
+        return OsProxyService.facedbEngineControl(paramJson);
+    }
+
 
 
     /* ***************************************************** 欧神基础数据类接口--> 人像集相关 ***************************************************** */

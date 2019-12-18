@@ -293,6 +293,17 @@ public class OsProxyService {
         return JSONObject.parseObject(resultString);
     }
 
+    /**
+     * 设备绑定引擎关系
+     *
+     * @param paramJson
+     * @return
+     */
+    public static JSONObject deviceEngineControl(String paramJson) {
+        String resultString = BaseHttpUtil.httpPost(paramJson, PropertiesUtil.getOshttp() + HttpConstant.ENGINE_BIND, null);
+        return JSONObject.parseObject(resultString);
+    }
+
     /* ***************************************************** 基础数据类接口--> 人像库相关 ***************************************************** */
 
     /**
@@ -359,6 +370,17 @@ public class OsProxyService {
      */
     public static JSONObject reFeatureFacedb(String paramJson) {
         String resultString = BaseHttpUtil.httpPost(paramJson, PropertiesUtil.getOshttp() + HttpConstant.FACEDB_REFEATURE, null);
+        return JSONObject.parseObject(resultString);
+    }
+
+    /**
+     * 人像库绑定引擎关系
+     *
+     * @param paramJson
+     * @return
+     */
+    public static JSONObject facedbEngineControl(String paramJson) {
+        String resultString = BaseHttpUtil.httpPost(paramJson, PropertiesUtil.getOshttp() + HttpConstant.FACEDB_ENGINE_BIND_CONTROL, null);
         return JSONObject.parseObject(resultString);
     }
 
