@@ -101,14 +101,14 @@ public class OrganizationServiceImpl extends AbstractSsServiceImpl<Organization>
     public List<Organization> treeData() {
         Example example = new Example(Organization.class);
         example.createCriteria().andEqualTo("status", StatusEnum.EFFECT.getCode());
-        example.orderBy("orgCname").asc();
+        example.orderBy("seq").asc();
         List<Organization> organizations = organizationMapper.selectByExample(example);
         return createOrgTree(organizations);
     }
 
     private List<Organization> createOrgTree(List<Organization> organizationList) {
         if (CollectionUtils.isEmpty(organizationList)) {
-            return null;
+            return Collections.emptyList();
         }
         // 创建根节点
         Organization root = new Organization();

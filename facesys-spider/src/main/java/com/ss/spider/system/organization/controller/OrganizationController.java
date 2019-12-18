@@ -5,6 +5,8 @@ import com.ss.annotation.OpLog;
 import com.ss.controller.AbstractController;
 import com.ss.enums.OperaTypeEnum;
 import com.ss.enums.StatusEnum;
+import com.ss.facesys.util.coordinate.GetCenterCoordinates;
+import com.ss.facesys.util.coordinate.IscCoordinate;
 import com.ss.response.PageEntity;
 import com.ss.response.ResponseEntity;
 import com.ss.spider.log.constants.ModuleCode;
@@ -15,6 +17,7 @@ import com.ss.spider.system.organization.service.OrganizationService;
 import com.ss.tools.ArraysUtils;
 import com.ss.tools.DateUtils;
 import com.ss.valide.*;
+import org.apache.commons.collections.CollectionUtils;
 import org.mybatis.spring.MyBatisSystemException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -144,6 +147,14 @@ public class OrganizationController extends AbstractController {
         org.setUpdateTime(currentTime);
         org.setCreateUserId(para.getUserId());
         org.setUpdateUserId(para.getUserId());
+        // 坐标信息
+        List<IscCoordinate> gisList;
+        if (CollectionUtils.isNotEmpty(gisList = para.getGisList())) {
+            IscCoordinate centerGis = GetCenterCoordinates.getCenterPoint(gisList);
+            org.setLon(centerGis.getLongitude());
+            org.setLat(centerGis.getLatitude());
+            org.setGisArea(gisList);
+        }
         try {
             resp.setData(this.organizationService.save(org));
         } catch (Exception e) {
@@ -173,6 +184,14 @@ public class OrganizationController extends AbstractController {
         org.setIsLinkage((short) StatusEnum.INVALID.getCode());
         org.setUpdateTime(DateUtils.getCurrentTime());
         org.setUpdateUserId(para.getUserId());
+        // 坐标信息
+        List<IscCoordinate> gisList;
+        if (CollectionUtils.isNotEmpty(gisList = para.getGisList())) {
+            IscCoordinate centerGis = GetCenterCoordinates.getCenterPoint(gisList);
+            org.setLon(centerGis.getLongitude());
+            org.setLat(centerGis.getLatitude());
+            org.setGisArea(gisList);
+        }
         try {
             this.organizationService.update(org);
         } catch (Exception e) {
