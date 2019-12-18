@@ -2,6 +2,7 @@ package com.ss.facesys.data.collect.client;
 
 import com.ss.exception.ServiceException;
 import com.ss.facesys.data.collect.common.model.FacedbFace;
+import tk.mybatis.mapper.entity.Example;
 
 import java.util.List;
 
@@ -85,5 +86,13 @@ public interface IFacedbfaceService {
      * @throws ServiceException
      */
     void reFeature(String faceId) throws ServiceException;
+
+    /**
+     * 根据Example条件更新人像集信息 facedbFace包含的不是null的属性值
+     *
+     * @param facedbFace
+     * @param example
+     */
+    void updateByExampleSelective(FacedbFace facedbFace, Example example);
 
 }

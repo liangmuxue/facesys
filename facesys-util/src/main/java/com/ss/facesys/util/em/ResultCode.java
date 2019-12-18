@@ -51,14 +51,14 @@ public enum ResultCode implements IResultCode {
     FACEDBFACE_FACESYS_DELETE_FAIL("800062006", "人像系统逻辑删除人像集数据失败：facedbFaceMapper.updateByPrimaryKeySelective异常"),
     FACEDBFACE_FACESYS_BAT_DELETE_FAIL("800062007", "人像系统批量逻辑删除人像集数据失败：facedbFaceMapper.updateByExampleSelective异常"),
 
-    FACEDB_ENGINE_BIND_NULLTARGET("800074001", "批量操作人像库关联引擎绑定关系失败：已选人像库中不存在可进行指定操作（绑定/取消绑定）的目标数据"),
-    FACEDB_ENGINE_BIND_FAIL("800074002", "批量操作人像库关联引擎绑定关系失败：新增关联关系数据失败"),
-    FACEDB_ENGINE_CANCEL_BIND_FAIL("800074003", "批量操作人像库关联引擎绑定关系失败：删除关联关系数据失败"),
+    FACEDB_ENGINE_BIND_NULLTARGET("800074001", "人像库关联引擎绑定关系失败：已选人像库中不存在可进行指定操作（绑定/取消绑定）的目标数据"),
+    FACEDB_ENGINE_BIND_FAIL("800074002", "人像库关联引擎绑定关系失败：新增关联关系数据失败"),
+    FACEDB_ENGINE_CANCEL_BIND_FAIL("800074003", "人像库关联引擎绑定关系失败：删除关联关系数据失败"),
     FACEDB_VPLAT_ENGINE_CONTROL_FAIL("800074004", "汇聚平台人像库绑定引擎关系操作异常"),
 
-    DEVICE_ENGINE_BIND_NULLTARGET("800074201", "批量操作设备关联引擎绑定关系失败：已选设备中不存在可进行指定操作（绑定/取消绑定）的目标数据"),
-    DEVICE_ENGINE_BIND_FAIL("800074202", "批量操作设备关联引擎绑定关系失败：新增关联关系数据失败"),
-    DEVICE_ENGINE_CANCEL_BIND_FAIL("800074203", "批量操作设备关联引擎绑定关系失败：删除关联关系数据失败"),
+    DEVICE_ENGINE_BIND_NULLTARGET("800074201", "设备关联引擎绑定关系失败：已选设备中不存在可进行指定操作（绑定/取消绑定）的目标数据"),
+    DEVICE_ENGINE_BIND_FAIL("800074202", "设备关联引擎绑定关系失败：新增关联关系数据失败"),
+    DEVICE_ENGINE_CANCEL_BIND_FAIL("800074203", "设备关联引擎绑定关系失败：删除关联关系数据失败"),
     DEVICE_VPLAT_ENGINE_CONTROL_FAIL("800074204", "汇聚平台设备绑定引擎关系操作异常"),
 
     ;

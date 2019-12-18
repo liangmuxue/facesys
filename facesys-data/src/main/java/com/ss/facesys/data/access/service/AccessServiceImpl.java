@@ -11,6 +11,7 @@ import java.util.Map;
 
 /**
  * AccessServiceImpl
+ *
  * @author FrancisYs
  * @date 2019/8/21
  * @email yaoshuai@ss-cas.com
@@ -20,7 +21,9 @@ import java.util.Map;
 public class AccessServiceImpl implements IAccessService {
 
     @Override
-    public String login() { return OsProxyService.login(); }
+    public String login() {
+        return OsProxyService.login();
+    }
 
     @Override
     public JSONObject getRecogTrack(String parmJson) {
@@ -38,7 +41,9 @@ public class AccessServiceImpl implements IAccessService {
     }
 
     @Override
-    public JSONObject getRecordAlarmPages(String parmJson) { return OsProxyService.getRecordAlarmPages(parmJson); }
+    public JSONObject getRecordAlarmPages(String parmJson) {
+        return OsProxyService.getRecordAlarmPages(parmJson);
+    }
 
     @Override
     public JSONObject getRecogRegisterDb(String parmJson) {
@@ -71,7 +76,9 @@ public class AccessServiceImpl implements IAccessService {
     }
 
     @Override
-    public JSONObject getClusterTaskPages(Integer state, String name) { return OsProxyService.getClusterTaskPages(state, name); }
+    public JSONObject getClusterTaskPages(Integer state, String name) {
+        return OsProxyService.getClusterTaskPages(state, name);
+    }
 
     @Override
     public JSONObject getClusterResultPages(Integer taskId) {
@@ -84,7 +91,9 @@ public class AccessServiceImpl implements IAccessService {
     }
 
     @Override
-    public JSONObject getClusterResultDetailPages(String resultId) { return OsProxyService.getClusterResultDetailPages(resultId); }
+    public JSONObject getClusterResultDetailPages(String resultId) {
+        return OsProxyService.getClusterResultDetailPages(resultId);
+    }
 
     @Override
     public JSONObject getCameraPreview(String parmJson) {
@@ -107,7 +116,9 @@ public class AccessServiceImpl implements IAccessService {
     }
 
     @Override
-    public JSONObject getAnalysisResultDetailPages(String resultId) { return OsProxyService.getAnalysisResultDetailPages(resultId); }
+    public JSONObject getAnalysisResultDetailPages(String resultId) {
+        return OsProxyService.getAnalysisResultDetailPages(resultId);
+    }
 
     @Override
     public JSONObject getRecogDeviceDb(String paramJson) {
@@ -200,6 +211,7 @@ public class AccessServiceImpl implements IAccessService {
 
     /**
      * 查询布控分页列表
+     *
      * @param paramJson
      * @return
      */

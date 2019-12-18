@@ -424,4 +424,15 @@ public class FacedbfaceServiceImpl extends BaseServiceImpl implements IFacedbfac
         }
     }
 
+    /**
+     * 根据Example条件更新人像集信息 facedbFace包含的不是null的属性值
+     *
+     * @param facedbFace
+     * @param example
+     */
+    @Override
+    public void updateByExampleSelective(FacedbFace facedbFace, Example example) {
+        facedbFaceMapper.updateByExampleSelective(facedbFace, example);
+    }
+
 }

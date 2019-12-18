@@ -17,6 +17,7 @@ import com.ss.facesys.util.em.ResultCode;
 import com.ss.spider.system.organization.mapper.OrganizationMapper;
 import com.ss.spider.system.organization.model.Organization;
 import com.ss.tools.DateUtils;
+import com.sun.xml.internal.bind.v2.TODO;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,7 +87,7 @@ public class DeviceEngineServiceImpl extends BaseServiceImpl implements IDeviceE
             List<Camera> deviceList = cameraMapper.selectByExample(deviceSelExp);
             // 单位信息
             Example orgExp = new Example(Organization.class);
-//            orgExp.createCriteria().andIn("id", deviceList.stream().map(Camera::getOrgId).collect(Collectors.toList())); TODO 设备未增加相关字段
+//            orgExp.createCriteria().andIn("orgId", deviceList.stream().map(Camera::getOrgId).collect(Collectors.toList())); TODO 设备未增加相关字段
             List<Organization> organizations = organizationMapper.selectByExample(orgExp);
             Map<String, String> orgMap = organizations.stream().collect(Collectors.toMap(Organization::getOrgId, Organization::getOrgCname));
             for (Camera device : deviceList) {
@@ -151,9 +152,9 @@ public class DeviceEngineServiceImpl extends BaseServiceImpl implements IDeviceE
             }
         }
         // 汇聚平台操作
-        vplatEngineControl((List<String>) targetMap.values(), engineType, bindStatus);
+        vplatEngineControl(new ArrayList<>(targetMap.values()), engineType, bindStatus);
         return "设备与引擎绑定关系：成功将" + count + "条设备数据"
-                + (bindStatus == CommonConstant.ENGINE_BIND_STATUS ? "绑定" : "取消绑定")
+                + (bindStatus == CommonConstant.ENGINE_BIND_STATUS ? "绑定" : "解绑")
                 + EntityUtil.getEnumName("ENGINE_TYPE", String.valueOf(engineType));
     }
 
@@ -168,8 +169,8 @@ public class DeviceEngineServiceImpl extends BaseServiceImpl implements IDeviceE
     private Map<Integer, String> catchBindTarget(List<Camera> deviceList, Integer engineType, Integer bindStatus) {
         Map<Integer, String> targetMap = new HashMap<>(deviceList.size());
         if (CollectionUtils.isNotEmpty(deviceList)) {
-            Map<Integer, String> validMap = new HashMap<>();
 //            TODO 设备未增加相关字段
+            Map<Integer, String> validMap = new HashMap<>();
 //            Map<Integer, String> validMap = deviceList.stream().collect(Collectors.toMap(Camera::getId, Camera::getVplatId));
             Set<Integer> ids = validMap.keySet();
             Example selectBindExp = new Example(DeviceEngine.class);

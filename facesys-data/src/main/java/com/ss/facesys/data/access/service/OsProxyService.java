@@ -300,7 +300,7 @@ public class OsProxyService {
      * @return
      */
     public static JSONObject deviceEngineControl(String paramJson) {
-        String resultString = BaseHttpUtil.httpPost(paramJson, PropertiesUtil.getOshttp() + HttpConstant.ENGINE_BIND, null);
+        String resultString = BaseHttpUtil.httpPost(paramJson, PropertiesUtil.getOshttp() + HttpConstant.DEVICE_ENGINE_BIND_CONTROL, null);
         return JSONObject.parseObject(resultString);
     }
 
