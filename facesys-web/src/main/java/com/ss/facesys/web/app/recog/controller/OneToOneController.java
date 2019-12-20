@@ -11,7 +11,7 @@ import com.ss.facesys.data.access.client.IAccessService;
 import com.ss.facesys.util.StringUtils;
 import com.ss.facesys.util.constant.CommonConstant;
 import com.ss.facesys.util.em.ResultCode;
-import com.ss.facesys.web.app.recog.form.RecogForm;
+import com.ss.facesys.web.app.recog.query.RecogQuery;
 import com.ss.response.ResponseEntity;
 import com.ss.spider.log.constants.ModuleCode;
 import com.ss.tools.Base64ImageUtils;
@@ -41,7 +41,7 @@ public class OneToOneController extends AbstractController {
 
     @PostMapping({"/1vs1"})
     @OpLog(model = ModuleCode.BUSINESS, desc = "人像1:1比对", type = OperaTypeEnum.OTHER)
-    public ResponseEntity<String> recog(@RequestBody @Validated final RecogForm para, final BindingResult bindingResult) throws BindException {
+    public ResponseEntity<String> recog(@RequestBody @Validated final RecogQuery para, final BindingResult bindingResult) throws BindException {
         this.logger.info("1:1比对-开始。请求参数:{}", JSON.toJSONString(para));
         final ResponseEntity<String> resp = this.validite(bindingResult);
         JSONObject recog;

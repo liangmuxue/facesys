@@ -1,4 +1,4 @@
-package com.ss.facesys.web.app.recog.form;
+package com.ss.facesys.web.app.recog.query;
 
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -6,13 +6,13 @@ import java.io.Serializable;
 import java.util.StringJoiner;
 
 /**
- * RecogForm
+ * RecogQuery
  *
  * @author FrancisYs
  * @date 2019/12/4
  * @email yaoshuai@ss-cas.com
  */
-public class RecogForm implements Serializable {
+public class RecogQuery implements Serializable {
 
     @NotBlank(message = "{recog.faceA.empty}")
     private String faceA;
@@ -38,7 +38,7 @@ public class RecogForm implements Serializable {
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", RecogForm.class.getSimpleName() + "[", "]")
+        return new StringJoiner(", ", RecogQuery.class.getSimpleName() + "[", "]")
                 .add("faceA='" + faceA + "'")
                 .add("faceB='" + faceB + "'")
                 .toString();

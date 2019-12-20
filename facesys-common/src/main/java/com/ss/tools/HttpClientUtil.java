@@ -46,7 +46,7 @@ public class HttpClientUtil {
     private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 5.1; rv:6.0.2) Gecko/20100101 Firefox/6.0.2";
 
 
-    private static final String ACCEPT = "text/html,application/xhtml+xml,application/xml,application/json,application/x-www-form-urlencoded;q=0.9,*/*;q=0.8";
+    private static final String ACCEPT = "text/html,application/xhtml+xml,application/xml,application/json,application/x-www-query-urlencoded;q=0.9,*/*;q=0.8";
 
 
     private static final String ACCEPT_LANGUAGE = "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3";
@@ -163,7 +163,7 @@ public class HttpClientUtil {
         httpRequestBase.setHeader("User-Agent",
                 "Mozilla/5.0 (Windows NT 5.1; rv:6.0.2) Gecko/20100101 Firefox/6.0.2");
         httpRequestBase.setHeader("Accept",
-                "text/html,application/xhtml+xml,application/xml,application/json,application/x-www-form-urlencoded;q=0.9,*/*;q=0.8");
+                "text/html,application/xhtml+xml,application/xml,application/json,application/x-www-query-urlencoded;q=0.9,*/*;q=0.8");
         httpRequestBase.setHeader("Accept-Language", "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3");
         httpRequestBase.setHeader("Accept-Charset", "utf-8,gbk,gb2312,ISO-8859-1,;q=0.7,*;q=0.7");
         RequestConfig requestConfig = RequestConfig.custom().setConnectionRequestTimeout(3000)

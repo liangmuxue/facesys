@@ -48,16 +48,7 @@ public class OsProxyService {
         return JSONObject.parseObject(resultString);
     }
 
-    /**
-     * 检索抓拍库数据
-     *
-     * @param parmJson
-     * @return
-     */
-    public static JSONObject getRecogCameraDb(String parmJson) {
-        String resultString = BaseHttpUtil.httpPost(parmJson, PropertiesUtil.getOshttp() + HttpConstant.RECOG_CAMERADB, null);
-        return JSONObject.parseObject(resultString);
-    }
+
 
 
     public static JSONObject getRecogTerminalDb(String parmJson) {
@@ -74,17 +65,6 @@ public class OsProxyService {
      */
     public static JSONObject getRecordAlarmPages(String parmJson) {
         String resultString = BaseHttpUtil.httpPost(parmJson, PropertiesUtil.getOshttp() + HttpConstant.RECORDALARM_PAGES, null);
-        return JSONObject.parseObject(resultString);
-    }
-
-    /**
-     * 注册库人脸检索
-     *
-     * @param parmJson
-     * @return
-     */
-    public static JSONObject getRecogRegisterDb(String parmJson) {
-        String resultString = BaseHttpUtil.httpPost(parmJson, PropertiesUtil.getOshttp() + HttpConstant.RECOG_REGISTERDB, null);
         return JSONObject.parseObject(resultString);
     }
 
@@ -170,21 +150,6 @@ public class OsProxyService {
         parm.put("currentPage", 1);
         parm.put("pageSize", 10);
         String resultString = BaseHttpUtil.httpPost(JSON.toJSONString(parm), PropertiesUtil.getOshttp() + HttpConstant.CLUSTER_TASK_RESULT_PAGE, null);
-        return JSONObject.parseObject(resultString);
-    }
-
-    /**
-     * 人脸比对功能（1:1）
-     *
-     * @param faceA 图片A的base64，图片大小要求小于3M
-     * @param faceB 图片B的base64，图片大小要求小于3M
-     * @return
-     */
-    public static JSONObject getRecogOne(String faceA, String faceB) {
-        Map<String, Object> parm = new HashMap<String, Object>();
-        parm.put("faceA", faceA);
-        parm.put("faceB", faceB);
-        String resultString = BaseHttpUtil.httpPost(JSON.toJSONString(parm), PropertiesUtil.getOshttp() + HttpConstant.RECOG_ONE_VS_ONE, null);
         return JSONObject.parseObject(resultString);
     }
 
@@ -538,6 +503,44 @@ public class OsProxyService {
         paramJson.put("monitorId", monitorId);
         paramJson.put("monitorStatus", monitorStatus);
         String resultString = BaseHttpUtil.httpPost(JSON.toJSONString(paramJson), PropertiesUtil.getOshttp() + HttpConstant.MONITOR_STATUS_EDIT, null);
+        return JSONObject.parseObject(resultString);
+    }
+
+
+    /**
+     * 人脸比对功能（1:1）
+     *
+     * @param faceA 图片A的base64，图片大小要求小于3M
+     * @param faceB 图片B的base64，图片大小要求小于3M
+     * @return
+     */
+    public static JSONObject getRecogOne(String faceA, String faceB) {
+        Map<String, Object> parm = new HashMap<>(2);
+        parm.put("faceA", faceA);
+        parm.put("faceB", faceB);
+        String resultString = BaseHttpUtil.httpPost(JSON.toJSONString(parm), PropertiesUtil.getOshttp() + HttpConstant.RECOG_ONE_VS_ONE, null);
+        return JSONObject.parseObject(resultString);
+    }
+
+    /**
+     * 1:N 抓拍库
+     *
+     * @param parmJson
+     * @return
+     */
+    public static JSONObject getRecogCameraDb(String parmJson) {
+        String resultString = BaseHttpUtil.httpPost(parmJson, PropertiesUtil.getOshttp() + HttpConstant.RECOG_CAMERADB, null);
+        return JSONObject.parseObject(resultString);
+    }
+
+    /**
+     * 1:N 注册库
+     *
+     * @param parmJson
+     * @return
+     */
+    public static JSONObject getRecogRegisterDb(String parmJson) {
+        String resultString = BaseHttpUtil.httpPost(parmJson, PropertiesUtil.getOshttp() + HttpConstant.RECOG_REGISTERDB, null);
         return JSONObject.parseObject(resultString);
     }
 

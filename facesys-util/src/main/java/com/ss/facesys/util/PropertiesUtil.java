@@ -57,6 +57,9 @@ public class PropertiesUtil {
     private static int threadAliveTime;
     private static int oceanOrViid;
 
+    private static int topN;
+    private static double threshold;
+
     public static String getCaptureFile() {
         return captureFile;
     }
@@ -537,4 +540,21 @@ public class PropertiesUtil {
     public static void setOceanOrViid(int oceanOrViid) {
         PropertiesUtil.oceanOrViid = oceanOrViid;
     }
+
+    public static int getTopN() {
+        return topN;
+    }
+
+    public static void setTopN(int topN) {
+        PropertiesUtil.topN = topN;
+    }
+
+    public static double getThreshold() {
+        return threshold;
+    }
+
+    public static void setThreshold(double threshold) {
+        PropertiesUtil.threshold = threshold;
+    }
+
 }

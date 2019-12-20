@@ -61,6 +61,9 @@ public enum ResultCode implements IResultCode {
     DEVICE_ENGINE_CANCEL_BIND_FAIL("800074203", "设备关联引擎绑定关系失败：删除关联关系数据失败"),
     DEVICE_VPLAT_ENGINE_CONTROL_FAIL("800074204", "汇聚平台设备绑定引擎关系操作异常"),
 
+    RECOG_CAPTURE_VPLAT_FAIL("800015001", "人像检索1:N抓拍库汇聚平台操作异常"),
+    RECOG_FACEDB_VPLAT_FAIL("800015002", "人像检索1:N注册库汇聚平台操作异常"),
+
     ;
 
     private String code;
