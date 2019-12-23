@@ -51,7 +51,6 @@ public class RecogFacedbController extends BaseController {
     @OpLog(model = ModuleCode.BUSINESS, desc = "1:N 注册库检索", type = OperaTypeEnum.SEARCH)
     public ResponseEntity<Map<String, Object>> recog(@RequestBody @Validated RecogFacedbQuery facedbQuery, BindingResult bindingResult) throws BindException {
         ResponseEntity<Map<String, Object>> resp = validite(bindingResult);
-        Map<String, Object> restMap = new HashMap<>(1);
         try {
             paramCheck(facedbQuery);
             facedbCheck(facedbQuery);
@@ -69,8 +68,7 @@ public class RecogFacedbController extends BaseController {
             }
             // 将结果转换为数据传输对象
             List<FacedbfaceDTO> resultList = BaseFormatJsonUtil.formatList(oceanResult.get("data"), FacedbfaceDTO.class);
-            restMap.put("recogList", filterCondition(resultList, facedbQuery));
-            resp.setData(restMap);
+            resp.setData(assemblePage(filterCondition(resultList, facedbQuery), null, null));
         } catch (ServiceException e) {
             this.logger.error("1:N 抓拍库检索失败，错误码：{}，异常信息：{}", e.getCode(), e.getMessage(), e);
             return createFailResponse(e);
@@ -147,6 +145,12 @@ public class RecogFacedbController extends BaseController {
             }
         }
         return filter;
+    }
+
+    private Map<String, Object> assemblePage(List<FacedbfaceDTO> resultList, Integer currentPage, Integer pageSize) {
+        Map<String, Object> resultMap = new HashMap<>(1);
+        resultMap.put("recogList", resultList);
+        return resultMap;
     }
 
 }

@@ -5,6 +5,7 @@ import com.ss.annotation.OpLog;
 import com.ss.enums.OperaTypeEnum;
 import com.ss.exception.ServiceException;
 import com.ss.facesys.data.access.client.IAccessService;
+import com.ss.facesys.data.access.common.dto.FacedbfaceDTO;
 import com.ss.facesys.data.baseinfo.common.dto.PersonCaptureDTO;
 import com.ss.facesys.util.PropertiesUtil;
 import com.ss.facesys.util.StringUtils;
@@ -51,7 +52,6 @@ public class RecogCameraCaptureController extends BaseController {
     @OpLog(model = ModuleCode.BUSINESS, desc = "1:N 抓拍库检索", type = OperaTypeEnum.SEARCH)
     public ResponseEntity<Map<String, Object>> recog(@RequestBody @Validated RecogCaptureQuery captureQuery, BindingResult bindingResult) throws BindException {
         ResponseEntity<Map<String, Object>> resp = validite(bindingResult);
-        Map<String, Object> restMap = new HashMap<>(1);
         try {
             paramCheck(captureQuery);
             deviceCheck(captureQuery);
@@ -69,8 +69,7 @@ public class RecogCameraCaptureController extends BaseController {
             }
             // 将结果转换为数据传输对象
             List<PersonCaptureDTO> resultList = BaseFormatJsonUtil.formatList(oceanResult.get("data"), PersonCaptureDTO.class);
-            restMap.put("recogList", filterCondition(resultList, captureQuery));
-            resp.setData(restMap);
+            resp.setData(assemblePage(filterCondition(resultList, captureQuery), null, null));
         } catch (ServiceException e) {
             this.logger.error("1:N 抓拍库检索失败，错误码：{}，异常信息：{}", e.getCode(), e.getMessage(), e);
             return createFailResponse(e);
@@ -150,6 +149,12 @@ public class RecogCameraCaptureController extends BaseController {
             }
         }
         return filter;
+    }
+
+    private Map<String, Object> assemblePage(List<PersonCaptureDTO> resultList, Integer currentPage, Integer pageSize) {
+        Map<String, Object> resultMap = new HashMap<>(1);
+        resultMap.put("recogList", resultList);
+        return resultMap;
     }
 
 }
