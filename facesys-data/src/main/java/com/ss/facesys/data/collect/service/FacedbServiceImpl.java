@@ -122,6 +122,17 @@ public class FacedbServiceImpl extends BaseServiceImpl implements IFacedbService
         return facedb;
     }
 
+    /**
+     * 根据example查询人像库列表
+     *
+     * @param example
+     * @return
+     */
+    @Override
+    public List<Facedb> selectByExample(Example example) {
+        return facedbMapper.selectByExample(example);
+    }
+
     private void duplicateCheck(Facedb facedb) throws ServiceException {
         Example example = new Example(Facedb.class);
         example.createCriteria()

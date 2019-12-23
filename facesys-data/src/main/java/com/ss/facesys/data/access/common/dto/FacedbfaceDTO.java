@@ -33,6 +33,7 @@ public class FacedbfaceDTO {
     private String facePath;
     private String cardPath;
     private Integer state;
+    private Float recogScore;
 
 
     public String getId() {
@@ -217,6 +218,14 @@ public class FacedbfaceDTO {
 
     public void setState(Integer state) {
         this.state = state;
+    }
+
+    public Float getRecogScore() {
+        return recogScore;
+    }
+
+    public void setRecogScore(Float recogScore) {
+        this.recogScore = recogScore;
     }
 
     @Override

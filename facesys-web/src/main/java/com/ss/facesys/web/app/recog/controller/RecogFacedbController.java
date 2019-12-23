@@ -3,9 +3,12 @@ package com.ss.facesys.web.app.recog.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.ss.annotation.OpLog;
 import com.ss.enums.OperaTypeEnum;
+import com.ss.enums.StatusEnum;
 import com.ss.exception.ServiceException;
 import com.ss.facesys.data.access.client.IAccessService;
 import com.ss.facesys.data.access.common.dto.FacedbfaceDTO;
+import com.ss.facesys.data.collect.client.IFacedbService;
+import com.ss.facesys.data.collect.common.model.Facedb;
 import com.ss.facesys.util.PropertiesUtil;
 import com.ss.facesys.util.StringUtils;
 import com.ss.facesys.util.constant.CommonConstant;
@@ -26,12 +29,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 1:N 注册库检索
@@ -46,6 +51,8 @@ public class RecogFacedbController extends BaseController {
 
     @Resource
     private IAccessService accessService;
+    @Resource
+    private IFacedbService facedbService;
 
     @PostMapping(value = {"/registerDb"})
     @OpLog(model = ModuleCode.BUSINESS, desc = "1:N 注册库检索", type = OperaTypeEnum.SEARCH)
@@ -114,7 +121,19 @@ public class RecogFacedbController extends BaseController {
      * @throws ServiceException
      */
     private void facedbCheck(RecogFacedbQuery facedbQuery) throws ServiceException {
+        // 获取全部权限库
 
+        // 未传入条件时直接返回全部权限库
+        if (CollectionUtils.isEmpty(facedbQuery.getFacedbIds())) {
+
+
+            return;
+        }
+        // 校验筛选有效人像库
+        Example example = new Example(Facedb.class);
+        example.createCriteria().andIn("id", facedbQuery.getFacedbIds()).andEqualTo("status", StatusEnum.EFFECT.getCode());
+        List<Facedb> facedbs = facedbService.selectByExample(example);
+        facedbQuery.setVplatFacedbIds(facedbs.stream().map(Facedb::getFacedbId).collect(Collectors.toList()));
     }
 
     private String getVplatParam(RecogFacedbQuery facedbQuery) {

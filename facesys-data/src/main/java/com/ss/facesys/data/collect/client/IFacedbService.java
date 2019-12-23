@@ -4,6 +4,7 @@ import com.ss.exception.ServiceException;
 import com.ss.facesys.data.collect.common.model.Facedb;
 import com.ss.facesys.data.engine.common.dto.FacedbEngineDTO;
 import com.ss.facesys.data.engine.common.model.FacedbEngine;
+import tk.mybatis.mapper.entity.Example;
 
 import java.util.List;
 
@@ -39,6 +40,14 @@ public interface IFacedbService {
      * @return
      */
     Facedb selectOne(Facedb facedb);
+
+    /**
+     * 根据example查询人像库列表
+     *
+     * @param example
+     * @return
+     */
+    List<Facedb> selectByExample(Example example);
 
     /**
      * 新增人像库
@@ -98,8 +107,8 @@ public interface IFacedbService {
      * 人像库绑定引擎关系
      *
      * @param facedbEngine
-     * @throws ServiceException
      * @return
+     * @throws ServiceException
      */
     String bindEngineControl(FacedbEngine facedbEngine) throws ServiceException;
 
