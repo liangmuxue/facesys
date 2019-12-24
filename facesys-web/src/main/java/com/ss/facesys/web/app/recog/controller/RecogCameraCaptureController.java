@@ -5,11 +5,13 @@ import com.ss.annotation.OpLog;
 import com.ss.enums.OperaTypeEnum;
 import com.ss.exception.ServiceException;
 import com.ss.facesys.data.access.client.IAccessService;
-import com.ss.facesys.data.access.common.dto.FacedbfaceDTO;
 import com.ss.facesys.data.baseinfo.common.dto.PersonCaptureDTO;
+import com.ss.facesys.data.resource.common.model.Camera;
+import com.ss.facesys.data.resource.mapper.CameraMapper;
 import com.ss.facesys.util.PropertiesUtil;
 import com.ss.facesys.util.StringUtils;
 import com.ss.facesys.util.constant.CommonConstant;
+import com.ss.facesys.util.em.ResourceType;
 import com.ss.facesys.util.em.ResultCode;
 import com.ss.facesys.util.file.FilePropertiesUtil;
 import com.ss.facesys.util.http.BaseFormatJsonUtil;
@@ -27,12 +29,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 1:N 抓拍库检索
@@ -47,6 +51,8 @@ public class RecogCameraCaptureController extends BaseController {
 
     @Resource
     private IAccessService accessService;
+    @Resource
+    private CameraMapper cameraMapper;
 
     @PostMapping(value = {"/cameraDb"})
     @OpLog(model = ModuleCode.BUSINESS, desc = "1:N 抓拍库检索", type = OperaTypeEnum.SEARCH)
@@ -109,13 +115,17 @@ public class RecogCameraCaptureController extends BaseController {
     }
 
     /**
-     * 校验设备权限并获取汇聚平台设备ID参数 TODO
+     * 校验设备权限并获取汇聚平台设备ID参数
      *
      * @param captureQuery
      * @throws ServiceException
      */
     private void deviceCheck(RecogCaptureQuery captureQuery) throws ServiceException {
-
+        captureQuery.setDeviceIds(getAuthResources(captureQuery.getUserId(), ResourceType.CAMERA, captureQuery.getDeviceIds()));
+        Example example = new Example(Camera.class);
+        example.createCriteria().andIn("id", captureQuery.getDeviceIds()).andEqualTo("state", CommonConstant.DELETE_FLAG_EXIST);
+        List<Camera> deviceList = cameraMapper.selectByExample(example);
+        captureQuery.setVplatDeviceIds(deviceList.stream().map(Camera::getCameraId).collect(Collectors.toList()));
     }
 
     private String getVplatParam(RecogCaptureQuery captureQuery) {

@@ -6,16 +6,21 @@ import com.ss.facesys.data.resource.client.IRegionService;
 import com.ss.facesys.data.resource.client.IVillageService;
 import com.ss.facesys.util.StringUtils;
 import com.ss.facesys.util.constant.CommonConstant;
+import com.ss.facesys.util.em.ResourceType;
 import com.ss.facesys.util.jedis.JedisUtil;
+import com.ss.spider.system.user.mapper.UserResourceMapper;
 import com.ss.spider.system.user.model.User;
+import com.ss.spider.system.user.model.UserResource;
 import com.ss.tools.MD5Utils;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.collections.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * controller通用基础父类
@@ -32,25 +37,15 @@ public class BaseController extends AbstractController {
     private IRegionService regionService;
     @Resource
     private IVillageService villageService;
+    @Resource
+    private UserResourceMapper userResourceMapper;
 
-    public User getUser(String userid) {
+    protected User getUser(String userid) {
         String key = "USERINFO_" + userid;
         if (this.jedisUtil.hasKey(key)) {
             return JSONObject.parseObject(this.jedisUtil.get(key).toString(), User.class);
         }
         return null;
-    }
-
-    public static String stringFilter(String str) {
-        String regEx = "[`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？]";
-        Pattern p = Pattern.compile(regEx);
-        Matcher m = p.matcher(str);
-        return m.replaceAll("").trim();
-    }
-
-    public static void main(String[] args) {
-        System.out.println(MD5Utils.encode("123456"));
-        System.out.println(DigestUtils.md5("e10adc3949ba59abbe56e057f20f883e"));
     }
 
     /**
@@ -84,6 +79,20 @@ public class BaseController extends AbstractController {
         }
         // 传入了非空的 区划/小区条件，未查到小区条件，即区划下无小区的情况
         return "0";
+    }
+
+    protected List<Integer> getAuthResources(final String userId, final ResourceType resourceType, final List<Integer> resourceIds) {
+        UserResource userResource = new UserResource();
+        userResource.setUserId(userId);
+        userResource.setType(resourceType.getValue());
+        List<UserResource> allResources = userResourceMapper.select(userResource);
+        final List<Integer> allResourceIds = allResources.stream().map(UserResource::getResourceId).collect(Collectors.toList());
+        // 无指定条件时查询用户权限下的全部数据
+        if (CollectionUtils.isEmpty(resourceIds)) {
+            return allResourceIds;
+        }
+        // 筛选有效数据
+        return resourceIds.stream().filter(allResourceIds::contains).collect(Collectors.toList());
     }
 
 }

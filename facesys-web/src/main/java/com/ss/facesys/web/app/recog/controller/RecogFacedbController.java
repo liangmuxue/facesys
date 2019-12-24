@@ -12,6 +12,7 @@ import com.ss.facesys.data.collect.common.model.Facedb;
 import com.ss.facesys.util.PropertiesUtil;
 import com.ss.facesys.util.StringUtils;
 import com.ss.facesys.util.constant.CommonConstant;
+import com.ss.facesys.util.em.ResourceType;
 import com.ss.facesys.util.em.ResultCode;
 import com.ss.facesys.util.file.FilePropertiesUtil;
 import com.ss.facesys.util.http.BaseFormatJsonUtil;
@@ -115,21 +116,13 @@ public class RecogFacedbController extends BaseController {
     }
 
     /**
-     * 校验人像库权限并获取汇聚平台设备ID参数 TODO
+     * 校验人像库权限并获取汇聚平台设备ID参数
      *
      * @param facedbQuery
      * @throws ServiceException
      */
     private void facedbCheck(RecogFacedbQuery facedbQuery) throws ServiceException {
-        // 获取全部权限库
-
-        // 未传入条件时直接返回全部权限库
-        if (CollectionUtils.isEmpty(facedbQuery.getFacedbIds())) {
-
-
-            return;
-        }
-        // 校验筛选有效人像库
+        facedbQuery.setFacedbIds(getAuthResources(facedbQuery.getUserId(), ResourceType.FACEDB, facedbQuery.getFacedbIds()));
         Example example = new Example(Facedb.class);
         example.createCriteria().andIn("id", facedbQuery.getFacedbIds()).andEqualTo("status", StatusEnum.EFFECT.getCode());
         List<Facedb> facedbs = facedbService.selectByExample(example);
