@@ -435,24 +435,33 @@ public class UserServiceImpl extends AbstractSsServiceImpl<User> implements User
         }
     }
 
+    /**
+     * 修改个人信息
+     * @param user
+     * @throws ServiceException
+     */
     @Override
     public void editMyUserInfo(User user) throws ServiceException {
+        //查询当前账户信息
         User temp = (User) this.userMapper.selectByPrimaryKey(user.getUserId());
         if (temp == null) {
-            throw new ServiceException("修改信息失败:当前用户信息不存在.");
+            throw new ServiceException("修改信息失败:当前账户信息不存在.");
         }
         if (!StringUtils.isEmpty(user.getWorkCode()) && !user.getWorkCode().equals(temp.getWorkCode())) {
             User u = new User();
             u.setWorkCode(user.getWorkCode());
+            //查询所属警号信息
             List<User> users = this.userMapper.list(u);
             if (!CollectionUtils.isEmpty(users)) {
-                throw new ServiceException("用户警号[" + user.getWorkCode() + "]已存在");
+                throw new ServiceException("账户警号[" + user.getWorkCode() + "]已存在");
             }
         } else if (user.getWorkCode() == null) {
             user.setWorkCode("");
         }
         try {
+            //存储照片
             saveImagetoNas(user);
+            //修改账户信息
             this.userMapper.updateByPrimaryKeySelective(user);
         } catch (Exception e) {
             this.logger.error("修改信息失败,原因:", e);

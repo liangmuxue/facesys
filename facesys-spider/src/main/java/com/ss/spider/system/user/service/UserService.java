@@ -60,7 +60,7 @@ public interface UserService<User> extends SsService<User> {
     String save(User paramUser, List<String> paramList) throws ServiceException;
 
     /**
-     * 重置账户密码
+     * 重置个人密码
      * @param paramUser
      * @return
      * @throws ServiceException
@@ -86,6 +86,11 @@ public interface UserService<User> extends SsService<User> {
 
     int delete(User paramUser) throws ServiceException;
 
+    /**
+     * 修改个人信息
+     * @param paramUser
+     * @throws ServiceException
+     */
     void editMyUserInfo(User paramUser) throws ServiceException;
 
     List<UserFuzzyMatchVO> userFuzzyMatch(User paramUser);

@@ -7,11 +7,11 @@ import javax.xml.bind.annotation.XmlTransient;
 import java.util.Map;
 
 /**
- * @Description 像机查询对象
- * @author FrancisYs
- * @date 2019/8/16
- * @email yaoshuai@ss-cas.com
- */
+* 相机设备查询实体类
+* @author chao
+* @create 2019/12/6
+* @email lishuangchao@ss-cas.com
+**/
 public class CameraQueryVO extends Pagination {
 
     private String villageCode;
@@ -22,6 +22,9 @@ public class CameraQueryVO extends Pagination {
     private Integer cameraState;
     private String userIds;
     private Map<String, String> sqlMap;
+    private String companyCode;
+    private Integer cameraEnabled;
+    private String cameraId;
 
     public String getVillageCode() {
         return villageCode;
@@ -90,18 +93,27 @@ public class CameraQueryVO extends Pagination {
         this.cameraState = cameraState;
     }
 
-    @Override
-    public String toString() {
-        return "CameraQueryVO{" +
-                "villageCode='" + villageCode + '\'' +
-                ", villageCodes='" + villageCodes + '\'' +
-                ", cameraName='" + cameraName + '\'' +
-                ", prducetBrand='" + prducetBrand + '\'' +
-                ", cameraType=" + cameraType +
-                ", cameraState=" + cameraState +
-                ", userIds='" + userIds + '\'' +
-                ", sqlMap=" + sqlMap +
-                '}';
+    public String getCompanyCode() {
+        return companyCode;
     }
 
+    public void setCompanyCode(String companyCode) {
+        this.companyCode = companyCode;
+    }
+
+    public Integer getCameraEnabled() {
+        return cameraEnabled;
+    }
+
+    public void setCameraEnabled(Integer cameraEnabled) {
+        this.cameraEnabled = cameraEnabled;
+    }
+
+    public String getCameraId() {
+        return cameraId;
+    }
+
+    public void setCameraId(String cameraId) {
+        this.cameraId = cameraId;
+    }
 }

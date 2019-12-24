@@ -293,13 +293,6 @@ public class CameraServiceImpl extends BaseServiceImpl implements ICameraService
     @Override
     public List<ImportCamera> findAllCameras(CameraQueryVO queryVO) {
         PageHelper.startPage(queryVO.getCurrentPage(), queryVO.getPageSize());
-        if (queryVO.getUserIds() != null) {
-            User user = new User();
-            user.setUserId(queryVO.getUserIds());
-            Map<String, String> map = new HashMap<>(CommonConstant.HASHMAP_INITIALCAPACITY);
-            map.put("dsf", dataScopeFilter(user).replace("t1", "a"));
-            queryVO.setSqlMap(map);
-        }
         List<ImportCamera> findAllCameras = this.cameraMapper.findAllCameras(queryVO);
         return findAllCameras;
     }

@@ -8,7 +8,12 @@ import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 
-
+/**
+* 个人信息
+* @author chao
+* @create 2019/12/6
+* @email lishuangchao@ss-cas.com
+**/
 public class UpdateMyUserForm implements Serializable {
 
     private static final long serialVersionUID = -1L;

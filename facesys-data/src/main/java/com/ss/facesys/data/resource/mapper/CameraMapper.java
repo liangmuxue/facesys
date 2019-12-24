@@ -13,11 +13,11 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 /**
- * CameraMapper
- * @author FrancisYs
- * @date 2019/8/19
- * @email yaoshuai@ss-cas.com
- */
+* 相机设备
+* @author chao
+* @create 2019/12/6
+* @email lishuangchao@ss-cas.com
+**/
 @Component
 @Mapper
 public interface CameraMapper extends SsMapper<Camera> {

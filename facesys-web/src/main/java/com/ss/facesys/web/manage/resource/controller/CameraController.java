@@ -21,6 +21,7 @@ import com.ss.facesys.web.manage.baseinfo.controller.BaseController;
 import com.ss.facesys.web.manage.baseinfo.controller.ResultCode;
 import com.ss.response.PageEntity;
 import com.ss.response.ResponseEntity;
+import com.ss.spider.log.constants.ModuleCode;
 import com.ss.valide.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,13 +39,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 /**
- * CameraController 设备管理web请求
- * @author FrancisYs
- * @date 2019/8/19
- * @email yaoshuai@ss-cas.com
- */
+* 相机设备管理
+* @author chao
+* @create 2019/12/6
+* @email lishuangchao@ss-cas.com
+**/
 @RestController
 @RequestMapping({"/camera"})
 public class CameraController extends BaseController {
@@ -55,11 +55,6 @@ public class CameraController extends BaseController {
     private IAccessService accessService;
     @Resource
     private ICameraService cameraService;
-    @Resource
-    private IRegionService regionService;
-    @Resource
-    private IOrganizationRegionService organizationRegionService;
-
 
     @RequestMapping(value = {"/preview"}, method = {RequestMethod.POST})
     public ResponseEntity<Object> cameraPreview(HttpServletRequest request, HttpServletResponse response, @RequestBody Camera camera, BindingResult bindingResult) throws Exception {
@@ -120,7 +115,7 @@ public class CameraController extends BaseController {
      * @throws Exception
      */
     @RequestMapping(value = {"/insert"}, method = {RequestMethod.POST})
-    @OpLog(model = "80006", desc = "新增相机", type = OperaTypeEnum.SELECT)
+    @OpLog(model = ModuleCode.RESOURCE, desc = "新增相机", type = OperaTypeEnum.ADD)
     public ResponseEntity<Map<String, String>> insertCamera(@RequestBody @Validated({APIAddGroup.class}) Camera camera, BindingResult bindingResult) throws Exception {
         ResponseEntity<Map<String, String>> resp = validite(bindingResult);
         try {
@@ -288,11 +283,10 @@ public class CameraController extends BaseController {
      * @throws Exception
      */
     @RequestMapping(value = {"/findAllCameras"}, method = {RequestMethod.POST})
-    @OpLog(model = "80006", desc = "查找相机分页列表", type = OperaTypeEnum.SELECT)
+    @OpLog(model = ModuleCode.RESOURCE, desc = "查找相机分页列表", type = OperaTypeEnum.SEARCH)
     public ResponseEntity<PageEntity<ImportCamera>> findAllCameras(@RequestBody @Validated({APIPageGroup.class}) CameraQueryVO queryVO, BindingResult bindingResult) throws Exception {
         ResponseEntity<PageEntity<ImportCamera>> resp = validite(bindingResult);
         try {
-            queryVO.setVillageCodes(getVillageCodes(queryVO.getVillageCodes()));
             Page<ImportCamera> data = (Page) this.cameraService.findAllCameras(queryVO);
             resp.setData(new PageEntity(data));
         } catch (Exception e) {

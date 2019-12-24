@@ -28,7 +28,7 @@
 		left join cw_ge_department d on u.depart_id = d.depart_id
 		left join cw_ge_user_role_ref urr on u.user_id = urr.user_id
 		left join cw_ge_role gr on urr.role_id = gr.role_id
-		left join cw_base_enum e on u.status = e.enumValue and e.enumType = "USER_STATUS"
+		left join cw_base_enum e on u.status = e.enumValue and e.enumType = "ENABLED_STATUS"
 		<where>
 			<if test="orgId != null and orgId != ''">
 				and u.org_id = #{orgId, jdbcType=VARCHAR}

@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * ICameraService
- * @author FrancisYs
- * @date 2019/8/19
- * @email yaoshuai@ss-cas.com
- */
+* 相机设备
+* @author chao
+* @create 2019/12/6
+* @email lishuangchao@ss-cas.com
+**/
 public interface ICameraService {
 
     /**

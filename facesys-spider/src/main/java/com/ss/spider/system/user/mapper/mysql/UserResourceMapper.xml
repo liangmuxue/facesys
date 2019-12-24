@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.spider.system.user.mapper.UserResourceMapper">
+
+    <!--查询像机设备列表-->
+    <select id="allCameraList" parameterType="com.ss.spider.system.user.model.UserResource"
+            resultType="com.ss.spider.system.user.model.UserResource">
+        select
+        id as resourceId,
+        cameraId as resourceCode,
+        cameraName as resourceName
+        from cw_base_camera
+        <where>
+            state = 0
+            <if test="resourceName != null and resourceName != ''">
+                and cameraName like concat('%', #{resourceName,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="orgId != null and orgId != ''">
+                and orgId = #{orgId, jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <!--查询用户设备关联列表-->
+    <select id="cameraList" parameterType="com.ss.spider.system.user.model.UserResource"
+    resultType="com.ss.spider.system.user.model.UserResource">
+        select
+        user_id as userId,
+        resource_id as resourceId
+        from
+        cw_ge_user_resource_ref
+        <where>
+            `type` = 1
+            <if test="userId != null and userId != ''">
+                and user_id = #{userId, jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <!--移除像机权限-->
+    <delete id="remove" parameterType="com.ss.spider.system.user.model.UserResource">
+        delete from cw_ge_user_resource_ref where user_id = #{userId} and `type` = #{type}
+    </delete>
+
+    <!--添加像机权限-->
+    <insert id="add" parameterType="com.ss.spider.system.user.model.UserResource">
+        insert into cw_ge_user_resource_ref(user_id, resource_id, type)
+        values
+        <foreach collection="resourceIds" item="item" index="index" separator=",">
+            (#{userId, jdbcType=VARCHAR}, #{item, jdbcType=VARCHAR}, #{type, jdbcType=INTEGER})
+        </foreach>
+    </insert>
+
+    <!--查询人像库列表-->
+    <select id="allFacedbList" parameterType="com.ss.spider.system.user.model.UserResource"
+            resultType="com.ss.spider.system.user.model.UserResource">
+        select
+        f.id as resourceId,
+        f.`name` as resourceName,
+        f.remark,
+        e.enumName as facedbTypeName
+        from ss_facedb_info f
+        left join cw_base_enum e on f.type = e.enumValue and e.enumType = "FACEDB_TYPE"
+        <where>
+            f.status = 1
+            <if test="resourceName != null and resourceName != ''">
+                and f.`name` like concat('%', #{resourceName,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="orgId != null and orgId != ''">
+                and f.org_id = #{orgId, jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <!--查询人像库权限列表-->
+    <select id="facedbList" parameterType="com.ss.spider.system.user.model.UserResource"
+            resultType="com.ss.spider.system.user.model.UserResource">
+        select
+        user_id as userId,
+        resource_id as resourceId
+        from
+        cw_ge_user_resource_ref
+        <where>
+            `type` = 3
+            <if test="userId != null and userId != ''">
+                and user_id = #{userId, jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+</mapper>

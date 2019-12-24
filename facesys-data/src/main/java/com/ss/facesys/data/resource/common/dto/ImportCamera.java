@@ -11,11 +11,11 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 /**
- * ImportCamera 设备信息
- * @author FrancisYs
- * @date 2019/8/19
- * @email yaoshuai@ss-cas.com
- */
+* 相机设备
+* @author chao
+* @create 2019/12/6
+* @email lishuangchao@ss-cas.com
+**/
 @Table(name = "cw_base_camera")
 public class ImportCamera implements Serializable {
 
@@ -49,6 +49,11 @@ public class ImportCamera implements Serializable {
     private String standardCameraId;
     private Date createTime;
     private Date updateTime;
+    private Integer monitorStatus;
+    private String monitorStatusName;
+    private Integer cameraEnabled;
+    @Transient
+    private String cameraEnabledName;
     @Transient
     private String regionCode;
     @Transient
@@ -69,11 +74,12 @@ public class ImportCamera implements Serializable {
     private String villageCodes;
     @Transient
     private String villageName;
-
     @Transient
-    private String cameraTypeDesc;
+    private String cameraTypeName;
     @Transient
-    private String cameraStateDesc;
+    private String cameraStateName;
+    @Transient
+    private String companyName;
 
     public String getVillageCodes() {
         return this.villageCodes;
@@ -492,20 +498,59 @@ public class ImportCamera implements Serializable {
         this.sqlMap = sqlMap;
     }
 
-    public String getCameraTypeDesc() {
-        return cameraTypeDesc;
+    public String getCameraTypeName() {
+        return cameraTypeName;
     }
 
-    public void setCameraTypeDesc(String cameraTypeDesc) {
-        this.cameraTypeDesc = cameraTypeDesc;
+    public void setCameraTypeName(String cameraTypeName) {
+        this.cameraTypeName = cameraTypeName;
     }
 
-    public String getCameraStateDesc() {
-        return cameraStateDesc;
+    public String getCameraStateName() {
+        return cameraStateName;
     }
 
-    public void setCameraStateDesc(String cameraStateDesc) {
-        this.cameraStateDesc = cameraStateDesc;
+    public void setCameraStateName(String cameraStateName) {
+        this.cameraStateName = cameraStateName;
     }
 
+    public Integer getMonitorStatus() {
+        return monitorStatus;
+    }
+
+    public void setMonitorStatus(Integer monitorStatus) {
+        this.monitorStatus = monitorStatus;
+    }
+
+    public String getMonitorStatusName() {
+        return monitorStatusName;
+    }
+
+    public void setMonitorStatusName(String monitorStatusName) {
+        this.monitorStatusName = monitorStatusName;
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
+    public Integer getCameraEnabled() {
+        return cameraEnabled;
+    }
+
+    public void setCameraEnabled(Integer cameraEnabled) {
+        this.cameraEnabled = cameraEnabled;
+    }
+
+    public String getCameraEnabledName() {
+        return cameraEnabledName;
+    }
+
+    public void setCameraEnabledName(String cameraEnabledName) {
+        this.cameraEnabledName = cameraEnabledName;
+    }
 }

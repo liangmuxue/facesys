@@ -180,9 +180,10 @@ public class UserController extends AbstractController {
      * @throws BindException
      */
     @RequestMapping(value = {"/password"}, method = {RequestMethod.POST})
-    @OpLog(model = "70005", desc = "修改用户密码", type = OperaTypeEnum.EDIT)
+    @OpLog(model = ModuleCode.USER, desc = "修改个人密码", type = OperaTypeEnum.EDIT)
     public ResponseEntity<String> password(@RequestBody @Validated final PasswordForm para, BindingResult bindingResult) throws BindException {
         ResponseEntity<String> resp = validite(bindingResult);
+        //获取账户信息
         List<User> list = this.userService.gets(new HashMap<String, Object>(1) {
             {
                 put("userId", para.getOpUserId());
@@ -190,7 +191,7 @@ public class UserController extends AbstractController {
         });
         if (CollectionUtils.isEmpty(list)) {
             resp = createFailResponse();
-            resp.setMessage("用户不存在，请检查用户");
+            resp.setMessage("账户不存在，请检查账户");
             return resp;
         }
         String password = para.getOldPassword();
@@ -209,15 +210,15 @@ public class UserController extends AbstractController {
         user = new User();
         user.setUserId(para.getOpUserId());
         user.setPassword(para.getNewPassword());
-        user.setUpdateUserId(para.getUpdatedUserid());
+        user.setUpdateUserId(para.getUpdateUserId());
         user.setUpdateTime(DateUtils.getCurrentTime());
         try {
             this.userService.updateNotNull(user);
         } catch (MyBatisSystemException | DataAccessResourceFailureException e) {
-            this.logger.error("修改用户密码失败,原因：", e);
+            this.logger.error("修改密码失败,原因：", e);
             throw e;
         } catch (Exception e) {
-            this.logger.error("修改用户密码失败,原因：", e);
+            this.logger.error("修改密码失败,原因：", e);
             resp = createFailResponse();
             resp.setMessage(e.getMessage());
 
@@ -246,7 +247,7 @@ public class UserController extends AbstractController {
         });
         if (CollectionUtils.isEmpty(list)) {
             resp = createFailResponse();
-            resp.setMessage("用户不存在，请检查用户");
+            resp.setMessage("账户不存在，请检查用户");
             return resp;
         }
 //        User user = (User) list.get(0);
@@ -404,7 +405,7 @@ public class UserController extends AbstractController {
      * @throws BindException
      */
     @RequestMapping(value = {"/editMyUserInfo"}, method = {RequestMethod.POST})
-    @OpLog(model = "70005", desc = "修改个人用户信息", type = OperaTypeEnum.EDIT)
+    @OpLog(model = ModuleCode.USER, desc = "修改个人用户信息", type = OperaTypeEnum.EDIT)
     public ResponseEntity<String> editMyUserInfo(@RequestBody @Validated({com.ss.valide.APIEditGroup.class}) UpdateMyUserForm para, BindingResult bindingResult) throws BindException {
         ResponseEntity<String> resp = validite(bindingResult);
         User user = new User();
@@ -416,7 +417,7 @@ public class UserController extends AbstractController {
             //修改个人信息
             this.userService.editMyUserInfo(user);
         } catch (MyBatisSystemException | DataAccessResourceFailureException e) {
-            this.logger.error("修改用户基本信息失败,原因：", e);
+            this.logger.error("修改账户基本信息失败,原因：", e);
             throw e;
         } catch (Exception e) {
             this.logger.error("修改用户基本信息失败,原因：", e);

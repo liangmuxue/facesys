@@ -21,7 +21,7 @@
         select role_id, role_cname, role_ename, status, remark, init_flag, create_time, create_user_id,
         update_time, update_user_id, delete_time, delete_user_id, e.enumName as statusName
         from cw_ge_role r
-        left join cw_base_enum e on r.status = e.enumValue and e.enumType = "USER_STATUS"
+        left join cw_base_enum e on r.status = e.enumValue and e.enumType = "ENABLED_STATUS"
         <where>
             <if test="roleId != null and roleId != ''">
                 and role_id = #{roleId, jdbcType=VARCHAR}

@@ -6,9 +6,9 @@ import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
-* 修改密码
+* 修改个人密码
 * @author chao
-* @create 2019/10/11
+* @create 2019/12/6
 * @email lishuangchao@ss-cas.com
 **/
 public class PasswordForm implements Serializable {
@@ -26,7 +26,7 @@ public class PasswordForm implements Serializable {
     private String newPassword;
     @NotBlank(message = "{updated.user.empty}")
     @Length(min = 1, max = 32, message = "{updated.user.length}")
-    public String updatedUserid;
+    public String updateUserId;
 
     public String getOpUserId() {
         return this.opUserId;
@@ -68,13 +68,13 @@ public class PasswordForm implements Serializable {
     }
 
 
-    public String getUpdatedUserid() {
-        return this.updatedUserid;
+    public String getUpdateUserId() {
+        return this.updateUserId;
     }
 
 
-    public void setUpdatedUserid(String updatedUserid) {
-        this.updatedUserid = updatedUserid;
+    public void setUpdateUserId(String updateUserId) {
+        this.updateUserId = updateUserId;
     }
 
 }
