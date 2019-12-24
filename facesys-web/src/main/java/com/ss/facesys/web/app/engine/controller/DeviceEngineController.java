@@ -7,6 +7,7 @@ import com.ss.facesys.data.engine.client.IDeviceEngineService;
 import com.ss.facesys.data.engine.common.dto.DeviceEngineDTO;
 import com.ss.facesys.data.engine.common.model.DeviceEngine;
 import com.ss.facesys.data.engine.validate.APIEngineBindGroup;
+import com.ss.facesys.util.em.ResourceType;
 import com.ss.facesys.web.app.facedb.form.DeviceEngineBindForm;
 import com.ss.facesys.web.manage.baseinfo.controller.BaseController;
 import com.ss.response.ResponseEntity;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 设备绑定引擎关系
@@ -50,7 +52,11 @@ public class DeviceEngineController extends BaseController {
     @OpLog(model = ModuleCode.SYSTEM, desc = "查询设备绑定引擎列表", type = OperaTypeEnum.SELECT)
     public ResponseEntity<List<DeviceEngineDTO>> engineList(@RequestBody DeviceEngineDTO engineDTO) {
         ResponseEntity<List<DeviceEngineDTO>> resp = createSuccResponse();
-        resp.setData(deviceEngineService.engineList(engineDTO));
+        List<DeviceEngineDTO> deviceEngineDTOS = deviceEngineService.engineList(engineDTO);
+        List<Integer> deviceIds = deviceEngineDTOS.stream().map(DeviceEngineDTO::getDeviceId).collect(Collectors.toList());
+        List<Integer> authDeviceIds = getAuthResources(engineDTO.getUserId(), ResourceType.CAMERA, deviceIds);
+        List<DeviceEngineDTO> resultList = deviceEngineDTOS.stream().filter(deviceEngineDTO -> authDeviceIds.contains(deviceEngineDTO.getDeviceId())).collect(Collectors.toList());
+        resp.setData(resultList);
         return resp;
     }
 
@@ -67,6 +73,7 @@ public class DeviceEngineController extends BaseController {
     public ResponseEntity<String> engineBindControl(@RequestBody @Validated({APIEngineBindGroup.class}) DeviceEngineBindForm bindControlForm, BindingResult bindingResult) throws BindException {
         ResponseEntity<String> resp = this.validite(bindingResult);
         try {
+            bindControlForm.setDeviceIds(getAuthResources(bindControlForm.getUserId(), ResourceType.CAMERA, bindControlForm.getDeviceIds()));
             DeviceEngine deviceEngine = new DeviceEngine();
             BeanUtils.copyProperties(bindControlForm, deviceEngine);
             resp.setData(deviceEngineService.bindEngineControl(deviceEngine));

@@ -35,6 +35,7 @@ public class RecogCaptureQuery {
     private Integer topN;
     private Double thresholdMin;
     private Double thresholdMax;
+    private String userId;
 
     public List<Integer> getDeviceIds() {
         return deviceIds;
@@ -164,6 +165,14 @@ public class RecogCaptureQuery {
         this.thresholdMax = thresholdMax;
     }
 
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
     @Override
     public String toString() {
         return new StringJoiner(", ", RecogCaptureQuery.class.getSimpleName() + "[", "]")
@@ -183,6 +192,7 @@ public class RecogCaptureQuery {
                 .add("topN=" + topN)
                 .add("thresholdMin=" + thresholdMin)
                 .add("thresholdMax=" + thresholdMax)
+                .add("userId=" + userId)
                 .toString();
     }
 

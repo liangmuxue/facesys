@@ -11,6 +11,7 @@ import com.ss.facesys.data.engine.common.dto.FacedbEngineDTO;
 import com.ss.facesys.data.engine.common.model.FacedbEngine;
 import com.ss.facesys.data.engine.validate.APIEngineBindGroup;
 import com.ss.facesys.util.constant.CommonConstant;
+import com.ss.facesys.util.em.ResourceType;
 import com.ss.facesys.web.app.facedb.form.FacedbEngineBindForm;
 import com.ss.facesys.web.app.facedb.form.FacedbForm;
 import com.ss.facesys.web.app.facedb.query.FacedbQuery;
@@ -20,7 +21,6 @@ import com.ss.response.ResponseEntity;
 import com.ss.spider.log.constants.ModuleCode;
 import com.ss.tools.DateUtils;
 import com.ss.valide.*;
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
@@ -31,8 +31,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 人像库
@@ -223,7 +223,11 @@ public class FacedbController extends BaseController {
     @OpLog(model = ModuleCode.SYSTEM, desc = "查询人像库绑定引擎列表", type = OperaTypeEnum.SELECT)
     public ResponseEntity<List<FacedbEngineDTO>> engineList(@RequestBody FacedbEngineDTO engineDTO) {
         ResponseEntity<List<FacedbEngineDTO>> resp = createSuccResponse();
-        resp.setData(facedbService.engineList(engineDTO));
+        List<FacedbEngineDTO> facedbEngineDTOS = facedbService.engineList(engineDTO);
+        List<Integer> facedbIds = facedbEngineDTOS.stream().map(FacedbEngineDTO::getFacedbId).collect(Collectors.toList());
+        List<Integer> authFacedbIds = getAuthResources(engineDTO.getUserId(), ResourceType.FACEDB, facedbIds);
+        List<FacedbEngineDTO> resultList = facedbEngineDTOS.stream().filter(facedbEngineDTO -> authFacedbIds.contains(facedbEngineDTO.getFacedbId())).collect(Collectors.toList());
+        resp.setData(resultList);
         return resp;
     }
 
@@ -240,6 +244,7 @@ public class FacedbController extends BaseController {
     public ResponseEntity<String> engineBindControl(@RequestBody @Validated({APIEngineBindGroup.class}) FacedbEngineBindForm bindControlForm, BindingResult bindingResult) throws BindException {
         ResponseEntity<String> resp = this.validite(bindingResult);
         try {
+            bindControlForm.setFacedbIds(getAuthResources(bindControlForm.getUserId(), ResourceType.FACEDB, bindControlForm.getFacedbIds()));
             FacedbEngine facedbEngine = new FacedbEngine();
             BeanUtils.copyProperties(bindControlForm, facedbEngine);
             resp.setData(facedbService.bindEngineControl(facedbEngine));

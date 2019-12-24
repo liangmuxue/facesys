@@ -28,6 +28,7 @@ public class FacedbEngineBindForm implements Serializable {
     @NotNull(message = "{facedb.engine.bind.status.empty}", groups = {APIEngineBindGroup.class})
     @Range(max = 1L, message = "{facedb.engine.bind.status.invalid.ange}", groups = {APIEngineBindGroup.class})
     private Integer bindStatus;
+    private String userId;
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
@@ -57,12 +58,21 @@ public class FacedbEngineBindForm implements Serializable {
         this.bindStatus = bindStatus;
     }
 
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
     @Override
     public String toString() {
         return new StringJoiner(", ", FacedbEngineBindForm.class.getSimpleName() + "[", "]")
                 .add("facedbIds=" + facedbIds)
                 .add("engineType=" + engineType)
                 .add("bindStatus=" + bindStatus)
+                .add("userId=" + userId)
                 .toString();
     }
 

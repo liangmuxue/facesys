@@ -30,6 +30,7 @@ public class RecogFacedbQuery {
     private String name;
     private String cardId;
     private Integer nation;
+    private String userId;
 
     public List<Integer> getFacedbIds() {
         return facedbIds;
@@ -135,6 +136,14 @@ public class RecogFacedbQuery {
         this.nation = nation;
     }
 
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
     @Override
     public String toString() {
         return new StringJoiner(", ", RecogFacedbQuery.class.getSimpleName() + "[", "]")
@@ -151,6 +160,7 @@ public class RecogFacedbQuery {
                 .add("name='" + name + "'")
                 .add("cardId='" + cardId + "'")
                 .add("nation=" + nation)
+                .add("userId=" + userId)
                 .toString();
     }
 

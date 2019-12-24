@@ -19,6 +19,7 @@ public class DeviceEngineDTO {
     private String orgId;
     private String orgCname;
     private List<Integer> engineTypeList;
+    private String userId;
 
     public Integer getId() {
         return id;
@@ -76,6 +77,14 @@ public class DeviceEngineDTO {
         this.engineTypeList = engineTypeList;
     }
 
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
     @Override
     public String toString() {
         return new StringJoiner(", ", DeviceEngineDTO.class.getSimpleName() + "[", "]")
@@ -86,6 +95,7 @@ public class DeviceEngineDTO {
                 .add("orgId='" + orgId + "'")
                 .add("orgCname='" + orgCname + "'")
                 .add("engineTypeList=" + engineTypeList)
+                .add("userId=" + userId)
                 .toString();
     }
 
