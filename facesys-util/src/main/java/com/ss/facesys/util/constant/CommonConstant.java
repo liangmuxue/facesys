@@ -305,4 +305,44 @@ public class CommonConstant {
      */
     public static final short OCEAN_DEVICE_TYPE_TERMINAL = 4;
 
+    /**
+     * 人像库布控状态-未布控
+     */
+    public static final int FACEDB_MONITOR_STATE_TBM = 0;
+    /**
+     * 人像库布控状态-已布控
+     */
+    public static final int FACEDB_MONITOR_STATE_MONITORED = 1;
+
+    /**
+     * 绑定引擎状态：已绑定
+     */
+    public static final int ENGINE_BIND_STATUS = 1;
+
+
+    /**
+     * 引擎类型：人脸引擎
+     */
+    public static final int ENGINE_TYPE_FACE = 1;
+    /**
+     * 引擎类型：人脸聚类引擎
+     */
+    public static final int ENGINE_TYPE_FACE_CLUSTER = 2;
+    /**
+     * 引擎类型：ReID引擎
+     */
+    public static final int ENGINE_TYPE_REID = 3;
+    /**
+     * 引擎类型：ReID聚类引擎
+     */
+    public static final int ENGINE_TYPE_REID_CLUSTER = 4;
+    /**
+     * 引擎类型：头肩引擎
+     */
+    public static final int ENGINE_TYPE_HS = 5;
+    /**
+     * 引擎类型：归档引擎
+     */
+    public static final int ENGINE_TYPE_ARCHIVE = 6;
+
 }

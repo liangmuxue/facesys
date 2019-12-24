@@ -1,6 +1,9 @@
 package com.ss.spider.system.organization.model;
 
 import com.ss.entity.DTEntity;
+import com.ss.facesys.util.StringUtils;
+import com.ss.facesys.util.coordinate.IscCoordinate;
+import org.apache.commons.collections.CollectionUtils;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -10,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 /**
  * 单位表实体映射
@@ -81,6 +85,23 @@ public class Organization extends DTEntity {
      */
     @Column(name = "remark")
     private String remark;
+    /**
+     * 中心点经度
+     */
+    private Double lon;
+    /**
+     * 中心点纬度
+     */
+    private Double lat;
+    /**
+     * 坐标组信息
+     */
+    @Column(name = "gis_area")
+    private String gisArea;
+    /**
+     * 单位序号
+     */
+    private Integer seq;
     @Column(name = "link_man_name")
     private String linkManName;
     @Column(name = "link_man_dept")
@@ -198,6 +219,50 @@ public class Organization extends DTEntity {
         this.remark = remark;
     }
 
+    public Double getLon() {
+        return lon;
+    }
+
+    public void setLon(Double lon) {
+        this.lon = lon;
+    }
+
+    public Double getLat() {
+        return lat;
+    }
+
+    public void setLat(Double lat) {
+        this.lat = lat;
+    }
+
+    public String getGisArea() {
+        return gisArea;
+    }
+
+    public void setGisArea(String gisArea) {
+        this.gisArea = gisArea;
+    }
+
+    public void setGisArea(List<IscCoordinate> gisList) {
+        if (CollectionUtils.isNotEmpty(gisList)) {
+            List<String> gisArea = new ArrayList<>();
+            gisList.forEach(gis -> {
+                gisArea.add(gis.getLatitude() + "," + gis.getLongitude());
+            });
+            if (CollectionUtils.isNotEmpty(gisArea)) {
+                this.gisArea = StringUtils.join(gisArea, "-");
+            }
+        }
+    }
+
+    public Integer getSeq() {
+        return seq;
+    }
+
+    public void setSeq(Integer seq) {
+        this.seq = seq;
+    }
+
     public String getLinkManName() {
         return this.linkManName;
     }
@@ -292,6 +357,10 @@ public class Organization extends DTEntity {
                 .add("parentId='" + parentId + "'")
                 .add("departh='" + departh + "'")
                 .add("remark='" + remark + "'")
+                .add("lon=" + lon)
+                .add("lat=" + lat)
+                .add("gisArea='" + gisArea + "'")
+                .add("seq='" + seq + "'")
                 .add("linkManName='" + linkManName + "'")
                 .add("linkManDept='" + linkManDept + "'")
                 .add("linkManPos='" + linkManPos + "'")

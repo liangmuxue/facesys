@@ -1,5 +1,6 @@
 package com.ss.spider.system.organization.form;
 
+import com.ss.facesys.util.coordinate.IscCoordinate;
 import com.ss.valide.APIAddGroup;
 import com.ss.valide.APIDeltGroup;
 import com.ss.valide.APIEditGroup;
@@ -8,6 +9,7 @@ import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 单位表单参数对象
@@ -62,6 +64,7 @@ public class OrgForm implements Serializable {
     @NotBlank(message = "{org.user.empty}", groups = {APIAddGroup.class, APIEditGroup.class, APIDeltGroup.class})
     @Length(min = 1, max = 32, message = "{org.user.length}", groups = {APIAddGroup.class, APIEditGroup.class, APIDeltGroup.class})
     private String userId;
+    private List<IscCoordinate> gisList;
     private int thorough = 0;
 
     public String getOrgId() {
@@ -214,6 +217,14 @@ public class OrgForm implements Serializable {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public List<IscCoordinate> getGisList() {
+        return gisList;
+    }
+
+    public void setGisList(List<IscCoordinate> gisList) {
+        this.gisList = gisList;
     }
 
 }

@@ -8,11 +8,16 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
+/**
+ * 坐标信息工具
+ *
+ * @author FrancisYs
+ * @date 2019/12/18
+ * @email yaoshuai@ss-cas.com
+ */
 public class GetCenterCoordinates {
 
     private static Logger logger = LoggerFactory.getLogger(GetCenterCoordinates.class);
-
 
     public static IscCoordinate getCenterPoint(List<IscCoordinate> geoCoordinateList) {
         int total = geoCoordinateList.size();
@@ -28,7 +33,6 @@ public class GetCenterCoordinates {
             pointy += y;
             pointz += z;
         }
-
         pointx /= total;
         pointy /= total;
         pointz /= total;
@@ -37,7 +41,6 @@ public class GetCenterCoordinates {
         double lat = Math.atan2(pointz, hyp);
         return new IscCoordinate(lat * 180.0D / Math.PI, lon * 180.0D / Math.PI);
     }
-
 
     public static IscCoordinate getCenterPoint400(List<IscCoordinate> geoCoordinateList) {
         int total = geoCoordinateList.size();
@@ -51,7 +54,6 @@ public class GetCenterCoordinates {
         return new IscCoordinate(lat * 180.0D / Math.PI, lon * 180.0D / Math.PI);
     }
 
-
     public static IscCoordinate getCoordinate(String coordinate) {
         try {
             List<IscCoordinate> coordinateList = null;
@@ -59,15 +61,14 @@ public class GetCenterCoordinates {
             if (null != coordinate) {
                 coordinateList = new ArrayList<IscCoordinate>();
                 String[] coo = coordinate.split("@");
-                String[] atom = null;
-                if (null != coo && coo.length > 0) {
-                    for (int i = 0; i < coo.length; i++) {
-                        atom = coo[i].split(",");
-                        cooObj = new IscCoordinate(Double.valueOf(atom[0]).doubleValue(), Double.valueOf(atom[1]).doubleValue());
+                String[] atom;
+                if (coo.length > 0) {
+                    for (String s : coo) {
+                        atom = s.split(",");
+                        cooObj = new IscCoordinate(Double.valueOf(atom[0]), Double.valueOf(atom[1]));
                         coordinateList = StringUtils.pickList(coordinateList, cooObj);
                     }
                 }
-
                 return getCenterPoint(coordinateList);
             }
         } catch (Exception e) {

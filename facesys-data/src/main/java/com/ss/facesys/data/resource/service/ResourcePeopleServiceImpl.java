@@ -162,7 +162,7 @@ public class ResourcePeopleServiceImpl extends BaseServiceImpl implements IResou
         // 人口数据/人口-人像库关联数据
         Facedb ssFacedb = new Facedb();
         ssFacedb.setFacedbId(facedbId);
-        ssFacedb.setDeleteFlag(CommonConstant.DELETE_FLAG_EXIST);
+        ssFacedb.setStatus(CommonConstant.DELETE_FLAG_EXIST);
         ssFacedb = facedbMapper.selectOne(ssFacedb);
         boolean facedbRes = facedbPeopleMapper.insertSelective(new FacedbPeople(peopleId, ssFacedb.getId(), facedbfaceId, currentTime, people.getUserIds(), true)) > 0,
                 peopleRes = peopleMapper.insertSelective(people) > 0,
@@ -252,7 +252,7 @@ public class ResourcePeopleServiceImpl extends BaseServiceImpl implements IResou
         // 人口数据/人口-人像库关联数据
         Facedb ssFacedb = new Facedb();
         ssFacedb.setFacedbId(facedbId);
-        ssFacedb.setDeleteFlag(CommonConstant.DELETE_FLAG_EXIST);
+        ssFacedb.setStatus(CommonConstant.DELETE_FLAG_EXIST);
         ssFacedb = facedbMapper.selectOne(ssFacedb);
         boolean facedbRes = facedbPeopleMapper.updateByPrimaryKeySelective(new FacedbPeople(dbPeople.getSsFacedbPeopleId(), ssFacedb.getId(), facedbfaceId, currentTime, people.getUserIds(), false)) > 0,
                 peopleRes = peopleMapper.updateByPrimaryKeySelective(people) > 0;

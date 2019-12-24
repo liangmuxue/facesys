@@ -1,92 +1,115 @@
 package com.ss.facesys.data.collect.client;
 
-import com.ss.facesys.data.collect.common.model.FacedbPeople;
-import com.ss.facesys.data.collect.common.web.FacedbPeopleVO;
-import com.ss.facesys.data.collect.common.web.FacedbVO;
+import com.ss.exception.ServiceException;
 import com.ss.facesys.data.collect.common.model.Facedb;
+import com.ss.facesys.data.engine.common.dto.FacedbEngineDTO;
+import com.ss.facesys.data.engine.common.model.FacedbEngine;
+import tk.mybatis.mapper.entity.Example;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * IFacedbService
  *
  * @author FrancisYs
- * @date 2019/9/3
+ * @date 2019/12/5
  * @email yaoshuai@ss-cas.com
  */
 public interface IFacedbService {
 
     /**
      * 查询人像库列表
+     *
      * @param facedb
      * @return
      */
     List<Facedb> getFacedbList(Facedb facedb);
 
     /**
-     * 查询重点人员库分页列表
-     * @param vo
+     * 查询人像库分页列表
+     *
+     * @param facedb
      * @return
      */
-    List<Facedb> getFacedbPage(FacedbVO vo);
+    List<Facedb> getFacedbPage(Facedb facedb, int currentPage, int pageSize);
 
     /**
      * 根据实体中的属性进行查询，只能有一个返回值，查询条件使用等号
+     *
      * @param facedb
      * @return
      */
     Facedb selectOne(Facedb facedb);
 
     /**
-     * 新增重点人员库
+     * 根据example查询人像库列表
+     *
+     * @param example
+     * @return
+     */
+    List<Facedb> selectByExample(Example example);
+
+    /**
+     * 新增人像库
+     *
      * @param facedb
      * @return
+     * @throws ServiceException
      */
-    Map<String, Object> insertFacedb(Facedb facedb);
+    String insertFacedb(Facedb facedb) throws ServiceException;
 
     /**
-     * 修改重点人员库信息
+     * 修改人像库
+     *
      * @param facedb
      * @return
+     * @throws ServiceException
      */
-    Map<String, Object> updateFacedb(Facedb facedb);
+    void updateFacedb(Facedb facedb) throws ServiceException;
 
     /**
-     * 删除重点人员库
+     * 删除人像库
+     *
      * @param facedb
      * @return
-     * @throws Exception
+     * @throws ServiceException
      */
-    void deleteFacedb(Facedb facedb) throws Exception;
+    void deleteFacedb(Facedb facedb) throws ServiceException;
 
     /**
-     * 查询重点人员列表
-     * @param facedbPeople
+     * 人像库重提特征
+     *
+     * @param id
+     * @param facedbId
+     * @param faceDBFaceStateInvalid
      * @return
+     * @throws ServiceException
      */
-    List<FacedbPeople> selectFacedbPeopleList(FacedbPeople facedbPeople);
+    void reFeature(Integer id, String facedbId, Integer faceDBFaceStateInvalid) throws ServiceException;
 
     /**
-     * 查询重点人员分页列表
-     * @param vo
-     * @return
+     * 更新人像库人脸数量
+     *
+     * @param facedbId
+     * @param num
      */
-    List<FacedbPeopleVO> getFacedbPeoplePage(FacedbPeopleVO vo);
+    void updateFaceCount(Integer facedbId, Integer num);
 
     /**
-     * 新增重点人员
-     * @param facedbPeople
+     * 查询人像库绑定引擎列表
+     *
+     * @param engineDTO
      * @return
-     * @throws Exception
      */
-    Map<String, Object> insertFacedbPeople(FacedbPeople facedbPeople) throws Exception ;
+    List<FacedbEngineDTO> engineList(FacedbEngineDTO engineDTO);
 
     /**
-     * 移除重点人员
-     * @param facedbPeople
+     * 人像库绑定引擎关系
+     *
+     * @param facedbEngine
      * @return
+     * @throws ServiceException
      */
-    Map<String, Object> deleteFacedbPeople(FacedbPeople facedbPeople);
+    String bindEngineControl(FacedbEngine facedbEngine) throws ServiceException;
 
 }

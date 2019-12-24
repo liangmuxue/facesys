@@ -1,5 +1,8 @@
 package com.ss.facesys.data.resource.service;
 
+import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.PageHelper;
+import com.j7cai.common.util.JsonUtils;
 import com.ss.facesys.data.access.client.IAccessService;
 import com.ss.facesys.data.baseinfo.common.model.User;
 import com.ss.facesys.data.baseinfo.service.BaseServiceImpl;
@@ -22,20 +25,12 @@ import com.ss.facesys.util.em.Enums;
 import com.ss.facesys.util.file.FileConstant;
 import com.ss.facesys.util.file.FilePropertiesUtil;
 import com.ss.facesys.util.jedis.JedisUtil;
-import com.alibaba.fastjson.JSONObject;
-import com.github.pagehelper.PageHelper;
-import com.j7cai.common.util.JsonUtils;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.annotation.Resource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import java.util.*;
 
 /**
  * VillageServiceImpl
@@ -148,7 +143,7 @@ public class VillageServiceImpl extends BaseServiceImpl implements IVillageServi
                 ssFacedb.setRemark(village.getVillageName());
                 ssFacedb.setFacedbId(facedbId);
                 ssFacedb.setCreateTime(System.currentTimeMillis());
-                ssFacedb.setCreateUser(village.getUserIds());
+                ssFacedb.setCreateUserId(village.getUserIds());
                 int ssNum = facedbMapper.insertSelective(ssFacedb);
                 if (num > 0 && ssNum > 0) {
                     return result;
@@ -186,11 +181,11 @@ public class VillageServiceImpl extends BaseServiceImpl implements IVillageServi
             Facedb facedb = villageMapper.findFaceDbByCode(village.getVillageCode());
             com.ss.facesys.data.collect.common.model.Facedb ssFacedb = new com.ss.facesys.data.collect.common.model.Facedb();
             ssFacedb.setFacedbId(facedb.getFacedbId());
-            ssFacedb.setDeleteFlag(CommonConstant.DELETE_FLAG_EXIST);
+            ssFacedb.setStatus(CommonConstant.DELETE_FLAG_EXIST);
             ssFacedb = facedbMapper.selectOne(ssFacedb);
             ssFacedb.setDeleteTime(System.currentTimeMillis());
-            ssFacedb.setDeleteUser(village.getUserIds());
-            ssFacedb.setDeleteFlag(CommonConstant.DELETE_FLAG_DELETE);
+            ssFacedb.setDeleteUserId(village.getUserIds());
+            ssFacedb.setStatus(CommonConstant.DELETE_FLAG_DELETE);
             facedbMapper.updateByPrimaryKeySelective(ssFacedb);
             // 删除小区关联欧神人像库数据
             this.villageMapper.deleteFaceDb(village.getVillageCode());
@@ -213,13 +208,13 @@ public class VillageServiceImpl extends BaseServiceImpl implements IVillageServi
             Facedb facedb = villageMapper.findFaceDbByCode(village.getVillageCode());
             com.ss.facesys.data.collect.common.model.Facedb ssFacedb = new com.ss.facesys.data.collect.common.model.Facedb();
             ssFacedb.setFacedbId(facedb.getFacedbId());
-            ssFacedb.setDeleteFlag(CommonConstant.DELETE_FLAG_EXIST);
+            ssFacedb.setStatus(CommonConstant.DELETE_FLAG_EXIST);
             ssFacedb = facedbMapper.selectOne(ssFacedb);
             ssFacedb.setName(village.getVillageName());
-            Map<String, Object> resultMap = facedbService.updateFacedb(ssFacedb);
-            if (!(boolean)(resultMap.get(CommonConstant.SUCCESS_EN_CODE))) {
-                return 0;
-            }
+//            Map<String, Object> resultMap = facedbService.updateFacedb(ssFacedb);
+//            if (!(boolean)(resultMap.get(CommonConstant.SUCCESS_EN_CODE))) {
+//                return 0;
+//            }
         }
         return this.villageMapper.updateVillage(village);
     }

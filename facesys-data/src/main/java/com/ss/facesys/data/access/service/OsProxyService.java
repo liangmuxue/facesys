@@ -1,22 +1,22 @@
 package com.ss.facesys.data.access.service;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.ss.facesys.data.access.common.web.TaskReceive;
 import com.ss.facesys.util.PropertiesUtil;
 import com.ss.facesys.util.constant.HttpConstant;
 import com.ss.facesys.util.http.BaseHttpUtil;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.stereotype.Service;
-
 /**
  * OsProxyService
+ *
  * @author FrancisYs
  * @date 2019/8/21
  * @email yaoshuai@ss-cas.com
@@ -28,6 +28,7 @@ public class OsProxyService {
 
     /**
      * 应用鉴权：获取接口请求token
+     *
      * @return
      */
     public static String login() {
@@ -36,6 +37,7 @@ public class OsProxyService {
 
     /**
      * 人员轨迹检索
+     *
      * @param parmJson
      * @return
      */
@@ -46,15 +48,7 @@ public class OsProxyService {
         return JSONObject.parseObject(resultString);
     }
 
-    /**
-     * 检索抓拍库数据
-     * @param parmJson
-     * @return
-     */
-    public static JSONObject getRecogCameraDb(String parmJson) {
-        String resultString = BaseHttpUtil.httpPost(parmJson, PropertiesUtil.getOshttp() + HttpConstant.RECOG_CAMERADB, null);
-        return JSONObject.parseObject(resultString);
-    }
+
 
 
     public static JSONObject getRecogTerminalDb(String parmJson) {
@@ -65,6 +59,7 @@ public class OsProxyService {
 
     /**
      * 分页查询报警中心(黑名单,陌生人,少数民族黑名单,少数民族陌生人)
+     *
      * @param parmJson
      * @return
      */
@@ -74,17 +69,8 @@ public class OsProxyService {
     }
 
     /**
-     * 注册库人脸检索
-     * @param parmJson
-     * @return
-     */
-    public static JSONObject getRecogRegisterDb(String parmJson) {
-        String resultString = BaseHttpUtil.httpPost(parmJson, PropertiesUtil.getOshttp() + HttpConstant.RECOG_REGISTERDB, null);
-        return JSONObject.parseObject(resultString);
-    }
-
-    /**
      * 分页查询像机抓拍数据
+     *
      * @param parmJson
      * @return
      */
@@ -100,6 +86,7 @@ public class OsProxyService {
 
     /**
      * 获取抓拍记录详细信息
+     *
      * @param captureId 采集编号
      * @return
      */
@@ -112,6 +99,7 @@ public class OsProxyService {
 
     /**
      * 抓拍统计
+     *
      * @param parmJson
      * @return
      */
@@ -122,6 +110,7 @@ public class OsProxyService {
 
     /**
      * 新增聚类任务
+     *
      * @param taskReceive
      * @return
      */
@@ -132,6 +121,7 @@ public class OsProxyService {
 
     /**
      * 分页查询聚类分析任务
+     *
      * @param state 聚类状态(1:进行中,2:失败,4:完成)
      * @param name  聚类名称
      * @return
@@ -150,7 +140,8 @@ public class OsProxyService {
 
     /**
      * 分页查询聚类分析任务分组结果信息
-     * @param taskId    聚类任务ID
+     *
+     * @param taskId 聚类任务ID
      * @return
      */
     public static JSONObject getClusterResultPages(Integer taskId) {
@@ -163,22 +154,9 @@ public class OsProxyService {
     }
 
     /**
-     * 人脸比对功能（1:1）
-     * @param faceA 图片A的base64，图片大小要求小于3M
-     * @param faceB 图片B的base64，图片大小要求小于3M
-     * @return
-     */
-    public static JSONObject getRecogOne(String faceA, String faceB) {
-        Map<String, Object> parm = new HashMap<String, Object>();
-        parm.put("faceA", faceA);
-        parm.put("faceB", faceB);
-        String resultString = BaseHttpUtil.httpPost(JSON.toJSONString(parm), PropertiesUtil.getOshttp() + HttpConstant.RECOG_ONE_VS_ONE, null);
-        return JSONObject.parseObject(resultString);
-    }
-
-    /**
      * 分页查询聚类分析任务分组结果详细人脸信息
-     * @param resultId  分组结果ID
+     *
+     * @param resultId 分组结果ID
      * @return
      */
     public static JSONObject getClusterResultDetailPages(String resultId) {
@@ -247,6 +225,7 @@ public class OsProxyService {
 
     /**
      * 像机预览
+     *
      * @param parmJson
      * @return
      */
@@ -279,10 +258,22 @@ public class OsProxyService {
         return JSONObject.parseObject(resultString);
     }
 
+    /**
+     * 设备绑定引擎关系
+     *
+     * @param paramJson
+     * @return
+     */
+    public static JSONObject deviceEngineControl(String paramJson) {
+        String resultString = BaseHttpUtil.httpPost(paramJson, PropertiesUtil.getOshttp() + HttpConstant.DEVICE_ENGINE_BIND_CONTROL, null);
+        return JSONObject.parseObject(resultString);
+    }
+
     /* ***************************************************** 基础数据类接口--> 人像库相关 ***************************************************** */
 
     /**
      * 查询人像库列表数据
+     *
      * @return
      */
     public static JSONObject facedblist() {
@@ -292,7 +283,8 @@ public class OsProxyService {
 
     /**
      * 查询人像库详细信息
-     * @param id    人像库id
+     *
+     * @param id 人像库id
      * @return
      */
     public static JSONObject getFacedbDetail(String id) {
@@ -304,6 +296,7 @@ public class OsProxyService {
 
     /**
      * 新增人像库信息
+     *
      * @param parmJson
      * @return
      */
@@ -314,6 +307,7 @@ public class OsProxyService {
 
     /**
      * 删除人像库信息
+     *
      * @param parmJson
      * @return
      */
@@ -324,6 +318,7 @@ public class OsProxyService {
 
     /**
      * 编辑人像库信息
+     *
      * @param paramJson
      * @return
      */
@@ -332,11 +327,34 @@ public class OsProxyService {
         return JSONObject.parseObject(resultString);
     }
 
+    /**
+     * 人像库重提特征
+     *
+     * @param paramJson
+     * @return
+     */
+    public static JSONObject reFeatureFacedb(String paramJson) {
+        String resultString = BaseHttpUtil.httpPost(paramJson, PropertiesUtil.getOshttp() + HttpConstant.FACEDB_REFEATURE, null);
+        return JSONObject.parseObject(resultString);
+    }
+
+    /**
+     * 人像库绑定引擎关系
+     *
+     * @param paramJson
+     * @return
+     */
+    public static JSONObject facedbEngineControl(String paramJson) {
+        String resultString = BaseHttpUtil.httpPost(paramJson, PropertiesUtil.getOshttp() + HttpConstant.FACEDB_ENGINE_BIND_CONTROL, null);
+        return JSONObject.parseObject(resultString);
+    }
+
 
     /* ***************************************************** 基础数据类接口--> 人像集相关 ***************************************************** */
 
     /**
      * 分页查询人像集数据
+     *
      * @param paramJson
      * @return
      */
@@ -347,6 +365,7 @@ public class OsProxyService {
 
     /**
      * 查询人像集详细信息
+     *
      * @param paramJson
      * @return
      */
@@ -357,6 +376,7 @@ public class OsProxyService {
 
     /**
      * 新增人像集信息
+     *
      * @param parmJson
      * @return
      */
@@ -367,6 +387,7 @@ public class OsProxyService {
 
     /**
      * 删除人像集信息
+     *
      * @param paramJson
      * @return
      */
@@ -377,6 +398,7 @@ public class OsProxyService {
 
     /**
      * 编辑人像集信息
+     *
      * @param paramJson
      * @return
      */
@@ -385,11 +407,23 @@ public class OsProxyService {
         return JSONObject.parseObject(resultString);
     }
 
+    /**
+     * 人像集重提特征
+     *
+     * @param paramJson
+     * @return
+     */
+    public static JSONObject reFeatureFacedbFace(String paramJson) {
+        String resultString = BaseHttpUtil.httpPost(paramJson, PropertiesUtil.getOshttp() + HttpConstant.FACEDBFACE_REFEATURE, null);
+        return JSONObject.parseObject(resultString);
+    }
+
 
     /* ***************************************************** 应用类接口--> 布控相关 ***************************************************** */
 
     /**
      * 查询布控分页列表
+     *
      * @param paramJson
      * @return
      */
@@ -400,6 +434,7 @@ public class OsProxyService {
 
     /**
      * 查询布控列表(不关联底库、设备)
+     *
      * @param paramJson
      * @return
      */
@@ -410,6 +445,7 @@ public class OsProxyService {
 
     /**
      * 查询布控详细信息
+     *
      * @param monitorId 布控编号
      * @return
      */
@@ -422,6 +458,7 @@ public class OsProxyService {
 
     /**
      * 新增布控
+     *
      * @param parmJson
      * @return
      */
@@ -432,7 +469,8 @@ public class OsProxyService {
 
     /**
      * 删除布控
-     * @param monitorId     布控编号
+     *
+     * @param monitorId 布控编号
      * @return
      */
     public static JSONObject deleteMonitor(String monitorId) {
@@ -444,6 +482,7 @@ public class OsProxyService {
 
     /**
      * 编辑布控
+     *
      * @param paramJson
      * @return
      */
@@ -454,8 +493,9 @@ public class OsProxyService {
 
     /**
      * 修改布控状态
-     * @param monitorId         布控编号
-     * @param monitorStatus     布控状态：1-启用，2-停用
+     *
+     * @param monitorId     布控编号
+     * @param monitorStatus 布控状态：1-启用，2-停用
      * @return
      */
     public static JSONObject updateMonitorStatus(String monitorId, int monitorStatus) {
@@ -463,6 +503,44 @@ public class OsProxyService {
         paramJson.put("monitorId", monitorId);
         paramJson.put("monitorStatus", monitorStatus);
         String resultString = BaseHttpUtil.httpPost(JSON.toJSONString(paramJson), PropertiesUtil.getOshttp() + HttpConstant.MONITOR_STATUS_EDIT, null);
+        return JSONObject.parseObject(resultString);
+    }
+
+
+    /**
+     * 人脸比对功能（1:1）
+     *
+     * @param faceA 图片A的base64，图片大小要求小于3M
+     * @param faceB 图片B的base64，图片大小要求小于3M
+     * @return
+     */
+    public static JSONObject getRecogOne(String faceA, String faceB) {
+        Map<String, Object> parm = new HashMap<>(2);
+        parm.put("faceA", faceA);
+        parm.put("faceB", faceB);
+        String resultString = BaseHttpUtil.httpPost(JSON.toJSONString(parm), PropertiesUtil.getOshttp() + HttpConstant.RECOG_ONE_VS_ONE, null);
+        return JSONObject.parseObject(resultString);
+    }
+
+    /**
+     * 1:N 抓拍库
+     *
+     * @param parmJson
+     * @return
+     */
+    public static JSONObject getRecogCameraDb(String parmJson) {
+        String resultString = BaseHttpUtil.httpPost(parmJson, PropertiesUtil.getOshttp() + HttpConstant.RECOG_CAMERADB, null);
+        return JSONObject.parseObject(resultString);
+    }
+
+    /**
+     * 1:N 注册库
+     *
+     * @param parmJson
+     * @return
+     */
+    public static JSONObject getRecogRegisterDb(String parmJson) {
+        String resultString = BaseHttpUtil.httpPost(parmJson, PropertiesUtil.getOshttp() + HttpConstant.RECOG_REGISTERDB, null);
         return JSONObject.parseObject(resultString);
     }
 

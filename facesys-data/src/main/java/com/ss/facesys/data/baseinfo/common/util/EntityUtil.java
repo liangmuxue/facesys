@@ -82,4 +82,22 @@ public class EntityUtil {
         }
     }
 
+    /**
+     * 获取字典值描述
+     *
+     * @param enumType
+     * @param enumValue
+     * @return
+     */
+    public static String getEnumName(String enumType, String enumValue) {
+        if (StringUtils.isAnyBlank(enumType, enumValue)) {
+            return "";
+        }
+        Map<String, String> dicMap = getMapByKeyName(enumType);
+        if (dicMap.isEmpty()) {
+            return "";
+        }
+        return dicMap.get(enumValue);
+    }
+
 }
