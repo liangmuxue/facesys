@@ -1,19 +1,23 @@
 package com.ss.spider.system.user.model;
 
 import javax.persistence.Column;
+import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.List;
+
 /**
-* 账户权限实体类
-* @author chao
-* @create 2019/12/23
-* @email lishuangchao@ss-cas.com
-**/
+ * 账户权限实体类
+ *
+ * @author chao
+ * @create 2019/12/23
+ * @email lishuangchao@ss-cas.com
+ **/
 @Table(name = "cw_ge_user_resource_ref")
 public class UserResource implements Serializable {
 
+    @Id
     @Column(name = "id")
     private Integer id;
     @Column(name = "user_id")
