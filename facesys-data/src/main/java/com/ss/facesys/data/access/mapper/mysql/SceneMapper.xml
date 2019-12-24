@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ss.facesys.data.resource.mapper.SceneMapper">
+    <!--场景列表-->
+    <select id="list" resultType="com.ss.facesys.data.resource.common.model.Scene">
+        SELECT id, scene FROM cw_base_scene
+    </select>
+    <!--新增场景-->
+    <insert id="add" parameterType="com.ss.facesys.data.resource.common.model.Scene">
+        insert into cw_base_scene(scene) value (#{scene})
+    </insert>
+    <!--修改场景-->
+    <update id="edit" parameterType="com.ss.facesys.data.resource.common.model.Scene">
+        update cw_base_scene set scene = #{scene} where id = #{id}
+    </update>
+    <!--删除场景-->
+    <delete id="delt" parameterType="com.ss.facesys.data.resource.common.model.Scene">
+        delete from cw_base_scene where id = #{id}
+    </delete>
+</mapper>

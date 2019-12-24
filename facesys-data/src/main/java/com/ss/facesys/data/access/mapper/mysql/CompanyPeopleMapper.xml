@@ -16,16 +16,16 @@
         b.nationCode,
         e.enumName AS nation,
         c.companyAdress,
-        c.companyName,
+        c.orgName,
         e1.enumName AS gender
         FROM
         cw_base_company_people a
         LEFT JOIN cw_base_people b ON a.credentialNo = b.credentialNo
-        LEFT JOIN cw_base_company c ON a.companyCode = c.companyCode AND a.villageCode = c.villageCode
+        LEFT JOIN cw_base_company c ON a.orgId = c.orgId AND a.villageCode = c.villageCode
         LEFT JOIN cw_base_enum e ON b.nationCode = e.enumValue AND e.enumType = "nation"
         LEFT JOIN cw_base_enum e1 ON a.genderCode = e1.enumValue AND e1.enumType = "sex"
         <where>
-            a.companyCode =#{companyCode}
+            a.orgId =#{orgId}
             <if test="peopleName !=null and peopleName !=''">
                 AND a.peopleName LIKE CONCAT('%',#{peopleName},'%')
             </if>
@@ -57,8 +57,8 @@
             <if test="credentialNo !=null and credentialNo !=''">
                 credentialNo =#{credentialNo}
             </if>
-            <if test="companyCode !=null and companyCode !=''">
-                AND companyCode =#{companyCode}
+            <if test="orgId !=null and orgId !=''">
+                AND orgId =#{orgId}
             </if>
             <if test="id !=null">
                 AND id !=#{id}
@@ -72,7 +72,7 @@
         <foreach collection="list" item="item" index="index" open="" separator=";" close="">
             update cw_base_company_people
             <set>
-                companyCode = #{item.companyCode,jdbcType=VARCHAR},
+                orgId = #{item.orgId,jdbcType=VARCHAR},
                 villageCode =
                 #{item.villageCode,jdbcType=VARCHAR},
                 peopleName =
@@ -118,8 +118,8 @@
             <if test="villageCode !=null and villageCode !=''">
                 villageCode = #{villageCode,jdbcType=VARCHAR}
             </if>
-            <if test="companyCode !=null and companyCode !=''">
-                AND companyCode = #{companyCode,jdbcType=VARCHAR}
+            <if test="orgId !=null and orgId !=''">
+                AND orgId = #{orgId,jdbcType=VARCHAR}
             </if>
                 AND id in
             <foreach collection="ids" item="item" open="(" close=")" separator=",">

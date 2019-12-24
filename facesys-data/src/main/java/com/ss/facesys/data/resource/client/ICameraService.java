@@ -57,6 +57,14 @@ public interface ICameraService {
     int deleteCamera(Camera paramCamera) throws Exception;
 
     /**
+     * 切换状态
+     * @param paramCamera
+     * @return
+     * @throws Exception
+     */
+    int opStatus(Camera paramCamera) throws Exception;
+
+    /**
      * 查询像机分页列表
      * @param queryVO
      * @return

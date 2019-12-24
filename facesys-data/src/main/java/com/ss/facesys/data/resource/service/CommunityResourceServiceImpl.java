@@ -122,7 +122,6 @@ public class CommunityResourceServiceImpl extends BaseServiceImpl implements ICo
     user.setUserId(camera.getUserIds());
     Map<String, String> map = new HashMap<String, String>();
     map.put("dsf", dataScopeFilter(user).replace("t1", "a"));
-    camera.setSqlMap(map);
     return this.cameraMapper.findCameras(camera);
   }
 

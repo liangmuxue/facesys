@@ -42,7 +42,7 @@ import java.util.Map;
 /**
 * 相机设备管理
 * @author chao
-* @create 2019/12/6
+* @create 2019/12/24
 * @email lishuangchao@ss-cas.com
 **/
 @RestController
@@ -66,23 +66,18 @@ public class CameraController extends BaseController {
                     resp = createFailResponse();
                     resp.setMessage("国标摄像机ID不能为空");
                 } else {
-
                     JSONObject jsonObject = this.cameraService.vmsPreview(camera.getStandardCameraId());
                     if (jsonObject == null) {
                         resp = createFailResponse();
                         resp.setMessage("VMS相机信息返回为空");
                     } else {
-
                         resp.setData(jsonObject);
                     }
-
                 }
-
             } else if (StringUtils.isBlank(camera.getCameraId())) {
                 resp = createFailResponse();
                 resp.setMessage("相机cameraId不能为空");
             } else {
-
                 map.put("deviceId", camera.getCameraId());
                 String parmJson = JsonUtils.getFastjsonFromObject(map);
                 JSONObject jsonObject = this.accessService.getCameraPreview(parmJson);
@@ -96,9 +91,7 @@ public class CameraController extends BaseController {
                     resp = createFailResponse();
                     resp.setMessage(jsonObject.getString("message"));
                 }
-
             }
-
         } catch (Exception e) {
             this.logger.error("获取相机VMS信息失败，原因：" + e.toString(), e);
             resp = createFailResponse();
@@ -115,7 +108,7 @@ public class CameraController extends BaseController {
      * @throws Exception
      */
     @RequestMapping(value = {"/insert"}, method = {RequestMethod.POST})
-    @OpLog(model = ModuleCode.RESOURCE, desc = "新增相机", type = OperaTypeEnum.ADD)
+    @OpLog(model = ModuleCode.RESOURCE, desc = "新增像机", type = OperaTypeEnum.ADD)
     public ResponseEntity<Map<String, String>> insertCamera(@RequestBody @Validated({APIAddGroup.class}) Camera camera, BindingResult bindingResult) throws Exception {
         ResponseEntity<Map<String, String>> resp = validite(bindingResult);
         try {
@@ -134,13 +127,13 @@ public class CameraController extends BaseController {
             }
             // 新增设备
             int num = this.cameraService.insertCamera(camera);
-            //设备推流，抽帧启动
-            if(num > CommonConstant.COMMON_0 && CommonConstant.COMMON_1.equals(camera.getCameraState()) && StringUtils.isNotBlank(camera.getCameraIp()) && !"rtsp://".equals(camera.getStreamSource())){
-                com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDevicePushFlowUrl(), camera.getCameraId(), camera.getCameraName());
-                if (!CommonConstant.COMMON_2.equals(camera.getCameraType())){
-                    com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDeviceCutFlowUrl(), camera.getCameraId(), camera.getCameraName());
-                }
-            }
+//            //设备推流，抽帧启动
+//            if(num > CommonConstant.COMMON_0 && CommonConstant.COMMON_1.equals(camera.getCameraState()) && StringUtils.isNotBlank(camera.getCameraIp()) && !"rtsp://".equals(camera.getStreamSource())){
+//                com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDevicePushFlowUrl(), camera.getCameraId(), camera.getCameraName());
+//                if (!CommonConstant.COMMON_2.equals(camera.getCameraType())){
+//                    com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDeviceCutFlowUrl(), camera.getCameraId(), camera.getCameraName());
+//                }
+//            }
             if (num > 0) {
                 Map<String, String> map = new HashMap<String, String>();
                 map.put("result", "添加成功");
@@ -150,46 +143,46 @@ public class CameraController extends BaseController {
                 resp.setMessage("添加失败，请联系管理员");
             }
         } catch (Exception e) {
-            this.logger.error("新增相机失败原因：+" + e.toString(), e);
+            this.logger.error("新增像机失败原因：+" + e.toString(), e);
             resp = createFailResponse();
             resp.setCode(ResultCode.CAMERAINSERT_FAILED_CODE);
-            resp.setMessage("新增相机失败！");
+            resp.setMessage("新增像机失败！");
         }
         return resp;
     }
 
     /**
-     * 查询设备详情
+     * 查询像机详情
      * @param camera
      * @param bindingResult
      * @return
      * @throws Exception
      */
     @RequestMapping(value = {"/detail"}, method = {RequestMethod.POST})
-    @OpLog(model = "80006", desc = "查询像机详情", type = OperaTypeEnum.SELECT)
+    @OpLog(model = ModuleCode.RESOURCE, desc = "查询像机详情", type = OperaTypeEnum.SELECT)
     public ResponseEntity<Camera> detail(@RequestBody @Validated({APIGetsGroup.class}) Camera camera, BindingResult bindingResult) throws Exception {
         ResponseEntity<Camera> resp = validite(bindingResult);
         try {
             Camera data = this.cameraService.selectOne(camera);
             resp.setData(data);
         } catch (Exception e) {
-            this.logger.error("查找相机失败的原因：" + e.toString(), e);
+            this.logger.error("查找像机失败的原因：" + e.toString(), e);
             resp = createFailResponse();
             resp.setCode(ResultCode.FINDCAMERAS_FAILED_CODE);
-            resp.setMessage("查找相机失败");
+            resp.setMessage("查找像机失败");
         }
         return resp;
     }
 
     /**
-     * 修改设备信息
+     * 修改像机信息
      * @param camera
      * @param bindingResult
      * @return
      * @throws Exception
      */
     @RequestMapping(value = {"/update"}, method = {RequestMethod.POST})
-    @OpLog(model = "80006", desc = "相机修改", type = OperaTypeEnum.SELECT)
+    @OpLog(model = ModuleCode.RESOURCE, desc = "修改像机", type = OperaTypeEnum.EDIT)
     public ResponseEntity<Map<String, String>> updateCamera(@RequestBody @Validated({APIEditGroup.class}) Camera camera, BindingResult bindingResult) throws Exception {
         ResponseEntity<Map<String, String>> resp = validite(bindingResult);
         try {
@@ -206,28 +199,28 @@ public class CameraController extends BaseController {
                 streamSource = "rtsp://";
                 camera.setStreamSource(streamSource);
             }
-            Camera temp = new Camera();
-            temp.setId(camera.getId());
-            Camera cameraOld = this.cameraService.selectOne(temp);
             int num = this.cameraService.updateCamera(camera);
-            if (num > CommonConstant.COMMON_0){
-                if(CommonConstant.COMMON_0.equals(cameraOld.getCameraState())
-                        && CommonConstant.COMMON_1.equals(camera.getCameraState())
-                        && StringUtils.isNotBlank(camera.getCameraIp())
-                        && !"rtsp://".equals(camera.getStreamSource())){
-                    //设备推流，抽帧启动
-                    com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDevicePushFlowUrl(), camera.getCameraId(), camera.getCameraName());
-                    if (!CommonConstant.COMMON_2.equals(camera.getCameraType())){
-                        com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDeviceCutFlowUrl(), camera.getCameraId(), camera.getCameraName());
-                    }
-                } else if (CommonConstant.COMMON_1.equals(cameraOld.getCameraState()) && CommonConstant.COMMON_0.equals(camera.getCameraState())){
-                    //设备停止推流，停止抽帧
-                    com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDevicePushFlowStopUrl(), camera.getCameraId(), camera.getCameraName());
-                    if (!CommonConstant.COMMON_2.equals(cameraOld.getCameraType())){
-                        com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDeviceCutFlowStopUrl(), camera.getCameraId(), camera.getCameraName());
-                    }
-                }
-            }
+//            Camera temp = new Camera();
+//            temp.setId(camera.getId());
+//            Camera cameraOld = this.cameraService.selectOne(temp);
+//            if (num > CommonConstant.COMMON_0){
+//                if(CommonConstant.COMMON_0.equals(cameraOld.getCameraState())
+//                        && CommonConstant.COMMON_1.equals(camera.getCameraState())
+//                        && StringUtils.isNotBlank(camera.getCameraIp())
+//                        && !"rtsp://".equals(camera.getStreamSource())){
+//                    //设备推流，抽帧启动
+//                    com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDevicePushFlowUrl(), camera.getCameraId(), camera.getCameraName());
+//                    if (!CommonConstant.COMMON_2.equals(camera.getCameraType())){
+//                        com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDeviceCutFlowUrl(), camera.getCameraId(), camera.getCameraName());
+//                    }
+//                } else if (CommonConstant.COMMON_1.equals(cameraOld.getCameraState()) && CommonConstant.COMMON_0.equals(camera.getCameraState())){
+//                    //设备停止推流，停止抽帧
+//                    com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDevicePushFlowStopUrl(), camera.getCameraId(), camera.getCameraName());
+//                    if (!CommonConstant.COMMON_2.equals(cameraOld.getCameraType())){
+//                        com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDeviceCutFlowStopUrl(), camera.getCameraId(), camera.getCameraName());
+//                    }
+//                }
+//            }
             Map<String, String> map = new HashMap<>(CommonConstant.HASHMAP_INITIALCAPACITY);
             if (num > 0) {
                 map.put("result", "更新成功");
@@ -237,23 +230,23 @@ public class CameraController extends BaseController {
                 resp.setData(map);
             }
         } catch (Exception e) {
-            this.logger.error("更新相机失败的原因：+" + e.toString(), e);
+            this.logger.error("更新像机失败的原因：+" + e.toString(), e);
             resp = createFailResponse();
             resp.setCode(ResultCode.CAMERAUPDATE_FAILED_CODE);
-            resp.setMessage("更新相机失败！");
+            resp.setMessage("更新像机失败！");
         }
         return resp;
     }
 
     /**
-     * 删除设备
+     * 删除像机
      * @param camera
      * @param bindingResult
      * @return
      * @throws Exception
      */
     @RequestMapping(value = {"/delete"}, method = {RequestMethod.POST})
-    @OpLog(model = "80006", desc = "删除一个相机", type = OperaTypeEnum.SELECT)
+    @OpLog(model = ModuleCode.RESOURCE, desc = "删除像机", type = OperaTypeEnum.SELECT)
     public ResponseEntity<Map<String, String>> deleteCamera(@RequestBody @Validated({APIDeltGroup.class}) Camera camera, BindingResult bindingResult) throws Exception {
         ResponseEntity<Map<String, String>> resp = validite(bindingResult);
         try {
@@ -267,10 +260,10 @@ public class CameraController extends BaseController {
                 resp.setData(map);
             }
         } catch (Exception e) {
-            this.logger.error("删除相机失败的原因+" + e.toString(), e);
+            this.logger.error("删除像机失败的原因+" + e.toString(), e);
             resp = createFailResponse();
             resp.setCode(ResultCode.CAMERADELETE_FAILED_CODE);
-            resp.setMessage("删除相机失败");
+            resp.setMessage("删除像机失败");
         }
         return resp;
     }
@@ -283,21 +276,49 @@ public class CameraController extends BaseController {
      * @throws Exception
      */
     @RequestMapping(value = {"/findAllCameras"}, method = {RequestMethod.POST})
-    @OpLog(model = ModuleCode.RESOURCE, desc = "查找相机分页列表", type = OperaTypeEnum.SEARCH)
+    @OpLog(model = ModuleCode.RESOURCE, desc = "查找像机分页列表", type = OperaTypeEnum.SEARCH)
     public ResponseEntity<PageEntity<ImportCamera>> findAllCameras(@RequestBody @Validated({APIPageGroup.class}) CameraQueryVO queryVO, BindingResult bindingResult) throws Exception {
         ResponseEntity<PageEntity<ImportCamera>> resp = validite(bindingResult);
         try {
             Page<ImportCamera> data = (Page) this.cameraService.findAllCameras(queryVO);
             resp.setData(new PageEntity(data));
         } catch (Exception e) {
-            this.logger.error("查找相机失败的原因：" + e.toString(), e);
+            this.logger.error("查找像机分页列表失败的原因：" + e.toString(), e);
             resp = createFailResponse();
             resp.setCode(ResultCode.FINDALLCAMERAS_FAILED_CODE);
-            resp.setMessage("查找相机失败");
+            resp.setMessage("查找像机分页列表失败");
         }
         return resp;
     }
 
+    /**
+     * 切换像机状态
+     * @param camera
+     * @param bindingResult
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = {"/opStatus"}, method = {RequestMethod.POST})
+    @OpLog(model = ModuleCode.RESOURCE, desc = "切换像机状态", type = OperaTypeEnum.EDIT)
+    public ResponseEntity<Map<String, String>> opStatus(@RequestBody @Validated({APIOpStatusGroup.class}) Camera camera, BindingResult bindingResult) throws Exception {
+        ResponseEntity<Map<String, String>> resp = validite(bindingResult);
+        try {
+            int num = this.cameraService.opStatus(camera);
+            Map<String, String> map = new HashMap<>(CommonConstant.HASHMAP_INITIALCAPACITY);
+            if (num > 0) {
+                map.put("result", "切换状态成功");
+                resp.setData(map);
+            } else {
+                map.put("result", "切换状态失败");
+                resp.setData(map);
+            }
+        } catch (Exception e) {
+            this.logger.error("切换像机状态失败的原因+" + e.toString(), e);
+            resp = createFailResponse();
+            resp.setMessage("切换像机状态失败");
+        }
+        return resp;
+    }
 
     @RequestMapping(value = {"/importCameraData"}, method = {RequestMethod.POST})
     @OpLog(model = "80006", desc = "导入相机设备", type = OperaTypeEnum.SELECT)
@@ -317,7 +338,6 @@ public class CameraController extends BaseController {
         }
         return resp;
     }
-
 
     @RequestMapping(value = {"/playVideo"}, method = {RequestMethod.POST})
     @OpLog(model = "80006", desc = "播放录像", type = OperaTypeEnum.SELECT)

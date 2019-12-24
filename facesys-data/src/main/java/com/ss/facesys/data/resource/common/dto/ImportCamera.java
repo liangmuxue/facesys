@@ -1,12 +1,9 @@
 package com.ss.facesys.data.resource.common.dto;
 
 import com.ss.facesys.util.export.excel.annotation.ExcelField;
-import com.google.common.collect.Maps;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -57,19 +54,7 @@ public class ImportCamera implements Serializable {
     @Transient
     private String regionCode;
     @Transient
-    private String sqlString;
-    @Transient
     private String userIds;
-    @Transient
-    private Map<String, String> sqlMap;
-    @Transient
-    private List<String> villages;
-    @Transient
-    private String enumName;
-    @Transient
-    private int pageNum;
-    @Transient
-    private int pageSize;
     @Transient
     private String villageCodes;
     @Transient
@@ -79,7 +64,7 @@ public class ImportCamera implements Serializable {
     @Transient
     private String cameraStateName;
     @Transient
-    private String companyName;
+    private String orgName;
 
     public String getVillageCodes() {
         return this.villageCodes;
@@ -91,46 +76,6 @@ public class ImportCamera implements Serializable {
     }
 
 
-    public int getPageNum() {
-        return this.pageNum;
-    }
-
-
-    public void setPageNum(int pageNum) {
-        this.pageNum = pageNum;
-    }
-
-
-    public int getPageSize() {
-        return this.pageSize;
-    }
-
-
-    public void setPageSize(int pageSize) {
-        this.pageSize = pageSize;
-    }
-
-
-    public String getEnumName() {
-        return this.enumName;
-    }
-
-
-    public void setEnumName(String enumName) {
-        this.enumName = enumName;
-    }
-
-
-    public List<String> getVillages() {
-        return this.villages;
-    }
-
-
-    public void setVillages(List<String> villages) {
-        this.villages = villages;
-    }
-
-
     public String getUserIds() {
         return this.userIds;
     }
@@ -138,16 +83,6 @@ public class ImportCamera implements Serializable {
 
     public void setUserIds(String userIds) {
         this.userIds = userIds;
-    }
-
-
-    public String getSqlString() {
-        return this.sqlString;
-    }
-
-
-    public void setSqlString(String sqlString) {
-        this.sqlString = sqlString;
     }
 
 
@@ -486,18 +421,6 @@ public class ImportCamera implements Serializable {
         this.villageName = villageName;
     }
 
-    public Map<String, String> getSqlMap() {
-        if (this.sqlMap == null) {
-            this.sqlMap = Maps.newHashMap();
-        }
-        return this.sqlMap;
-    }
-
-
-    public void setSqlMap(Map<String, String> sqlMap) {
-        this.sqlMap = sqlMap;
-    }
-
     public String getCameraTypeName() {
         return cameraTypeName;
     }
@@ -530,12 +453,12 @@ public class ImportCamera implements Serializable {
         this.monitorStatusName = monitorStatusName;
     }
 
-    public String getCompanyName() {
-        return companyName;
+    public String getOrgName() {
+        return orgName;
     }
 
-    public void setCompanyName(String companyName) {
-        this.companyName = companyName;
+    public void setOrgName(String orgName) {
+        this.orgName = orgName;
     }
 
     public Integer getCameraEnabled() {

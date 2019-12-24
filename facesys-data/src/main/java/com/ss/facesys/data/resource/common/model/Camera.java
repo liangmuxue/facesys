@@ -1,11 +1,7 @@
 package com.ss.facesys.data.resource.common.model;
 
-import com.google.common.collect.Maps;
 import com.ss.facesys.util.export.excel.annotation.ExcelField;
-import com.ss.valide.APIAddGroup;
-import com.ss.valide.APIDeltGroup;
-import com.ss.valide.APIEditGroup;
-import com.ss.valide.APIGetsGroup;
+import com.ss.valide.*;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.Id;
@@ -15,7 +11,6 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Camera 设备信息
@@ -28,17 +23,21 @@ public class Camera implements Serializable {
 
     private static final long serialVersionUID = -4972616909555429239L;
     @Id
-    @NotNull(message = "{camera.id.empty}", groups = {APIEditGroup.class, APIGetsGroup.class, APIDeltGroup.class})
+    @NotNull(message = "{camera.id.empty}", groups = {APIEditGroup.class, APIGetsGroup.class, APIDeltGroup.class, APIOpStatusGroup.class})
     private Integer id;
-    @NotBlank(message = "{camera.villageCode.empty}", groups = {APIAddGroup.class, APIEditGroup.class})
     private String villageCode;
     private String cameraId;
     @NotBlank(message = "{camera.cameraName.empty}", groups = {APIAddGroup.class, APIEditGroup.class})
     private String cameraName;
+    @NotBlank(message = "{camera.ip.empty}", groups = {APIAddGroup.class})
     private String cameraIp;
+    @NotNull(message = "{camera.port.empty}", groups = {APIAddGroup.class})
     private Integer cameraPort;
+    @NotBlank(message = "{camera.loginName.empty}", groups = {APIAddGroup.class})
     private String loginName;
+    @NotBlank(message = "{camera.password.empty}", groups = {APIAddGroup.class})
     private String password;
+    @NotBlank(message = "{camera.url.empty}", groups = {APIAddGroup.class, APIEditGroup.class})
     private String streamSource;
     private String buildingNo;
     private String installAdd;
@@ -46,13 +45,11 @@ public class Camera implements Serializable {
     private String productModel;
     private String productCode;
     private String companyCode;
-    @NotNull(message = "{camera.cameraType.empty}", groups = {APIAddGroup.class, APIEditGroup.class})
+    @NotNull(message = "{camera.cameraType.empty}", groups = {APIAddGroup.class})
     private Integer cameraType;
     private Integer thridType;
     private Integer inOutFlag;
-    @NotNull(message = "{camera.cameraState.empty}", groups = {APIAddGroup.class, APIEditGroup.class})
     private Integer cameraState;
-    @NotNull(message = "{camera.gisType.empty}", groups = {APIAddGroup.class, APIEditGroup.class})
     private Integer gisType;
     @NotNull(message = "{camera.lon.empty}", groups = {APIAddGroup.class, APIEditGroup.class})
     private Double lon;
@@ -65,46 +62,30 @@ public class Camera implements Serializable {
     private String standardCameraId;
     private Date createTime;
     private Date updateTime;
+    @NotNull(message = "{camera.cameraEnabled.empty}", groups = {APIOpStatusGroup.class})
+    private Integer cameraEnabled;
+    @NotBlank(message = "{camera.orgId.empty}", groups = {APIAddGroup.class, APIEditGroup.class})
+    private String orgId;
+    @NotNull(message = "{camera.sceneId.empty}", groups = {APIAddGroup.class, APIEditGroup.class})
+    private Integer sceneId;
     @Transient
     private String regionCode;
     @Transient
-    private String sqlString;
-    @Transient
     private String userIds;
     @Transient
-    private Map<String, String> sqlMap;
-    @Transient
-    private List<String> villages;
-    @Transient
     private String villageCodes;
-    @Transient
-    private String enumName;
     @Transient
     private List<Integer> cameraList;
     @Transient
     private List<Integer> cameraTypeList;
     @Transient
     private String villageName;
-
-    public String getEnumName() {
-        return this.enumName;
-    }
-
-
-    public void setEnumName(String enumName) {
-        this.enumName = enumName;
-    }
-
-
-    public List<String> getVillages() {
-        return this.villages;
-    }
-
-
-    public void setVillages(List<String> villages) {
-        this.villages = villages;
-    }
-
+    @Transient
+    private String orgName;
+    @Transient
+    private String sceneName;
+    @Transient
+    private String cameraTypeName;
 
     public String getUserIds() {
         return this.userIds;
@@ -113,16 +94,6 @@ public class Camera implements Serializable {
 
     public void setUserIds(String userIds) {
         this.userIds = userIds;
-    }
-
-
-    public String getSqlString() {
-        return this.sqlString;
-    }
-
-
-    public void setSqlString(String sqlString) {
-        this.sqlString = sqlString;
     }
 
 
@@ -461,18 +432,6 @@ public class Camera implements Serializable {
         this.villageName = villageName;
     }
 
-    public Map<String, String> getSqlMap() {
-        if (this.sqlMap == null) {
-            this.sqlMap = Maps.newHashMap();
-        }
-        return this.sqlMap;
-    }
-
-
-    public void setSqlMap(Map<String, String> sqlMap) {
-        this.sqlMap = sqlMap;
-    }
-
 
     public List<Integer> getCameraList() {
         return this.cameraList;
@@ -505,9 +464,51 @@ public class Camera implements Serializable {
         this.villageCodes = villageCodes;
     }
 
-    @Override
-    public String toString() {
-        return "Camera [villageCode=" + this.villageCode + ", cameraId=" + this.cameraId + ", cameraName=" + this.cameraName + ", installAdd=" + this.installAdd + ", cameraState=" + this.cameraState + "]";
+    public String getOrgId() {
+        return orgId;
     }
 
+    public void setOrgId(String orgId) {
+        this.orgId = orgId;
+    }
+
+    public Integer getSceneId() {
+        return sceneId;
+    }
+
+    public void setSceneId(Integer sceneId) {
+        this.sceneId = sceneId;
+    }
+
+    public String getOrgName() {
+        return orgName;
+    }
+
+    public void setOrgName(String orgName) {
+        this.orgName = orgName;
+    }
+
+    public String getSceneName() {
+        return sceneName;
+    }
+
+    public void setSceneName(String sceneName) {
+        this.sceneName = sceneName;
+    }
+
+    public String getCameraTypeName() {
+        return cameraTypeName;
+    }
+
+    public void setCameraTypeName(String cameraTypeName) {
+        this.cameraTypeName = cameraTypeName;
+    }
+
+    public Integer getCameraEnabled() {
+        return cameraEnabled;
+    }
+
+    public void setCameraEnabled(Integer cameraEnabled) {
+        this.cameraEnabled = cameraEnabled;
+    }
 }

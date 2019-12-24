@@ -40,11 +40,11 @@ public interface CameraMapper extends SsMapper<Camera> {
     int insertCamera(Camera paramCamera);
 
     /**
-     * 通过ip查询像机
+     * 通过ip,编号查询像机
      * @param paramCamera
      * @return
      */
-    ImportCamera checkIp(Camera paramCamera);
+    ImportCamera checkCamera(Camera paramCamera);
 
     /**
      * 通过ip、id查询像机
@@ -73,6 +73,14 @@ public interface CameraMapper extends SsMapper<Camera> {
      * @return
      */
     List<ImportCamera> findAllCameras(CameraQueryVO queryVO);
+
+    /**
+     * 切换状态
+     * @param paramCamera
+     * @return
+     * @throws Exception
+     */
+    int opStatus(Camera paramCamera) throws Exception;
 
     ImportCamera check(ImportCamera paramImportCamera);
 

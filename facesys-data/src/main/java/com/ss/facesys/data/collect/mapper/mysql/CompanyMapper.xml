@@ -10,15 +10,15 @@
 		a.*,
 		c.villageName,
 		e.enumName AS companyTypeName,
-		COUNT(p.companyCode) countPeople
+		COUNT(p.orgId) countPeople
 		FROM
 		cw_base_company a
 		LEFT JOIN cw_base_village c ON a.villageCode = c.villageCode
 		LEFT JOIN cw_base_enum e ON a.companyType = e.enumValue AND e.enumType = 'companyType'
-		LEFT JOIN cw_base_company_people p on p.companyCode = a.companyCode AND p.villageCode = a.villageCode
+		LEFT JOIN cw_base_company_people p on p.orgId = a.orgId AND p.villageCode = a.villageCode
 		<where>
-			<if test="companyName != null and companyName != ''">
-				AND a.companyName LIKE concat('%',#{companyName},'%')
+			<if test="orgName != null and orgName != ''">
+				AND a.orgName LIKE concat('%',#{orgName},'%')
 			</if>
 			<if test="companyType != null and companyType != ''">
 				AND a.companyType =#{companyType}
@@ -36,7 +36,7 @@
 				AND ${dsf}
 			</if>
 		</where>
-		GROUP BY a.companyCode
+		GROUP BY a.orgId
 	</select>
 
 	<select id="searchEmployee" parameterType="Map"
@@ -162,8 +162,8 @@
 			<if test="villageCode !=null and villageCode !=''">
 				t1.villageCode = #{villageCode}
 			</if>
-			<if test="companyName !=null and companyName !=''">
-				AND t1.companyName LIKE CONCAT('%', #{companyName}, '%')
+			<if test="orgName !=null and orgName !=''">
+				AND t1.orgName LIKE CONCAT('%', #{orgName}, '%')
 			</if>
 			<if test="companyType !=null and companyType !=''">
 				AND t1.companyType = #{companyType}

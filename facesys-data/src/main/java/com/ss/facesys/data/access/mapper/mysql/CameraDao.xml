@@ -73,11 +73,27 @@
 	</select>
 
 
-    <select id="selectById"
-            resultType="com.ss.facesys.data.resource.common.model.Camera"
+    <select id="selectById" resultType="com.ss.facesys.data.resource.common.model.Camera"
             parameterType="com.ss.facesys.data.resource.common.model.Camera">
-		SELECT * FROM cw_base_camera WHERE id =
-		#{id}
+		SELECT
+		c.id,
+		c.cameraId,
+		c.cameraName,
+		c.orgId,
+		o.org_cname AS orgName,
+        c.sceneId,
+        s.scene AS sceneName,
+        c.installAdd,
+        c.cameraType,
+        e.enumName AS cameraTypeName,
+        c.streamSource,
+        c.lon,
+        c.lat
+		FROM cw_base_camera c
+        LEFT JOIN cw_ge_organization o ON c.orgId = o.org_id
+        LEFT JOIN cw_base_scene s ON c.sceneId = s.id
+        LEFT JOIN cw_base_enum e ON e.enumType = 'CAMERA_TYPE' AND c.cameraType = e.enumValue
+        WHERE c.id = #{id}
 	</select>
 
     <insert id="insertCamera"
@@ -97,11 +113,10 @@
 		prducetBrand,
 		productModel,
 		productCode,
-		companyCode,
+		orgId,
 		thridType,
 		cameraType,
 		inOutFlag,
-		cameraState,
 		gisType,
 		lon,
 		lat,
@@ -111,7 +126,8 @@
 		thirdCameraId,
 		standardCameraId,
 		createTime,
-		updateTime
+		updateTime,
+		sceneId
 		)
 		VALUE
 		(
@@ -128,11 +144,10 @@
 		#{prducetBrand},
 		#{productModel},
 		#{productCode},
-		#{companyCode},
+		#{orgId},
 		#{thridType},
 		#{cameraType},
 		#{inOutFlag},
-		#{cameraState},
 		#{gisType},
 		#{lon},
 		#{lat},
@@ -142,7 +157,8 @@
 		#{thirdCameraId},
 		#{standardCameraId},
 		NOW(),
-		NOW()
+		NOW(),
+		#{sceneId}
 		)
 	</insert>
 
@@ -164,7 +180,7 @@
 		prducetBrand,
 		productModel,
 		productCode,
-		companyCode,
+		orgId,
 		thridType,
 		cameraType,
 		inOutFlag,
@@ -195,7 +211,7 @@
 		#{prducetBrand},
 		#{productModel},
 		#{productCode},
-		#{companyCode},
+		#{orgId},
 		#{thridType},
 		#{cameraType},
 		#{inOutFlag},
@@ -213,44 +229,24 @@
 		)
 	</insert>
 
-
-    <update id="updateCamera"
-            parameterType="com.ss.facesys.data.resource.common.model.Camera">
+    <!--修改像机信息-->
+    <update id="updateCamera" parameterType="com.ss.facesys.data.resource.common.model.Camera">
         UPDATE cw_base_camera
         <set>
-            <if test="villageCode != null and villageCode !=''">villageCode = #{villageCode},</if>
-            cameraId = #{cameraId},
-            cameraIp = #{cameraIp},
-            <if test="cameraName != null and cameraName !=''">cameraName = #{cameraName},</if>
-            cameraPort = #{cameraPort},
-            password = #{password},
-            loginName = #{loginName},
-            streamSource = #{streamSource},
-            buildingNo = #{buildingNo},
+            cameraName = #{cameraName},
+            orgId = #{orgId},
+            sceneId = #{sceneId},
             installAdd = #{installAdd},
-            prducetBrand = #{prducetBrand},
-            productModel = #{productModel},
-            companyCode = #{companyCode},
-            thridType = #{thridType},
-            inOutFlag =#{inOutFlag},
-            cameraState =#{cameraState},
-            gisType = #{gisType},
+            streamSource = #{streamSource},
             lon = #{lon},
             lat = #{lat},
-            alt = #{alt},
-            vehicleChannelNo = #{vehicleChannelNo},
-            camreaChannelID = #{camreaChannelID},
-            thirdCameraId = #{thirdCameraId},
-            standardCameraId = #{standardCameraId},
-            thirdCameraId = #{thirdCameraId},
             updateTime = NOW()
         </set>
         WHERE
         id = #{id}
     </update>
-
-    <update id="deleteCamera"
-            parameterType="com.ss.facesys.data.resource.common.model.Camera">
+    <!--删除像机-->
+    <update id="deleteCamera" parameterType="com.ss.facesys.data.resource.common.model.Camera">
 		UPDATE cw_base_camera
 		SET state = 1
 		WHERE
@@ -258,10 +254,12 @@
 	</update>
 
     <!--查询像机分页列表-->
-    <select id="findAllCameras" parameterType="com.ss.facesys.data.resource.common.web.CameraQueryVO" resultType="com.ss.facesys.data.resource.common.dto.ImportCamera">
+    <select id="findAllCameras" parameterType="com.ss.facesys.data.resource.common.web.CameraQueryVO"
+            resultType="com.ss.facesys.data.resource.common.dto.ImportCamera">
         SELECT
         a.id,
-        a.cameraId,
+        case when a.standardCameraId is not null and a.standardCameraId != '' then a.standardCameraId else a.cameraId
+        end cameraId,
         a.cameraName,
         a.cameraType,
         e1.enumName AS cameraTypeName,
@@ -272,11 +270,11 @@
         e3.enumName AS cameraStateName,
         a.cameraEnabled,
         e4.enumName AS cameraEnabledName,
-        a.companyCode,
-        o.org_cname AS companyName
+        a.orgId,
+        o.org_cname AS orgName
         FROM
         cw_base_camera a
-        LEFT JOIN cw_ge_organization o ON a.companyCode = o.org_code
+        LEFT JOIN cw_ge_organization o ON a.orgId = o.org_id
         LEFT JOIN cw_base_enum e1 ON e1.enumType = 'CAMERA_TYPE' AND a.cameraType = e1.enumValue
         LEFT JOIN cw_base_enum e2 ON e2.enumType = 'FACEDB_MONITOR_STATE' AND a.monitorStatus = e2.enumValue
         LEFT JOIN cw_base_enum e3 ON e3.enumType = 'CAMERA_STATE' AND a.cameraState = e3.enumValue
@@ -284,19 +282,20 @@
         <where>
             a.state = 0
             <if test="cameraName != null and cameraName !=''">
-              AND a.cameraName LIKE CONCAT('%',#{cameraName},'%')
+                AND a.cameraName LIKE CONCAT('%',#{cameraName},'%')
             </if>
             <if test="cameraId != null and cameraId !=''">
-                AND a.cameraId LIKE CONCAT('%',#{cameraId},'%')
+                AND case when a.standardCameraId is not null and a.standardCameraId != '' then a.standardCameraId else
+                a.cameraId end LIKE CONCAT('%',#{cameraId},'%')
             </if>
             <if test="cameraType != null">
-              AND a.cameraType = #{cameraType}
+                AND a.cameraType = #{cameraType}
             </if>
-            <if test="companyCode != null and companyCode !=''">
-                AND a.companyCode = #{companyCode}
+            <if test="orgId != null and orgId !=''">
+                AND a.orgId = #{orgId}
             </if>
             <if test="cameraState != null">
-              AND a.cameraState = #{cameraState}
+                AND a.cameraState = #{cameraState}
             </if>
             <if test="cameraEnabled != null">
                 AND a.cameraEnabled = #{cameraEnabled}
@@ -304,7 +303,15 @@
         </where>
         ORDER BY a.cameraId DESC
     </select>
-
+    <!--切换状态-->
+    <update id="opStatus" parameterType="com.ss.facesys.data.resource.common.model.Camera">
+        UPDATE cw_base_camera
+        <set>
+            cameraEnabled = #{cameraEnabled}
+        </set>
+        WHERE
+        id = #{id}
+    </update>
 
     <select id="check"
             resultType="com.ss.facesys.data.resource.common.dto.ImportCamera">
@@ -374,8 +381,8 @@
                 <if test="item.productCode !=null and item.productCode !=''">
                     productCode = #{item.productCode,jdbcType=VARCHAR},
                 </if>
-                <if test="item.companyCode !=null and item.companyCode !=''">
-                    companyCode = #{item.companyCode,jdbcType=VARCHAR},
+                <if test="item.orgId !=null and item.orgId !=''">
+                    orgId = #{item.orgId,jdbcType=VARCHAR},
                 </if>
                 <if test="item.cameraType !=null">
                     cameraType = #{item.installAdd,jdbcType=SMALLINT},
@@ -468,22 +475,24 @@
             </if>
         </where>
     </select>
-    <!--根据ip查询设备-->
-    <select id="checkIp" resultType="com.ss.facesys.data.resource.common.dto.ImportCamera" parameterType="com.ss.facesys.data.resource.common.model.Camera">
+    <!--根据ip、编号查询设备-->
+    <select id="checkCamera" resultType="com.ss.facesys.data.resource.common.dto.ImportCamera"
+            parameterType="com.ss.facesys.data.resource.common.model.Camera">
         SELECT
         *
         FROM
         cw_base_camera
         <where>
-            state != 1
-            <if test="cameraIp !=null and cameraIp !=''">
-                AND cameraIp = #{cameraIp}
+            state = 0 AND cameraIp = #{cameraIp}
+            <if test="standardCameraId !=null and standardCameraId !=''">
+                OR standardCameraId = #{standardCameraId}
             </if>
         </where>
         LIMIT 0,1
     </select>
     <!--根据ip、id查询设备-->
-    <select id="checkIpById" resultType="com.ss.facesys.data.resource.common.dto.ImportCamera" parameterType="com.ss.facesys.data.resource.common.model.Camera">
+    <select id="checkIpById" resultType="com.ss.facesys.data.resource.common.dto.ImportCamera"
+            parameterType="com.ss.facesys.data.resource.common.model.Camera">
         SELECT
         *
         FROM

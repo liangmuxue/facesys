@@ -22,7 +22,7 @@ public class CameraQueryVO extends Pagination {
     private Integer cameraState;
     private String userIds;
     private Map<String, String> sqlMap;
-    private String companyCode;
+    private String orgId;
     private Integer cameraEnabled;
     private String cameraId;
 
@@ -93,12 +93,12 @@ public class CameraQueryVO extends Pagination {
         this.cameraState = cameraState;
     }
 
-    public String getCompanyCode() {
-        return companyCode;
+    public String getOrgId() {
+        return orgId;
     }
 
-    public void setCompanyCode(String companyCode) {
-        this.companyCode = companyCode;
+    public void setOrgId(String orgId) {
+        this.orgId = orgId;
     }
 
     public Integer getCameraEnabled() {

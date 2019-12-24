@@ -14,8 +14,8 @@
             <if test="villageCode !=null and villageCode !=''">
                 t1.villageCode = #{villageCode}
             </if>
-            <if test="companyName !=null and companyName !=''">
-                AND t1.companyName LIKE CONCAT('%', #{companyName}, '%')
+            <if test="orgName !=null and orgName !=''">
+                AND t1.orgName LIKE CONCAT('%', #{orgName}, '%')
             </if>
             <if test="companyType !=null and companyType !=''">
                 AND t1.companyType = #{companyType}
@@ -52,8 +52,8 @@
     <select id="check" resultType="com.ss.facesys.data.resource.common.model.Company">
         SELECT * FROM cw_base_company
         <where>
-            <if test="companyCode !=null and companyCode !=''">
-                companyCode =#{companyCode}
+            <if test="orgId !=null and orgId !=''">
+                orgId =#{orgId}
             </if>
             <if test="villageCode !=null and villageCode !=''">
                 AND villageCode =#{villageCode}
@@ -67,7 +67,7 @@
 
 
     <select id="selectByCompanyCode" resultType="com.ss.facesys.data.resource.common.model.Company">
-        SELECT * FROM cw_base_company WHERE companyCode =#{companyCode}
+        SELECT * FROM cw_base_company WHERE orgId =#{orgId}
     </select>
 
 
@@ -75,9 +75,9 @@
         <foreach collection="list" item="item" index="index" open="" separator=";" close="">
             update cw_base_company
             <set>
-                companyCode = #{item.companyCode,jdbcType=VARCHAR},
+                orgId = #{item.orgId,jdbcType=VARCHAR},
                 villageCode = #{item.villageCode,jdbcType=VARCHAR},
-                companyName = #{item.companyName,jdbcType=VARCHAR},
+                orgName = #{item.orgName,jdbcType=VARCHAR},
                 <if test="item.companyType !=null">
                     companyType = #{item.companyType,jdbcType=INTEGER},
                 </if>
