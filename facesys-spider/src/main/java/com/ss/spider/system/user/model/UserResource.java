@@ -6,7 +6,7 @@ import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.List;
 /**
-* 账户像机权限实体类
+* 账户权限实体类
 * @author chao
 * @create 2019/12/23
 * @email lishuangchao@ss-cas.com
@@ -14,6 +14,8 @@ import java.util.List;
 @Table(name = "cw_ge_user_resource_ref")
 public class UserResource implements Serializable {
 
+    @Column(name = "id")
+    private Integer id;
     @Column(name = "user_id")
     private String userId;
     @Column(name = "resource_id")
@@ -34,6 +36,15 @@ public class UserResource implements Serializable {
     private String facedbTypeName;
     @Transient
     private String remark;
+
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public String getUserId() {
         return userId;
@@ -114,4 +125,5 @@ public class UserResource implements Serializable {
     public void setRemark(String remark) {
         this.remark = remark;
     }
+
 }
