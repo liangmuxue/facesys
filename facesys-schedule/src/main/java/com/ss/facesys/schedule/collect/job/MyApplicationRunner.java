@@ -133,6 +133,8 @@ public class MyApplicationRunner implements ApplicationRunner {
         /* ************感知增量*************************/
         //人脸-统计
         //this.stockSimpleJob.addSimpleJobScheduler(FaceDataLookDayJob.class, JobProperties.getDataLookDay(), tc, sp, true);
+        //像机设备在线离线验证定时任务
+        this.stockSimpleJob.addSimpleJobScheduler(IpJob.class, JobProperties.getIpJob(), tc, sp, true);
     }
 
 }

@@ -6,26 +6,15 @@
             resultType="com.ss.facesys.data.resource.common.model.Camera"
             parameterType="com.ss.facesys.data.resource.common.model.Camera">
         SELECT
-        a.*,
-        CONCAT(b.provinceCode,b.cityCode,b.districtCode,b.streetCode,b.roadCode)AS regionCode,b.villageName
+        a.*
         FROM
         cw_base_camera a
-        LEFT JOIN cw_base_village b ON a.villageCode = b.villageCode
         <where>
-            <if test="villageCode !=null and villageCode !=''">
-                and a.villageCode in #{villageCode}
-            </if>
-            <if test="villageCodes !=null and villageCodes !=''">
-                AND FIND_IN_SET(a.villageCode,#{villageCodes})
-            </if>
             <if test="cameraType !=null and cameraType !=''">
                 and a.cameraType = #{cameraType}
             </if>
             <if test="cameraName !=null and cameraName !=''">
                 and a.cameraName LIKE CONCAT('%', #{cameraName}, '%')
-            </if>
-            <if test="sqlMap.dsf != null and sqlMap.dsf !=''">
-                and ${sqlMap.dsf}
             </if>
             <if test="cameraList != null and cameraList.size > 0">
                 and a.cameraType in
@@ -35,7 +24,6 @@
                 </foreach>
             </if>
             AND a.state = 0
-            AND b.state = 0
         </where>
     </select>
 
@@ -88,7 +76,8 @@
         e.enumName AS cameraTypeName,
         c.streamSource,
         c.lon,
-        c.lat
+        c.lat,
+        c.cameraEnabled
 		FROM cw_base_camera c
         LEFT JOIN cw_ge_organization o ON c.orgId = o.org_id
         LEFT JOIN cw_base_scene s ON c.sceneId = s.id
@@ -161,7 +150,6 @@
 		#{sceneId}
 		)
 	</insert>
-
 
     <insert id="insertImportCamera"
             parameterType="com.ss.facesys.data.resource.common.dto.ImportCamera">
@@ -508,5 +496,15 @@
         </where>
         LIMIT 0,1
     </select>
+
+    <!--修改设备在线离线状态-->
+    <update id="updateCameraState" parameterType="java.util.List">
+        <foreach collection="list" item="item" separator=";">
+            UPDATE cw_base_camera
+            SET cameraState = #{item.cameraState}
+            WHERE
+            id = #{item.id}
+        </foreach>
+	</update>
 
 </mapper>

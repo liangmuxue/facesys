@@ -127,13 +127,13 @@ public class CameraController extends BaseController {
             }
             // 新增设备
             int num = this.cameraService.insertCamera(camera);
-//            //设备推流，抽帧启动
-//            if(num > CommonConstant.COMMON_0 && CommonConstant.COMMON_1.equals(camera.getCameraState()) && StringUtils.isNotBlank(camera.getCameraIp()) && !"rtsp://".equals(camera.getStreamSource())){
-//                com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDevicePushFlowUrl(), camera.getCameraId(), camera.getCameraName());
-//                if (!CommonConstant.COMMON_2.equals(camera.getCameraType())){
-//                    com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDeviceCutFlowUrl(), camera.getCameraId(), camera.getCameraName());
-//                }
-//            }
+            //设备推流，抽帧启动
+            if(num > CommonConstant.COMMON_0 && StringUtils.isNotBlank(camera.getCameraIp()) && !"rtsp://".equals(camera.getStreamSource())){
+                com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDevicePushFlowUrl(), camera.getCameraId(), camera.getCameraName());
+                if (!CommonConstant.COMMON_2.equals(camera.getCameraType())){
+                    com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDeviceCutFlowUrl(), camera.getCameraId(), camera.getCameraName());
+                }
+            }
             if (num > 0) {
                 Map<String, String> map = new HashMap<String, String>();
                 map.put("result", "添加成功");
@@ -200,32 +200,12 @@ public class CameraController extends BaseController {
                 camera.setStreamSource(streamSource);
             }
             int num = this.cameraService.updateCamera(camera);
-//            Camera temp = new Camera();
-//            temp.setId(camera.getId());
-//            Camera cameraOld = this.cameraService.selectOne(temp);
-//            if (num > CommonConstant.COMMON_0){
-//                if(CommonConstant.COMMON_0.equals(cameraOld.getCameraState())
-//                        && CommonConstant.COMMON_1.equals(camera.getCameraState())
-//                        && StringUtils.isNotBlank(camera.getCameraIp())
-//                        && !"rtsp://".equals(camera.getStreamSource())){
-//                    //设备推流，抽帧启动
-//                    com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDevicePushFlowUrl(), camera.getCameraId(), camera.getCameraName());
-//                    if (!CommonConstant.COMMON_2.equals(camera.getCameraType())){
-//                        com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDeviceCutFlowUrl(), camera.getCameraId(), camera.getCameraName());
-//                    }
-//                } else if (CommonConstant.COMMON_1.equals(cameraOld.getCameraState()) && CommonConstant.COMMON_0.equals(camera.getCameraState())){
-//                    //设备停止推流，停止抽帧
-//                    com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDevicePushFlowStopUrl(), camera.getCameraId(), camera.getCameraName());
-//                    if (!CommonConstant.COMMON_2.equals(cameraOld.getCameraType())){
-//                        com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDeviceCutFlowStopUrl(), camera.getCameraId(), camera.getCameraName());
-//                    }
-//                }
-//            }
             Map<String, String> map = new HashMap<>(CommonConstant.HASHMAP_INITIALCAPACITY);
             if (num > 0) {
                 map.put("result", "更新成功");
                 resp.setData(map);
             } else {
+                resp = createFailResponse();
                 map.put("result", "更新失败");
                 resp.setData(map);
             }
@@ -256,6 +236,7 @@ public class CameraController extends BaseController {
                 map.put("result", "删除成功");
                 resp.setData(map);
             } else {
+                resp = createFailResponse();
                 map.put("result", "删除失败");
                 resp.setData(map);
             }
@@ -309,6 +290,7 @@ public class CameraController extends BaseController {
                 map.put("result", "切换状态成功");
                 resp.setData(map);
             } else {
+                resp = createFailResponse();
                 map.put("result", "切换状态失败");
                 resp.setData(map);
             }

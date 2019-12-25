@@ -106,4 +106,10 @@ public interface CameraMapper extends SsMapper<Camera> {
 
     List<String> findCameraIds(Camera paramCamera);
 
+    /**
+     * 修改设备在线离线状态
+     * @param paramCamera
+     * @return
+     */
+    int updateCameraState(List<Camera> paramCamera);
 }

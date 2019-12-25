@@ -29,6 +29,7 @@ public class JobProperties {
     private static String dataLookDay;
     private static String dataLookMouth;
     private static String dataLookWeek;
+    private static String ipJob;
 
     public static int getShardingTotalCount() {
         return shardingTotalCount;
@@ -237,5 +238,13 @@ public class JobProperties {
 
     public static void setDataLookWeek(String dataLookWeek) {
         JobProperties.dataLookWeek = dataLookWeek;
+    }
+
+    public static String getIpJob() {
+        return ipJob;
+    }
+
+    public static void setIpJob(String ipJob) {
+        JobProperties.ipJob = ipJob;
     }
 }

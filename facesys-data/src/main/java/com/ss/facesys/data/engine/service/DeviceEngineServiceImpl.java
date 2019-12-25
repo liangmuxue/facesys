@@ -17,7 +17,6 @@ import com.ss.facesys.util.em.ResultCode;
 import com.ss.spider.system.organization.mapper.OrganizationMapper;
 import com.ss.spider.system.organization.model.Organization;
 import com.ss.tools.DateUtils;
-import com.sun.xml.internal.bind.v2.TODO;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

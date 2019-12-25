@@ -103,9 +103,9 @@ public abstract class BaseHttpUtil {
      * @param deviceId
      * @param name
      */
-    public static void deviceHttpPost(String deviceUrl, String deviceId, String name) {
+    public static String deviceHttpPost(String deviceUrl, String deviceId, String name) {
 
-        String result;
+        String result = null;
         HttpClient httpClient = null;
         HttpPost httpPost = null;
         String json = "{\"cameras\": [{\"cameraId\": \"" + deviceId + "\",\"cameraName\":\"" + name + "\"}]}";
@@ -127,7 +127,7 @@ public abstract class BaseHttpUtil {
                 LOG.info(result);
             }
         } catch (Exception e) {
-            LOG.error("设备流错误", e);
+            LOG.error("设备流请求错误", e);
         } finally {
             // 终止本次请求
             assert httpPost != null;
@@ -136,5 +136,6 @@ public abstract class BaseHttpUtil {
             httpPost.releaseConnection();
             httpClient.getConnectionManager().shutdown();
         }
+        return result;
     }
 }

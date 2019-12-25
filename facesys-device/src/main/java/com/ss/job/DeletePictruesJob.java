@@ -1,4 +1,4 @@
-package com.ss.facesys.schedule.collect.job;
+package com.ss.job;
 
 import com.dangdang.ddframe.job.api.ShardingContext;
 import com.dangdang.ddframe.job.api.simple.SimpleJob;
@@ -23,7 +23,6 @@ import java.util.LinkedList;
 public class DeletePictruesJob implements SimpleJob {
 
     public static final Log LOG = LogFactory.getLog(DeletePictruesJob.class);
-    private LocalCameraMapper localCameraMapper = SpringUtil.getBean(LocalCameraMapper.class);
 
     @Override
     public void execute(ShardingContext shardingContext) {

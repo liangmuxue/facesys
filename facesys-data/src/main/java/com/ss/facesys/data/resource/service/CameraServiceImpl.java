@@ -62,7 +62,6 @@ public class CameraServiceImpl extends BaseServiceImpl implements ICameraService
         return this.cameraMapper.selectById(camera);
     }
 
-
     @Override
     public List<Camera> findCameras(Camera camera) {
         List<Camera> list = null;
@@ -235,6 +234,16 @@ public class CameraServiceImpl extends BaseServiceImpl implements ICameraService
     @Override
     public int deleteCamera(Camera camera) throws Exception {
         Camera c = this.cameraMapper.selectById(camera);
+        //设备停止推流，停止抽帧
+        if (c != null){
+            String resultString = com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDevicePushFlowStopUrl(), c.getCameraId(), c.getCameraName());
+            if (!CommonConstant.COMMON_2.equals(c.getCameraType()) && resultString != null){
+                resultString = com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDeviceCutFlowStopUrl(), c.getCameraId(), c.getCameraName());
+            }
+            if (resultString == null){
+                return 0;
+            }
+        }
         if (c != null && StringUtils.isNotBlank(c.getCameraId())) {
             if (c.getCameraType() > 0) {
                 // 普通像机类型调用欧神删除像机设备接口
@@ -248,11 +257,6 @@ public class CameraServiceImpl extends BaseServiceImpl implements ICameraService
                     throw new Exception("内网同步 - 刪除像机失败 deviceId = " + c.getCameraId());
                 }
             }
-            //设备停止推流，停止抽帧
-//            com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDevicePushFlowStopUrl(), c.getCameraId(), c.getCameraName());
-//            if (!CommonConstant.COMMON_2.equals(c.getCameraType())){
-//                com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDeviceCutFlowStopUrl(), c.getCameraId(), c.getCameraName());
-//            }
         }
         int num = this.cameraMapper.deleteCamera(camera);
         return num;
@@ -266,6 +270,26 @@ public class CameraServiceImpl extends BaseServiceImpl implements ICameraService
      */
     @Override
     public int opStatus(Camera camera) throws Exception {
+        Camera c = this.cameraMapper.selectById(camera);
+        //设备推流，抽帧
+        if (c != null){
+            String resultString = null;
+            if(camera.getCameraEnabled() == 1 && c.getCameraEnabled() == 0) {
+                resultString = com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDevicePushFlowUrl(), c.getCameraId(), c.getCameraName());
+                if (!CommonConstant.COMMON_2.equals(c.getCameraType()) && resultString != null) {
+                    resultString = com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDeviceCutFlowUrl(), c.getCameraId(), c.getCameraName());
+                }
+            } else if (camera.getCameraEnabled() == 0 && c.getCameraEnabled() == 1) {
+                resultString = com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDevicePushFlowStopUrl(), c.getCameraId(), c.getCameraName());
+                if (!CommonConstant.COMMON_2.equals(c.getCameraType()) && resultString != null) {
+                    resultString = com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDeviceCutFlowStopUrl(), c.getCameraId(), c.getCameraName());
+                }
+            }
+            if (resultString == null) {
+                return 0;
+            }
+        }
+        //修改状态
         int result = this.cameraMapper.opStatus(camera);
         return result;
     }
@@ -298,12 +322,10 @@ public class CameraServiceImpl extends BaseServiceImpl implements ICameraService
         }
     }
 
-
     @Override
     public String batchImport(List<ImportCamera> tempList) throws Exception {
         List<ImportCamera> updateList = new ArrayList<ImportCamera>();
         List<ImportCamera> insertList = new ArrayList<ImportCamera>();
-
 
         boolean flag = true;
         int insertNum = 0;
