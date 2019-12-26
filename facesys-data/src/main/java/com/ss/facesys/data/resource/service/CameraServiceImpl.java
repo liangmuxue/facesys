@@ -19,8 +19,11 @@ import com.ss.facesys.util.constant.CommonConstant;
 import com.ss.facesys.util.constant.HttpConstant;
 import com.ss.facesys.util.constant.NumberConstant;
 import com.ss.facesys.util.em.Enums;
+import com.ss.facesys.util.em.ResourceType;
 import com.ss.facesys.util.http.BaseHttpUtil;
 import com.ss.facesys.util.jedis.JedisUtil;
+import com.ss.spider.system.user.mapper.UserResourceMapper;
+import com.ss.spider.system.user.model.UserResource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeanUtils;
@@ -49,6 +52,8 @@ public class CameraServiceImpl extends BaseServiceImpl implements ICameraService
 
     @Autowired
     private CameraMapper cameraMapper;
+    @Autowired
+    private UserResourceMapper userResourceMapper;
     @Resource
     public JedisUtil jedisUtil;
 
@@ -166,6 +171,17 @@ public class CameraServiceImpl extends BaseServiceImpl implements ICameraService
         }
         if (flag) {
             num = this.cameraMapper.insertCamera(camera);
+            UserResource userResource = new UserResource();
+            userResource.setType(ResourceType.CAMERA.getValue());
+            List<String> resourceIds = new ArrayList<>();
+            resourceIds.add(String.valueOf(camera.getId()));
+            userResource.setResourceIds(resourceIds);
+            userResource.setUserId(camera.getUserIds());
+            this.userResourceMapper.add(userResource);
+            if (!"1000".equals(camera.getUserIds())){
+                userResource.setUserId("1000");
+                this.userResourceMapper.add(userResource);
+            }
         } else {
             LOG.error("内网同步 - 新增 设备失败：");
             throw new Exception("内网同步 - 新增像机失败 deviceId = " + deviceId);
@@ -259,6 +275,10 @@ public class CameraServiceImpl extends BaseServiceImpl implements ICameraService
             }
         }
         int num = this.cameraMapper.deleteCamera(camera);
+        UserResource userResource = new UserResource();
+        userResource.setResourceId(camera.getId());
+        userResource.setType(ResourceType.CAMERA.getValue());
+        this.userResourceMapper.delete(userResource);
         return num;
     }
 

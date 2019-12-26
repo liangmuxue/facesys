@@ -16,6 +16,7 @@ import com.ss.facesys.util.PropertiesUtil;
 import com.ss.facesys.util.StringUtils;
 import com.ss.facesys.util.autoconfigure.DeviceProperties;
 import com.ss.facesys.util.constant.CommonConstant;
+import com.ss.facesys.util.em.ResourceType;
 import com.ss.facesys.util.export.excel.ImportExcel;
 import com.ss.facesys.web.manage.baseinfo.controller.BaseController;
 import com.ss.facesys.web.manage.baseinfo.controller.ResultCode;
@@ -261,6 +262,8 @@ public class CameraController extends BaseController {
     public ResponseEntity<PageEntity<ImportCamera>> findAllCameras(@RequestBody @Validated({APIPageGroup.class}) CameraQueryVO queryVO, BindingResult bindingResult) throws Exception {
         ResponseEntity<PageEntity<ImportCamera>> resp = validite(bindingResult);
         try {
+            List<Integer> resources = getAuthResources(queryVO.getUserIds(), ResourceType.CAMERA, null);
+            queryVO.setResources(resources);
             Page<ImportCamera> data = (Page) this.cameraService.findAllCameras(queryVO);
             resp.setData(new PageEntity(data));
         } catch (Exception e) {

@@ -85,7 +85,7 @@
         WHERE c.id = #{id}
 	</select>
 
-    <insert id="insertCamera"
+    <insert id="insertCamera" useGeneratedKeys="true" keyProperty="id"
             parameterType="com.ss.facesys.data.resource.common.model.Camera">
 		INSERT INTO cw_base_camera
 		(
@@ -287,6 +287,12 @@
             </if>
             <if test="cameraEnabled != null">
                 AND a.cameraEnabled = #{cameraEnabled}
+            </if>
+            <if test="resources!=null and  resources.size()!=0">
+                AND a.id in
+                <foreach collection="resources" item="item" open="(" close=")" separator=",">
+                    #{item,jdbcType=INTEGER}
+                </foreach>
             </if>
         </where>
         ORDER BY a.cameraId DESC
