@@ -86,15 +86,15 @@ public class DeviceEngineServiceImpl extends BaseServiceImpl implements IDeviceE
             List<Camera> deviceList = cameraMapper.selectByExample(deviceSelExp);
             // 单位信息
             Example orgExp = new Example(Organization.class);
-//            orgExp.createCriteria().andIn("orgId", deviceList.stream().map(Camera::getOrgId).collect(Collectors.toList())); TODO 设备未增加相关字段
+            orgExp.createCriteria().andIn("orgId", deviceList.stream().map(Camera::getOrgId).collect(Collectors.toList()));
             List<Organization> organizations = organizationMapper.selectByExample(orgExp);
             Map<String, String> orgMap = organizations.stream().collect(Collectors.toMap(Organization::getOrgId, Organization::getOrgCname));
             for (Camera device : deviceList) {
                 DeviceEngineDTO deviceEngineDTO = new DeviceEngineDTO();
                 deviceEngineDTO.setDeviceId(device.getId());
                 deviceEngineDTO.setCameraName(device.getCameraName());
-//                deviceEngineDTO.setOrgId(device.getOrgId()); TODO 设备未增加相关字段
-//                deviceEngineDTO.setOrgCname(orgMap.get(device.getOrgId()));
+                deviceEngineDTO.setOrgId(device.getOrgId());
+                deviceEngineDTO.setOrgCname(orgMap.get(device.getOrgId()));
                 deviceEngineDTO.setEngineTypeList(resMap.get(device.getId()).stream().map(DeviceEngine::getEngineType).collect(Collectors.toList()));
                 resultList.add(deviceEngineDTO);
             }
@@ -168,9 +168,7 @@ public class DeviceEngineServiceImpl extends BaseServiceImpl implements IDeviceE
     private Map<Integer, String> catchBindTarget(List<Camera> deviceList, Integer engineType, Integer bindStatus) {
         Map<Integer, String> targetMap = new HashMap<>(deviceList.size());
         if (CollectionUtils.isNotEmpty(deviceList)) {
-//            TODO 设备未增加相关字段
-            Map<Integer, String> validMap = new HashMap<>();
-//            Map<Integer, String> validMap = deviceList.stream().collect(Collectors.toMap(Camera::getId, Camera::getVplatId));
+            Map<Integer, String> validMap = deviceList.stream().collect(Collectors.toMap(Camera::getId, Camera::getCameraId));
             Set<Integer> ids = validMap.keySet();
             Example selectBindExp = new Example(DeviceEngine.class);
             selectBindExp.createCriteria().andIn("deviceId", ids).andEqualTo("engineType", engineType);

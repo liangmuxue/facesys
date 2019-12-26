@@ -10,16 +10,17 @@ import com.ss.facesys.data.collect.client.IFacedbfaceService;
 import com.ss.facesys.data.collect.common.model.FacedbFace;
 import com.ss.facesys.util.DateUtil;
 import com.ss.facesys.util.StringUtils;
+import com.ss.facesys.util.em.ResourceType;
 import com.ss.facesys.web.app.facedb.form.FacedbFaceForm;
 import com.ss.facesys.web.app.facedb.query.FacedbFaceQuery;
 import com.ss.facesys.web.manage.baseinfo.controller.BaseController;
-import com.ss.facesys.web.manage.baseinfo.controller.ResultCode;
 import com.ss.response.PageEntity;
 import com.ss.response.ResponseEntity;
 import com.ss.spider.log.constants.ModuleCode;
 import com.ss.tools.ArraysUtils;
 import com.ss.tools.DateUtils;
 import com.ss.valide.*;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
@@ -30,6 +31,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 人像集
@@ -66,9 +70,8 @@ public class FacedbfaceController extends BaseController {
             facedbFace.setBirthdayMax(DateUtil.getDateAfterYears(-1 * query.getAgeMin(), null));
             facedbFace.setBirthdayMin(DateUtil.getDateAfterYears(-1 * query.getAgeMax(), null));
         }
-        if (StringUtils.isNotBlank(query.getFacedbId())) {
-            facedbFace.setFacedbIds(ArraysUtils.asList(query.getFacedbId()));
-        }
+        List<Integer> facedbIds = StringUtils.isNotBlank(query.getFacedbId()) ? ArraysUtils.asList(query.getFacedbId()).stream().map(Integer::parseInt).collect(Collectors.toList()) : null;
+        facedbFace.setFacedbIds(getAuthResources(query.getUserId(), ResourceType.FACEDB, facedbIds).stream().map(String::valueOf).collect(Collectors.toList()));
         Page<FacedbFace> data = (Page) facedbfaceService.pages(facedbFace, query.getCurrentPage(), query.getPageSize());
         resp.setData(new PageEntity(data));
         return resp;

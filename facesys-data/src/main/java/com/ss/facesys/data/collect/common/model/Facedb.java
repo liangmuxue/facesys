@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.io.Serializable;
+import java.util.List;
 import java.util.StringJoiner;
 
 /**
@@ -85,6 +86,11 @@ public class Facedb extends DTEntity implements Serializable {
      */
     @Transient
     private String types;
+    /**
+     * id集合
+     */
+    @Transient
+    private List<Integer> ids;
 
 
     public static long getSerialVersionUID() {
@@ -195,6 +201,14 @@ public class Facedb extends DTEntity implements Serializable {
         this.types = types;
     }
 
+    public List<Integer> getIds() {
+        return ids;
+    }
+
+    public void setIds(List<Integer> ids) {
+        this.ids = ids;
+    }
+
     @Override
     public String toString() {
         return new StringJoiner(", ", Facedb.class.getSimpleName() + "[", "]")
@@ -211,6 +225,7 @@ public class Facedb extends DTEntity implements Serializable {
                 .add("typeName='" + typeName + "'")
                 .add("monitorStateName='" + monitorStateName + "'")
                 .add("types='" + types + "'")
+                .add("ids='" + ids + "'")
                 .toString();
     }
 

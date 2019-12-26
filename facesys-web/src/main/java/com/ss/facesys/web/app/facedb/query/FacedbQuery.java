@@ -20,6 +20,7 @@ public class FacedbQuery extends Pagination {
     private String name;
     private String orgId;
     private Integer monitorState;
+    private String userId;
 
     public Integer getId() {
         return id;
@@ -53,6 +54,14 @@ public class FacedbQuery extends Pagination {
         this.monitorState = monitorState;
     }
 
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
     @Override
     public String toString() {
         return new StringJoiner(", ", FacedbQuery.class.getSimpleName() + "[", "]")
@@ -60,6 +69,7 @@ public class FacedbQuery extends Pagination {
                 .add("name='" + name + "'")
                 .add("orgId='" + orgId + "'")
                 .add("monitorState=" + monitorState)
+                .add("userId=" + userId)
                 .toString();
     }
 

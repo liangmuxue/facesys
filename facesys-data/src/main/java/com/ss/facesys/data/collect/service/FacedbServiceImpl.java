@@ -18,9 +18,12 @@ import com.ss.facesys.data.engine.common.model.FacedbEngine;
 import com.ss.facesys.data.engine.mapper.FacedbEngineMapper;
 import com.ss.facesys.util.StringUtils;
 import com.ss.facesys.util.constant.CommonConstant;
+import com.ss.facesys.util.em.ResourceType;
 import com.ss.facesys.util.em.ResultCode;
 import com.ss.spider.system.organization.mapper.OrganizationMapper;
 import com.ss.spider.system.organization.model.Organization;
+import com.ss.spider.system.user.mapper.UserResourceMapper;
+import com.ss.spider.system.user.model.UserResource;
 import com.ss.tools.DateUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
@@ -53,6 +56,8 @@ public class FacedbServiceImpl extends BaseServiceImpl implements IFacedbService
     private FacedbEngineMapper facedbEngineMapper;
     @Resource
     private OrganizationMapper organizationMapper;
+    @Resource
+    private UserResourceMapper userResourceMapper;
 
 
     /**
@@ -63,7 +68,11 @@ public class FacedbServiceImpl extends BaseServiceImpl implements IFacedbService
      */
     @Override
     public List<Facedb> getFacedbList(Facedb facedb) {
-        List<Facedb> facedbs = facedbMapper.select(facedb);
+        Example example = this.entityToExample(facedb);
+        if (CollectionUtils.isNotEmpty(facedb.getIds())) {
+            example.and().andIn("id", facedb.getIds());
+        }
+        List<Facedb> facedbs = facedbMapper.selectByExample(example);
         if (CollectionUtils.isNotEmpty(facedbs)) {
             for (Facedb db : facedbs) {
                 // 字典值处理：monitorState、type
@@ -96,6 +105,9 @@ public class FacedbServiceImpl extends BaseServiceImpl implements IFacedbService
         }
         if (facedb.getMonitorState() != null) {
             example.and().andEqualTo("monitorState", facedb.getMonitorState());
+        }
+        if (CollectionUtils.isNotEmpty(facedb.getIds())) {
+            example.and().andIn("id", facedb.getIds());
         }
         List<Facedb> facedbs = facedbMapper.selectByExample(example);
         if (CollectionUtils.isNotEmpty(facedbs)) {
@@ -160,6 +172,16 @@ public class FacedbServiceImpl extends BaseServiceImpl implements IFacedbService
             facedbMapper.insertSelective(facedb);
         } catch (Exception e) {
             throw new ServiceException(ResultCode.FACEDB_FACESYS_INSERT_FAIL);
+        }
+        // 新增权限数据
+        UserResource userResource = new UserResource();
+        userResource.setUserId(facedb.getCreateUserId());
+        userResource.setResourceId(facedb.getId());
+        userResource.setType(ResourceType.FACEDB.getValue());
+        try {
+            userResourceMapper.insertSelective(userResource);
+        } catch (Exception e) {
+            System.err.println("新增人像库默认赋权当前用户失败：" + e.getMessage());
         }
         // 绑定引擎数据
         FacedbEngine facedbEngine = new FacedbEngine();
@@ -229,6 +251,11 @@ public class FacedbServiceImpl extends BaseServiceImpl implements IFacedbService
         } catch (Exception e) {
             throw new ServiceException(ResultCode.FACEDB_FACESYS_DELETE_FAIL);
         }
+        // 删除赋权数据
+        UserResource userResource = new UserResource();
+        userResource.setResourceId(facedb.getId());
+        userResource.setType(ResourceType.FACEDB.getValue());
+        userResourceMapper.delete(userResource);
         // 删除绑定引擎数据
         FacedbEngine facedbEngine = new FacedbEngine();
         facedbEngine.setFacedbId(facedb.getId());

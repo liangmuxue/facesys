@@ -29,6 +29,7 @@ public class FacedbFaceQuery extends Pagination {
     private Integer state;
     private Integer ageMin;
     private Integer ageMax;
+    private String userId;
 
     public Integer getId() {
         return id;
@@ -102,6 +103,14 @@ public class FacedbFaceQuery extends Pagination {
         this.ageMax = ageMax;
     }
 
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
     @Override
     public String toString() {
         return new StringJoiner(", ", FacedbFaceQuery.class.getSimpleName() + "[", "]")
@@ -114,6 +123,7 @@ public class FacedbFaceQuery extends Pagination {
                 .add("state=" + state)
                 .add("ageMin=" + ageMin)
                 .add("ageMax=" + ageMax)
+                .add("userId=" + userId)
                 .toString();
     }
 

@@ -55,10 +55,11 @@ public class FacedbController extends BaseController {
      */
     @PostMapping(value = {"/list"})
     @OpLog(model = ModuleCode.RESOURCE, desc = "查询人像库列表", type = OperaTypeEnum.SELECT)
-    public ResponseEntity<List<Facedb>> getFacedblist() {
+    public ResponseEntity<List<Facedb>> getFacedblist(@RequestBody FacedbQuery query) {
         ResponseEntity<List<Facedb>> resp = createSuccResponse();
         Facedb facedb = new Facedb();
         facedb.setStatus(StatusEnum.EFFECT.getCode());
+        facedb.setIds(getAuthResources(query.getUserId(), ResourceType.FACEDB, null));
         resp.setData(facedbService.getFacedbList(facedb));
         return resp;
     }
@@ -76,6 +77,7 @@ public class FacedbController extends BaseController {
         ResponseEntity<PageEntity<Facedb>> resp = validite(bindingResult);
         Facedb facedb = new Facedb();
         BeanUtils.copyProperties(query, facedb);
+        facedb.setIds(getAuthResources(query.getUserId(), ResourceType.FACEDB, null));
         Page<Facedb> data = (Page) facedbService.getFacedbPage(facedb, query.getCurrentPage(), query.getPageSize());
         resp.setData(new PageEntity(data));
         return resp;
