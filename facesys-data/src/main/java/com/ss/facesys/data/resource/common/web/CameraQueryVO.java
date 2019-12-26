@@ -2,8 +2,12 @@ package com.ss.facesys.data.resource.common.web;
 
 import com.google.common.collect.Maps;
 import com.ss.request.Pagination;
+import com.ss.valide.*;
+import org.hibernate.validator.constraints.NotBlank;
 
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,11 +24,13 @@ public class CameraQueryVO extends Pagination {
     private String prducetBrand;
     private Integer cameraType;
     private Integer cameraState;
+    @NotBlank(message = "{user.ids.empty}", groups = {APIPageGroup.class})
     private String userIds;
     private Map<String, String> sqlMap;
     private String orgId;
     private Integer cameraEnabled;
     private String cameraId;
+    private List<Integer> resources;
 
     public String getVillageCode() {
         return villageCode;
@@ -115,5 +121,13 @@ public class CameraQueryVO extends Pagination {
 
     public void setCameraId(String cameraId) {
         this.cameraId = cameraId;
+    }
+
+    public List<Integer> getResources() {
+        return resources;
+    }
+
+    public void setResources(List<Integer> resources) {
+        this.resources = resources;
     }
 }

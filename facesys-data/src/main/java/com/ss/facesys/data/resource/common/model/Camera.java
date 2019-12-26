@@ -71,6 +71,7 @@ public class Camera implements Serializable {
     @Transient
     private String regionCode;
     @Transient
+    @NotBlank(message = "{user.ids.empty}", groups = {APIAddGroup.class, APIDeltGroup.class})
     private String userIds;
     @Transient
     private String villageCodes;
