@@ -72,6 +72,11 @@ public class Facedb extends DTEntity implements Serializable {
     private Integer status;
 
     /**
+     * 机构名称
+     */
+    @Transient
+    private String orgCname;
+    /**
      * 标识中文描述
      */
     @Transient
@@ -175,6 +180,14 @@ public class Facedb extends DTEntity implements Serializable {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public String getOrgCname() {
+        return orgCname;
+    }
+
+    public void setOrgCname(String orgCname) {
+        this.orgCname = orgCname;
     }
 
     public String getTypeName() {

@@ -33,6 +33,7 @@ import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -110,13 +111,26 @@ public class FacedbServiceImpl extends BaseServiceImpl implements IFacedbService
             example.and().andIn("id", facedb.getIds());
         }
         List<Facedb> facedbs = facedbMapper.selectByExample(example);
+        Map<String, Organization> orgMap = getOrgMapByIds(facedbs.stream().map(Facedb::getOrgId).collect(Collectors.toList()));
         if (CollectionUtils.isNotEmpty(facedbs)) {
             for (Facedb db : facedbs) {
+                db.setOrgCname(orgMap.get(db.getOrgId()).getOrgCname());
                 // 字典值处理：monitorState、type
                 EntityUtil.dealDic(db, "monitorState-FACEDB_MONITOR_STATE-monitorStateName", "type-FACEDB_TYPE-typeName");
             }
         }
         return facedbs;
+    }
+
+    private Map<String, Organization> getOrgMapByIds(List<String> orgIds) {
+        Map<String, Organization> orgMap = new HashMap<>();
+        Example example = new Example(Organization.class);
+        example.createCriteria().andIn("orgId", orgIds);
+        List<Organization> orgList = organizationMapper.selectByExample(example);
+        if (CollectionUtils.isNotEmpty(orgList)) {
+            orgMap = orgList.stream().collect(Collectors.toMap(Organization::getOrgId, Function.identity()));
+        }
+        return orgMap;
     }
 
     /**
@@ -129,6 +143,8 @@ public class FacedbServiceImpl extends BaseServiceImpl implements IFacedbService
     public Facedb selectOne(Facedb facedb) {
         facedb = facedbMapper.selectOne(facedb);
         if (facedb != null) {
+            Map<String, Organization> orgMap = getOrgMapByIds(Collections.singletonList(facedb.getOrgId()));
+            facedb.setOrgCname(orgMap.get(facedb.getOrgId()).getOrgCname());
             EntityUtil.dealDic(facedb, "monitorState-FACEDB_MONITOR_STATE-monitorStateName", "type-FACEDB_TYPE-typeName");
         }
         return facedb;
