@@ -111,8 +111,8 @@ public class FacedbServiceImpl extends BaseServiceImpl implements IFacedbService
             example.and().andIn("id", facedb.getIds());
         }
         List<Facedb> facedbs = facedbMapper.selectByExample(example);
-        Map<String, Organization> orgMap = getOrgMapByIds(facedbs.stream().map(Facedb::getOrgId).collect(Collectors.toList()));
         if (CollectionUtils.isNotEmpty(facedbs)) {
+            Map<String, Organization> orgMap = getOrgMapByIds(facedbs.stream().map(Facedb::getOrgId).collect(Collectors.toList()));
             for (Facedb db : facedbs) {
                 db.setOrgCname(orgMap.get(db.getOrgId()).getOrgCname());
                 // 字典值处理：monitorState、type
@@ -124,6 +124,9 @@ public class FacedbServiceImpl extends BaseServiceImpl implements IFacedbService
 
     private Map<String, Organization> getOrgMapByIds(List<String> orgIds) {
         Map<String, Organization> orgMap = new HashMap<>();
+        if (CollectionUtils.isEmpty(orgIds)) {
+            return orgMap;
+        }
         Example example = new Example(Organization.class);
         example.createCriteria().andIn("orgId", orgIds);
         List<Organization> orgList = organizationMapper.selectByExample(example);
