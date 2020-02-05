@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.facesys.data.collect.mapper.HotelMapper">
+
+	<!--酒店分页查询-->
+	<select id="hotelPage" resultType="com.ss.facesys.data.collect.common.model.Hotel" parameterType="com.ss.facesys.data.resource.common.web.HotelVO">
+		select
+		h.id,
+		h.name,
+		h.org_id as orgId,
+		o.org_cname as orgName,
+		h.address as address,
+		h.contact_number as contactNumber,
+		h.contacts,
+		h.remark,
+		h.lon,
+		h.lat
+		from
+		cw_base_hotel h
+		left join cw_ge_organization o on h.org_id = o.org_id
+		<where>
+			h.`status` = 1
+			<if test="name != null and name != ''">
+				and h.name like concat('%', #{name},'%')
+			</if>
+			<if test="orgId != null and orgId != ''">
+				and h.org_id=#{orgId}
+			</if>
+		</where>
+	</select>
+
+	<!--添加酒店-->
+	<insert id="insertHotel" parameterType="com.ss.facesys.data.resource.common.web.HotelVO">
+		insert into cw_base_hotel
+		(name, org_id, address, contact_number, contacts, remark, lon, lat, create_time, update_time, status)
+		value
+		(#{name}, #{orgId}, #{address}, #{contactNumber}, #{contacts}, #{remark}, #{lon}, #{lat}, #{createTime}, #{updateTime}, #{status})
+	</insert>
+
+	<!--修改酒店信息-->
+	<update id="updateHotel" parameterType="com.ss.facesys.data.resource.common.web.HotelVO">
+		update cw_base_hotel set
+		name = #{name, jdbcType=VARCHAR},
+		org_id = #{orgId, jdbcType=VARCHAR},
+		address = #{address, jdbcType=VARCHAR},
+		contact_number = #{contactNumber, jdbcType=VARCHAR},
+		contacts = #{contacts, jdbcType=VARCHAR},
+		remark = #{remark, jdbcType=VARCHAR},
+		lon = #{lon, jdbcType=DOUBLE},
+		lat =  #{lat, jdbcType=DOUBLE},
+		update_time = #{updateTime, jdbcType=VARCHAR}
+		where id = #{id}
+	</update>
+
+	<!--删除酒店-->
+	<update id="deleteHotel" parameterType="com.ss.facesys.data.resource.common.web.HotelVO">
+		update cw_base_hotel set status = 0 where id = #{id}
+	</update>
+
+	<!--查询酒店详情-->
+	<select id="detail" resultType="com.ss.facesys.data.collect.common.model.Hotel" parameterType="com.ss.facesys.data.resource.common.web.HotelVO">
+		select
+		h.id,
+		h.name,
+		h.org_id as orgId,
+		o.org_cname as orgName,
+		h.address as address,
+		h.contact_number as contactNumber,
+		h.contacts,
+		h.remark,
+		h.lon,
+		h.lat
+		from
+		cw_base_hotel h
+		left join cw_ge_organization o on h.org_id = o.org_id
+		where h.id = #{id}
+	</select>
+</mapper>
