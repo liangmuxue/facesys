@@ -72,6 +72,10 @@ public class User extends DTEntity {
     private List<ResourceTree> children;
     @Transient
     private List<Resource> resourceList;
+    @Transient
+    private String orgName;
+    @Transient
+    private String departName;
     ;
 
     public List<String> getOrgIds() {
@@ -312,5 +316,21 @@ public class User extends DTEntity {
 
     public void setIp(String ip) {
         this.ip = ip;
+    }
+
+    public String getOrgName() {
+        return orgName;
+    }
+
+    public void setOrgName(String orgName) {
+        this.orgName = orgName;
+    }
+
+    public String getDepartName() {
+        return departName;
+    }
+
+    public void setDepartName(String departName) {
+        this.departName = departName;
     }
 }
