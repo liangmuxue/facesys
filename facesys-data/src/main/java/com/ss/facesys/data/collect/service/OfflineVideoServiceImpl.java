@@ -39,4 +39,48 @@ public class OfflineVideoServiceImpl extends BaseServiceImpl implements IOffline
     List<OfflineVideo> internetBars = this.offlineVideoMapper.offlineVideoPage(offlineVideoVO);
     return internetBars;
   }
+
+  /**
+   * 添加离线视频
+   * @param offlineVideoVO
+   * @return
+   */
+  @Override
+  public int insertOfflineVideo(OfflineVideoVO offlineVideoVO) {
+    int result = this.offlineVideoMapper.insertOfflineVideo(offlineVideoVO);
+    return result;
+  }
+
+  /**
+   * 查询离线视频详情
+   * @param offlineVideoVO
+   * @return
+   */
+  @Override
+  public OfflineVideo detail(OfflineVideoVO offlineVideoVO) {
+    OfflineVideo detail = this.offlineVideoMapper.detail(offlineVideoVO);
+    return detail;
+  }
+
+  /**
+   * 修改离线视频信息
+   * @param offlineVideoVO
+   * @return
+   */
+  @Override
+  public int updateOfflineVideo(OfflineVideoVO offlineVideoVO) {
+    int result = this.offlineVideoMapper.updateOfflineVideo(offlineVideoVO);
+    return result;
+  }
+
+  /**
+   * 删除离线视频
+   * @param offlineVideoVO
+   * @return
+   */
+  @Override
+  public int deleteOfflineVideo(OfflineVideoVO offlineVideoVO) {
+    int result = this.offlineVideoMapper.deleteOfflineVideo(offlineVideoVO);
+    return result;
+  }
 }

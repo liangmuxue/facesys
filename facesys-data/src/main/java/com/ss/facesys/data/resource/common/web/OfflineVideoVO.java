@@ -1,9 +1,15 @@
 package com.ss.facesys.data.resource.common.web;
 
 import com.ss.request.Pagination;
+import com.ss.valide.APIAddGroup;
+import com.ss.valide.APIDeltGroup;
+import com.ss.valide.APIEditGroup;
+import com.ss.valide.APIGetsGroup;
+import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
 
 /**
 * 离线视频
@@ -14,6 +20,7 @@ import javax.persistence.Transient;
 @Table(name = "cw_base_offline_video")
 public class OfflineVideoVO extends Pagination {
     private static final long serialVersionUID = 1L;
+    @NotNull(message = "{offlineVideo.id.empty}", groups = {APIEditGroup.class, APIDeltGroup.class, APIGetsGroup.class})
     private Integer id;
     private String name;
     private String depositUrl;
@@ -21,9 +28,11 @@ public class OfflineVideoVO extends Pagination {
     private String uploadUrl;
     private String format;
     private String remark;
+    @NotBlank(message = "{offlineVideo.orgId.empty}", groups = {APIAddGroup.class, APIEditGroup.class})
     private String orgId;
     private String createUserId;
     private String createTime;
+    private Integer status;
     @Transient
     private String orgName;
     @Transient
@@ -107,6 +116,14 @@ public class OfflineVideoVO extends Pagination {
 
     public void setCreateTime(String createTime) {
         this.createTime = createTime;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 
     public String getOrgName() {

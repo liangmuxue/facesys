@@ -18,4 +18,32 @@ public interface IOfflineVideoService {
    * @return
    */
   List<OfflineVideo> offlineVideoPage(OfflineVideoVO para);
+
+  /**
+   * 添加离线视频
+   * @param para
+   * @return
+   */
+  int insertOfflineVideo(OfflineVideoVO para);
+
+  /**
+   * 查询离线视频详情
+   * @param para
+   * @return
+   */
+  OfflineVideo detail(OfflineVideoVO para);
+
+  /**
+   * 修改离线视频信息
+   * @param para
+   * @return
+   */
+  int updateOfflineVideo(OfflineVideoVO para);
+
+  /**
+   * 删除离线视频
+   * @param para
+   * @return
+   */
+  int deleteOfflineVideo(OfflineVideoVO para);
 }
