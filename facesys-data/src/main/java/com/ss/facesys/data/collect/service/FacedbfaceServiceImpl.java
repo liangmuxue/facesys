@@ -296,7 +296,7 @@ public class FacedbfaceServiceImpl extends BaseServiceImpl implements IFacedbfac
             facedb = facedbMapper.selectOne(facedb);
             dto.setFacedbId(facedb.getFacedbId());
             if (StringUtils.isNotBlank(facedbFace.getFacePath()) && !facedbFace.getFacePath().contains(FileConstant.FILE_HTTPADD)) {
-                String fullPath = FilePropertiesUtil.getNginxImgUrl() + facedbFace.getFacePath();
+                String fullPath = FilePropertiesUtil.getHttpUrl() + facedbFace.getFacePath();
                 dto.setFaceImg(FileUtil.getBase64ByUrl(fullPath));
                 dto.setFaceImgType(CommonConstant.IMGTYPE_BASE64);
             }
@@ -365,8 +365,12 @@ public class FacedbfaceServiceImpl extends BaseServiceImpl implements IFacedbfac
             orginal.setId(facedbFace.getId());
             orginal = this.selectOne(orginal);
             if (StringUtils.isNotBlank(facedbFace.getFacePath()) && !orginal.getFacePath().equals(facedbFace.getFacePath()) && !facedbFace.getFacePath().contains(FileConstant.FILE_HTTPADD)) {
-                String fullPath = FilePropertiesUtil.getNginxImgUrl() + facedbFace.getFacePath();
-                dto.setFaceImg(FileUtil.getBase64ByUrl(fullPath));
+                String fullPath = FilePropertiesUtil.getHttpUrl() + facedbFace.getFacePath();
+                try {
+                    dto.setFaceImg(FileUtil.getBase64ByUrl(fullPath));
+                } catch (Exception e) {
+                    throw new ServiceException(ResultCode.IMG_TO_BASE64_FAIL);
+                }
                 dto.setFaceImgType(CommonConstant.IMGTYPE_BASE64);
             }
             JSONObject oceanResult = accessService.facedbfaceUpdate(JsonUtils.getFastjsonFromObject(dto));

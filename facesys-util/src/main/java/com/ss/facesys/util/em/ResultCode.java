@@ -43,6 +43,8 @@ public enum ResultCode implements IResultCode {
 
     DEVICE_NOTEXIST("800064000", "设备不存在"),
 
+    IMG_TO_BASE64_FAIL("800079001", "图片转换base64发生异常，请检查图片内容或图片路径"),
+
     FACEDBFACE_CARDID_EXIST("800062001", "证件类型+证件号存在重复的人像集"),
     FACEDBFACE_DELETEFAIL_MONITOR("800062002", "人像集已布控,不能删除"),
     FACEDBFACE_VPLAT_FAIL("800062003", "汇聚平台人像集操作异常"),
