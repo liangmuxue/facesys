@@ -135,17 +135,20 @@
     </select>
     <!--查询账户信息-->
     <select id="gets" parameterType="map" resultMap="BaseUserMap">
-        select user_id, depart_id, org_id, work_code, login_name, password, salt,
-        name, sex, brithday, app_on_off, status, position, email, phone_number, picture_url,
-        remark, init_flag, ip, create_time, create_user_id, update_time, update_user_id, delete_time, delete_user_id
-        from cw_ge_user
+        select u.user_id, u.depart_id, u.org_id, u.work_code, u.login_name, u.password, u.salt,
+        u.name, u.sex, u.brithday, u.app_on_off, u.status, u.position, u.email, u.phone_number, u.picture_url,
+        u.remark, u.init_flag, u.ip, u.create_time, u.create_user_id, u.update_time, u.update_user_id, u.delete_time, u.delete_user_id,
+        o.org_cname as orgName, d.depart_cname as departName
+        from cw_ge_user u
+        left join cw_ge_organization o on u.org_id = o.org_id
+        left join cw_ge_department d on u.depart_id = d.depart_id
         where 1 = 1
         <choose>
             <when test="userId != null and userId != ''">
-                and user_id = #{userId, jdbcType=VARCHAR}
+                and u.user_id = #{userId, jdbcType=VARCHAR}
             </when>
             <when test="userIds != null">
-                and user_id in
+                and u.user_id in
                 <foreach collection="userIds" item="item" open="(" separator="," close=")">
                     #{item, jdbcType=VARCHAR}
                 </foreach>
@@ -153,49 +156,49 @@
         </choose>
 
         <if test="departId != null and departId != ''">
-            and depart_id = #{departId, jdbcType=VARCHAR}
+            and u.depart_id = #{departId, jdbcType=VARCHAR}
         </if>
 
         <if test="orgId != null and orgId != ''">
-            and org_id = #{orgId, jdbcType=VARCHAR}
+            and u.org_id = #{orgId, jdbcType=VARCHAR}
         </if>
 
         <if test="workCode != null and workCode != ''">
-            and work_code = #{workCode, jdbcType=VARCHAR}
+            and u.work_code = #{workCode, jdbcType=VARCHAR}
         </if>
 
         <if test="email != null and email != ''">
-            and email = #{email, jdbcType=VARCHAR}
+            and u.email = #{email, jdbcType=VARCHAR}
         </if>
 
         <if test="loginName != null and loginName != ''">
-            and login_name = #{loginName, jdbcType=VARCHAR}
+            and u.login_name = #{loginName, jdbcType=VARCHAR}
         </if>
 
         <if test="name != null and name != ''">
-            and name = #{name, jdbcType=VARCHAR}
+            and u.name = #{name, jdbcType=VARCHAR}
         </if>
 
         <if test="position != null and position != ''">
-            and position = #{position, jdbcType=VARCHAR}
+            and u.position = #{position, jdbcType=VARCHAR}
         </if>
 
         <if test="phoneNumber != null and phoneNumber != ''">
-            and phone_number = #{phoneNumber, jdbcType=VARCHAR}
+            and u.phone_number = #{phoneNumber, jdbcType=VARCHAR}
         </if>
 
         <choose>
             <when test="status != null">
-                and status = #{status, jdbcType=INTEGER}
+                and u.status = #{status, jdbcType=INTEGER}
             </when>
             <otherwise>
-                and status in(0, 1)
+                and u.status in(0, 1)
             </otherwise>
         </choose>
 
         <if test="searchKey != null and searchKey != ''">
-            and (name LIKE CONCAT('%', #{searchKey, jdbcType=VARCHAR},'%')
-            OR login_name LIKE CONCAT('%', #{searchKey, jdbcType=VARCHAR},'%'))
+            and (u.name LIKE CONCAT('%', #{searchKey, jdbcType=VARCHAR},'%')
+            OR u.`login_name LIKE CONCAT('%', #{searchKey, jdbcType=VARCHAR},'%'))
         </if>
     </select>
     <!--查询账户拥有角色-->

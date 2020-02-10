@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.facesys.data.collect.mapper.OfflineVideoMapper">
+
+    <!--离线视频分页查询-->
+    <select id="offlineVideoPage" resultType="com.ss.facesys.data.collect.common.model.OfflineVideo"
+            parameterType="com.ss.facesys.data.resource.common.web.OfflineVideoVO">
+        select
+        ov.id,
+        ov.name,
+        ov.deposit_url as depositUrl,
+        ov.upload_mode as uploadModeCode,
+        ov.upload_url as uploadUrl,
+        ov.format,
+        ov.remark,
+        ov.org_id as orgId,
+        ov.create_user_id as createUserId,
+        ov.create_time as createTime,
+        o.org_cname as orgName,
+        u.name as createUserName
+        from cw_base_offline_video ov
+        left join cw_ge_organization o on ov.org_id = o.org_id
+        left join cw_ge_user u on ov.create_user_id = u.user_id
+        where ov.status = 1
+    </select>
+</mapper>
