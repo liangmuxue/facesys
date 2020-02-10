@@ -129,33 +129,12 @@ public class MediaInfoController extends BaseController {
                 // 文件存储绝对路径业务处理
                 StringBuilder remoteFilePath = new StringBuilder();
                 remoteFilePath.append(FilePropertiesUtil.getLocation()).append("/");
-                if ("add_person".equals(mediaInfo.getDateAttachmentBusiType())) {
-                    remoteFilePath.append("add_person/");
-                } else if ("leave_person".equals(mediaInfo.getDateAttachmentBusiType())) {
-                    remoteFilePath.append("leave_person/");
-                } else if ("frequency_person".equals(mediaInfo.getDateAttachmentBusiType())) {
-                    remoteFilePath.append("frequency_person/");
-                } else if ("special_person".equals(mediaInfo.getDateAttachmentBusiType())) {
-                    remoteFilePath.append("special_person/");
-                } else if ("alarm_person".equals(mediaInfo.getDateAttachmentBusiType())) {
-                    remoteFilePath.append("alarm_person/");
-                } else if ("village".equals(mediaInfo.getDateAttachmentBusiType())) {
-                    remoteFilePath.append("resource/village/");
-                } else if ("company".equals(mediaInfo.getDateAttachmentBusiType())) {
-                    remoteFilePath.append("resource/company/");
-                } else if ("people".equals(mediaInfo.getDateAttachmentBusiType())) {
-                    // 实有人口照片
-                    remoteFilePath.append("resource/people/");
-                } else if ("vehicle_discovery".equals(mediaInfo.getDateAttachmentBusiType())) {
-                    remoteFilePath.append("vihicle/vehicle_discovery/");
-                } else if ("vehicle_leave".equals(mediaInfo.getDateAttachmentBusiType())) {
-                    remoteFilePath.append("vihicle/vehicle_leave/");
-                } else if ("vehicle_retation".equals(mediaInfo.getDateAttachmentBusiType())) {
-                    remoteFilePath.append("vihicle/vehicle_retation/");
-                } else if ("vehicle_tollgate".equals(mediaInfo.getDateAttachmentBusiType())) {
-                    remoteFilePath.append("resource/vehicle_tollgate/");
-                } else if ("village_Entrance".equals(mediaInfo.getDateAttachmentBusiType())) {
-                    remoteFilePath.append("resource/village_Entrance/");
+                switch (mediaInfo.getDateAttachmentBusiType()) {
+                    case "people" :
+                        remoteFilePath.append("resource/people/");
+                        break;
+                    default:
+                        remoteFilePath.append("resource/unknown/");
                 }
                 // 存储文件
                 boolean res = FileUtil.transferFile(remoteFilePath.toString(), dbImageName, file);

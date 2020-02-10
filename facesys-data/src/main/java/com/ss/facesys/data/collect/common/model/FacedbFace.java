@@ -281,7 +281,7 @@ public class FacedbFace extends DTEntity {
         if (StringUtils.isBlank(this.facePath)) {
             this.facePathFull = "";
         } else if (!this.facePath.contains(FileConstant.FILE_HTTPADD)) {
-            this.facePathFull = FilePropertiesUtil.getNginxImgUrl() + this.facePath;
+            this.facePathFull = FilePropertiesUtil.getHttpUrl() + this.facePath;
         }
         return facePathFull;
     }
@@ -294,7 +294,7 @@ public class FacedbFace extends DTEntity {
         if (StringUtils.isBlank(this.cardPath)) {
             this.cardPathFull = "";
         } else if (!this.cardPath.contains(FileConstant.FILE_HTTPADD)) {
-            this.cardPathFull = FilePropertiesUtil.getNginxImgUrl() + this.cardPath;
+            this.cardPathFull = FilePropertiesUtil.getHttpUrl() + this.cardPath;
         }
         return cardPathFull;
     }
@@ -307,7 +307,7 @@ public class FacedbFace extends DTEntity {
         if (StringUtils.isBlank(this.recentPath)) {
             this.recentPathFull = "";
         } else if (!this.recentPath.contains(FileConstant.FILE_HTTPADD)) {
-            this.recentPathFull = FilePropertiesUtil.getNginxImgUrl() + this.recentPath;
+            this.recentPathFull = FilePropertiesUtil.getHttpUrl() + this.recentPath;
         }
         return recentPathFull;
     }
