@@ -187,7 +187,7 @@ public class FacedbfaceServiceImpl extends BaseServiceImpl implements IFacedbfac
         FacedbFace update = new FacedbFace();
         update.setId(facedbFace.getId());
         update.setFaceId(facedbfaceDTO.getId());
-        update.setFacePath(facedbfaceDTO.getFacePath());
+//        update.setFacePath(facedbfaceDTO.getFacePath());
         update.setState(facedbfaceDTO.getState());
         try {
             facedbFaceMapper.updateByPrimaryKeySelective(update);
