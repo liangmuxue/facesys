@@ -39,4 +39,18 @@ public interface UserResourceService<UserResource> extends SsService<UserResourc
      * @return
      */
     String facedbEdit(UserResource paramUserResource);
+
+    /**
+     * 查询账户人证设备关联列表
+     * @param paramUserResource
+     * @return
+     */
+    List<UserResource> deviceList(UserResource paramUserResource);
+
+    /**
+     * 修改账户人证设备关联信息
+     * @param paramUserResource
+     * @return
+     */
+    String deviceEdit(UserResource paramUserResource);
 }

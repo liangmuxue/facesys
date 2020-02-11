@@ -56,4 +56,18 @@ public interface UserResourceMapper extends SsMapper<UserResource> {
      * @return
      */
     List<UserResource> facedbList(UserResource paramUserResource);
+
+    /**
+     * 查询人证设备列表
+     * @param paramUserResource
+     * @return
+     */
+    List<UserResource> allDeviceList(UserResource paramUserResource);
+
+    /**
+     * 查询人证设备权限列表
+     * @param paramUserResource
+     * @return
+     */
+    List<UserResource> deviceList(UserResource paramUserResource);
 }
