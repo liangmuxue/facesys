@@ -279,9 +279,6 @@
             <if test="cameraType != null">
                 AND a.cameraType = #{cameraType}
             </if>
-            <if test="orgId != null and orgId !=''">
-                AND a.orgId = #{orgId}
-            </if>
             <if test="cameraState != null">
                 AND a.cameraState = #{cameraState}
             </if>
@@ -292,6 +289,13 @@
                 AND a.id in
                 <foreach collection="resources" item="item" open="(" close=")" separator=",">
                     #{item,jdbcType=INTEGER}
+                </foreach>
+            </if>
+            <if test="orgIds != null and orgIds.size > 0 ">
+                AND o.ORG_ID in
+                <foreach collection="orgIds" index="index" item="item" open="("
+                         separator="," close=")">
+                    #{item}
                 </foreach>
             </if>
         </where>

@@ -86,6 +86,8 @@ public class User implements Serializable {
   private String departCName;
   @Transient
   private String statusName;
+  @Transient
+  private List<String> orgIds;
 
   public String getUserId() {
     return userId;
@@ -373,5 +375,13 @@ public class User implements Serializable {
 
   public void setStatusName(String statusName) {
     this.statusName = statusName;
+  }
+
+  public List<String> getOrgIds() {
+    return orgIds;
+  }
+
+  public void setOrgIds(List<String> orgIds) {
+    this.orgIds = orgIds;
   }
 }

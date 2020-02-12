@@ -321,6 +321,10 @@ public class CameraServiceImpl extends BaseServiceImpl implements ICameraService
      */
     @Override
     public List<ImportCamera> findAllCameras(CameraQueryVO queryVO) {
+        if (StringUtils.isNotBlank(queryVO.getOrgId())) {
+            List<String> allOrgNodes = getAllOrgNodes(queryVO.getOrgId());
+            queryVO.setOrgIds(allOrgNodes);
+        }
         PageHelper.startPage(queryVO.getCurrentPage(), queryVO.getPageSize());
         List<ImportCamera> findAllCameras = this.cameraMapper.findAllCameras(queryVO);
         return findAllCameras;

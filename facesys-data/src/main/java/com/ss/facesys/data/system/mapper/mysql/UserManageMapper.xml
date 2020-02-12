@@ -30,8 +30,12 @@
 		left join cw_ge_role gr on urr.role_id = gr.role_id
 		left join cw_base_enum e on u.status = e.enumValue and e.enumType = "ENABLED_STATUS"
 		<where>
-			<if test="orgId != null and orgId != ''">
-				and u.org_id = #{orgId, jdbcType=VARCHAR}
+			<if test="orgIds != null and orgIds.size > 0 ">
+				AND o.ORG_ID in
+				<foreach collection="orgIds" index="index" item="item" open="("
+						 separator="," close=")">
+					#{item}
+				</foreach>
 			</if>
 
 			<if test="loginName != null and loginName != ''">
