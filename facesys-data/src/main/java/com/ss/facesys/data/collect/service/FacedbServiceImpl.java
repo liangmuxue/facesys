@@ -102,7 +102,7 @@ public class FacedbServiceImpl extends BaseServiceImpl implements IFacedbService
             example.and().andLike("name", like(facedb.getName()));
         }
         if (StringUtils.isNotBlank(facedb.getOrgId())) {
-            example.and().andEqualTo("orgId", facedb.getOrgId());
+            example.and().andIn("orgId", getAllOrgNodes(facedb.getOrgId()));
         }
         if (facedb.getMonitorState() != null) {
             example.and().andEqualTo("monitorState", facedb.getMonitorState());

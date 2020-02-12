@@ -72,8 +72,6 @@ public class DevicePersoncardServiceImpl extends BaseServiceImpl implements IDev
      */
     @Override
     public List<DevicePersoncard> getPersonCardPage(DevicePersoncard devicePersoncard, int currentPage, int pageSize) {
-        // 初始化分页查询条件
-        PageHelper.startPage(currentPage, pageSize);
         Example example = new Example(DevicePersoncard.class);
         example.createCriteria().andEqualTo("status", StatusEnum.EFFECT.getCode());
         if (StringUtils.isNotBlank(devicePersoncard.getDeviceName())) {
@@ -83,11 +81,13 @@ public class DevicePersoncardServiceImpl extends BaseServiceImpl implements IDev
             example.and().andLike("deviceCode", like(devicePersoncard.getDeviceCode()));
         }
         if (StringUtils.isNotBlank(devicePersoncard.getOrgId())) {
-            example.and().andEqualTo("orgId", devicePersoncard.getOrgId());
+            example.and().andIn("orgId", getAllOrgNodes(devicePersoncard.getOrgId()));
         }
         if (CollectionUtils.isNotEmpty(devicePersoncard.getIds())) {
             example.and().andIn("id", devicePersoncard.getIds());
         }
+        // 初始化分页查询条件
+        PageHelper.startPage(currentPage, pageSize);
         List<DevicePersoncard> personcards = devicePersoncardMapper.selectByExample(example);
         if (CollectionUtils.isNotEmpty(personcards)) {
             Map<String, Organization> orgMap = getOrgMapByIds(personcards.stream().map(DevicePersoncard::getOrgId).collect(Collectors.toList()));
@@ -101,9 +101,8 @@ public class DevicePersoncardServiceImpl extends BaseServiceImpl implements IDev
                 Object relAddressObj = PersoncardMainEnum.HOTEL.getKey().equals(personcard.getRelAddressType()) ? hotelMap.get(personcard.getRelAddressId()) : internetBarMap.get(personcard.getRelAddressId());
                 JSONObject relAddress = JSONObject.parseObject(JSON.toJSONString(relAddressObj));
                 // 酒店网吧信息
-                personcard.setRelAddressName(relAddress.getString("name"));
-                personcard.setLon(relAddress.getDouble("lon"));
-                personcard.setLat(relAddress.getDouble("lat"));
+                personcard.setRelAddressTypeName(PersoncardMainEnum.get(personcard.getRelAddressType()));
+                personcard.setRelAddressName(relAddress == null ? null : relAddress.getString("name"));
                 // 单位名称
                 personcard.setOrgCname(orgMap.get(personcard.getOrgId()).getOrgCname());
                 // 字典值处理： onlineState、monitorState
@@ -171,9 +170,8 @@ public class DevicePersoncardServiceImpl extends BaseServiceImpl implements IDev
                     getInternetBarMapByIds(Collections.singletonList(devicePersoncard.getRelAddressId())).get(devicePersoncard.getRelAddressId());
             JSONObject relAddress = JSONObject.parseObject(JSON.toJSONString(relAddressObj));
             // 酒店网吧信息
-            devicePersoncard.setRelAddressName(relAddress.getString("name"));
-            devicePersoncard.setLon(relAddress.getDouble("lon"));
-            devicePersoncard.setLat(relAddress.getDouble("lat"));
+            devicePersoncard.setRelAddressTypeName(PersoncardMainEnum.get(devicePersoncard.getRelAddressType()));
+            devicePersoncard.setRelAddressName(relAddress == null ? null : relAddress.getString("name"));
             // 单位名称
             devicePersoncard.setOrgCname(orgMap.get(devicePersoncard.getOrgId()).getOrgCname());
             // 字典值处理： onlineState、monitorState
@@ -183,15 +181,17 @@ public class DevicePersoncardServiceImpl extends BaseServiceImpl implements IDev
     }
 
     private void duplicateCheck(DevicePersoncard devicePersoncard) throws ServiceException {
-        Example example = new Example(DevicePersoncard.class);
-        example.createCriteria()
-                .andEqualTo("status", StatusEnum.EFFECT.getCode())
-                .andEqualTo("ip", devicePersoncard.getIp());
-        if (devicePersoncard.getId() != null) {
-            example.and().andNotEqualTo("id", devicePersoncard.getId());
-        }
-        if (CollectionUtils.isNotEmpty(devicePersoncardMapper.selectByExample(example))) {
-            throw new ServiceException(ResultCode.PERSONCARD_IP_EXIST);
+        if (StringUtils.isNotBlank(devicePersoncard.getIp())) {
+            Example example = new Example(DevicePersoncard.class);
+            example.createCriteria()
+                    .andEqualTo("status", StatusEnum.EFFECT.getCode())
+                    .andEqualTo("ip", devicePersoncard.getIp());
+            if (devicePersoncard.getId() != null) {
+                example.and().andNotEqualTo("id", devicePersoncard.getId());
+            }
+            if (CollectionUtils.isNotEmpty(devicePersoncardMapper.selectByExample(example))) {
+                throw new ServiceException(ResultCode.PERSONCARD_IP_EXIST);
+            }
         }
     }
 
@@ -242,34 +242,44 @@ public class DevicePersoncardServiceImpl extends BaseServiceImpl implements IDev
     }
 
     private void updateVplatPersonCard(DevicePersoncard devicePersoncard) throws ServiceException {
-//        FaceDbDTO dto = new FaceDbDTO();
-//        try {
-//            BeanUtils.copyProperties(facedb, dto);
-//            dto.setId(facedb.getFacedbId());
-//            JSONObject oceanResult = accessService.updateFacedb(JSONObject.toJSONString(dto));
-//            if (!StringUtils.checkSuccess(oceanResult)) {
-//                throw new ServiceException(oceanResult.getString("code"), oceanResult.getString("message"));
-//            }
-//        } catch (ServiceException e) {
+        try {
+            Object relAddressObj = PersoncardMainEnum.HOTEL.getKey().equals(devicePersoncard.getRelAddressType()) ?
+                    getHotelMapByIds(Collections.singletonList(devicePersoncard.getRelAddressId())).get(devicePersoncard.getRelAddressId()) :
+                    getInternetBarMapByIds(Collections.singletonList(devicePersoncard.getRelAddressId())).get(devicePersoncard.getRelAddressId());
+            JSONObject relAddress = JSONObject.parseObject(JSON.toJSONString(relAddressObj));
+            JSONObject param = new JSONObject();
+            param.put("deviceId", devicePersoncard.getDeviceId());
+            param.put("lng", devicePersoncard.getLon());
+            param.put("lat", devicePersoncard.getLat());
+            param.put("address", relAddress == null ? null : relAddress.getString("name"));
+            JSONObject oceanResult = accessService.updatePersoncard(JSONObject.toJSONString(param));
+            if (!StringUtils.checkSuccess(oceanResult)) {
+                throw new ServiceException(oceanResult.getString("code"), oceanResult.getString("message"));
+            }
+        } catch (ServiceException e) {
+            this.logger.error("修改汇聚平台人证设备失败，错误码: {},错误描述：{}", e.getCode(), e.getMessage(), e);
 //            throw e;
-//        } catch (Exception e) {
+        } catch (Exception e) {
+            this.logger.error(ResultCode.PERSONCARD_VPLAT_FAIL.getDesc(), e);
 //            throw new ServiceException(ResultCode.FACEDB_VPLAT_FAIL);
-//        }
+        }
     }
 
     private void deleteVplatPersonCard(String deviceId) throws ServiceException {
-//        try {
-//            JSONObject param = new JSONObject();
-//            param.put("facedbIds", Collections.singletonList(deviceId));
-//            JSONObject oceanResult = accessService.facedDelete(param.toJSONString());
-//            if (!StringUtils.checkSuccess(oceanResult)) {
-//                throw new ServiceException(oceanResult.getString("code"), oceanResult.getString("message"));
-//            }
-//        } catch (ServiceException e) {
+        try {
+            JSONObject param = new JSONObject();
+            param.put("deviceIds", Collections.singletonList(deviceId));
+            JSONObject oceanResult = accessService.deletePersoncard(param.toJSONString());
+            if (!StringUtils.checkSuccess(oceanResult)) {
+                throw new ServiceException(oceanResult.getString("code"), oceanResult.getString("message"));
+            }
+        } catch (ServiceException e) {
+            this.logger.error("删除汇聚平台人证设备失败，错误码: {},错误描述：{}", e.getCode(), e.getMessage(), e);
 //            throw e;
-//        } catch (Exception e) {
+        } catch (Exception e) {
+            this.logger.error(ResultCode.PERSONCARD_VPLAT_FAIL.getDesc(), e);
 //            throw new ServiceException(ResultCode.FACEDB_VPLAT_FAIL);
-//        }
+        }
     }
 
 }

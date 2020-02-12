@@ -55,6 +55,7 @@ public enum ResultCode implements IResultCode {
     PERSONCARD_FACESYS_UPDATE_FAIL("800063002", "人像系统更新人证设备数据失败：数据库操作异常"),
     PERSONCARD_DELETEFAIL_MONITOR("800063003", "人证设备已布控,不能删除"),
     PERSONCARD_FACESYS_DELETE_FAIL("800063004", "人像系统逻辑删除人证设备数据失败：数据库操作异常"),
+    PERSONCARD_VPLAT_FAIL("800063005", "汇聚平台人证设备操作异常"),
 
     IMG_TO_BASE64_FAIL("800079001", "图片转换base64发生异常，请检查图片内容或图片路径"),
 

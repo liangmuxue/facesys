@@ -23,4 +23,13 @@ public enum PersoncardMainEnum {
         return this.value;
     }
 
+    public static String get(Integer key) {
+        for (PersoncardMainEnum obj : values()) {
+            if (obj.getKey().equals(key)) {
+                return obj.getValue();
+            }
+        }
+        return null;
+    }
+
 }

@@ -250,4 +250,17 @@ public class AccessServiceImpl implements IAccessService {
         return OsProxyService.updateMonitorStatus(monitorId, monitorStatus);
     }
 
+
+    /* ************************************* 人证设备相关接口 ************************************* */
+
+    @Override
+    public JSONObject updatePersoncard(String paramJson) {
+        return OsProxyService.updatePersoncard(paramJson);
+    }
+
+    @Override
+    public JSONObject deletePersoncard(String paramJson) {
+        return OsProxyService.deletePersoncard(paramJson);
+    }
+
 }

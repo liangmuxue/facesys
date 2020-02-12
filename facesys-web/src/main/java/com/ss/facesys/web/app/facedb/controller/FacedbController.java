@@ -10,6 +10,7 @@ import com.ss.facesys.data.collect.common.model.Facedb;
 import com.ss.facesys.data.engine.common.dto.FacedbEngineDTO;
 import com.ss.facesys.data.engine.common.model.FacedbEngine;
 import com.ss.facesys.data.engine.validate.APIEngineBindGroup;
+import com.ss.facesys.util.StringUtils;
 import com.ss.facesys.util.constant.CommonConstant;
 import com.ss.facesys.util.em.ResourceType;
 import com.ss.facesys.web.app.facedb.form.FacedbEngineBindForm;
@@ -78,6 +79,9 @@ public class FacedbController extends BaseController {
         Facedb facedb = new Facedb();
         BeanUtils.copyProperties(query, facedb);
         facedb.setIds(getAuthResources(query.getUserId(), ResourceType.FACEDB, null));
+        if (StringUtils.isBlank(facedb.getOrgId())) {
+            facedb.setOrgId(getUser(query.getUserId()).getOrgId());
+        }
         Page<Facedb> data = (Page) facedbService.getFacedbPage(facedb, query.getCurrentPage(), query.getPageSize());
         resp.setData(new PageEntity(data));
         return resp;

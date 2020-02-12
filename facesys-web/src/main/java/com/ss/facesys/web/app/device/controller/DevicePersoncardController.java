@@ -7,6 +7,7 @@ import com.ss.enums.StatusEnum;
 import com.ss.exception.ServiceException;
 import com.ss.facesys.data.collect.client.IDevicePersoncardService;
 import com.ss.facesys.data.collect.common.model.DevicePersoncard;
+import com.ss.facesys.util.StringUtils;
 import com.ss.facesys.util.em.ResourceType;
 import com.ss.facesys.web.app.device.form.DevicePersoncardForm;
 import com.ss.facesys.web.app.device.query.DevicePersoncardQuery;
@@ -58,6 +59,9 @@ public class DevicePersoncardController extends BaseController {
         DevicePersoncard devicePersoncard = new DevicePersoncard();
         BeanUtils.copyProperties(query, devicePersoncard);
         devicePersoncard.setIds(getAuthResources(query.getUserId(), ResourceType.PERSONCARD, null));
+        if (StringUtils.isBlank(devicePersoncard.getOrgId())) {
+            devicePersoncard.setOrgId(getUser(query.getUserId()).getOrgId());
+        }
         Page<DevicePersoncard> data = (Page) devicePersoncardService.getPersonCardPage(devicePersoncard, query.getCurrentPage(), query.getPageSize());
         resp.setData(new PageEntity(data));
         return resp;

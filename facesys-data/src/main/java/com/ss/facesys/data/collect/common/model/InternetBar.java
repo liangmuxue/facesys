@@ -1,5 +1,6 @@
 package com.ss.facesys.data.collect.common.model;
 
+import javax.persistence.Column;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.io.Serializable;
@@ -9,14 +10,18 @@ public class InternetBar implements Serializable {
     private static final long serialVersionUID = 1L;
     private Integer id;
     private String name;
+    @Column(name = "org_id")
     private String orgId;
     private String address;
+    @Column(name = "contact_number")
     private String contactNumber;
     private String contacts;
     private String remark;
     private Double lon;
     private Double lat;
+    @Column(name = "create_time")
     private String createTime;
+    @Column(name = "update_time")
     private String updateTime;
     private Integer status;
     @Transient

@@ -7,6 +7,7 @@ import com.ss.facesys.data.engine.client.IDeviceEngineService;
 import com.ss.facesys.data.engine.common.dto.DeviceEngineDTO;
 import com.ss.facesys.data.engine.common.model.DeviceEngine;
 import com.ss.facesys.data.engine.validate.APIEngineBindGroup;
+import com.ss.facesys.util.StringUtils;
 import com.ss.facesys.util.em.ResourceType;
 import com.ss.facesys.web.app.facedb.form.DeviceEngineBindForm;
 import com.ss.facesys.web.manage.baseinfo.controller.BaseController;
@@ -52,6 +53,9 @@ public class DeviceEngineController extends BaseController {
     @OpLog(model = ModuleCode.SYSTEM, desc = "查询设备绑定引擎列表", type = OperaTypeEnum.SELECT)
     public ResponseEntity<List<DeviceEngineDTO>> engineList(@RequestBody DeviceEngineDTO engineDTO) {
         ResponseEntity<List<DeviceEngineDTO>> resp = createSuccResponse();
+        if (StringUtils.isBlank(engineDTO.getOrgId())) {
+            engineDTO.setOrgId(getUser(engineDTO.getUserId()).getOrgId());
+        }
         List<DeviceEngineDTO> deviceEngineDTOS = deviceEngineService.engineList(engineDTO);
         List<Integer> deviceIds = deviceEngineDTOS.stream().map(DeviceEngineDTO::getDeviceId).collect(Collectors.toList());
         List<Integer> authDeviceIds = getAuthResources(engineDTO.getUserId(), ResourceType.CAMERA, deviceIds);

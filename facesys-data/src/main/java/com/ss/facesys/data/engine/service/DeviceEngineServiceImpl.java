@@ -65,7 +65,7 @@ public class DeviceEngineServiceImpl extends BaseServiceImpl implements IDeviceE
             Example deviceExp = new Example(Camera.class);
             deviceExp.createCriteria().andEqualTo("state", CommonConstant.DELETE_FLAG_EXIST);
             if (StringUtils.isNotBlank(engineDTO.getOrgId())) {
-                deviceExp.and().andEqualTo("orgId", engineDTO.getOrgId());
+                deviceExp.and().andEqualTo("orgId", getAllOrgNodes(engineDTO.getOrgId()));
             }
             if (StringUtils.isNotBlank(engineDTO.getCameraName())) {
                 deviceExp.and().andLike("cameraName", like(engineDTO.getCameraName()));

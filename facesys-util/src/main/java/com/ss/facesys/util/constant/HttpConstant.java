@@ -173,4 +173,16 @@ public class HttpConstant {
      */
     public static String RECOG_VIDEODB = "/api/recog/videoDb";
 
+
+    /* ************************************* 人证设备相关接口 ************************************* */
+
+    /**
+     * 编辑人证设备
+     */
+    public static String DEVICE_PERSONCARD_EDIT = "/api/device/personcard/edit";
+    /**
+     * 删除人证设备
+     */
+    public static String DEVICE_PERSONCARD_DELETE = "/api/device/personcard/delete";
+
 }

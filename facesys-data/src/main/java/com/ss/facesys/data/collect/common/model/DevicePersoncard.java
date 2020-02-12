@@ -54,6 +54,18 @@ public class DevicePersoncard implements Serializable {
     private String ip;
 
     /**
+     * 经度
+     */
+    @Column(name = "lon")
+    private Double lon;
+
+    /**
+     * 纬度
+     */
+    @Column(name = "lat")
+    private Double lat;
+
+    /**
      * 关联地址类型：1-酒店，2-网吧
      */
     @Column(name = "rel_address_type")
@@ -110,6 +122,12 @@ public class DevicePersoncard implements Serializable {
     private String orgCname;
 
     /**
+     * 关联地址类型描述
+     */
+    @Transient
+    private String relAddressTypeName;
+
+    /**
      * 关联地址名称
      */
     @Transient
@@ -132,18 +150,6 @@ public class DevicePersoncard implements Serializable {
      */
     @Transient
     private List<Integer> ids;
-
-    /**
-     * 经度
-     */
-    @Transient
-    private Double lon;
-
-    /**
-     * 维度
-     */
-    @Transient
-    private Double lat;
 
 
     public Integer getId() {
@@ -272,6 +278,14 @@ public class DevicePersoncard implements Serializable {
 
     public void setOrgCname(String orgCname) {
         this.orgCname = orgCname;
+    }
+
+    public String getRelAddressTypeName() {
+        return relAddressTypeName;
+    }
+
+    public void setRelAddressTypeName(String relAddressTypeName) {
+        this.relAddressTypeName = relAddressTypeName;
     }
 
     public String getRelAddressName() {

@@ -322,4 +322,21 @@ public interface IAccessService {
      */
     JSONObject updateMonitorStatus(String monitorId, int monitorStatus);
 
+
+    /* ************************************* 人证设备相关接口 ************************************* */
+
+    /**
+     * 修改人证设备
+     * @param paramJson
+     * @return
+     */
+    JSONObject updatePersoncard(String paramJson);
+
+    /**
+     * 删除人证设备
+     * @param paramJson
+     * @return
+     */
+    JSONObject deletePersoncard(String paramJson);
+
 }

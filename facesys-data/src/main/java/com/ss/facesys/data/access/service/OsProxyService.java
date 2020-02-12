@@ -544,4 +544,26 @@ public class OsProxyService {
         return JSONObject.parseObject(resultString);
     }
 
+    /**
+     * 编辑人证设备
+     *
+     * @param parmJson
+     * @return
+     */
+    public static JSONObject updatePersoncard(String parmJson) {
+        String resultString = BaseHttpUtil.httpPost(parmJson, PropertiesUtil.getOshttp() + HttpConstant.DEVICE_PERSONCARD_EDIT, null);
+        return JSONObject.parseObject(resultString);
+    }
+
+    /**
+     * 删除人证设备
+     *
+     * @param parmJson
+     * @return
+     */
+    public static JSONObject deletePersoncard(String parmJson) {
+        String resultString = BaseHttpUtil.httpPost(parmJson, PropertiesUtil.getOshttp() + HttpConstant.DEVICE_PERSONCARD_DELETE, null);
+        return JSONObject.parseObject(resultString);
+    }
+
 }

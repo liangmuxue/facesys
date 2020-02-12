@@ -6,6 +6,8 @@ import com.ss.facesys.util.StringUtils;
 import com.ss.spider.system.organization.model.Organization;
 import com.ss.spider.system.organization.service.OrganizationService;
 import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
@@ -27,6 +29,8 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(rollbackFor = {Exception.class})
 public class BaseServiceImpl implements IBaseService {
+
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Resource
     private OrganizationService<Organization> organizationService;
