@@ -44,6 +44,14 @@ public interface OrganizationService<Organization> extends SsService<Organizatio
     List<Organization> treeData();
 
     /**
+     * 查询单位及全部子节点集合
+     *
+     * @param orgId
+     * @return
+     */
+    List<Organization> getCascadeChildren(String orgId);
+
+    /**
      * 查询单位信息
      *
      * @param orgId

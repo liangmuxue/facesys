@@ -3,9 +3,9 @@ package com.ss.facesys.util.em;
 
 public enum PersoncardMainEnum {
 
-    HOTEL(Integer.valueOf(0), "酒店"),
-    INTERNET_BAR(Integer.valueOf(1), "网吧"),
-    STATION(Integer.valueOf(3), "车站");
+    HOTEL(1, "酒店"),
+    INTERNET_BAR(2, "网吧"),
+    STATION(3, "车站");
 
     private final Integer key;
     private final String value;
@@ -15,13 +15,12 @@ public enum PersoncardMainEnum {
         this.value = value;
     }
 
-
     public Integer getKey() {
         return this.key;
     }
 
-
     public String getValue() {
         return this.value;
     }
+
 }

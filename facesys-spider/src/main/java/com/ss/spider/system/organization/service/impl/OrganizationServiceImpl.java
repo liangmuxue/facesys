@@ -32,6 +32,7 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -128,6 +129,50 @@ public class OrganizationServiceImpl extends AbstractSsServiceImpl<Organization>
             }
         }
         return root.getChildren();
+    }
+
+    private Map<String, Organization> getTreeMap() {
+        Map<String, Organization> treeMap = new HashMap<>();
+        List<Organization> treeList = this.list(null);
+        if (CollectionUtils.isNotEmpty(treeList)) {
+            treeMap = treeList.stream().collect(Collectors.toMap(Organization::getOrgId, Function.identity()));
+        }
+        // 组装树形结构
+        if (!treeMap.isEmpty()) {
+            Set<Map.Entry<String, Organization>> entrySet = treeMap.entrySet();
+            for (Map.Entry<String, Organization> entry : entrySet) {
+                Organization currentNode = entry.getValue();
+                if (!StringUtils.isEmpty(currentNode.getParentId()) && !"0".equals(currentNode.getParentId())) {
+                    treeMap.get(currentNode.getParentId()).getChildren().add(currentNode);
+                }
+            }
+        }
+        return treeMap;
+    }
+
+    /**
+     * 查询单位及全部子节点集合
+     *
+     * @param orgId
+     * @return
+     */
+    @Override
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public List<Organization> getCascadeChildren(String orgId) {
+        List<Organization> resultList = new ArrayList<>();
+        Organization currentNode = this.getTreeMap().get(orgId);
+        List<Organization> childNodes = currentNode.getChildren();
+        while (CollectionUtils.isNotEmpty(childNodes)) {
+            resultList.addAll(childNodes);
+            List<Organization> tempList = new ArrayList<>();
+            for (Organization childNode : childNodes) {
+                tempList.addAll(childNode.getChildren());
+            }
+            childNodes.clear();
+            childNodes.addAll(tempList);
+        }
+        resultList.add(currentNode);
+        return resultList;
     }
 
     /**
