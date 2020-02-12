@@ -18,7 +18,7 @@ public class ResetPasswordForm implements Serializable {
     @Length(min = 1, max = 32, message = "{user.ids.length}")
     private String opUserId;
     @NotBlank(message = "{user.newPassword.empty}")
-    @Length(min = 1, max = 32, message = "{user.newPassword.length}")
+    @Length(min = 8, max = 23, message = "{user.newPassword.length}")
     private String newPassword;
     @NotBlank(message = "{updated.user.empty}")
     @Length(min = 1, max = 32, message = "{updated.user.length}")

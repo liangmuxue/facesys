@@ -31,6 +31,7 @@ public class CameraQueryVO extends Pagination {
     private Integer cameraEnabled;
     private String cameraId;
     private List<Integer> resources;
+    private List<String> orgIds;
 
     public String getVillageCode() {
         return villageCode;
@@ -129,5 +130,13 @@ public class CameraQueryVO extends Pagination {
 
     public void setResources(List<Integer> resources) {
         this.resources = resources;
+    }
+
+    public List<String> getOrgIds() {
+        return orgIds;
+    }
+
+    public void setOrgIds(List<String> orgIds) {
+        this.orgIds = orgIds;
     }
 }

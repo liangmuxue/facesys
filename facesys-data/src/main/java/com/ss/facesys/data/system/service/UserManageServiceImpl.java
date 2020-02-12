@@ -1,5 +1,6 @@
 package com.ss.facesys.data.system.service;
 
+import com.ss.facesys.data.baseinfo.service.BaseServiceImpl;
 import com.ss.facesys.data.system.client.IUserManageService;
 import com.ss.facesys.data.system.common.model.Role;
 import com.ss.facesys.data.system.common.model.User;
@@ -10,6 +11,7 @@ import com.github.pagehelper.PageHelper;
 import java.util.Iterator;
 import java.util.List;
 
+import com.ss.facesys.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +22,7 @@ import org.springframework.stereotype.Service;
 * @email lishuangchao@ss-cas.com
 **/
 @Service
-public class UserManageServiceImpl implements IUserManageService {
+public class UserManageServiceImpl extends BaseServiceImpl implements IUserManageService {
 
   @Autowired
   private UserManageMapper userManageMapper;
@@ -34,6 +36,10 @@ public class UserManageServiceImpl implements IUserManageService {
    */
   @Override
   public List<User> pages(User dto) {
+    if (StringUtils.isNotBlank(dto.getOrgId())) {
+      List<String> allOrgNodes = getAllOrgNodes(dto.getOrgId());
+      dto.setOrgIds(allOrgNodes);
+    }
     PageHelper.startPage(dto.getCurrentPage(), dto.getPageSize());
     //查询账户信息
     List<User> uList = this.userManageMapper.pages(dto);
