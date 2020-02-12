@@ -3,12 +3,19 @@ package com.ss.facesys.data.baseinfo.service;
 import com.ss.facesys.data.baseinfo.client.IBaseService;
 import com.ss.facesys.data.baseinfo.common.model.User;
 import com.ss.facesys.util.StringUtils;
+import com.ss.spider.system.organization.model.Organization;
+import com.ss.spider.system.organization.service.OrganizationService;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
+import javax.annotation.Resource;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * BaseServiceImpl
@@ -20,6 +27,9 @@ import java.lang.reflect.Method;
 @Service
 @Transactional(rollbackFor = {Exception.class})
 public class BaseServiceImpl implements IBaseService {
+
+    @Resource
+    private OrganizationService<Organization> organizationService;
 
     /**
      * 返回查询用户权限小区的sql条件
@@ -76,6 +86,23 @@ public class BaseServiceImpl implements IBaseService {
 
     protected String like(String target) {
         return "%" + target + "%";
+    }
+
+    /**
+     * 获取全部的子集单位（包含本身）
+     *
+     * @param orgId 单位id
+     * @return
+     */
+    protected List<String> getAllOrgNodes(String orgId) {
+        if (StringUtils.isBlank(orgId)) {
+            return Collections.emptyList();
+        }
+        List<Organization> allList = organizationService.getCascadeChildren(orgId);
+        if (CollectionUtils.isEmpty(allList)) {
+            return Collections.emptyList();
+        }
+        return allList.stream().map(Organization::getOrgId).collect(Collectors.toList());
     }
 
 }
