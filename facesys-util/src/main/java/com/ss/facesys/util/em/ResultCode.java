@@ -43,8 +43,6 @@ public enum ResultCode implements IResultCode {
 
     DEVICE_NOTEXIST("800064000", "设备不存在"),
 
-    IMG_TO_BASE64_FAIL("800079001", "图片转换base64发生异常，请检查图片内容或图片路径"),
-
     FACEDBFACE_CARDID_EXIST("800062001", "证件类型+证件号存在重复的人像集"),
     FACEDBFACE_DELETEFAIL_MONITOR("800062002", "人像集已布控,不能删除"),
     FACEDBFACE_VPLAT_FAIL("800062003", "汇聚平台人像集操作异常"),
@@ -52,6 +50,13 @@ public enum ResultCode implements IResultCode {
     FACEDBFACE_FACESYS_UPDATE_FAIL("800062005", "人像系统更新人像集数据失败：facedbFaceMapper.updateByPrimaryKeySelective异常"),
     FACEDBFACE_FACESYS_DELETE_FAIL("800062006", "人像系统逻辑删除人像集数据失败：facedbFaceMapper.updateByPrimaryKeySelective异常"),
     FACEDBFACE_FACESYS_BAT_DELETE_FAIL("800062007", "人像系统批量逻辑删除人像集数据失败：facedbFaceMapper.updateByExampleSelective异常"),
+
+    PERSONCARD_IP_EXIST("800063001", "已存在绑定此ip的人证设备"),
+    PERSONCARD_FACESYS_UPDATE_FAIL("800063002", "人像系统更新人证设备数据失败：数据库操作异常"),
+    PERSONCARD_DELETEFAIL_MONITOR("800063003", "人证设备已布控,不能删除"),
+    PERSONCARD_FACESYS_DELETE_FAIL("800063004", "人像系统逻辑删除人证设备数据失败：数据库操作异常"),
+
+    IMG_TO_BASE64_FAIL("800079001", "图片转换base64发生异常，请检查图片内容或图片路径"),
 
     FACEDB_ENGINE_BIND_NULLTARGET("800074001", "人像库关联引擎绑定关系失败：已选人像库中不存在可进行指定操作（绑定/取消绑定）的目标数据"),
     FACEDB_ENGINE_BIND_FAIL("800074002", "人像库关联引擎绑定关系失败：新增关联关系数据失败"),

@@ -300,7 +300,7 @@ public interface IAccessService {
     /**
      * 删除布控
      *
-     * @param parmJson
+     * @param monitorId
      * @return
      */
     JSONObject deleteMonitor(String monitorId);

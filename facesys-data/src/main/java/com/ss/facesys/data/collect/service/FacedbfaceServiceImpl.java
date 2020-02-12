@@ -174,7 +174,7 @@ public class FacedbfaceServiceImpl extends BaseServiceImpl implements IFacedbfac
      */
     @Override
     public String insert(FacedbFace facedbFace) throws ServiceException {
-        duplicateCheck(facedbFace);
+//        duplicateCheck(facedbFace);
         // 新增人像系统数据
         try {
             facedbFaceMapper.insertSelective(facedbFace);
@@ -205,7 +205,7 @@ public class FacedbfaceServiceImpl extends BaseServiceImpl implements IFacedbfac
      */
     @Override
     public void update(FacedbFace facedbFace) throws ServiceException {
-        duplicateCheck(facedbFace);
+//        duplicateCheck(facedbFace);
         // 更新人像系统数据
         try {
             facedbFaceMapper.updateByPrimaryKeySelective(facedbFace);
