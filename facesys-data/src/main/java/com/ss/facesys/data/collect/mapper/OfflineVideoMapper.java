@@ -21,4 +21,32 @@ public interface OfflineVideoMapper extends SsMapper<OfflineVideo> {
    * @return
    */
   List<OfflineVideo> offlineVideoPage(OfflineVideoVO para);
+
+  /**
+   * 添加离线视频
+   * @param para
+   * @return
+   */
+  int insertOfflineVideo(OfflineVideoVO para);
+
+  /**
+   * 查询离线视频详情
+   * @param internetBarVO
+   * @return
+   */
+  OfflineVideo detail(OfflineVideoVO internetBarVO);
+
+  /**
+   * 修改离线视频信息
+   * @param para
+   * @return
+   */
+  int updateOfflineVideo(OfflineVideoVO para);
+
+  /**
+   * 删除离线视频
+   * @param internetBarVO
+   * @return
+   */
+  int deleteOfflineVideo(OfflineVideoVO internetBarVO);
 }

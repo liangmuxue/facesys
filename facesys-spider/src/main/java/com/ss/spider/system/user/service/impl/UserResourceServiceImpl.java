@@ -60,9 +60,11 @@ public class UserResourceServiceImpl extends AbstractSsServiceImpl<UserResource>
         String message;
         userResource.setType(1);
         //移除像机权限
-        this.userResourceMapper.remove(userResource);
-        //添加像机权限
-        int add = this.userResourceMapper.add(userResource);
+        int add = this.userResourceMapper.remove(userResource);
+        if (userResource.getResourceIds() != null) {
+            //添加像机权限
+            add = this.userResourceMapper.add(userResource);
+        }
         if (add > 0){
             message = "success";
         } else {
@@ -108,9 +110,60 @@ public class UserResourceServiceImpl extends AbstractSsServiceImpl<UserResource>
         String message;
         userResource.setType(3);
         //移除人像库权限
-        this.userResourceMapper.remove(userResource);
-        //添加人像库权限
-        int add = this.userResourceMapper.add(userResource);
+        int add = this.userResourceMapper.remove(userResource);
+        if (userResource.getResourceIds() != null) {
+            //添加人像库权限
+            add = this.userResourceMapper.add(userResource);
+        }
+        if (add > 0){
+            message = "success";
+        } else {
+            message = "error";
+        }
+        return message;
+    }
+
+    /**
+     * 查询账户人证设备关联列表
+     * @param userResource
+     * @return
+     */
+    @Override
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public List<UserResource> deviceList(UserResource userResource) {
+        //查询人证设备列表
+        List<UserResource> allDeviceList = this.userResourceMapper.allDeviceList(userResource);
+        //查找人证设备权限编号
+        List<UserResource> list = this.userResourceMapper.deviceList(userResource);
+        if (allDeviceList.size() > 0){
+            for (int i = 0; i < allDeviceList.size(); i++){
+                for (int j = 0; j < list.size(); j++){
+                    if (allDeviceList.get(i).getResourceId().equals(list.get(j).getResourceId())){
+                        allDeviceList.get(i).setAuthority(1);
+                    }
+                }
+            }
+            return allDeviceList;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * 修改账户人证设备关联信息
+     * @param userResource
+     * @return
+     */
+    @Override
+    public String deviceEdit(UserResource userResource) {
+        String message;
+        userResource.setType(2);
+        //移除人证设备权限
+        int add = this.userResourceMapper.remove(userResource);
+        //添加人证设备权限
+        if (userResource.getResourceIds() != null) {
+            add = this.userResourceMapper.add(userResource);
+        }
         if (add > 0){
             message = "success";
         } else {

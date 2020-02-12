@@ -23,6 +23,7 @@ public class OfflineVideo implements Serializable {
     private String orgId;
     private String createUserId;
     private String createTime;
+    private Integer status;
     @Transient
     private String orgName;
     @Transient
@@ -106,6 +107,14 @@ public class OfflineVideo implements Serializable {
 
     public void setCreateTime(String createTime) {
         this.createTime = createTime;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 
     public String getOrgName() {

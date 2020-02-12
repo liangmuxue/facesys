@@ -60,6 +60,8 @@ public class PropertiesUtil {
     private static int topN;
     private static double threshold;
 
+    private static String offlineVideoUrl;
+
     public static String getCaptureFile() {
         return captureFile;
     }
@@ -557,4 +559,11 @@ public class PropertiesUtil {
         PropertiesUtil.threshold = threshold;
     }
 
+    public static String getOfflineVideoUrl() {
+        return offlineVideoUrl;
+    }
+
+    public static void setOfflineVideoUrl(String offlineVideoUrl) {
+        PropertiesUtil.offlineVideoUrl = offlineVideoUrl;
+    }
 }
