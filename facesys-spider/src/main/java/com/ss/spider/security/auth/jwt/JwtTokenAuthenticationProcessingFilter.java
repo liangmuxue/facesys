@@ -59,9 +59,7 @@ public class JwtTokenAuthenticationProcessingFilter extends AbstractAuthenticati
             }
             customHeaderWrapper = new CustomHeaderWrapper(request, map);
             super.doFilter(customHeaderWrapper, res, chain);
-        } catch (ExpiredTokenException e) {
-            unsuccessfulAuthentication(request, response, new RefreshTokenException(e.getMessage()));
-        } catch (ExpiredJwtException e) {
+        } catch (ExpiredTokenException | ExpiredJwtException e) {
             unsuccessfulAuthentication(request, response, new RefreshTokenException(e.getMessage()));
         }
     }

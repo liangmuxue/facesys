@@ -23,7 +23,7 @@ public class WebIscSecurityConfig extends WebMvcConfigurerAdapter {
         addInterceptor.excludePathPatterns("/auth/login");
         addInterceptor.excludePathPatterns("/auth/token");
         addInterceptor.excludePathPatterns("/region/list");
-        addInterceptor.excludePathPatterns("/mediaInfo/uploadImage");
+//        addInterceptor.excludePathPatterns("/mediaInfo/uploadImage");
         addInterceptor.excludePathPatterns("/region/treeData");
         addInterceptor.excludePathPatterns("/region/regionTree");
         addInterceptor.excludePathPatterns("/app/list");

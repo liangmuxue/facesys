@@ -88,6 +88,7 @@ public class FacedbfaceServiceImpl extends BaseServiceImpl implements IFacedbfac
         if (StringUtils.isNoneBlank(facedbFace.getBirthdayMin(), facedbFace.getBirthdayMax())) {
             example.and().andBetween("birthday", facedbFace.getBirthdayMin(), facedbFace.getBirthdayMax());
         }
+        example.orderBy("createTime").desc();
         List<FacedbFace> faces = facedbFaceMapper.selectByExample(example);
         if (CollectionUtils.isNotEmpty(faces)) {
             List<Integer> facedbIdList = faces.stream().map(FacedbFace::getFacedbId).collect(Collectors.toList());
@@ -297,7 +298,11 @@ public class FacedbfaceServiceImpl extends BaseServiceImpl implements IFacedbfac
             dto.setFacedbId(facedb.getFacedbId());
             if (StringUtils.isNotBlank(facedbFace.getFacePath()) && !facedbFace.getFacePath().contains(FileConstant.FILE_HTTPADD)) {
                 String fullPath = FilePropertiesUtil.getHttpUrl() + facedbFace.getFacePath();
-                dto.setFaceImg(FileUtil.getBase64ByUrl(fullPath));
+                try {
+                    dto.setFaceImg(FileUtil.getBase64ByUrl(fullPath));
+                } catch (Exception e) {
+                    throw new ServiceException(ResultCode.IMG_TO_BASE64_FAIL);
+                }
                 dto.setFaceImgType(CommonConstant.IMGTYPE_BASE64);
             }
             JSONObject oceanResult = accessService.facedbfaceInsert(JsonUtils.getFastjsonFromObject(dto));

@@ -73,6 +73,7 @@ public class FacedbServiceImpl extends BaseServiceImpl implements IFacedbService
         if (CollectionUtils.isNotEmpty(facedb.getIds())) {
             example.and().andIn("id", facedb.getIds());
         }
+        example.orderBy("updateTime").desc();
         List<Facedb> facedbs = facedbMapper.selectByExample(example);
         if (CollectionUtils.isNotEmpty(facedbs)) {
             for (Facedb db : facedbs) {
@@ -93,8 +94,6 @@ public class FacedbServiceImpl extends BaseServiceImpl implements IFacedbService
      */
     @Override
     public List<Facedb> getFacedbPage(Facedb facedb, int currentPage, int pageSize) {
-        // 初始化分页查询条件
-        PageHelper.startPage(currentPage, pageSize);
         Example example = new Example(Facedb.class);
         example.selectProperties("id", "name", "faceCount", "monitorState", "type", "remark", "orgId", "updateTime");
         example.createCriteria().andEqualTo("status", StatusEnum.EFFECT.getCode());
@@ -110,6 +109,9 @@ public class FacedbServiceImpl extends BaseServiceImpl implements IFacedbService
         if (CollectionUtils.isNotEmpty(facedb.getIds())) {
             example.and().andIn("id", facedb.getIds());
         }
+        example.orderBy("updateTime").desc();
+        // 初始化分页查询条件
+        PageHelper.startPage(currentPage, pageSize);
         List<Facedb> facedbs = facedbMapper.selectByExample(example);
         if (CollectionUtils.isNotEmpty(facedbs)) {
             Map<String, Organization> orgMap = getOrgMapByIds(facedbs.stream().map(Facedb::getOrgId).collect(Collectors.toList()));
