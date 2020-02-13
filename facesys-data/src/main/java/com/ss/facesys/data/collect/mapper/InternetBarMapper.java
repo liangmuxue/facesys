@@ -1,5 +1,6 @@
 package com.ss.facesys.data.collect.mapper;
 
+import com.ss.facesys.data.collect.common.model.DevicePersoncard;
 import com.ss.facesys.data.collect.common.model.InternetBar;
 import com.ss.facesys.data.resource.common.web.InternetBarVO;
 import com.ss.mapper.SsMapper;
@@ -49,4 +50,11 @@ public interface InternetBarMapper extends SsMapper<InternetBar> {
    * @return
    */
   InternetBar detail(InternetBarVO para);
+
+  /**
+   * 查找网吧关联人证设备
+   * @param para
+   * @return
+   */
+  List<DevicePersoncard> checkDevice(InternetBarVO para);
 }

@@ -72,9 +72,20 @@ public class HotelServiceImpl extends BaseServiceImpl implements IHotelService {
    * @return
    */
   @Override
-  public int deleteHotel(HotelVO para) {
-    int result = this.hotelMapper.deleteHotel(para);
-    return result;
+  public String deleteHotel(HotelVO para) {
+    String message;
+    List<DevicePersoncard> devicePersoncards = this.hotelMapper.checkDevice(para);
+    if (devicePersoncards.size() > 0){
+      message = "删除酒店信息失败，酒店已经关联设备信息";
+    } else {
+      int num = this.hotelMapper.deleteHotel(para);
+      if (num > 0) {
+        message = "删除成功";
+      } else {
+        message = "删除失败，请联系管理员";
+      }
+    }
+    return message;
   }
 
   /**

@@ -125,12 +125,12 @@ public class HotelController extends BaseController {
     public ResponseEntity<String> deleteHotel(@RequestBody @Validated({APIDeltGroup.class})HotelVO para , BindingResult bindingResult) throws Exception {
         ResponseEntity<String> resp = validite(bindingResult);
         try {
-            int num = this.hotelService.deleteHotel(para);
-            if (num > 0) {
-                resp.setData("删除成功");
+            String message = this.hotelService.deleteHotel(para);
+            if ("删除成功".equals(message)) {
+                resp.setData(message);
             } else {
                 resp = createFailResponse();
-                resp.setMessage("删除失败，请联系管理员");
+                resp.setMessage(message);
             }
         } catch (Exception e) {
             //删除酒店失败处理

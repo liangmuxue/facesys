@@ -77,4 +77,13 @@
 		left join cw_ge_organization o on h.org_id = o.org_id
 		where h.id = #{id}
 	</select>
+
+	<!--查找酒店关联人证设备-->
+	<select id="checkDevice" resultType="com.ss.facesys.data.collect.common.model.DevicePersoncard" parameterType="com.ss.facesys.data.resource.common.web.HotelVO">
+		select
+		*
+		from
+		ss_device_personcard
+		where rel_address_id = #{id} and rel_address_type = 1
+	</select>
 </mapper>

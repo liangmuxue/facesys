@@ -1,5 +1,6 @@
 package com.ss.facesys.data.collect.mapper;
 
+import com.ss.facesys.data.collect.common.model.DevicePersoncard;
 import com.ss.facesys.data.collect.common.model.Hotel;
 import com.ss.facesys.data.resource.common.web.HotelVO;
 import com.ss.mapper.SsMapper;
@@ -49,4 +50,11 @@ public interface HotelMapper extends SsMapper<Hotel> {
    * @return
    */
   Hotel detail(HotelVO para);
+
+  /**
+   * 查找酒店关联人证设备
+   * @param para
+   * @return
+   */
+  List<DevicePersoncard> checkDevice(HotelVO para);
 }
