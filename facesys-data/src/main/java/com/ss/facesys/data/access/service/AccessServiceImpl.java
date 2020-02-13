@@ -263,4 +263,9 @@ public class AccessServiceImpl implements IAccessService {
         return OsProxyService.deletePersoncard(paramJson);
     }
 
+    @Override
+    public JSONObject faceDetect(String paramJson) {
+        return OsProxyService.faceDetect(paramJson);
+    }
+
 }

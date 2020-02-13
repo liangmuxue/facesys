@@ -153,6 +153,11 @@ public class HttpConstant {
     /* ************************************* 人脸识别相关接口 ************************************* */
 
     /**
+     * 人脸检测
+     */
+    public static String FACE_DETECT = "/api/face/detect";
+
+    /**
      * 1:1
      */
     public static String RECOG_ONE_VS_ONE = "/api/recog/1vs1";
