@@ -339,4 +339,12 @@ public interface IAccessService {
      */
     JSONObject deletePersoncard(String paramJson);
 
+    /**
+     * 人脸检测
+     *
+     * @param paramJson
+     * @return
+     */
+    JSONObject faceDetect(String paramJson);
+
 }

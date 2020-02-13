@@ -566,4 +566,15 @@ public class OsProxyService {
         return JSONObject.parseObject(resultString);
     }
 
+    /**
+     * 人脸检测
+     *
+     * @param parmJson
+     * @return
+     */
+    public static JSONObject faceDetect(String parmJson) {
+        String resultString = BaseHttpUtil.httpPost(parmJson, PropertiesUtil.getOshttp() + HttpConstant.FACE_DETECT, null);
+        return JSONObject.parseObject(resultString);
+    }
+
 }

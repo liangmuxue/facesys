@@ -280,6 +280,16 @@ public class FacedbfaceServiceImpl extends BaseServiceImpl implements IFacedbfac
         }
     }
 
+    private void faceDetect(String img) throws ServiceException {
+        JSONObject detectParam = new JSONObject() {{
+            put("img", img);
+        }};
+        JSONObject detect = accessService.faceDetect(detectParam.toJSONString());
+        if (!StringUtils.checkSuccess(detect) || CollectionUtils.isEmpty(detect.getJSONArray("data"))) {
+            throw new ServiceException(ResultCode.FACEDBFACE_VPLAT_FAIL.getCode(), "图片中未检测到人脸");
+        }
+    }
+
     /**
      * 新增汇聚平台人像集
      *
@@ -305,6 +315,7 @@ public class FacedbfaceServiceImpl extends BaseServiceImpl implements IFacedbfac
                 }
                 dto.setFaceImgType(CommonConstant.IMGTYPE_BASE64);
             }
+            faceDetect(dto.getFaceImg());
             JSONObject oceanResult = accessService.facedbfaceInsert(JsonUtils.getFastjsonFromObject(dto));
             if (!StringUtils.checkSuccess(oceanResult)) {
                 throw new ServiceException(oceanResult.getString("code"), oceanResult.getString("message"));
@@ -377,6 +388,7 @@ public class FacedbfaceServiceImpl extends BaseServiceImpl implements IFacedbfac
                     throw new ServiceException(ResultCode.IMG_TO_BASE64_FAIL);
                 }
                 dto.setFaceImgType(CommonConstant.IMGTYPE_BASE64);
+                faceDetect(dto.getFaceImg());
             }
             JSONObject oceanResult = accessService.facedbfaceUpdate(JsonUtils.getFastjsonFromObject(dto));
             if (!StringUtils.checkSuccess(oceanResult)) {
