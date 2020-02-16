@@ -460,7 +460,7 @@ public class UserServiceImpl extends AbstractSsServiceImpl<User> implements User
         }
         try {
             //存储照片
-            saveImagetoNas(user);
+            //saveImagetoNas(user);
             //修改账户信息
             this.userMapper.updateByPrimaryKeySelective(user);
         } catch (Exception e) {
