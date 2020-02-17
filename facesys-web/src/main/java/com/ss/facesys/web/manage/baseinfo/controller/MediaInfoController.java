@@ -133,6 +133,9 @@ public class MediaInfoController extends BaseController {
                     case "people" :
                         remoteFilePath.append("resource/people/");
                         break;
+                    case "system" :
+                        remoteFilePath.append("system/");
+                        break;
                     default:
                         remoteFilePath.append("resource/unknown/");
                 }
