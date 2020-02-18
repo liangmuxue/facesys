@@ -256,9 +256,9 @@ public class CameraServiceImpl extends BaseServiceImpl implements ICameraService
             if (!CommonConstant.COMMON_2.equals(c.getCameraType()) && resultString != null){
                 resultString = com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDeviceCutFlowStopUrl(), c.getCameraId(), c.getCameraName());
             }
-            if (resultString == null){
-                return 0;
-            }
+//            if (resultString == null){
+//                return 0;
+//            }
         }
         if (c != null && StringUtils.isNotBlank(c.getCameraId())) {
             if (c.getCameraType() > 0) {
@@ -305,9 +305,9 @@ public class CameraServiceImpl extends BaseServiceImpl implements ICameraService
                     resultString = com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDeviceCutFlowStopUrl(), c.getCameraId(), c.getCameraName());
                 }
             }
-            if (resultString == null) {
-                return 0;
-            }
+//            if (resultString == null) {
+//                return 0;
+//            }
         }
         //修改状态
         int result = this.cameraMapper.opStatus(camera);

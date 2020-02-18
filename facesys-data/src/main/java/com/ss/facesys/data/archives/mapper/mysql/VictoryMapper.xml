@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.facesys.data.archives.mapper.VictoryMapper">
+
+	<!--战果汇总分页-->
+	<select id="victoryPage" parameterType="com.ss.facesys.data.archives.common.web.VictoryVO" resultType="com.ss.facesys.data.archives.common.model.Victory">
+		SELECT
+			v.id,
+			v.victory_name as victoryName,
+			v.user_ids as userIds,
+			v.user_names as userNames,
+			v.solve_time as solveTime,
+			v.case_code as caseCode,
+			v.case_type as caseType,
+			v.case_detail as caseDetail,
+			v.picture_one as pictureOne,
+			v.picture_two as pictureTwo,
+			v.picture_three as pictureThree,
+			v.picture_four as pictureFour,
+			v.picture_five as pictureFive,
+			e.enumName as caseTypeName
+		FROM
+			cw_base_victory v
+			LEFT JOIN cw_base_enum e ON e.enumType = 'CASE_TYPE' AND v.case_type = e.enumValue
+		<where>
+			v.status = 1
+			<if test="beginTime != null and beginTime != ''">
+				AND  <![CDATA[v.solve_time >= #{beginTime}]]>
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND  <![CDATA[v.solve_time <= #{endTime}]]>
+			</if>
+			<if test="victoryName != null and victoryName != ''">
+				AND v.victory_name like concat('%', #{victoryName,jdbcType=VARCHAR},'%')
+			</if>
+		</where>
+	</select>
+
+	<!--查询所有账户-->
+	<select id="findAllUsers" resultType="com.ss.spider.system.organization.model.Organization">
+		SELECT
+			user_id as orgId,
+			login_name as orgCname,
+			org_id as parentId
+		FROM
+			cw_ge_user
+		WHERE status != -1 AND org_id != "" AND org_id IS NOT NULL
+	</select>
+
+	<!--添加战果汇总-->
+	<insert id="insertVictory" parameterType="com.ss.facesys.data.archives.common.web.VictoryVO">
+		insert into cw_base_victory
+		(victory_name, user_ids, user_names, solve_time, case_code, case_type, case_detail, picture_one, picture_two, picture_three,
+		picture_four, picture_five, create_time, update_time, status)
+		value
+		(#{victoryName}, #{userIds}, #{userNames}, #{solveTime}, #{caseCode}, #{caseType}, #{caseDetail}, #{pictureOne}, #{pictureTwo}, #{pictureThree},
+		#{pictureFour}, #{pictureFive}, #{createTime}, #{updateTime}, #{status})
+	</insert>
+
+	<!--修改战果汇总信息-->
+	<update id="updateVictory" parameterType="com.ss.facesys.data.archives.common.web.VictoryVO">
+		update cw_base_victory set
+		victory_name = #{victoryName, jdbcType=VARCHAR},
+		user_ids = #{userIds, jdbcType=VARCHAR},
+		user_names = #{userNames, jdbcType=VARCHAR},
+		solve_time = #{solveTime, jdbcType=VARCHAR},
+		case_code = #{caseCode, jdbcType=VARCHAR},
+		case_type = #{caseType, jdbcType=INTEGER},
+		case_detail = #{caseDetail, jdbcType=VARCHAR},
+		picture_one =  #{pictureOne, jdbcType=VARCHAR},
+		picture_two =  #{pictureTwo, jdbcType=VARCHAR},
+		picture_three =  #{pictureThree, jdbcType=VARCHAR},
+		picture_four =  #{pictureFour, jdbcType=VARCHAR},
+		picture_five =  #{pictureFive, jdbcType=VARCHAR},
+		update_time = #{updateTime, jdbcType=VARCHAR}
+		where id = #{id}
+	</update>
+
+	<!--删除战果汇总-->
+	<update id="deleteVictory" parameterType="com.ss.facesys.data.archives.common.web.VictoryVO">
+		update cw_base_victory set status = 0 where id = #{id}
+	</update>
+
+	<!--查询战果汇总详情-->
+	<select id="victoryDetail" resultType="com.ss.facesys.data.archives.common.model.Victory" parameterType="com.ss.facesys.data.archives.common.web.VictoryVO">
+		SELECT
+		v.id,
+		v.victory_name as victoryName,
+		v.user_ids as userIds,
+		v.user_names as userNames,
+		v.solve_time as solveTime,
+		v.case_code as caseCode,
+		v.case_type as caseType,
+		v.case_detail as caseDetail,
+		v.picture_one as pictureOne,
+		v.picture_two as pictureTwo,
+		v.picture_three as pictureThree,
+		v.picture_four as pictureFour,
+		v.picture_five as pictureFive,
+		e.enumName as caseTypeName
+		FROM
+		cw_base_victory v
+		LEFT JOIN cw_base_enum e ON e.enumType = 'CASE_TYPE' AND v.case_type = e.enumValue
+		where v.id = #{id}
+	</select>
+
+	<!--查询账户姓名-->
+	<select id="findUserNames" resultType="java.lang.String" parameterType="com.ss.facesys.data.archives.common.web.VictoryVO">
+		select
+		GROUP_CONCAT(distinct name) as userNames
+		from
+		cw_ge_user
+		where
+		user_id in (${userIds})
+	</select>
+</mapper>
