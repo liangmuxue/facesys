@@ -125,12 +125,12 @@ public class InternetBarController extends BaseController {
     public ResponseEntity<String> deleteInternetBar(@RequestBody @Validated({APIDeltGroup.class})InternetBarVO para , BindingResult bindingResult) throws Exception {
         ResponseEntity<String> resp = validite(bindingResult);
         try {
-            int num = this.internetBarService.deleteInternetBar(para);
-            if (num > 0) {
-                resp.setData("删除成功");
+            String message = this.internetBarService.deleteInternetBar(para);
+            if ("删除成功".equals(message)) {
+                resp.setData(message);
             } else {
                 resp = createFailResponse();
-                resp.setMessage("删除失败，请联系管理员");
+                resp.setMessage(message);
             }
         } catch (Exception e) {
             //删除网吧失败处理

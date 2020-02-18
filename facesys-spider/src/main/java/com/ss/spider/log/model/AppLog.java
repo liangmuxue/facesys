@@ -3,6 +3,7 @@ package com.ss.spider.log.model;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 
 @Table(name = "cw_app_log")
@@ -43,6 +44,12 @@ public class AppLog {
     private String inPara;
     @Column(name = "OUT_PARA")
     private String outPara;
+    @Transient
+    private String orgCname;
+    @Transient
+    private String moduleName;
+    @Transient
+    private String isSuccessName;
 
     public String getAppLog() {
         return this.appLog;
@@ -213,4 +220,27 @@ public class AppLog {
         this.phoneNumber = phoneNumber;
     }
 
+    public String getOrgCname() {
+        return orgCname;
+    }
+
+    public void setOrgCname(String orgCname) {
+        this.orgCname = orgCname;
+    }
+
+    public String getModuleName() {
+        return moduleName;
+    }
+
+    public void setModuleName(String moduleName) {
+        this.moduleName = moduleName;
+    }
+
+    public String getIsSuccessName() {
+        return isSuccessName;
+    }
+
+    public void setIsSuccessName(String isSuccessName) {
+        this.isSuccessName = isSuccessName;
+    }
 }

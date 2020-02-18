@@ -18,6 +18,9 @@ public class AppLogVO {
     private Integer timeConsum;
     private Short isSuccess;
     private String desc;
+    private String orgCname;
+    private String moduleName;
+    private String isSuccessName;
 
     public String getAppLog() {
         return this.appLog;
@@ -168,4 +171,27 @@ public class AppLogVO {
         this.desc = desc;
     }
 
+    public String getOrgCname() {
+        return orgCname;
+    }
+
+    public void setOrgCname(String orgCname) {
+        this.orgCname = orgCname;
+    }
+
+    public String getModuleName() {
+        return moduleName;
+    }
+
+    public void setModuleName(String moduleName) {
+        this.moduleName = moduleName;
+    }
+
+    public String getIsSuccessName() {
+        return isSuccessName;
+    }
+
+    public void setIsSuccessName(String isSuccessName) {
+        this.isSuccessName = isSuccessName;
+    }
 }

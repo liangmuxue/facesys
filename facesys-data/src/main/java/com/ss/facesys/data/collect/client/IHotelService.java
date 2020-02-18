@@ -37,7 +37,7 @@ public interface IHotelService {
    * @param para
    * @return
    */
-  int deleteHotel(HotelVO para);
+  String deleteHotel(HotelVO para);
 
   /**
    * 查询酒店详情

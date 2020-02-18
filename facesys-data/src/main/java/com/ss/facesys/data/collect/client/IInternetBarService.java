@@ -38,7 +38,7 @@ public interface IInternetBarService {
    * @param internetBarVO
    * @return
    */
-  int deleteInternetBar(InternetBarVO internetBarVO);
+  String deleteInternetBar(InternetBarVO internetBarVO);
 
   /**
    * 查询网吧详情

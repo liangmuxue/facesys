@@ -115,7 +115,7 @@
     </sql>
     <select id="queryFull" resultMap="BaseResultMap" parameterType="com.ss.spider.log.bean.dto.QueryDTO">
         select
-        <include refid="Full_Column_List"/>
+        <include refid="Base_Column_List"/>
         from cw_app_log where 1=1
         <if test="keyword!=null and ''!=keyword">
             AND (
@@ -131,15 +131,74 @@
 
     <select id="query" resultMap="BaseResultMap" parameterType="com.ss.spider.log.bean.dto.QueryDTO">
         select
-        <include refid="Base_Column_List"/>
-        from cw_app_log where 1=1
+        APP_LOG,USER_ID,al.ORG_ID,PHONE_NUMBER,WORK_CODE,`NAME`,OPER_TIME,MODULE_CODE,`TYPE`,LOG_TYPE,URL,IP,TIME_CONSUM,IS_SUCCESS,`OP_DESC`,
+        e1.enumName as moduleName,e2.enumName as isSuccessName,o.org_cname as orgCname
+        from cw_app_log al
+        left join cw_base_enum e1 on e1.enumValue = al.MODULE_CODE and e1.enumType = "modulecode"
+        left join cw_base_enum e2 on e2.enumValue = al.IS_SUCCESS and e2.enumType = "LOG_RESULT"
+        left join cw_ge_organization o on o.org_id = al.ORG_ID
+        where 1=1
         <if test="keyword!=null and ''!=keyword">
             AND (
             `NAME` like concat('%', #{keyword,jdbcType=VARCHAR},'%')
             OR `OP_DESC` like concat('%', #{keyword,jdbcType=VARCHAR},'%')
             )
         </if>
-        <include refid="Base_Condition"/>
+        <if test="moduleCode!=null and ''!=moduleCode">
+            AND MODULE_CODE = #{moduleCode,jdbcType=VARCHAR}
+        </if>
+        <if test="orgId!=null and ''!=orgId">
+            AND al.ORG_ID = #{orgId,jdbcType=VARCHAR}
+        </if>
+
+        <if test="workCode!=null and ''!=workCode">
+            AND WORK_CODE = #{workCode,jdbcType=VARCHAR}
+        </if>
+
+        <if test="ip!=null and ''!=ip">
+            AND IP like concat('%', #{ip,jdbcType=VARCHAR},'%')
+        </if>
+
+        <if test="phoneNumber!=null and ''!=phoneNumber">
+            AND PHONE_NUMBER like concat('%', #{phoneNumber,jdbcType=VARCHAR},'%')
+        </if>
+
+        <if test="url!=null and ''!=url">
+            AND URL like concat('%', #{url,jdbcType=VARCHAR},'%')
+        </if>
+
+        <if test="name!=null and ''!=name">
+            AND `NAME` like concat('%', #{name,jdbcType=VARCHAR},'%')
+        </if>
+
+        <if test="desc!=null and ''!=desc">
+            AND `OP_DESC` like concat('%', #{desc,jdbcType=VARCHAR},'%')
+        </if>
+
+        <if test="inPara!=null and ''!=inPara">
+            AND IN_PARA like concat('%', #{inPara,jdbcType=VARCHAR},'%')
+        </if>
+
+        <if test="outPara!=null and ''!=outPara">
+            AND OUT_PARA like concat('%', #{outPara,jdbcType=VARCHAR},'%')
+        </if>
+
+        <if test="type!=null and ''!=type">
+            AND `TYPE` = #{type,jdbcType=VARCHAR}
+        </if>
+
+        <if test="logType!=null">
+            AND LOG_TYPE = #{logType,jdbcType=SMALLINT}
+        </if>
+        <if test="isSuccess!=null">
+            AND IS_SUCCESS = #{isSuccess,jdbcType=SMALLINT}
+        </if>
+        <if test="operTimeB!=null">
+            <![CDATA[ AND OPER_TIME >= #{operTimeB,jdbcType=BIGINT} ]]>
+        </if>
+        <if test="operTimeE!=null">
+            <![CDATA[ AND OPER_TIME <= #{operTimeE,jdbcType=BIGINT} ]]>
+        </if>
         ORDER BY OPER_TIME DESC
     </select>
     <select id="getOpModelList" resultMap="ModelResultMap">

@@ -3,6 +3,7 @@ package com.ss.facesys.data.collect.service;
 import com.github.pagehelper.PageHelper;
 import com.ss.facesys.data.baseinfo.service.BaseServiceImpl;
 import com.ss.facesys.data.collect.client.IInternetBarService;
+import com.ss.facesys.data.collect.common.model.DevicePersoncard;
 import com.ss.facesys.data.collect.common.model.InternetBar;
 import com.ss.facesys.data.collect.mapper.InternetBarMapper;
 import com.ss.facesys.data.resource.common.web.InternetBarVO;
@@ -73,9 +74,20 @@ public class InternetBarServiceImpl extends BaseServiceImpl implements IInternet
    * @return
    */
   @Override
-  public int deleteInternetBar(InternetBarVO internetBarVO) {
-    int result = this.internetBarMapper.deleteInternetBar(internetBarVO);
-    return result;
+  public String deleteInternetBar(InternetBarVO internetBarVO) {
+    String message;
+    List<DevicePersoncard> devicePersoncards = this.internetBarMapper.checkDevice(internetBarVO);
+    if (devicePersoncards.size() > 0){
+      message = "删除网吧信息失败，网吧已经关联设备信息";
+    } else {
+      int num = this.internetBarMapper.deleteInternetBar(internetBarVO);
+      if (num > 0) {
+        message = "删除成功";
+      } else {
+        message = "删除失败，请联系管理员";
+      }
+    }
+    return message;
   }
 
   /**
