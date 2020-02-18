@@ -1,7 +1,5 @@
 package com.ss.facesys.data.archives.common.model;
 
-import com.ss.request.Pagination;
-
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -16,7 +14,9 @@ public class Victory {
     private static final long serialVersionUID = 1L;
     private Integer id;
     private String victoryName;
+    @Transient
     private String userIds;
+    @Transient
     private String userNames;
     private String solveTime;
     private String caseCode;

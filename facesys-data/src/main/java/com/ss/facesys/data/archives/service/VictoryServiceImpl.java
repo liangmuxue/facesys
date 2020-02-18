@@ -3,7 +3,9 @@ package com.ss.facesys.data.archives.service;
 import com.github.pagehelper.PageHelper;
 import com.ss.enums.StatusEnum;
 import com.ss.facesys.data.archives.client.IVictoryService;
+import com.ss.facesys.data.archives.common.model.CasePolice;
 import com.ss.facesys.data.archives.common.model.Victory;
+import com.ss.facesys.data.archives.common.model.VictoryStatistics;
 import com.ss.facesys.data.archives.common.web.VictoryVO;
 import com.ss.facesys.data.archives.mapper.VictoryMapper;
 import com.ss.facesys.util.StringUtils;
@@ -77,12 +79,12 @@ public class VictoryServiceImpl implements IVictoryService {
         victoryVO.setCreateTime(String.valueOf(System.currentTimeMillis()));
         victoryVO.setUpdateTime(String.valueOf(System.currentTimeMillis()));
         victoryVO.setStatus(NumberConstant.ONE);
+        int result = this.victoryMapper.insertVictory(victoryVO);
         if(StringUtils.isNotBlank(victoryVO.getUserIds())){
             //查询账户名称
-            String userNames = this.victoryMapper.findUserNames(victoryVO);
-            victoryVO.setUserNames(userNames);
+            List<CasePolice> users = this.victoryMapper.findUser(victoryVO);
+            this.victoryMapper.insertPolice(users);
         }
-        int result = this.victoryMapper.insertVictory(victoryVO);
         return result;
     }
 
@@ -95,12 +97,13 @@ public class VictoryServiceImpl implements IVictoryService {
     @Override
     public int updateVictory(VictoryVO victoryVO) {
         victoryVO.setUpdateTime(String.valueOf(System.currentTimeMillis()));
+        this.victoryMapper.deletePolice(victoryVO);
+        int result = this.victoryMapper.updateVictory(victoryVO);
         if(StringUtils.isNotBlank(victoryVO.getUserIds())){
             //查询账户名称
-            String userNames = this.victoryMapper.findUserNames(victoryVO);
-            victoryVO.setUserNames(userNames);
+            List<CasePolice> users = this.victoryMapper.findUser(victoryVO);
+            this.victoryMapper.insertPolice(users);
         }
-        int result = this.victoryMapper.updateVictory(victoryVO);
         return result;
     }
 
@@ -112,6 +115,7 @@ public class VictoryServiceImpl implements IVictoryService {
      */
     @Override
     public int deleteVictory(VictoryVO victoryVO) {
+        this.victoryMapper.deletePolice(victoryVO);
         int result = this.victoryMapper.deleteVictory(victoryVO);
         return result;
     }
@@ -126,6 +130,40 @@ public class VictoryServiceImpl implements IVictoryService {
     public Victory victoryDetail(VictoryVO victoryVO) {
         Victory result = this.victoryMapper.victoryDetail(victoryVO);
         return result;
+    }
+
+    /**
+     * 查询战果总数
+     * @return
+     */
+    @Override
+    public VictoryStatistics findCount() {
+        int firstWeekCount = this.victoryMapper.findFirstWeekCount();
+        int secondWeekCount = this.victoryMapper.findSecondWeekCount();
+        int thirdWeekCount = this.victoryMapper.findThirdWeekCount();
+        int fourthWeekCount = this.victoryMapper.findFourthWeekCount();
+        int fifthWeekCount = this.victoryMapper.findFifthWeekCount();
+        int count = this.victoryMapper.findCount();
+        int thisWeekCount = this.victoryMapper.findThisWeekCount();
+        VictoryStatistics victoryStatistics = new VictoryStatistics();
+        victoryStatistics.setFirstWeekCount(firstWeekCount);
+        victoryStatistics.setSecondWeekCount(secondWeekCount);
+        victoryStatistics.setThirdWeekCount(thirdWeekCount);
+        victoryStatistics.setFourthWeekCount(fourthWeekCount);
+        victoryStatistics.setFifthWeekCount(fifthWeekCount);
+        victoryStatistics.setCount(count);
+        victoryStatistics.setThisWeekCount(thisWeekCount);
+        return victoryStatistics;
+    }
+
+    /**
+     * 查询战果排行
+     * @return
+     */
+    @Override
+    public List<CasePolice> findRank() {
+        List<CasePolice> rank = this.victoryMapper.findRank();
+        return rank;
     }
 
     private List<Organization> createOrgTree(List<Organization> organizationList) {

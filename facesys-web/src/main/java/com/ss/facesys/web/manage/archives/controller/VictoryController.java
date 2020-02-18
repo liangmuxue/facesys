@@ -4,7 +4,9 @@ import com.github.pagehelper.Page;
 import com.ss.annotation.OpLog;
 import com.ss.enums.OperaTypeEnum;
 import com.ss.facesys.data.archives.client.IVictoryService;
+import com.ss.facesys.data.archives.common.model.CasePolice;
 import com.ss.facesys.data.archives.common.model.Victory;
+import com.ss.facesys.data.archives.common.model.VictoryStatistics;
 import com.ss.facesys.data.archives.common.web.VictoryVO;
 import com.ss.facesys.web.manage.baseinfo.controller.BaseController;
 import com.ss.response.PageEntity;
@@ -52,7 +54,7 @@ public class VictoryController extends BaseController {
      */
     @RequestMapping(value = {"/page"}, method = {RequestMethod.POST})
     @OpLog(model = ModuleCode.BUSINESS, desc = "战果汇总分页查询", type = OperaTypeEnum.SEARCH)
-    public ResponseEntity<PageEntity<Victory>> detail(HttpServletRequest request, @RequestBody VictoryVO victoryVO, BindingResult bindingResult) throws Exception {
+    public ResponseEntity<PageEntity<Victory>> victoryPage(HttpServletRequest request, @RequestBody VictoryVO victoryVO, BindingResult bindingResult) throws Exception {
         ResponseEntity<PageEntity<Victory>> resp = validite(bindingResult);
         try {
             //战果汇总分页查询
@@ -95,7 +97,7 @@ public class VictoryController extends BaseController {
      */
     @RequestMapping(value = {"/insert"}, method = {RequestMethod.POST})
     @OpLog(model = ModuleCode.BUSINESS, desc = "添加战果汇总", type = OperaTypeEnum.ADD)
-    public ResponseEntity<String> insertHotel(@RequestBody @Validated({APIAddGroup.class})VictoryVO para , BindingResult bindingResult) throws Exception {
+    public ResponseEntity<String> insertVictory(@RequestBody @Validated({APIAddGroup.class})VictoryVO para , BindingResult bindingResult) throws Exception {
         ResponseEntity<String> resp = validite(bindingResult);
         try {
             int num = this.victoryService.insertVictory(para);
@@ -123,7 +125,7 @@ public class VictoryController extends BaseController {
      */
     @RequestMapping(value = {"/update"}, method = {RequestMethod.POST})
     @OpLog(model = ModuleCode.BUSINESS, desc = "修改战果汇总信息", type = OperaTypeEnum.EDIT)
-    public ResponseEntity<String> updateHotel(@RequestBody @Validated({APIEditGroup.class})VictoryVO para , BindingResult bindingResult) throws Exception {
+    public ResponseEntity<String> updateVictory(@RequestBody @Validated({APIEditGroup.class})VictoryVO para , BindingResult bindingResult) throws Exception {
         ResponseEntity<String> resp = validite(bindingResult);
         try {
             int num = this.victoryService.updateVictory(para);
@@ -151,7 +153,7 @@ public class VictoryController extends BaseController {
      */
     @RequestMapping(value = {"/delete"}, method = {RequestMethod.POST})
     @OpLog(model = ModuleCode.BUSINESS, desc = "删除战果汇总", type = OperaTypeEnum.DELETE)
-    public ResponseEntity<String> deleteHotel(@RequestBody @Validated({APIDeltGroup.class})VictoryVO para , BindingResult bindingResult) throws Exception {
+    public ResponseEntity<String> deleteVictory(@RequestBody @Validated({APIDeltGroup.class})VictoryVO para , BindingResult bindingResult) throws Exception {
         ResponseEntity<String> resp = validite(bindingResult);
         try {
             int num = this.victoryService.deleteVictory(para);
@@ -179,7 +181,7 @@ public class VictoryController extends BaseController {
      */
     @RequestMapping(value = {"/detail"}, method = {RequestMethod.POST})
     @OpLog(model = ModuleCode.BUSINESS, desc = "查询战果汇总详情", type = OperaTypeEnum.SELECT)
-    public ResponseEntity<Victory> hotelDetail(@RequestBody @Validated({APIGetsGroup.class})VictoryVO para , BindingResult bindingResult) throws Exception {
+    public ResponseEntity<Victory> victoryDetail(@RequestBody @Validated({APIGetsGroup.class})VictoryVO para , BindingResult bindingResult) throws Exception {
         ResponseEntity<Victory> resp = validite(bindingResult);
         try {
             Victory victory = this.victoryService.victoryDetail(para);
@@ -187,6 +189,50 @@ public class VictoryController extends BaseController {
         } catch (Exception e) {
             //查询战果汇总详情失败处理
             this.logger.error("查询战果汇总详情失败原因：+" + e.toString(), e);
+            resp = createFailResponse();
+            resp.setMessage("操作失败！请联系管理员！");
+        }
+        return resp;
+    }
+
+    /**
+     * 查询战果统计
+     * @param bindingResult
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = {"/count"}, method = {RequestMethod.POST})
+    @OpLog(model = ModuleCode.BUSINESS, desc = "查询战果统计", type = OperaTypeEnum.SELECT)
+    public ResponseEntity<VictoryStatistics> victoryCount(@RequestBody VictoryVO para, BindingResult bindingResult) throws Exception {
+        ResponseEntity<VictoryStatistics> resp = validite(bindingResult);
+        try {
+            VictoryStatistics count = this.victoryService.findCount();
+            resp.setData(count);
+        } catch (Exception e) {
+            //查询战果统计失败处理
+            this.logger.error("查询战果统计失败原因：+" + e.toString(), e);
+            resp = createFailResponse();
+            resp.setMessage("操作失败！请联系管理员！");
+        }
+        return resp;
+    }
+
+    /**
+     * 查询战果排行
+     * @param bindingResult
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = {"/rank"}, method = {RequestMethod.POST})
+    @OpLog(model = ModuleCode.BUSINESS, desc = "查询战果排行", type = OperaTypeEnum.SELECT)
+    public ResponseEntity<List<CasePolice>> victoryRank(@RequestBody VictoryVO para, BindingResult bindingResult) throws Exception {
+        ResponseEntity<List<CasePolice>> resp = validite(bindingResult);
+        try {
+            List<CasePolice> count = this.victoryService.findRank();
+            resp.setData(count);
+        } catch (Exception e) {
+            //查询战果排行失败处理
+            this.logger.error("查询战果排行失败原因：+" + e.toString(), e);
             resp = createFailResponse();
             resp.setMessage("操作失败！请联系管理员！");
         }

@@ -1,6 +1,8 @@
 package com.ss.facesys.data.archives.client;
 
+import com.ss.facesys.data.archives.common.model.CasePolice;
 import com.ss.facesys.data.archives.common.model.Victory;
+import com.ss.facesys.data.archives.common.model.VictoryStatistics;
 import com.ss.facesys.data.archives.common.web.VictoryVO;
 import com.ss.spider.system.organization.model.Organization;
 
@@ -52,4 +54,16 @@ public interface IVictoryService {
    * @return
    */
   Victory victoryDetail(VictoryVO victoryVO);
+
+  /**
+   * 查询战果统计
+   * @return
+   */
+  VictoryStatistics findCount();
+
+  /**
+   * 查询战果排行
+   * @return
+   */
+  List<CasePolice> findRank();
 }

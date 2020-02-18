@@ -9,8 +9,8 @@
 		SELECT
 			v.id,
 			v.victory_name as victoryName,
-			v.user_ids as userIds,
-			v.user_names as userNames,
+			GROUP_CONCAT(distinct cp.user_id) as userIds,
+			GROUP_CONCAT(distinct cp.user_name) as userNames,
 			v.solve_time as solveTime,
 			v.case_code as caseCode,
 			v.case_type as caseType,
@@ -24,6 +24,7 @@
 		FROM
 			cw_base_victory v
 			LEFT JOIN cw_base_enum e ON e.enumType = 'CASE_TYPE' AND v.case_type = e.enumValue
+			LEFT JOIN cw_base_case_police cp ON cp.victory_id = v.id
 		<where>
 			v.status = 1
 			<if test="beginTime != null and beginTime != ''">
@@ -36,6 +37,7 @@
 				AND v.victory_name like concat('%', #{victoryName,jdbcType=VARCHAR},'%')
 			</if>
 		</where>
+		GROUP BY v.id
 	</select>
 
 	<!--查询所有账户-->
@@ -50,12 +52,12 @@
 	</select>
 
 	<!--添加战果汇总-->
-	<insert id="insertVictory" parameterType="com.ss.facesys.data.archives.common.web.VictoryVO">
+	<insert id="insertVictory" parameterType="com.ss.facesys.data.archives.common.web.VictoryVO" useGeneratedKeys = "true" keyProperty = "id">
 		insert into cw_base_victory
-		(victory_name, user_ids, user_names, solve_time, case_code, case_type, case_detail, picture_one, picture_two, picture_three,
+		(victory_name, solve_time, case_code, case_type, case_detail, picture_one, picture_two, picture_three,
 		picture_four, picture_five, create_time, update_time, status)
 		value
-		(#{victoryName}, #{userIds}, #{userNames}, #{solveTime}, #{caseCode}, #{caseType}, #{caseDetail}, #{pictureOne}, #{pictureTwo}, #{pictureThree},
+		(#{victoryName}, #{solveTime}, #{caseCode}, #{caseType}, #{caseDetail}, #{pictureOne}, #{pictureTwo}, #{pictureThree},
 		#{pictureFour}, #{pictureFive}, #{createTime}, #{updateTime}, #{status})
 	</insert>
 
@@ -63,8 +65,6 @@
 	<update id="updateVictory" parameterType="com.ss.facesys.data.archives.common.web.VictoryVO">
 		update cw_base_victory set
 		victory_name = #{victoryName, jdbcType=VARCHAR},
-		user_ids = #{userIds, jdbcType=VARCHAR},
-		user_names = #{userNames, jdbcType=VARCHAR},
 		solve_time = #{solveTime, jdbcType=VARCHAR},
 		case_code = #{caseCode, jdbcType=VARCHAR},
 		case_type = #{caseType, jdbcType=INTEGER},
@@ -88,8 +88,8 @@
 		SELECT
 		v.id,
 		v.victory_name as victoryName,
-		v.user_ids as userIds,
-		v.user_names as userNames,
+		GROUP_CONCAT(distinct cp.user_id) as userIds,
+		GROUP_CONCAT(distinct cp.user_name) as userNames,
 		v.solve_time as solveTime,
 		v.case_code as caseCode,
 		v.case_type as caseType,
@@ -103,16 +103,68 @@
 		FROM
 		cw_base_victory v
 		LEFT JOIN cw_base_enum e ON e.enumType = 'CASE_TYPE' AND v.case_type = e.enumValue
+		LEFT JOIN cw_base_case_police cp ON cp.victory_id = v.id
 		where v.id = #{id}
 	</select>
 
-	<!--查询账户姓名-->
-	<select id="findUserNames" resultType="java.lang.String" parameterType="com.ss.facesys.data.archives.common.web.VictoryVO">
+	<!--查询账户-->
+	<select id="findUser" resultType="com.ss.facesys.data.archives.common.model.CasePolice" parameterType="com.ss.facesys.data.archives.common.web.VictoryVO">
 		select
-		GROUP_CONCAT(distinct name) as userNames
+		#{id} as victoryId,
+		user_id as userId,
+		name as userName,
+		picture_url as pictureUrl
 		from
 		cw_ge_user
 		where
 		user_id in (${userIds})
+	</select>
+
+	<!--添加破案民警-->
+	<insert id="insertPolice" parameterType="java.util.List">
+		insert into cw_base_case_police
+		(victory_id, user_id, user_name, picture_url)
+		values
+		<foreach collection="list" item="item" index="index" separator=",">
+			(#{item.victoryId, jdbcType=INTEGER}, #{item.userId, jdbcType=VARCHAR}, #{item.userName, jdbcType=VARCHAR}, #{item.pictureUrl, jdbcType=VARCHAR})
+		</foreach>
+	</insert>
+
+	<!--删除破案民警-->
+	<delete id="deletePolice" parameterType="com.ss.facesys.data.archives.common.web.VictoryVO">
+		delete from cw_base_case_police where victory_id = #{id}
+	</delete>
+
+	<!--查询本周战果总数-->
+	<select id="findThisWeekCount" resultType="java.lang.Integer">
+		SELECT count(*) FROM cw_base_victory WHERE YEARWEEK(date_format(from_unixtime(round(create_time/1000)),'%Y-%m-%d %H:%L:%S'), 1) = YEARWEEK(now(), 1) and status = 1
+	</select>
+	<!--查询上周战果总数-->
+	<select id="findFirstWeekCount" resultType="java.lang.Integer">
+		SELECT count(*) FROM cw_base_victory WHERE YEARWEEK(date_format(from_unixtime(round(create_time/1000)),'%Y-%m-%d %H:%L:%S'), 1) = YEARWEEK(now(), 1) - 1 and status = 1
+	</select>
+	<!--查询上上周战果总数-->
+	<select id="findSecondWeekCount" resultType="java.lang.Integer">
+		SELECT count(*) FROM cw_base_victory WHERE YEARWEEK(date_format(from_unixtime(round(create_time/1000)),'%Y-%m-%d %H:%L:%S'), 1) = YEARWEEK(now(), 1) - 2 and status = 1
+	</select>
+	<!--查询上上上周战果总数-->
+	<select id="findThirdWeekCount" resultType="java.lang.Integer">
+		SELECT count(*) FROM cw_base_victory WHERE YEARWEEK(date_format(from_unixtime(round(create_time/1000)),'%Y-%m-%d %H:%L:%S'), 1) = YEARWEEK(now(), 1) - 3 and status = 1
+	</select>
+	<!--查询上上上上周战果总数-->
+	<select id="findFourthWeekCount" resultType="java.lang.Integer">
+		SELECT count(*) FROM cw_base_victory WHERE YEARWEEK(date_format(from_unixtime(round(create_time/1000)),'%Y-%m-%d %H:%L:%S'), 1) = YEARWEEK(now(), 1) - 4 and status = 1
+	</select>
+	<!--查询上上上上上周战果总数-->
+	<select id="findFifthWeekCount" resultType="java.lang.Integer">
+		SELECT count(*) FROM cw_base_victory WHERE YEARWEEK(date_format(from_unixtime(round(create_time/1000)),'%Y-%m-%d %H:%L:%S'), 1) = YEARWEEK(now(), 1) - 5 and status = 1
+	</select>
+	<!--查询战果总数-->
+	<select id="findCount" resultType="java.lang.Integer">
+		SELECT count(*) FROM cw_base_victory WHERE status = 1
+	</select>
+	<!--查询战果排行-->
+	<select id="findRank" resultType="com.ss.facesys.data.archives.common.model.CasePolice">
+		SELECT COUNT(distinct victory_id) as count, user_name as userName, picture_url as pictureUrl FROM cw_base_case_police GROUP BY user_name ORDER BY COUNT(distinct victory_id)
 	</select>
 </mapper>

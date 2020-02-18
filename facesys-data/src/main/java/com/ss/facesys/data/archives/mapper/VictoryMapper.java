@@ -1,6 +1,8 @@
 package com.ss.facesys.data.archives.mapper;
 
+import com.ss.facesys.data.archives.common.model.CasePolice;
 import com.ss.facesys.data.archives.common.model.Victory;
+import com.ss.facesys.data.archives.common.model.VictoryStatistics;
 import com.ss.facesys.data.archives.common.web.VictoryVO;
 import com.ss.mapper.SsMapper;
 import com.ss.spider.system.organization.model.Organization;
@@ -59,9 +61,71 @@ public interface VictoryMapper extends SsMapper<Victory> {
     Victory victoryDetail(VictoryVO victoryVO);
 
     /**
-     * 查询账户姓名
+     * 查询账户
      * @param victoryVO
      * @return
      */
-    String findUserNames(VictoryVO victoryVO);
+    List<CasePolice> findUser(VictoryVO victoryVO);
+
+    /**
+     * 添加破案民警
+     * @param list
+     * @return
+     */
+    int insertPolice(List<CasePolice> list);
+
+    /**
+     * 删除破案民警
+     * @param victoryVO
+     * @return
+     */
+    int deletePolice(VictoryVO victoryVO);
+
+    /**
+     * 查询本周战果总数
+     * @return
+     */
+    int findThisWeekCount();
+
+    /**
+     * 查询上周战果总数
+     * @return
+     */
+    int findFirstWeekCount();
+
+    /**
+     * 查询上上周战果总数
+     * @return
+     */
+    int findSecondWeekCount();
+
+    /**
+     * 查询上上上周战果总数
+     * @return
+     */
+    int findThirdWeekCount();
+
+    /**
+     * 查询上上上上周战果总数
+     * @return
+     */
+    int findFourthWeekCount();
+
+    /**
+     * 查询上上上上上周战果总数
+     * @return
+     */
+    int findFifthWeekCount();
+
+    /**
+     * 查询战果总数
+     * @return
+     */
+    int findCount();
+
+    /**
+     * 查询战果排行
+     * @return
+     */
+    List<CasePolice> findRank();
 }
