@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.facesys.data.system.mapper.SysParaMapper">
+
+	<update id="reset">
+		UPDATE ss_sys_para
+		SET para_value = para_default_value
+	</update>
+
+	<update id="updateParaValueByCode" parameterType="com.ss.facesys.data.system.common.model.SysPara">
+		UPDATE ss_sys_para
+		SET para_value = #{paraValue}
+		WHERE para_code = #{paraCode}
+	</update>
+	
+</mapper>

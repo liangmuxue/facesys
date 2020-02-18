@@ -44,6 +44,8 @@ public class Department extends DTEntity {
 
     @Transient
     private List<String> orgIdList;
+    @Transient
+    private String orgCname;
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
@@ -137,6 +139,14 @@ public class Department extends DTEntity {
         this.orgIdList = orgIdList;
     }
 
+    public String getOrgCname() {
+        return orgCname;
+    }
+
+    public void setOrgCname(String orgCname) {
+        this.orgCname = orgCname;
+    }
+
     @Override
     public String toString() {
         return new StringJoiner(", ", Department.class.getSimpleName() + "[", "]")
@@ -151,6 +161,7 @@ public class Department extends DTEntity {
                 .add("linkManTel='" + linkManTel + "'")
                 .add("linkManFax='" + linkManFax + "'")
                 .add("orgIdList=" + orgIdList)
+                .add("orgCname=" + orgCname)
                 .toString();
     }
 

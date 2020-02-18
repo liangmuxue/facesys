@@ -8,6 +8,8 @@ import com.ss.service.AbstractSsServiceImpl;
 import com.ss.spider.system.department.mapper.DepartmentMapper;
 import com.ss.spider.system.department.model.Department;
 import com.ss.spider.system.department.service.DepartmentService;
+import com.ss.spider.system.organization.mapper.OrganizationMapper;
+import com.ss.spider.system.organization.model.Organization;
 import com.ss.tools.UUIDUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
@@ -16,9 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * DepartmentServiceImpl
@@ -32,6 +37,18 @@ public class DepartmentServiceImpl extends AbstractSsServiceImpl<Department> imp
 
     @Resource
     private DepartmentMapper departmentMapper;
+    @Resource
+    private OrganizationMapper organizationMapper;
+
+    private Map<String, Organization> getOrgMap(List<String> orgIds) {
+        if (CollectionUtils.isEmpty(orgIds)) {
+            return Collections.emptyMap();
+        }
+        Example example = new Example(Organization.class);
+        example.createCriteria().andIn("orgId", orgIds);
+        List<Organization> organizationList = organizationMapper.selectByExample(example);
+        return organizationList.stream().collect(Collectors.toMap(Organization::getOrgId, Function.identity()));
+    }
 
     private List<Department> getList(Department entity) {
         Example example = new Example(Department.class);
@@ -42,7 +59,12 @@ public class DepartmentServiceImpl extends AbstractSsServiceImpl<Department> imp
         if (StringUtils.isNotBlank(entity.getDepartCname())) {
             example.and().andLike("departCname", like(entity.getDepartCname()));
         }
-        return departmentMapper.selectByExample(example);
+        List<Department> departments = departmentMapper.selectByExample(example);
+        if (CollectionUtils.isNotEmpty(departments)) {
+            Map<String, Organization> orgMap = getOrgMap(departments.stream().map(Department::getOrgId).collect(Collectors.toList()));
+            departments.forEach(department -> department.setOrgCname(orgMap.get(department.getOrgId()).getOrgCname()));
+        }
+        return departments;
     }
 
     /**
@@ -84,7 +106,9 @@ public class DepartmentServiceImpl extends AbstractSsServiceImpl<Department> imp
         Department department = new Department();
         department.setDepartId(departId);
         department.setStatus(StatusEnum.EFFECT.getCode());
-        return departmentMapper.selectOne(department);
+        Department depart = departmentMapper.selectOne(department);
+        depart.setOrgCname(getOrgMap(Collections.singletonList(depart.getOrgId())).get(depart.getOrgId()).getOrgCname());
+        return depart;
     }
 
     /**
