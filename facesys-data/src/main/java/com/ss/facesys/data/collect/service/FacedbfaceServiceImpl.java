@@ -202,10 +202,11 @@ public class FacedbfaceServiceImpl extends BaseServiceImpl implements IFacedbfac
      * 修改人像集
      *
      * @param facedbFace
+     * @param orginal
      * @return
      */
     @Override
-    public void update(FacedbFace facedbFace) throws ServiceException {
+    public void update(FacedbFace facedbFace, FacedbFace orginal) throws ServiceException {
 //        duplicateCheck(facedbFace);
         // 更新人像系统数据
         try {
@@ -214,7 +215,7 @@ public class FacedbfaceServiceImpl extends BaseServiceImpl implements IFacedbfac
             throw new ServiceException(ResultCode.FACEDBFACE_FACESYS_UPDATE_FAIL);
         }
         // 更新汇聚平台数据
-        updateVplatFacedbFace(facedbFace);
+        updateVplatFacedbFace(facedbFace, orginal);
     }
 
     /**
@@ -278,6 +279,16 @@ public class FacedbfaceServiceImpl extends BaseServiceImpl implements IFacedbfac
             List<String> faceIdList = deleteList.stream().map(FacedbFace::getFaceId).collect(Collectors.toList());
             deleteVplatFacedbFace(faceIdList);
         }
+    }
+
+    private void faceDetectByUrl(String url) throws ServiceException {
+        String img;
+        try {
+            img = FileUtil.getBase64ByUrl(url);
+        } catch (Exception e) {
+            throw new ServiceException(ResultCode.IMG_TO_BASE64_FAIL);
+        }
+        faceDetect(img);
     }
 
     private void faceDetect(String img) throws ServiceException {
@@ -364,9 +375,10 @@ public class FacedbfaceServiceImpl extends BaseServiceImpl implements IFacedbfac
      * 更新汇聚平台人像集信息
      *
      * @param facedbFace
+     * @param orginal
      * @throws ServiceException
      */
-    private void updateVplatFacedbFace(FacedbFace facedbFace) throws ServiceException {
+    private void updateVplatFacedbFace(FacedbFace facedbFace, FacedbFace orginal) throws ServiceException {
         FacedbfaceDTO dto = new FacedbfaceDTO();
         try {
             BeanUtils.copyProperties(facedbFace, dto);
@@ -377,9 +389,6 @@ public class FacedbfaceServiceImpl extends BaseServiceImpl implements IFacedbfac
             facedb = facedbMapper.selectByPrimaryKey(facedb);
             dto.setFacedbId(facedb.getFacedbId());
             // 若更新了照片则传入注册照参数
-            FacedbFace orginal = new FacedbFace();
-            orginal.setId(facedbFace.getId());
-            orginal = this.selectOne(orginal);
             if (StringUtils.isNotBlank(facedbFace.getFacePath()) && !orginal.getFacePath().equals(facedbFace.getFacePath()) && !facedbFace.getFacePath().contains(FileConstant.FILE_HTTPADD)) {
                 String fullPath = FilePropertiesUtil.getHttpUrl() + facedbFace.getFacePath();
                 try {
@@ -430,8 +439,9 @@ public class FacedbfaceServiceImpl extends BaseServiceImpl implements IFacedbfac
      * @throws ServiceException
      */
     @Override
-    public void reFeature(String faceId) throws ServiceException {
+    public void reFeature(String faceId, String facePathFull) throws ServiceException {
         try {
+            faceDetectByUrl(facePathFull);
             JSONObject param = new JSONObject();
             param.put("id", faceId);
             JSONObject oceanResult = accessService.reFeatureFacedbFace(param.toJSONString());

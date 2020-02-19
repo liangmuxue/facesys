@@ -54,10 +54,11 @@ public interface IFacedbfaceService {
      * 修改人像集
      *
      * @param facedbFace
+     * @param orginal
      * @return
      * @throws ServiceException
      */
-    void update(FacedbFace facedbFace) throws ServiceException;
+    void update(FacedbFace facedbFace, FacedbFace orginal) throws ServiceException;
 
     /**
      * 删除人像集
@@ -82,10 +83,11 @@ public interface IFacedbfaceService {
      * 重提人像集特征
      *
      * @param faceId
+     * @param facePathFull
      * @return
      * @throws ServiceException
      */
-    void reFeature(String faceId) throws ServiceException;
+    void reFeature(String faceId, String facePathFull) throws ServiceException;
 
     /**
      * 根据Example条件更新人像集信息 facedbFace包含的不是null的属性值

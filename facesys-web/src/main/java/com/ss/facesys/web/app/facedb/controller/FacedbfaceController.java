@@ -145,7 +145,7 @@ public class FacedbfaceController extends BaseController {
         FacedbFace orgDb = getOriginalDbObj(form.getId());
         facedbFace.setFaceId(orgDb.getFaceId());
         try {
-            facedbfaceService.update(facedbFace);
+            facedbfaceService.update(facedbFace, orgDb);
         } catch (ServiceException e) {
             this.logger.error("修改人像集失败，错误码：{}，异常信息：{}", e.getCode(), e.getMessage(), e);
             return createFailResponse(e);
@@ -198,7 +198,7 @@ public class FacedbfaceController extends BaseController {
         ResponseEntity<String> resp = validite(bindingResult);
         FacedbFace orgDb = getOriginalDbObj(form.getId());
         try {
-            facedbfaceService.reFeature(orgDb.getFaceId());
+            facedbfaceService.reFeature(orgDb.getFaceId(), orgDb.getFacePathFull());
         } catch (ServiceException e) {
             this.logger.error("人像集重提特征失败，错误码：{}，异常信息：{}", e.getCode(), e.getMessage(), e);
             return createFailResponse(e);
