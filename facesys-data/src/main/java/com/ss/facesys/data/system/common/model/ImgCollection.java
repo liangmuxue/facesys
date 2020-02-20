@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.List;
 import java.util.StringJoiner;
 
 /**
@@ -37,6 +38,16 @@ public class ImgCollection {
     private Long collectionTimeMin;
     @Transient
     private Long collectionTimeMax;
+    @Transient
+    private List<String> captureDeviceIds;
+    @Transient
+    private List<String> personcardDeviceIds;
+    @Transient
+    private String captureDataIds;
+    @Transient
+    private String personcardDataIds;
+    @Transient
+    private String captureId;
 
     public Integer getId() {
         return id;
@@ -102,6 +113,46 @@ public class ImgCollection {
         this.collectionTimeMax = collectionTimeMax;
     }
 
+    public List<String> getCaptureDeviceIds() {
+        return captureDeviceIds;
+    }
+
+    public void setCaptureDeviceIds(List<String> captureDeviceIds) {
+        this.captureDeviceIds = captureDeviceIds;
+    }
+
+    public List<String> getPersoncardDeviceIds() {
+        return personcardDeviceIds;
+    }
+
+    public void setPersoncardDeviceIds(List<String> personcardDeviceIds) {
+        this.personcardDeviceIds = personcardDeviceIds;
+    }
+
+    public String getCaptureDataIds() {
+        return captureDataIds;
+    }
+
+    public void setCaptureDataIds(String captureDataIds) {
+        this.captureDataIds = captureDataIds;
+    }
+
+    public String getPersoncardDataIds() {
+        return personcardDataIds;
+    }
+
+    public void setPersoncardDataIds(String personcardDataIds) {
+        this.personcardDataIds = personcardDataIds;
+    }
+
+    public String getCaptureId() {
+        return captureId;
+    }
+
+    public void setCaptureId(String captureId) {
+        this.captureId = captureId;
+    }
+
     @Override
     public String toString() {
         return new StringJoiner(", ", ImgCollection.class.getSimpleName() + "[", "]")
@@ -113,6 +164,10 @@ public class ImgCollection {
                 .add("userId='" + userId + "'")
                 .add("collectionTimeMin='" + collectionTimeMin + "'")
                 .add("collectionTimeMax='" + collectionTimeMax + "'")
+                .add("captureDeviceIds='" + captureDeviceIds + "'")
+                .add("personcardDeviceIds='" + personcardDeviceIds + "'")
+                .add("captureDataIds='" + captureDataIds + "'")
+                .add("personcardDataIds='" + personcardDataIds + "'")
                 .toString();
     }
 

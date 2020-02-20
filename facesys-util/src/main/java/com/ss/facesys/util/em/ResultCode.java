@@ -72,6 +72,8 @@ public enum ResultCode implements IResultCode {
     RECOG_CAPTURE_VPLAT_FAIL("800015001", "人像检索1:N抓拍库汇聚平台操作异常"),
     RECOG_FACEDB_VPLAT_FAIL("800015002", "人像检索1:N注册库汇聚平台操作异常"),
 
+    COLLECT_VPLAT_GET_FAIL("800082001", "收藏失败：无法查询到目标图片的详细信息"),
+
     ;
 
     private String code;

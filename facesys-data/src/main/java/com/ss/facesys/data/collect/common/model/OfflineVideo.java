@@ -1,27 +1,37 @@
 package com.ss.facesys.data.collect.common.model;
 
+import javax.persistence.Column;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.io.Serializable;
 
 /**
-* 离线视频
-* @author chao
-* @create 2020/2/7
-* @email lishuangchao@ss-cas.com
-**/
+ * 离线视频
+ *
+ * @author chao
+ * @create 2020/2/7
+ * @email lishuangchao@ss-cas.com
+ **/
 @Table(name = "cw_base_offline_video")
 public class OfflineVideo implements Serializable {
     private static final long serialVersionUID = 1L;
     private Integer id;
+    @Column(name = "device_id")
+    private String deviceId;
     private String name;
+    @Column(name = "deposit_url")
     private String depositUrl;
+    @Column(name = "upload_mode")
     private Integer uploadModeCode;
+    @Column(name = "upload_url")
     private String uploadUrl;
     private String format;
     private String remark;
+    @Column(name = "org_id")
     private String orgId;
+    @Column(name = "create_user_id")
     private String createUserId;
+    @Column(name = "create_time")
     private String createTime;
     private Integer status;
     @Transient
@@ -35,6 +45,14 @@ public class OfflineVideo implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
     }
 
     public String getName() {
@@ -132,4 +150,5 @@ public class OfflineVideo implements Serializable {
     public void setCreateUserName(String createUserName) {
         this.createUserName = createUserName;
     }
+
 }

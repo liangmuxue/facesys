@@ -23,6 +23,15 @@ public interface IAccessService {
     String login();
 
     /**
+     * 通用请求
+     *
+     * @param jsonParam
+     * @param requestUrl
+     * @return
+     */
+    JSONObject request(String jsonParam, String requestUrl);
+
+    /**
      * 人员轨迹检索
      *
      * @param paramString
@@ -327,6 +336,7 @@ public interface IAccessService {
 
     /**
      * 修改人证设备
+     *
      * @param paramJson
      * @return
      */
@@ -334,6 +344,7 @@ public interface IAccessService {
 
     /**
      * 删除人证设备
+     *
      * @param paramJson
      * @return
      */
