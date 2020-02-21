@@ -17,8 +17,7 @@ import javax.validation.constraints.NotNull;
 * @email lishuangchao@ss-cas.com
 **/
 @Table(name = "cw_base_victory")
-public class VictoryVO extends Pagination {
-    private static final long serialVersionUID = 1L;
+public class VictoryVO {
     @NotNull(message = "{victory.id.empty}", groups = {APIEditGroup.class, APIDeltGroup.class, APIGetsGroup.class})
     private Integer id;
     @NotBlank(message = "{victory.name.empty}", groups = {APIAddGroup.class, APIEditGroup.class})

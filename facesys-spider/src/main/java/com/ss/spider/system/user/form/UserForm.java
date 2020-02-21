@@ -41,7 +41,7 @@ public class UserForm implements Serializable {
     @Length(min = 1, max = 32, message = "{user.password.length}", groups = {com.ss.valide.APIAddGroup.class})
     private String password;
     @NotBlank(message = "{user.name.empty}", groups = {com.ss.valide.APIAddGroup.class, com.ss.valide.APIEditGroup.class})
-    @Length(min = 1, max = 40, message = "{user.name.length}", groups = {com.ss.valide.APIAddGroup.class, com.ss.valide.APIEditGroup.class})
+    @Length(min = 2, max = 20, message = "{user.name.length}", groups = {com.ss.valide.APIAddGroup.class, com.ss.valide.APIEditGroup.class})
     private String name;
     @Length(max = 40, message = "{user.position.length}", groups = {com.ss.valide.APIAddGroup.class, com.ss.valide.APIEditGroup.class})
     private String position;
@@ -49,7 +49,7 @@ public class UserForm implements Serializable {
     @Length(max = 50, message = "{email.max.length}", groups = {com.ss.valide.APIAddGroup.class, com.ss.valide.APIEditGroup.class})
     private String email;
     @NotBlank(message = "{user.telephone.empty}", groups = {com.ss.valide.APIAddGroup.class, com.ss.valide.APIEditGroup.class})
-    @Length(max = 32, message = "{user.telephone.length}", groups = {com.ss.valide.APIAddGroup.class, com.ss.valide.APIEditGroup.class})
+    @Length(min = 11, max = 11, message = "{user.telephone.length}", groups = {com.ss.valide.APIAddGroup.class, com.ss.valide.APIEditGroup.class})
     private String phoneNumber;
     private String pictureUrl;
     @Length(max = 120, message = "{user.remark.length}", groups = {com.ss.valide.APIAddGroup.class, com.ss.valide.APIEditGroup.class})

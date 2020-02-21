@@ -39,15 +39,14 @@ public class VictoryServiceImpl implements IVictoryService {
     private OrganizationMapper organizationMapper;
 
     /**
-     * 战果汇总分页查询
+     * 战果汇总列表查询
      *
      * @param victoryVO
      * @return
      */
     @Override
-    public List<Victory> victoryPage(VictoryVO victoryVO) {
-        PageHelper.startPage(victoryVO.getCurrentPage(), victoryVO.getPageSize());
-        List<Victory> victories = this.victoryMapper.victoryPage(victoryVO);
+    public List<Victory> victoryList(VictoryVO victoryVO) {
+        List<Victory> victories = this.victoryMapper.victoryList(victoryVO);
         return victories;
     }
 

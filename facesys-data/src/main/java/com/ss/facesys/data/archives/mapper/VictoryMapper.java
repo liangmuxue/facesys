@@ -20,11 +20,11 @@ import java.util.List;
 @Mapper
 public interface VictoryMapper extends SsMapper<Victory> {
     /**
-     * 战果汇总分页查询
+     * 战果汇总列表查询
      * @param victoryVO
      * @return
      */
-    List<Victory> victoryPage(VictoryVO victoryVO);
+    List<Victory> victoryList(VictoryVO victoryVO);
 
     /**
      * 查询所有账户

@@ -45,26 +45,26 @@ public class VictoryController extends BaseController {
     private IVictoryService victoryService;
 
     /**
-     * 战果汇总分页查询
+     * 战果汇总列表查询
      * @param request
      * @param victoryVO
      * @param bindingResult
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = {"/page"}, method = {RequestMethod.POST})
-    @OpLog(model = ModuleCode.BUSINESS, desc = "战果汇总分页查询", type = OperaTypeEnum.SEARCH)
-    public ResponseEntity<PageEntity<Victory>> victoryPage(HttpServletRequest request, @RequestBody VictoryVO victoryVO, BindingResult bindingResult) throws Exception {
-        ResponseEntity<PageEntity<Victory>> resp = validite(bindingResult);
+    @RequestMapping(value = {"/list"}, method = {RequestMethod.POST})
+    @OpLog(model = ModuleCode.BUSINESS, desc = "战果汇总列表查询", type = OperaTypeEnum.SEARCH)
+    public ResponseEntity<List<Victory>> victoryList(HttpServletRequest request, @RequestBody VictoryVO victoryVO, BindingResult bindingResult) throws Exception {
+        ResponseEntity<List<Victory>> resp = validite(bindingResult);
         try {
-            //战果汇总分页查询
-            Page<Victory> data = (Page) this.victoryService.victoryPage(victoryVO);
-            resp.setData(new PageEntity(data));
+            //战果汇总列表查询
+            List<Victory> data = this.victoryService.victoryList(victoryVO);
+            resp.setData(data);
         } catch (Exception e) {
-            //战果汇总分页查询失败处理
+            //战果汇总列表查询失败处理
             resp = createFailResponse();
-            resp.setMessage("战果汇总分页查询失败");
-            this.logger.error("战果汇总分页查询失败，原因：" + e.toString(), e);
+            resp.setMessage("战果汇总列表查询失败");
+            this.logger.error("战果汇总列表查询失败，原因：" + e.toString(), e);
         }
         return resp;
     }

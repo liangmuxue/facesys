@@ -65,7 +65,8 @@
             parameterType="com.ss.facesys.data.resource.common.model.Camera">
 		SELECT
 		c.id,
-		c.cameraId,
+		case when c.standardCameraId is not null and c.standardCameraId != '' then c.standardCameraId else c.cameraId
+		end cameraId,
 		c.cameraName,
 		c.orgId,
 		o.org_cname AS orgName,

@@ -15,11 +15,11 @@ import java.util.List;
 **/
 public interface IVictoryService {
   /**
-   * 战果汇总分页查询
+   * 战果汇总列表查询
    * @param victoryVO
    * @return
    */
-  List<Victory> victoryPage(VictoryVO victoryVO);
+  List<Victory> victoryList(VictoryVO victoryVO);
 
   /**
    * 账户树查询
