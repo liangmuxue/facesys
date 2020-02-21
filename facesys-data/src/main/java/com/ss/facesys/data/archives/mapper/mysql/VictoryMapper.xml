@@ -4,8 +4,8 @@
     "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ss.facesys.data.archives.mapper.VictoryMapper">
 
-	<!--战果汇总分页-->
-	<select id="victoryPage" parameterType="com.ss.facesys.data.archives.common.web.VictoryVO" resultType="com.ss.facesys.data.archives.common.model.Victory">
+	<!--战果汇总列表查询-->
+	<select id="victoryList" parameterType="com.ss.facesys.data.archives.common.web.VictoryVO" resultType="com.ss.facesys.data.archives.common.model.Victory">
 		SELECT
 			v.id,
 			v.victory_name as victoryName,
