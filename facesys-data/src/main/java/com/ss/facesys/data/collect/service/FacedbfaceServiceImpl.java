@@ -167,6 +167,13 @@ public class FacedbfaceServiceImpl extends BaseServiceImpl implements IFacedbfac
         }
     }
 
+    private void recentImgCheck(FacedbFace facedbFace) throws ServiceException {
+        if (StringUtils.isBlank(facedbFace.getRecentPath())) {
+            return;
+        }
+        faceDetectByUrl(facedbFace.getRecentPath().contains(FileConstant.FILE_HTTPADD) ? facedbFace.getRecentPath() : FilePropertiesUtil.getHttpUrl() + facedbFace.getRecentPath());
+    }
+
     /**
      * 新增人像集
      *
@@ -176,6 +183,7 @@ public class FacedbfaceServiceImpl extends BaseServiceImpl implements IFacedbfac
     @Override
     public String insert(FacedbFace facedbFace) throws ServiceException {
 //        duplicateCheck(facedbFace);
+        recentImgCheck(facedbFace);
         // 新增人像系统数据
         try {
             facedbFaceMapper.insertSelective(facedbFace);
@@ -208,6 +216,7 @@ public class FacedbfaceServiceImpl extends BaseServiceImpl implements IFacedbfac
     @Override
     public void update(FacedbFace facedbFace, FacedbFace orginal) throws ServiceException {
 //        duplicateCheck(facedbFace);
+        recentImgCheck(facedbFace);
         // 更新人像系统数据
         try {
             facedbFaceMapper.updateByPrimaryKeySelective(facedbFace);
