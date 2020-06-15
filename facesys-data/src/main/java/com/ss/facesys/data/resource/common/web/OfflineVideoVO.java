@@ -1,10 +1,7 @@
 package com.ss.facesys.data.resource.common.web;
 
 import com.ss.request.Pagination;
-import com.ss.valide.APIAddGroup;
-import com.ss.valide.APIDeltGroup;
-import com.ss.valide.APIEditGroup;
-import com.ss.valide.APIGetsGroup;
+import com.ss.valide.*;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.Table;
@@ -20,10 +17,13 @@ import javax.validation.constraints.NotNull;
 @Table(name = "cw_base_offline_video")
 public class OfflineVideoVO extends Pagination {
     private static final long serialVersionUID = 1L;
-    @NotNull(message = "{offlineVideo.id.empty}", groups = {APIEditGroup.class, APIDeltGroup.class, APIGetsGroup.class})
+    @NotNull(message = "{offlineVideo.id.empty}", groups = {APIEditGroup.class, APIDeltGroup.class, APIGetsGroup.class, APIOpStatusGroup.class})
     private Integer id;
+    private String deviceId;
+    @NotBlank(message = "{offlineVideo.name.empty}", groups = {APIAddGroup.class})
     private String name;
     private String depositUrl;
+    @NotNull(message = "{offlineVideo.uploadModeCode.empty}", groups = {APIAddGroup.class})
     private Integer uploadModeCode;
     private String uploadUrl;
     private String format;
@@ -140,5 +140,13 @@ public class OfflineVideoVO extends Pagination {
 
     public void setCreateUserName(String createUserName) {
         this.createUserName = createUserName;
+    }
+
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
     }
 }

@@ -18,16 +18,19 @@
         ov.org_id as orgId,
         ov.create_user_id as createUserId,
         ov.create_time as createTime,
+        ov.status,
         o.org_cname as orgName,
-        u.name as createUserName
+        u.name as createUserName,
+        e.enumName as statusName
         from cw_base_offline_video ov
         left join cw_ge_organization o on ov.org_id = o.org_id
         left join cw_ge_user u on ov.create_user_id = u.user_id
-        where ov.status = 1
+        left join cw_base_enum e on ov.status = e.enumValue and e.enumType = "VIDEO_STATE"
+        where ov.status != 0
     </select>
 
     <!--添加离线视频-->
-    <insert id="insertOfflineVideo" parameterType="com.ss.facesys.data.resource.common.web.OfflineVideoVO">
+    <insert id="insertOfflineVideo" parameterType="com.ss.facesys.data.resource.common.web.OfflineVideoVO" useGeneratedKeys="true" keyProperty="id">
         insert into cw_base_offline_video
         (name, deposit_url, upload_mode, upload_url, format, remark, org_id, create_user_id, create_time, status)
         value
@@ -38,6 +41,7 @@
     <select id="detail" resultType="com.ss.facesys.data.collect.common.model.OfflineVideo" parameterType="com.ss.facesys.data.resource.common.web.OfflineVideoVO">
         select
         ov.id,
+        ov.device_id as deviceId,
         ov.name,
         ov.deposit_url as depositUrl,
         ov.upload_mode as uploadModeCode,
@@ -66,5 +70,32 @@
     <!--删除离线视频-->
     <update id="deleteOfflineVideo" parameterType="com.ss.facesys.data.resource.common.web.OfflineVideoVO">
         update cw_base_offline_video set status = 0 where id = #{id}
+    </update>
+
+    <!--添加离线视频关联ocean编号-->
+    <update id="insertDeviceId" parameterType="com.ss.facesys.data.resource.common.web.OfflineVideoVO">
+        update cw_base_offline_video
+        <set>
+            <if test="depositUrl != null and depositUrl != ''">
+                deposit_url = #{depositUrl, jdbcType=VARCHAR},
+            </if>
+            <if test="format != null and format != ''">
+                format = #{format, jdbcType=VARCHAR},
+            </if>
+            <if test="status != null and status != ''">
+                status = #{status, jdbcType=SMALLINT},
+            </if>
+            <if test="deviceId != null and deviceId != ''">
+                device_id = #{deviceId, jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--修改离线视频状态-->
+    <update id="updateStatus" parameterType="com.ss.facesys.data.resource.common.web.OfflineVideoVO">
+        update cw_base_offline_video set
+        status = #{status, jdbcType=SMALLINT}
+        where id = #{id}
     </update>
 </mapper>

@@ -14,6 +14,7 @@ import java.io.Serializable;
 public class OfflineVideo implements Serializable {
     private static final long serialVersionUID = 1L;
     private Integer id;
+    private String deviceId;
     private String name;
     private String depositUrl;
     private Integer uploadModeCode;
@@ -28,6 +29,8 @@ public class OfflineVideo implements Serializable {
     private String orgName;
     @Transient
     private String createUserName;
+    @Transient
+    private String statusName;
 
     public Integer getId() {
         return id;
@@ -35,6 +38,14 @@ public class OfflineVideo implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
     }
 
     public String getName() {
@@ -131,5 +142,13 @@ public class OfflineVideo implements Serializable {
 
     public void setCreateUserName(String createUserName) {
         this.createUserName = createUserName;
+    }
+
+    public String getStatusName() {
+        return statusName;
+    }
+
+    public void setStatusName(String statusName) {
+        this.statusName = statusName;
     }
 }

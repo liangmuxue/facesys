@@ -40,6 +40,12 @@ public class HttpConstant {
     public static String VMS_LOGIN = "/api/user/login";
     public static String VMS_DEVICE = "/api/device";
     public static String SWAGGER_LIST = "/api/foreign/getList";
+    public static String VIDEO_PAGES = "/api/device/video/pages";
+    public static String VIDEO_GET = "/api/device/video/get";
+    public static String VIDEO_LIST = "/api/device/video/list";
+    public static String VIDEO_ADD = "/api/device/video/add";
+    public static String VIDEO_EDIT = "/api/device/video/edit";
+    public static String VIDEO_DELETE = "/api/device/video/delete";
 
     /**
      * 设备绑定引擎

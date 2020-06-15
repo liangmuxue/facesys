@@ -8,14 +8,12 @@ import com.ss.facesys.data.collect.common.model.OfflineVideo;
 import com.ss.facesys.data.resource.common.web.OfflineVideoVO;
 import com.ss.facesys.util.PropertiesUtil;
 import com.ss.facesys.util.constant.NumberConstant;
+import com.ss.facesys.util.file.FilePropertiesUtil;
 import com.ss.facesys.web.manage.baseinfo.controller.BaseController;
 import com.ss.response.PageEntity;
 import com.ss.response.ResponseEntity;
 import com.ss.spider.log.constants.ModuleCode;
-import com.ss.valide.APIAddGroup;
-import com.ss.valide.APIDeltGroup;
-import com.ss.valide.APIEditGroup;
-import com.ss.valide.APIGetsGroup;
+import com.ss.valide.*;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -71,7 +69,39 @@ public class OfflineVideoController extends BaseController {
     }
 
     /**
-     * 本地上传视频
+     * 新增离线视频
+     * @param para
+     * @param redirectAttributes
+     * @return
+     */
+    @RequestMapping(value = {"/insert"}, method = {RequestMethod.POST})
+    @OpLog(model = ModuleCode.RESOURCE, desc = "离线视频新增", type = OperaTypeEnum.ADD)
+    public ResponseEntity<Object> insertOfflineVideo(@RequestBody @Validated({APIAddGroup.class}) OfflineVideoVO para, RedirectAttributes redirectAttributes) {
+        ResponseEntity<Object> resp = createSuccResponse();
+        try {
+            para.setCreateTime(String.valueOf(System.currentTimeMillis()));
+            para.setStatus(NumberConstant.ONE);
+            //添加离线视频
+            int id = this.offlineVideoService.insertOfflineVideo(para);
+            if (id > 0) {
+                resp.setMessage("离线视频新增成功");
+                resp.setData(id);
+            } else {
+                resp = createFailResponse();
+                resp.setMessage("离线视频新增失败，请联系管理员");
+            }
+            resp.setMessage("离线视频新增成功");
+        } catch (Exception e) {
+            this.logger.error("离线视频新增失败原因：+" + e.toString(), e);
+            resp = createFailResponse();
+            resp.setMessage("操作失败！请联系管理员！");
+        }
+        return resp;
+    }
+
+    /**
+     * 上传视频
+     *
      * @param srcFile
      * @param para
      * @param redirectAttributes
@@ -79,7 +109,7 @@ public class OfflineVideoController extends BaseController {
      */
     @RequestMapping(value = {"/localUpload"}, method = {RequestMethod.POST})
     @OpLog(model = ModuleCode.RESOURCE, desc = "离线视频上传", type = OperaTypeEnum.ADD)
-    public ResponseEntity<Object> localUpload(@RequestParam("file") MultipartFile srcFile, @Validated({APIAddGroup.class})OfflineVideoVO para, RedirectAttributes redirectAttributes) {
+    public ResponseEntity<Object> localUpload(@RequestParam("file") MultipartFile srcFile, @Validated({APIOpStatusGroup.class}) OfflineVideoVO para, RedirectAttributes redirectAttributes) {
         ResponseEntity<Object> resp = createSuccResponse();
         //没有选择文件，srcFile为空
         if (srcFile.isEmpty()) {
@@ -90,9 +120,9 @@ public class OfflineVideoController extends BaseController {
         //选择了文件，开始上传操作
         try {
             //构建上传目标路径，找到了项目的target的classes目录
-            File destFile = new File(PropertiesUtil.getOfflineVideoUrl());
+            File destFile = new File(FilePropertiesUtil.getLocation() + "/video");
             if (!destFile.exists()) {
-                destFile.mkdir();
+                destFile.mkdirs();
             }
             //根据srcFile大小，准备一个字节数组
             byte[] bytes = srcFile.getBytes();
@@ -102,34 +132,33 @@ public class OfflineVideoController extends BaseController {
             String prefixName = fileName.substring(0, fileName.lastIndexOf("."));
             //获得文件后缀名称
             String suffixName = fileName.substring(fileName.lastIndexOf(".") + 1);
-            if (!("rmvb".equals(suffixName) || "avi".equals(suffixName) || "mp4".equals(suffixName) || "mov".equals(suffixName))){
+            if (!("rmvb".equals(suffixName) || "avi".equals(suffixName) || "mp4".equals(suffixName) || "mov".equals(suffixName))) {
                 resp = createFailResponse();
                 resp.setMessage("视频格式不正确！");
                 return resp;
             }
             //设置日期格式
             SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
+            String url = "/video/" + prefixName + "_" + df.format(new Date()) + "." + suffixName;
             //拼接上传路径
-            String fileUrl = PropertiesUtil.getOfflineVideoUrl() + "/" + prefixName + "_" + df.format(new Date()) + "." + suffixName;
-            Path path = Paths.get(fileUrl);
+            Path path = Paths.get(FilePropertiesUtil.getLocation() + url);
             //** 开始将源文件写入目标地址
             Files.write(path, bytes);
-            para.setName(prefixName);
-            para.setDepositUrl(fileUrl);
-            para.setUploadModeCode(NumberConstant.ONE);
+            para.setDepositUrl(url);
             para.setFormat(suffixName);
-            para.setCreateTime(String.valueOf(System.currentTimeMillis()));
-            para.setStatus(NumberConstant.ONE);
-            //添加离线视频
-            int num = this.offlineVideoService.insertOfflineVideo(para);
+            //离线视频关联ocean
+            int num = this.offlineVideoService.insertDeviceId(para);
             if (num > 0) {
                 resp.setMessage("视频上传成功");
             } else {
+                para.setStatus(NumberConstant.FOUR);
+                this.offlineVideoService.updateStatus(para);
                 resp = createFailResponse();
                 resp.setMessage("视频上传失败，请联系管理员");
             }
-            resp.setMessage("视频上传成功");
         } catch (IOException e) {
+            para.setStatus(NumberConstant.FOUR);
+            this.offlineVideoService.updateStatus(para);
             this.logger.error("离线视频上传失败原因：+" + e.toString(), e);
             resp = createFailResponse();
             resp.setMessage("操作失败！请联系管理员！");
@@ -139,6 +168,7 @@ public class OfflineVideoController extends BaseController {
 
     /**
      * 查询离线视频详情
+     *
      * @param para
      * @param bindingResult
      * @return
@@ -146,7 +176,7 @@ public class OfflineVideoController extends BaseController {
      */
     @RequestMapping(value = {"/detail"}, method = {RequestMethod.POST})
     @OpLog(model = ModuleCode.RESOURCE, desc = "查询离线视频详情", type = OperaTypeEnum.SELECT)
-    public ResponseEntity<OfflineVideo> offlineVideoDetail(@RequestBody @Validated({APIGetsGroup.class})OfflineVideoVO para , BindingResult bindingResult) throws Exception {
+    public ResponseEntity<OfflineVideo> offlineVideoDetail(@RequestBody @Validated({APIGetsGroup.class}) OfflineVideoVO para, BindingResult bindingResult) throws Exception {
         ResponseEntity<OfflineVideo> resp = validite(bindingResult);
         try {
             OfflineVideo offlineVideo = this.offlineVideoService.detail(para);
@@ -162,6 +192,7 @@ public class OfflineVideoController extends BaseController {
 
     /**
      * 修改离线视频信息
+     *
      * @param para
      * @param bindingResult
      * @return
@@ -169,7 +200,7 @@ public class OfflineVideoController extends BaseController {
      */
     @RequestMapping(value = {"/update"}, method = {RequestMethod.POST})
     @OpLog(model = ModuleCode.RESOURCE, desc = "修改离线视频信息", type = OperaTypeEnum.EDIT)
-    public ResponseEntity<String> updateOfflineVideo(@RequestBody @Validated({APIEditGroup.class})OfflineVideoVO para , BindingResult bindingResult) throws Exception {
+    public ResponseEntity<String> updateOfflineVideo(@RequestBody @Validated({APIEditGroup.class}) OfflineVideoVO para, BindingResult bindingResult) throws Exception {
         ResponseEntity<String> resp = validite(bindingResult);
         try {
             int num = this.offlineVideoService.updateOfflineVideo(para);
@@ -190,6 +221,7 @@ public class OfflineVideoController extends BaseController {
 
     /**
      * 删除离线视频
+     *
      * @param para
      * @param bindingResult
      * @return
@@ -197,30 +229,16 @@ public class OfflineVideoController extends BaseController {
      */
     @RequestMapping(value = {"/delete"}, method = {RequestMethod.POST})
     @OpLog(model = ModuleCode.RESOURCE, desc = "删除离线视频", type = OperaTypeEnum.DELETE)
-    public ResponseEntity<String> deleteInternetBar(@RequestBody @Validated({APIDeltGroup.class}) OfflineVideoVO para , BindingResult bindingResult) throws Exception {
+    public ResponseEntity<String> deleteInternetBar(@RequestBody @Validated({APIDeltGroup.class}) OfflineVideoVO para, BindingResult bindingResult) throws Exception {
         ResponseEntity<String> resp = validite(bindingResult);
         try {
-            //查询离线视频详情
-            OfflineVideo offlineVideo = this.offlineVideoService.detail(para);
-            if (offlineVideo != null){
-                File file = new File(offlineVideo.getDepositUrl());
-                //删除本地视频文件
-                if (file.delete()){
-                    //删除表中离线视频
-                    int num = this.offlineVideoService.deleteOfflineVideo(para);
-                    if (num > 0) {
-                        resp.setData("删除成功");
-                    } else {
-                        resp = createFailResponse();
-                        resp.setMessage("删除失败，请联系管理员");
-                    }
-                } else {
-                    resp = createFailResponse();
-                    resp.setMessage("删除失败，请联系管理员");
-                }
+            //删除表中离线视频
+            int num = this.offlineVideoService.deleteOfflineVideo(para);
+            if (num > 0) {
+                resp.setData("删除成功");
             } else {
                 resp = createFailResponse();
-                resp.setMessage("此视频不存在");
+                resp.setMessage("删除失败，请联系管理员");
             }
         } catch (Exception e) {
             //删除离线视频失败处理

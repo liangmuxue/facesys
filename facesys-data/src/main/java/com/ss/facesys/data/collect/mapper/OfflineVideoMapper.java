@@ -49,4 +49,18 @@ public interface OfflineVideoMapper extends SsMapper<OfflineVideo> {
    * @return
    */
   int deleteOfflineVideo(OfflineVideoVO internetBarVO);
+
+  /**
+   * 添加离线视频关联ocean编号
+   * @param para
+   * @return
+   */
+  int insertDeviceId(OfflineVideoVO para);
+
+  /**
+   * 修改状态
+   * @param para
+   * @return
+   */
+  int updateStatus(OfflineVideoVO para);
 }
