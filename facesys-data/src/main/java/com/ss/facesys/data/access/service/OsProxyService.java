@@ -35,6 +35,11 @@ public class OsProxyService {
         return BaseHttpUtil.httpPost(null, PropertiesUtil.getOshttp() + HttpConstant.TOKEN, null);
     }
 
+    public static JSONObject request(String jsonParam, String requestUrl) {
+        String resultString = BaseHttpUtil.httpPost(jsonParam, PropertiesUtil.getOshttp() + requestUrl, null);
+        return JSONObject.parseObject(resultString);
+    }
+
     /**
      * 人员轨迹检索
      *
@@ -47,8 +52,6 @@ public class OsProxyService {
         String resultString = BaseHttpUtil.httpPost(parmJson, PropertiesUtil.getOshttp() + HttpConstant.RECOG_TRACK, null);
         return JSONObject.parseObject(resultString);
     }
-
-
 
 
     public static JSONObject getRecogTerminalDb(String parmJson) {

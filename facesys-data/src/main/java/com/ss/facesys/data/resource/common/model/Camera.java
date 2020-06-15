@@ -14,6 +14,7 @@ import java.util.List;
 
 /**
  * Camera 设备信息
+ *
  * @author FrancisYs
  * @date 2019/8/19
  * @email yaoshuai@ss-cas.com
@@ -62,6 +63,7 @@ public class Camera implements Serializable {
     private String standardCameraId;
     private Date createTime;
     private Date updateTime;
+    private Integer state;
     @NotNull(message = "{camera.cameraEnabled.empty}", groups = {APIOpStatusGroup.class})
     private Integer cameraEnabled;
     @NotBlank(message = "{camera.orgId.empty}", groups = {APIAddGroup.class, APIEditGroup.class})
@@ -98,12 +100,12 @@ public class Camera implements Serializable {
     }
 
 
-    public int getId() {
+    public Integer getId() {
         return this.id;
     }
 
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -413,6 +415,13 @@ public class Camera implements Serializable {
         this.updateTime = updateTime;
     }
 
+    public Integer getState() {
+        return state;
+    }
+
+    public void setState(Integer state) {
+        this.state = state;
+    }
 
     public String getRegionCode() {
         return this.regionCode;
@@ -451,10 +460,6 @@ public class Camera implements Serializable {
 
     public void setCameraTypeList(List<Integer> cameraTypeList) {
         this.cameraTypeList = cameraTypeList;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public String getVillageCodes() {
@@ -512,4 +517,5 @@ public class Camera implements Serializable {
     public void setCameraEnabled(Integer cameraEnabled) {
         this.cameraEnabled = cameraEnabled;
     }
+
 }

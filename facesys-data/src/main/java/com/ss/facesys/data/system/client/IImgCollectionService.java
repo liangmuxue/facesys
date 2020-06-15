@@ -1,6 +1,7 @@
 package com.ss.facesys.data.system.client;
 
 import com.ss.exception.ServiceException;
+import com.ss.facesys.data.system.common.dto.ImgCollectionResultDTO;
 import com.ss.facesys.data.system.common.model.ImgCollection;
 
 import java.util.List;
@@ -14,7 +15,9 @@ import java.util.List;
  */
 public interface IImgCollectionService {
 
-    List<ImgCollection> pages(ImgCollection query, int currentPage, int pageSize);
+    List<ImgCollectionResultDTO> pages(ImgCollection query, int currentPage, int pageSize);
+
+    String collect(ImgCollection imgCollection) throws ServiceException;
 
     String remove(ImgCollection imgCollection) throws ServiceException;
 

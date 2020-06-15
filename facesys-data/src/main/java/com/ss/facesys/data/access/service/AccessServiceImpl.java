@@ -26,6 +26,11 @@ public class AccessServiceImpl implements IAccessService {
     }
 
     @Override
+    public JSONObject request(String jsonParam, String requestUrl) {
+        return OsProxyService.request(jsonParam, requestUrl);
+    }
+
+    @Override
     public JSONObject getRecogTrack(String parmJson) {
         return OsProxyService.getRecogTrack(parmJson);
     }

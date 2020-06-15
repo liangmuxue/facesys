@@ -16,6 +16,8 @@ public class HttpConstant {
     public static String RECOG_TERMINALDB = "/api/recog/terminalDb";
     public static String CAMERA_CAPTURE_PAGE = "/api/camera/capture/pages";
     public static String CAMERA_CAPTURE_GET = "/api/camera/capture/get";
+    public static String VIDEO_CAPTURE_GET = "/api/video/capture/get";
+    public static String PERSONCARD_COLLECT_GET = "/api/personcard/collect/get";
     public static String COLLECT_PAGES = "/api/terminal/collect/pages";
     public static String CAPTURESTATISTICS_COUNT = "/api/captureStatistics/count";
     public static String CAMERA_ADD = "/api/device/camera/add";
