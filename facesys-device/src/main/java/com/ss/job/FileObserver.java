@@ -65,7 +65,6 @@
 //                        String fileUrl = url + "/" + file.getParentFile().getName() + "/" + file.getName();
 //                        String[] temps = file.getName().split("-");
 //                        String valueKey = temps[0] + temps[2];
-//                        System.out.println(FileObserver.this.jedisUtil.hmget(CacheConstant.REDIS_KEY_DEVICE_SNAP_CLOUDWALK));
 //                        if (FileObserver.this.jedisUtil.hmget(CacheConstant.REDIS_KEY_DEVICE_SNAP_CLOUDWALK) == null){
 //                            Map<String, Object> deviceMap = new HashMap<>();
 //                            deviceMap.put(valueKey, fileUrl);
@@ -83,7 +82,7 @@
 //                                        break;
 //                                    } else {
 //                                        //发送请求
-//                                        result = requestvplatRequest(valueKey, base64, base64Full, file.getParentFile().getName());
+//                                        result = requestvplatRequest(valueKey, base64Full, base64, file.getParentFile().getName());
 //                                        break;
 //                                    }
 //                                }

@@ -27,7 +27,7 @@ public class LogQuery extends Pagination {
     private String type;
     @Range(min = 1L, max = 3L, message = "日志类型超出范围{min}-{max}")
     private Short logType;
-    @Range(max = 1L, message = "操作结果超出范围{min}-{max}")
+    @Range(max = 10L, message = "操作结果超出范围{min}-{max}")
     private Short isSuccess;
     @Length(max = 32, message = "警员编号不超过{max}个字符")
     private String workCode;
