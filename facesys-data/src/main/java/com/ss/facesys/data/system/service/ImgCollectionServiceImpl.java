@@ -77,13 +77,17 @@ public class ImgCollectionServiceImpl implements IImgCollectionService {
                 CollectionPersoncardDetail personcardDetail;
                 CollectionCaptureDetail captureDetail;
                 if (resultDTO.getDataType() == COLLECTION_DATA_TYPE_PERSONCARD && (personcardDetail = personcardDataMap.get(resultDTO.getDataId())) != null) {
+                    personcardDetail.setCaptureUrl(FilePropertiesUtil.getNginxImgUrl() + personcardDetail.getCaptureUrl());
+                    personcardDetail.setCardUrl(FilePropertiesUtil.getNginxImgUrl() + personcardDetail.getCardUrl());
                     resultDTO.setCollectionPersoncardDetail(personcardDetail);
-                    resultDTO.setCollectionUrl(FilePropertiesUtil.getNginxImgUrl() + personcardDetail.getCaptureUrl());
+                    resultDTO.setCollectionUrl(personcardDetail.getCaptureUrl());
                     resultDTO.setDeviceName(personcardDetail.getDeviceName());
                     resultDTO.setDataCreateTime(personcardDetail.getCaptureTime());
                 } else if ((captureDetail = captureDataMap.get(resultDTO.getDataId())) != null) {
+                    captureDetail.setCaptureUrl(FilePropertiesUtil.getNginxImgUrl() + captureDetail.getCaptureUrl());
+                    captureDetail.setPanoramaUrl(FilePropertiesUtil.getNginxImgUrl() + captureDetail.getPanoramaUrl());
                     resultDTO.setCollectionCaptureDetail(captureDetail);
-                    resultDTO.setCollectionUrl(FilePropertiesUtil.getNginxImgUrl() + captureDetail.getCaptureUrl());
+                    resultDTO.setCollectionUrl(captureDetail.getCaptureUrl());
                     resultDTO.setDeviceName(captureDetail.getDeviceName());
                     resultDTO.setDataCreateTime(captureDetail.getCaptureTime());
                 }

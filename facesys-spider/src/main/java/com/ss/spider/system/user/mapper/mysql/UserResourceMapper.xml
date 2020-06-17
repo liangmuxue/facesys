@@ -6,17 +6,19 @@
     <select id="allCameraList" parameterType="com.ss.spider.system.user.model.UserResource"
             resultType="com.ss.spider.system.user.model.UserResource">
         select
-        id as resourceId,
-        cameraId as resourceCode,
-        cameraName as resourceName
-        from cw_base_camera
+        c.id as resourceId,
+        c.cameraId as resourceCode,
+        c.cameraName as resourceName
+        from cw_base_camera c
+        left join cw_ge_user_resource_ref ur on c.id = ur.resource_id and type = 1
         <where>
-            state = 0
+            c.state = 0
+            and ur.user_id = #{userId}
             <if test="resourceName != null and resourceName != ''">
-                and cameraName like concat('%', #{resourceName,jdbcType=VARCHAR},'%')
+                and c.cameraName like concat('%', #{resourceName,jdbcType=VARCHAR},'%')
             </if>
             <if test="orgId != null and orgId != ''">
-                and orgId = #{orgId, jdbcType=VARCHAR}
+                and c.orgId = #{orgId, jdbcType=VARCHAR}
             </if>
         </where>
     </select>
