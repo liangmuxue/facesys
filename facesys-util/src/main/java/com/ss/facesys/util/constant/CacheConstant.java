@@ -151,5 +151,9 @@ public class CacheConstant {
     public static final String TASK_SYNC_DOOR_FLOW = "ISC_SYNC_DOOR_FLOW";
     //云从抓拍照存放key
     public static final String REDIS_KEY_DEVICE_SNAP_CLOUDWALK = "DEVICE_SNAP_CLOUDWALK";
+    //生成库id标题
+    public static final String COMM_PLAT_DB_INFO = "COMM_PLAT_DB_INFO";
+
+    public static final String DB_INFO = "DB_INFO";
 
 }

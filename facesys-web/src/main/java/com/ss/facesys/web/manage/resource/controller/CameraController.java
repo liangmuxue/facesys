@@ -129,12 +129,12 @@ public class CameraController extends BaseController {
             // 新增设备
             int num = this.cameraService.insertCamera(camera);
             //设备推流，抽帧启动
-            if(num > CommonConstant.COMMON_0 && StringUtils.isNotBlank(camera.getCameraIp()) && !"rtsp://".equals(camera.getStreamSource())){
-                com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDevicePushFlowUrl(), camera.getCameraId(), camera.getCameraName());
-                if (!CommonConstant.COMMON_2.equals(camera.getCameraType())){
-                    com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDeviceCutFlowUrl(), camera.getCameraId(), camera.getCameraName());
-                }
-            }
+//            if(num > CommonConstant.COMMON_0 && StringUtils.isNotBlank(camera.getCameraIp()) && !"rtsp://".equals(camera.getStreamSource())){
+//                com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDevicePushFlowUrl(), camera.getCameraId(), camera.getCameraName());
+//                if (!CommonConstant.COMMON_2.equals(camera.getCameraType())){
+//                    com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDeviceCutFlowUrl(), camera.getCameraId(), camera.getCameraName());
+//                }
+//            }
             if (num > 0) {
                 Map<String, String> map = new HashMap<String, String>();
                 map.put("result", "添加成功");

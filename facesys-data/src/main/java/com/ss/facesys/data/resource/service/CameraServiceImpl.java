@@ -150,8 +150,6 @@ public class CameraServiceImpl extends BaseServiceImpl implements ICameraService
     @Override
     public int insertCamera(Camera camera) throws Exception {
         int num = 0;
-        String deviceId = null;
-        boolean flag = true;
         ImportCamera check = null;
         //检查ip,编号是否重复
         if (StringUtils.isNotBlank(camera.getStandardCameraId())){
@@ -160,31 +158,19 @@ public class CameraServiceImpl extends BaseServiceImpl implements ICameraService
         if (check != null){
             return num;
         }
-        if (PropertiesUtil.getOceanOrViid() != 0){
-            // 同步添加至欧神设备
-            deviceId = addOsCamera(camera);
-            if (StringUtils.isNotBlank(deviceId)) {
-                camera.setCameraId(deviceId);
-            } else {
-                flag = false;
-            }
-        }
-        if (flag) {
-            num = this.cameraMapper.insertCamera(camera);
-            UserResource userResource = new UserResource();
-            userResource.setType(ResourceType.CAMERA.getValue());
-            List<String> resourceIds = new ArrayList<>();
-            resourceIds.add(String.valueOf(camera.getId()));
-            userResource.setResourceIds(resourceIds);
-            userResource.setUserId(camera.getUserIds());
+        Long dbId = createDbId();
+        camera.setCameraId("device_" + dbId);
+        num = this.cameraMapper.insertCamera(camera);
+        UserResource userResource = new UserResource();
+        userResource.setType(ResourceType.CAMERA.getValue());
+        List<String> resourceIds = new ArrayList<>();
+        resourceIds.add(String.valueOf(camera.getId()));
+        userResource.setResourceIds(resourceIds);
+        userResource.setUserId(camera.getUserId());
+        this.userResourceMapper.add(userResource);
+        if (!"1000".equals(camera.getUserIds())){
+            userResource.setUserId("1000");
             this.userResourceMapper.add(userResource);
-            if (!"1000".equals(camera.getUserIds())){
-                userResource.setUserId("1000");
-                this.userResourceMapper.add(userResource);
-            }
-        } else {
-            LOG.error("内网同步 - 新增 设备失败：");
-            throw new Exception("内网同步 - 新增像机失败 deviceId = " + deviceId);
         }
         return num;
     }
@@ -197,46 +183,46 @@ public class CameraServiceImpl extends BaseServiceImpl implements ICameraService
      */
     @Override
     public int updateCamera(Camera camera) throws Exception {
-        Camera c = this.cameraMapper.selectById(camera);
-        camera.setCameraId(c.getCameraId());
-        camera.setCameraType(c.getCameraType());
-        boolean osflag = true;
-        JSONObject resultJson = null;
-        String postUrl = null;
-        Map<String, Object> parm = null;
+//        Camera c = this.cameraMapper.selectById(camera);
+//        camera.setCameraId(c.getCameraId());
+//        camera.setCameraType(c.getCameraType());
+//        boolean osflag = true;
+//        JSONObject resultJson = null;
+//        String postUrl = null;
+//        Map<String, Object> parm = null;
         int updateCamera = 0;
-        if (PropertiesUtil.getOceanOrViid() != 0){
-            int cameraType = camera.getCameraType();
-            if (cameraType > 0) {
-                // 普通摄像机调用 欧神-新增像机接口
-                postUrl = PropertiesUtil.getOshttp() + HttpConstant.CAMERA_EDIT;
-                parm = new HashMap<>();
-                BigDecimal b = new BigDecimal(camera.getLat());
-                double f1 = b.setScale(4, 4).doubleValue();
-                BigDecimal b1 = new BigDecimal(camera.getLon());
-                double f2 = b1.setScale(4, 4).doubleValue();
-                parm.put("deviceId", camera.getCameraId());
-                parm.put("deviceName", camera.getCameraName());
-                parm.put("lat", f1);
-                parm.put("lng", f2);
-                parm.put("address", camera.getInstallAdd());
-                parm.put("deviceCode", camera.getThirdCameraId());
-                parm.put("para", camera.getStreamSource());
-                parm.put("cameraType", "RTSP");
-            } else {
-                osflag = false;
-            }
-            if (osflag) {
-                String result = BaseHttpUtil.httpPost(JsonUtils.getFastjsonFromObject(parm), postUrl, null);
-                LOG.info("相机修改" + result);
-                resultJson = JSONObject.parseObject(result);
-                // 欧神修改失败抛出异常
-                if (!StringUtils.checkSuccess(resultJson)) {
-                    LOG.error("内网同步 -  修改设备失败：" + resultJson.getString("message"));
-                    throw new Exception("内网同步 -修改设备失败 deviceName = " + camera.getCameraName());
-                }
-            }
-        }
+//        if (PropertiesUtil.getOceanOrViid() != 0){
+//            int cameraType = camera.getCameraType();
+//            if (cameraType > 0) {
+//                // 普通摄像机调用 欧神-新增像机接口
+//                postUrl = PropertiesUtil.getOshttp() + HttpConstant.CAMERA_EDIT;
+//                parm = new HashMap<>();
+//                BigDecimal b = new BigDecimal(camera.getLat());
+//                double f1 = b.setScale(4, 4).doubleValue();
+//                BigDecimal b1 = new BigDecimal(camera.getLon());
+//                double f2 = b1.setScale(4, 4).doubleValue();
+//                parm.put("deviceId", camera.getCameraId());
+//                parm.put("deviceName", camera.getCameraName());
+//                parm.put("lat", f1);
+//                parm.put("lng", f2);
+//                parm.put("address", camera.getInstallAdd());
+//                parm.put("deviceCode", camera.getThirdCameraId());
+//                parm.put("para", camera.getStreamSource());
+//                parm.put("cameraType", "RTSP");
+//            } else {
+//                osflag = false;
+//            }
+//            if (osflag) {
+//                String result = BaseHttpUtil.httpPost(JsonUtils.getFastjsonFromObject(parm), postUrl, null);
+//                LOG.info("相机修改" + result);
+//                resultJson = JSONObject.parseObject(result);
+//                // 欧神修改失败抛出异常
+//                if (!StringUtils.checkSuccess(resultJson)) {
+//                    LOG.error("内网同步 -  修改设备失败：" + resultJson.getString("message"));
+//                    throw new Exception("内网同步 -修改设备失败 deviceName = " + camera.getCameraName());
+//                }
+//            }
+//        }
         updateCamera = this.cameraMapper.updateCamera(camera);
         return updateCamera;
     }
@@ -249,31 +235,31 @@ public class CameraServiceImpl extends BaseServiceImpl implements ICameraService
      */
     @Override
     public int deleteCamera(Camera camera) throws Exception {
-        Camera c = this.cameraMapper.selectById(camera);
+//        Camera c = this.cameraMapper.selectById(camera);
         //设备停止推流，停止抽帧
-        if (c != null){
-            String resultString = com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDevicePushFlowStopUrl(), c.getCameraId(), c.getCameraName());
-            if (!CommonConstant.COMMON_2.equals(c.getCameraType()) && resultString != null){
-                resultString = com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDeviceCutFlowStopUrl(), c.getCameraId(), c.getCameraName());
-            }
+//        if (c != null){
+//            String resultString = com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDevicePushFlowStopUrl(), c.getCameraId(), c.getCameraName());
+//            if (!CommonConstant.COMMON_2.equals(c.getCameraType()) && resultString != null){
+//                resultString = com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDeviceCutFlowStopUrl(), c.getCameraId(), c.getCameraName());
+//            }
 //            if (resultString == null){
 //                return 0;
 //            }
-        }
-        if (c != null && StringUtils.isNotBlank(c.getCameraId())) {
-            if (c.getCameraType() > 0) {
-                // 普通像机类型调用欧神删除像机设备接口
-                String postUrl = PropertiesUtil.getOshttp() + HttpConstant.CAMERA_DELETE;
-                Map<String, Object> parm = new HashMap<>(CommonConstant.HASHMAP_INITIALCAPACITY);
-                parm.put("deviceId", c.getCameraId());
-                String result = BaseHttpUtil.httpPost(JSONObject.toJSON(parm).toString(), postUrl, null);
-                JSONObject resultJson = JSONObject.parseObject(result);
-                if (!StringUtils.checkSuccess(resultJson)) {
-                    LOG.error("内网同步 -  刪除设备失败：" + resultJson.getString("message"));
-                    throw new Exception("内网同步 - 刪除像机失败 deviceId = " + c.getCameraId());
-                }
-            }
-        }
+//        }
+//        if (c != null && StringUtils.isNotBlank(c.getCameraId())) {
+//            if (c.getCameraType() > 0) {
+//                // 普通像机类型调用欧神删除像机设备接口
+//                String postUrl = PropertiesUtil.getOshttp() + HttpConstant.CAMERA_DELETE;
+//                Map<String, Object> parm = new HashMap<>(CommonConstant.HASHMAP_INITIALCAPACITY);
+//                parm.put("deviceId", c.getCameraId());
+//                String result = BaseHttpUtil.httpPost(JSONObject.toJSON(parm).toString(), postUrl, null);
+//                JSONObject resultJson = JSONObject.parseObject(result);
+//                if (!StringUtils.checkSuccess(resultJson)) {
+//                    LOG.error("内网同步 -  刪除设备失败：" + resultJson.getString("message"));
+//                    throw new Exception("内网同步 - 刪除像机失败 deviceId = " + c.getCameraId());
+//                }
+//            }
+//        }
         int num = this.cameraMapper.deleteCamera(camera);
         UserResource userResource = new UserResource();
         userResource.setResourceId(camera.getId());
@@ -290,25 +276,25 @@ public class CameraServiceImpl extends BaseServiceImpl implements ICameraService
      */
     @Override
     public int opStatus(Camera camera) throws Exception {
-        Camera c = this.cameraMapper.selectById(camera);
+//        Camera c = this.cameraMapper.selectById(camera);
         //设备推流，抽帧
-        if (c != null){
-            String resultString = null;
-            if(camera.getCameraEnabled() == 1 && c.getCameraEnabled() == 0) {
-                resultString = com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDevicePushFlowUrl(), c.getCameraId(), c.getCameraName());
-                if (!CommonConstant.COMMON_2.equals(c.getCameraType()) && resultString != null) {
-                    resultString = com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDeviceCutFlowUrl(), c.getCameraId(), c.getCameraName());
-                }
-            } else if (camera.getCameraEnabled() == 0 && c.getCameraEnabled() == 1) {
-                resultString = com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDevicePushFlowStopUrl(), c.getCameraId(), c.getCameraName());
-                if (!CommonConstant.COMMON_2.equals(c.getCameraType()) && resultString != null) {
-                    resultString = com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDeviceCutFlowStopUrl(), c.getCameraId(), c.getCameraName());
-                }
-            }
+//        if (c != null){
+//            String resultString = null;
+//            if(camera.getCameraEnabled() == 1 && c.getCameraEnabled() == 0) {
+//                resultString = com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDevicePushFlowUrl(), c.getCameraId(), c.getCameraName());
+//                if (!CommonConstant.COMMON_2.equals(c.getCameraType()) && resultString != null) {
+//                    resultString = com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDeviceCutFlowUrl(), c.getCameraId(), c.getCameraName());
+//                }
+//            } else if (camera.getCameraEnabled() == 0 && c.getCameraEnabled() == 1) {
+//                resultString = com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDevicePushFlowStopUrl(), c.getCameraId(), c.getCameraName());
+//                if (!CommonConstant.COMMON_2.equals(c.getCameraType()) && resultString != null) {
+//                    resultString = com.ss.utils.BaseHttpUtil.deviceHttpPost(DeviceProperties.getDeviceUrl() + DeviceProperties.getDeviceCutFlowStopUrl(), c.getCameraId(), c.getCameraName());
+//                }
+//            }
 //            if (resultString == null) {
 //                return 0;
 //            }
-        }
+//        }
         //修改状态
         int result = this.cameraMapper.opStatus(camera);
         return result;

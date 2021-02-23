@@ -60,6 +60,9 @@ public class PropertiesUtil {
     private static int topN;
     private static double threshold;
 
+    private static int dbPrefix;
+    private static int dbMagnification;
+
     public static String getCaptureFile() {
         return captureFile;
     }
@@ -555,5 +558,21 @@ public class PropertiesUtil {
 
     public static void setThreshold(double threshold) {
         PropertiesUtil.threshold = threshold;
+    }
+
+    public static int getDbPrefix() {
+        return dbPrefix;
+    }
+
+    public static void setDbPrefix(int dbPrefix) {
+        PropertiesUtil.dbPrefix = dbPrefix;
+    }
+
+    public static int getDbMagnification() {
+        return dbMagnification;
+    }
+
+    public static void setDbMagnification(int dbMagnification) {
+        PropertiesUtil.dbMagnification = dbMagnification;
     }
 }

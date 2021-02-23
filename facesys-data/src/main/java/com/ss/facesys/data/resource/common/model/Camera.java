@@ -73,7 +73,6 @@ public class Camera implements Serializable {
     @Transient
     private String regionCode;
     @Transient
-    @NotBlank(message = "{user.ids.empty}", groups = {APIAddGroup.class, APIDeltGroup.class})
     private String userIds;
     @Transient
     private String villageCodes;
@@ -89,6 +88,8 @@ public class Camera implements Serializable {
     private String sceneName;
     @Transient
     private String cameraTypeName;
+    @Transient
+    private String userId;
 
     public String getUserIds() {
         return this.userIds;
@@ -518,4 +519,11 @@ public class Camera implements Serializable {
         this.cameraEnabled = cameraEnabled;
     }
 
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 }

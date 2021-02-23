@@ -2,7 +2,10 @@ package com.ss.facesys.data.baseinfo.service;
 
 import com.ss.facesys.data.baseinfo.client.IBaseService;
 import com.ss.facesys.data.baseinfo.common.model.User;
+import com.ss.facesys.util.PropertiesUtil;
 import com.ss.facesys.util.StringUtils;
+import com.ss.facesys.util.constant.CacheConstant;
+import com.ss.facesys.util.jedis.JedisUtil;
 import com.ss.spider.system.organization.model.Organization;
 import com.ss.spider.system.organization.service.OrganizationService;
 import org.apache.commons.collections.CollectionUtils;
@@ -34,6 +37,9 @@ public class BaseServiceImpl implements IBaseService {
 
     @Resource
     private OrganizationService<Organization> organizationService;
+
+    @Resource
+    public JedisUtil jedisUtil;
 
     /**
      * 返回查询用户权限小区的sql条件
@@ -109,4 +115,34 @@ public class BaseServiceImpl implements IBaseService {
         return allList.stream().map(Organization::getOrgId).collect(Collectors.toList());
     }
 
+    /**
+     * 获取测温安防库id
+     *
+     * @param
+     * @return
+     */
+    protected Long createDbId(){
+        return mask(PropertiesUtil.getDbPrefix(), PropertiesUtil.getDbMagnification(), CacheConstant.COMM_PLAT_DB_INFO, CacheConstant.DB_INFO);
+    }
+
+    /**
+     * 获取掩码
+     *
+     * @param prefix 前缀
+     * @param magnification 倍率
+     * @param titleOne 标题一
+     * @param titleTwo 标题二
+     * @return
+     */
+    public Long mask(int prefix,int magnification,String titleOne,String titleTwo){
+        Long defaultValue = Long.valueOf(prefix) * magnification + 1;
+        String hget = String.valueOf(jedisUtil.hget(titleOne, titleTwo));
+        if("null".equals(hget)){
+            jedisUtil.hset(titleOne,titleTwo ,defaultValue);
+        }else{
+            defaultValue = Long.valueOf(hget) + 1;
+            jedisUtil.hset(titleOne,titleTwo,defaultValue);
+        }
+        return defaultValue;
+    }
 }

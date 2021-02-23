@@ -211,7 +211,7 @@ public class DevicePersoncardServiceImpl extends BaseServiceImpl implements IDev
             throw new ServiceException(ResultCode.PERSONCARD_FACESYS_UPDATE_FAIL);
         }
         // 更新汇聚平台数据
-        updateVplatPersonCard(devicePersoncard);
+//        updateVplatPersonCard(devicePersoncard);
     }
 
     /**
@@ -238,7 +238,7 @@ public class DevicePersoncardServiceImpl extends BaseServiceImpl implements IDev
         userResource.setType(ResourceType.PERSONCARD.getValue());
         userResourceMapper.delete(userResource);
         // 删除汇聚平台数据
-        deleteVplatPersonCard(dbCheck.getDeviceId());
+//        deleteVplatPersonCard(dbCheck.getDeviceId());
     }
 
     private void updateVplatPersonCard(DevicePersoncard devicePersoncard) throws ServiceException {
