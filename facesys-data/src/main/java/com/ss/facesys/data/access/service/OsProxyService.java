@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.ss.facesys.data.access.common.web.TaskReceive;
 import com.ss.facesys.util.PropertiesUtil;
 import com.ss.facesys.util.constant.HttpConstant;
+import com.ss.facesys.util.constant.SfgoHttpConstant;
 import com.ss.facesys.util.http.BaseHttpUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -521,7 +522,7 @@ public class OsProxyService {
         Map<String, Object> parm = new HashMap<>(2);
         parm.put("faceA", faceA);
         parm.put("faceB", faceB);
-        String resultString = BaseHttpUtil.httpPost(JSON.toJSONString(parm), PropertiesUtil.getOshttp() + HttpConstant.RECOG_ONE_VS_ONE, null);
+        String resultString = BaseHttpUtil.httpPost(JSON.toJSONString(parm), PropertiesUtil.getSfgohttp() + SfgoHttpConstant.FACE_MATCH, null);
         return JSONObject.parseObject(resultString);
     }
 
@@ -532,7 +533,7 @@ public class OsProxyService {
      * @return
      */
     public static JSONObject getRecogCameraDb(String parmJson) {
-        String resultString = BaseHttpUtil.httpPost(parmJson, PropertiesUtil.getOshttp() + HttpConstant.RECOG_CAMERADB, null);
+        String resultString = BaseHttpUtil.httpPost(parmJson, PropertiesUtil.getSfgohttp() + SfgoHttpConstant.STATICDB_SEARCH_MULTIPLE, null);
         return JSONObject.parseObject(resultString);
     }
 
@@ -543,7 +544,7 @@ public class OsProxyService {
      * @return
      */
     public static JSONObject getRecogRegisterDb(String parmJson) {
-        String resultString = BaseHttpUtil.httpPost(parmJson, PropertiesUtil.getOshttp() + HttpConstant.RECOG_REGISTERDB, null);
+        String resultString = BaseHttpUtil.httpPost(parmJson, PropertiesUtil.getSfgohttp() + SfgoHttpConstant.STATICDB_SEARCH_MULTIPLE, null);
         return JSONObject.parseObject(resultString);
     }
 

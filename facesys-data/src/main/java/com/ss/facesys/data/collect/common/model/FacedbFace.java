@@ -75,7 +75,18 @@ public class FacedbFace extends DTEntity {
     private String cardPathFull;
     @Transient
     private String recentPathFull;
+    @Transient
+    private Float recogScore;
+    @Transient
+    private String orgName;
 
+    public String getOrgName() {
+        return orgName;
+    }
+
+    public void setOrgName(String orgName) {
+        this.orgName = orgName;
+    }
 
     public Integer getId() {
         return id;
@@ -275,6 +286,14 @@ public class FacedbFace extends DTEntity {
 
     public void setFacedbName(String facedbName) {
         this.facedbName = facedbName;
+    }
+
+    public Float getRecogScore() {
+        return recogScore;
+    }
+
+    public void setRecogScore(Float recogScore) {
+        this.recogScore = recogScore;
     }
 
     public String getFacePathFull() {

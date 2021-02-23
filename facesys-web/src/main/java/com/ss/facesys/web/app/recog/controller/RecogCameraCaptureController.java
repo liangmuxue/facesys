@@ -5,6 +5,7 @@ import com.ss.annotation.OpLog;
 import com.ss.enums.OperaTypeEnum;
 import com.ss.exception.ServiceException;
 import com.ss.facesys.data.access.client.IAccessService;
+import com.ss.facesys.data.baseinfo.common.dto.CompareResultDTO;
 import com.ss.facesys.data.baseinfo.common.dto.PersonCaptureDTO;
 import com.ss.facesys.data.resource.common.model.Camera;
 import com.ss.facesys.data.resource.mapper.CameraMapper;
@@ -32,10 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -62,11 +60,32 @@ public class RecogCameraCaptureController extends BaseController {
             paramCheck(captureQuery);
             deviceCheck(captureQuery);
             // 请求汇聚平台
+            JSONObject params = new JSONObject();
+            //根据条件决定传参是特征值字符串还是图片
+            params.put("img", captureQuery.getImg());
+            params.put("groupId", StringUtils.join(captureQuery.getDeviceIds(), ","));
+            if (captureQuery.getTopN() != null) {
+                params.put("topN", captureQuery.getTopN());
+            }
+            if (captureQuery.getThresholdMin() != null && captureQuery.getThresholdMax() != null) {
+                List<String> strings = new ArrayList<>();
+                strings.add(String.valueOf(captureQuery.getThresholdMin()));
+                strings.add(String.valueOf(captureQuery.getThresholdMax()));
+                params.put("thresholdScore", strings);
+            }
+            if(captureQuery.getCaptureTimeB() != null) {
+                params.put("bTime", captureQuery.getCaptureTimeB()/1000);
+            } else {
+                params.put("bTime", -1);
+            }
+            if (captureQuery.getCaptureTimeE() != null) {
+                params.put("eTime", captureQuery.getCaptureTimeE()/1000);
+            }
             JSONObject oceanResult;
             try {
                 oceanResult = this.accessService.getRecogCameraDb(getVplatParam(captureQuery));
                 if (!StringUtils.checkSuccess(oceanResult)) {
-                    throw new ServiceException(oceanResult.getString("code"), oceanResult.getString("message"));
+                    throw new ServiceException(oceanResult.getString("result"), oceanResult.getString("message"));
                 }
             } catch (ServiceException e) {
                 throw e;
@@ -74,7 +93,39 @@ public class RecogCameraCaptureController extends BaseController {
                 throw new ServiceException(ResultCode.RECOG_CAPTURE_VPLAT_FAIL);
             }
             // 将结果转换为数据传输对象
-            List<PersonCaptureDTO> resultList = BaseFormatJsonUtil.formatList(oceanResult.get("data"), PersonCaptureDTO.class);
+            List<CompareResultDTO> resultList1 = BaseFormatJsonUtil.formatList(oceanResult.get("datas"), CompareResultDTO.class);
+            if(resultList1 == null || resultList1.isEmpty()){
+                resp.setData(assemblePage(filterCondition(new ArrayList<>() , captureQuery), null, null));
+                return resp;
+            }
+//            List<PersonCaptureDTO> resultList = snapRecordMapper.getById(resultList1);
+            List<PersonCaptureDTO> resultList =null;
+            if(resultList.isEmpty()){
+                resp.setData(assemblePage(filterCondition(new ArrayList<>() , captureQuery), null, null));
+                return resp;
+            }
+            for(PersonCaptureDTO p:resultList){
+                for(CompareResultDTO c:resultList1){
+                    if(String.valueOf(c.getUserId()).equals(p.getCaptureId())){
+                        p.setRecogScore(c.getScore());
+                        continue;
+                    }
+                }
+            }
+            if (CollectionUtils.isNotEmpty(resultList)) {
+                Collections.sort(resultList, new Comparator<PersonCaptureDTO>() {
+                    @Override
+                    public int compare(PersonCaptureDTO o1, PersonCaptureDTO o2) {
+                        if (o1.getRecogScore() > o2.getRecogScore() ) {
+                            return -1;
+                        }
+                        if (o1.getRecogScore().equals(o2.getRecogScore())) {
+                            return 0;
+                        }
+                        return 1;
+                    }
+                });
+            }
             resp.setData(assemblePage(filterCondition(resultList, captureQuery), null, null));
         } catch (ServiceException e) {
             this.logger.error("1:N 抓拍库检索失败，错误码：{}，异常信息：{}", e.getCode(), e.getMessage(), e);

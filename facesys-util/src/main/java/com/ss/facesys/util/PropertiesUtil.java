@@ -63,6 +63,8 @@ public class PropertiesUtil {
     private static int dbPrefix;
     private static int dbMagnification;
 
+    private static String sfgohttp;
+
     public static String getCaptureFile() {
         return captureFile;
     }
@@ -574,5 +576,13 @@ public class PropertiesUtil {
 
     public static void setDbMagnification(int dbMagnification) {
         PropertiesUtil.dbMagnification = dbMagnification;
+    }
+
+    public static String getSfgohttp() {
+        return sfgohttp;
+    }
+
+    public static void setSfgohttp(String sfgohttp) {
+        PropertiesUtil.sfgohttp = sfgohttp;
     }
 }
