@@ -1,3 +1,4 @@
+/*
 package com.ss.facesys.web.manage.access.controller;
 
 import com.alibaba.fastjson.JSON;
@@ -37,13 +38,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+*/
 /**
  * MonitorController 布控请求
  * @author FrancisYs
  * @date 2019/8/06
  * @update 2019/8/22
  * @email yaoshuai@ss-cas.com
- */
+ *//*
+
 @RestController
 @RequestMapping({"/monitor"})
 public class MonitorController extends BaseController {
@@ -58,13 +61,15 @@ public class MonitorController extends BaseController {
     private IEnumService enumService;
 
 
-    /**
+    */
+/**
      * 查询布控分页列表
      * @param monitor
      * @param bindingResult
      * @return
      * @throws Exception
-     */
+     *//*
+
     @RequestMapping(value = {"/page"}, method = {RequestMethod.POST})
     @OpLog(model = "80007", desc = "查询布控分页列表", type = OperaTypeEnum.SELECT)
     public ResponseEntity<Map<String, Object>> getMonitorPage(@RequestBody @Validated(APIPageGroup.class) MonitorVO monitor, BindingResult bindingResult) throws Exception {
@@ -120,13 +125,15 @@ public class MonitorController extends BaseController {
         return resp;
     }
 
-    /**
+    */
+/**
      * 查询布控列表
      * @param monitorDTO
      * @param bindingResult
      * @return
      * @throws Exception
-     */
+     *//*
+
     @RequestMapping(value = {"/list"}, method = {RequestMethod.POST})
     @OpLog(model = "80007", desc = "查询布控列表", type = OperaTypeEnum.SELECT)
     public ResponseEntity<Map<String, Object>> getMonitorlist(@RequestBody MonitorDTO monitorDTO, BindingResult bindingResult) throws Exception {
@@ -158,13 +165,15 @@ public class MonitorController extends BaseController {
         return resp;
     }
 
-    /**
+    */
+/**
      * 查询布控详情
      * @param monitor
      * @param bindingResult
      * @return
      * @throws Exception
-     */
+     *//*
+
     @RequestMapping(value = {"/detail"}, method = {RequestMethod.POST})
     @OpLog(model = "80007", desc = "查询布控详细信息", type = OperaTypeEnum.SELECT)
     public ResponseEntity<Map<String, Object>> getMonitorDetail(@RequestBody @Validated(APIGetsGroup.class) MonitorVO monitor, BindingResult bindingResult) throws Exception {
@@ -220,13 +229,15 @@ public class MonitorController extends BaseController {
         }
     }
 
-    /**
+    */
+/**
      * 新增布控任务
      * @param monitor
      * @param bindingResult
      * @return
      * @throws Exception
-     */
+     *//*
+
     @RequestMapping(value = {"/insert"}, method = {RequestMethod.POST})
     @OpLog(model = "80007", desc = "新增布控信息", type = OperaTypeEnum.ADD)
     public ResponseEntity<Map<String, Object>> insertMonitor(@RequestBody @Validated(APIAddGroup.class) MonitorVO monitor, BindingResult bindingResult) throws Exception {
@@ -268,13 +279,15 @@ public class MonitorController extends BaseController {
         return resp;
     }
 
-    /**
+    */
+/**
      * 删除布控任务
      * @param monitor
      * @param bindingResult
      * @return
      * @throws Exception
-     */
+     *//*
+
     @RequestMapping(value = {"/delete"}, method = {RequestMethod.POST})
     @OpLog(model = "80007", desc = "删除布控信息", type = OperaTypeEnum.DELETE)
     public ResponseEntity<Map<String, Object>> deleteMonitor(@RequestBody @Validated(APIDeltGroup.class) MonitorVO monitor, BindingResult bindingResult) throws Exception {
@@ -306,13 +319,15 @@ public class MonitorController extends BaseController {
         return resp;
     }
 
-    /**
+    */
+/**
      * 修改布控信息
      * @param monitor
      * @param bindingResult
      * @return
      * @throws Exception
-     */
+     *//*
+
     @RequestMapping(value = {"/update"}, method = {RequestMethod.POST})
     @OpLog(model = "80007", desc = "修改布控信息", type = OperaTypeEnum.EDIT)
     public ResponseEntity<Map<String, Object>> updateMonitor(@RequestBody @Validated(APIEditGroup.class) MonitorVO monitor, BindingResult bindingResult) throws Exception {
@@ -354,13 +369,15 @@ public class MonitorController extends BaseController {
         return resp;
     }
 
-    /**
+    */
+/**
      * 修改布控启动暂停状态
      * @param monitor
      * @param bindingResult
      * @return
      * @throws Exception
-     */
+     *//*
+
     @RequestMapping(value = {"/updateStatus"}, method = {RequestMethod.POST})
     @OpLog(model = "80007", desc = "修改布控启动暂停状态", type = OperaTypeEnum.EDIT)
     public ResponseEntity<Map<String, Object>> updateMonitorStatus(@RequestBody @Validated(APIKeyStateGroup.class) MonitorVO monitor, BindingResult bindingResult) throws Exception {
@@ -401,3 +418,4 @@ public class MonitorController extends BaseController {
     }
 
 }
+*/

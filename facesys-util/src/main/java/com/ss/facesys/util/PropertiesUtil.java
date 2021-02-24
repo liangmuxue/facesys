@@ -67,6 +67,8 @@ public class PropertiesUtil {
 
     private static String captureUrl;
 
+    private static String monitorCode;
+
     public static String getCaptureFile() {
         return captureFile;
     }
@@ -594,5 +596,13 @@ public class PropertiesUtil {
 
     public static void setCaptureUrl(String captureUrl) {
         PropertiesUtil.captureUrl = captureUrl;
+    }
+
+    public static String getMonitorCode() {
+        return monitorCode;
+    }
+
+    public static void setMonitorCode(String monitorCode) {
+        PropertiesUtil.monitorCode = monitorCode;
     }
 }
