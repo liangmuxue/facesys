@@ -65,6 +65,8 @@ public class PropertiesUtil {
 
     private static String sfgohttp;
 
+    private static String monitorCode;
+
     public static String getCaptureFile() {
         return captureFile;
     }
@@ -584,5 +586,13 @@ public class PropertiesUtil {
 
     public static void setSfgohttp(String sfgohttp) {
         PropertiesUtil.sfgohttp = sfgohttp;
+    }
+
+    public static String getMonitorCode() {
+        return monitorCode;
+    }
+
+    public static void setMonitorCode(String monitorCode) {
+        PropertiesUtil.monitorCode = monitorCode;
     }
 }
