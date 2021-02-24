@@ -29,8 +29,6 @@ public class MonitorTask {
     private Long endTime;
     @Column(name = "face_threshold")
     private Float faceThreshold;
-    @Column(name = "body_threshold")
-    private Float bodyThreshold;
     @Column(name = "camera_ids")
     private String cameraIds;
     @Column(name = "facedb_ids")
@@ -51,7 +49,7 @@ public class MonitorTask {
     private Long createTime;
     @Column(name = "update_user_id")
     private String updateUserId;
-    @Column(name = "updateTime")
+    @Column(name = "update_time")
     private Long updateTime;
     @Column(name = "delete_user_id")
     private String deleteUserId;
@@ -132,14 +130,6 @@ public class MonitorTask {
 
     public void setFaceThreshold(Float faceThreshold) {
         this.faceThreshold = faceThreshold;
-    }
-
-    public Float getBodyThreshold() {
-        return bodyThreshold;
-    }
-
-    public void setBodyThreshold(Float bodyThreshold) {
-        this.bodyThreshold = bodyThreshold;
     }
 
     public String getCameraIds() {
