@@ -65,6 +65,8 @@ public class PropertiesUtil {
 
     private static String sfgohttp;
 
+    private static String captureUrl;
+
     private static String monitorCode;
 
     public static String getCaptureFile() {
@@ -586,6 +588,14 @@ public class PropertiesUtil {
 
     public static void setSfgohttp(String sfgohttp) {
         PropertiesUtil.sfgohttp = sfgohttp;
+    }
+
+    public static String getCaptureUrl() {
+        return captureUrl;
+    }
+
+    public static void setCaptureUrl(String captureUrl) {
+        PropertiesUtil.captureUrl = captureUrl;
     }
 
     public static String getMonitorCode() {
