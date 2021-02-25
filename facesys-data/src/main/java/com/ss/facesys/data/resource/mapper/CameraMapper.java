@@ -6,6 +6,7 @@ import com.ss.facesys.data.resource.common.model.Camera;
 import com.ss.facesys.data.resource.common.web.CameraQueryVO;
 import com.ss.facesys.data.statistic.common.dto.CameraFaceCaptureDTO;
 import com.ss.mapper.SsMapper;
+import com.ss.spider.system.organization.model.Organization;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
@@ -112,4 +113,6 @@ public interface CameraMapper extends SsMapper<Camera> {
      * @return
      */
     int updateCameraState(List<Camera> paramCamera);
+
+    List<Organization> findTreeCameras(CameraQueryVO queryVO);
 }

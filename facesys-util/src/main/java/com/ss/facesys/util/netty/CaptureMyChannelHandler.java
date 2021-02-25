@@ -99,7 +99,6 @@ public class CaptureMyChannelHandler extends SimpleChannelInboundHandler<Object>
      * @param msg
      * @throws Exception
      */
-    @Override
     protected void messageReceived(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof HttpRequest) {
             doHandlerHttpRequest(ctx, (HttpRequest) msg);
@@ -205,4 +204,8 @@ public class CaptureMyChannelHandler extends SimpleChannelInboundHandler<Object>
         }
     }
 
+    @Override
+    protected void channelRead0(ChannelHandlerContext channelHandlerContext, Object o) throws Exception {
+
+    }
 }

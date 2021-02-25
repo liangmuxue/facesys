@@ -26,6 +26,11 @@
 
         <!-- *************************第三方依赖************************* -->
 
+        <dependency>
+            <groupId>org.yeauty</groupId>
+            <artifactId>netty-websocket-spring-boot-starter</artifactId>
+            <version>0.10.0</version>
+        </dependency>
         <!-- springboot 自动配置服务 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

@@ -3,6 +3,8 @@ package com.ss.facesys.data.collect.job;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.j7cai.common.util.JsonUtils;
+import com.ss.facesys.data.collect.common.dto.Transfer;
 import com.ss.facesys.data.collect.common.model.SnapRecord;
 import com.ss.facesys.data.collect.mapper.SnapRecordMapper;
 import com.ss.facesys.data.resource.common.model.Camera;
@@ -12,6 +14,11 @@ import com.ss.facesys.util.SpringUtil;
 import com.ss.facesys.util.StringUtils;
 import com.ss.facesys.util.constant.SfgoHttpConstant;
 import com.ss.facesys.util.em.AgeTypeEnum;
+import com.ss.facesys.util.em.ResourceType;
+import com.ss.facesys.util.jedis.JedisUtil;
+import com.ss.facesys.util.netty.MyWebSocket;
+import com.ss.spider.system.user.mapper.UserResourceMapper;
+import com.ss.spider.system.user.model.UserResource;
 import com.ss.tools.FileUtils;
 import com.ss.util.nasstorage.file.FileUtil;
 import com.ss.utils.BaseHttpUtil;
@@ -22,6 +29,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * com.ss.thread
@@ -36,6 +44,8 @@ public class CaptureThread implements Runnable {
 
     private SnapRecordMapper snapRecordMapper = SpringUtil.getBean(SnapRecordMapper.class);
     private CameraMapper cameraMapper = SpringUtil.getBean(CameraMapper.class);
+    private UserResourceMapper userResourceMapper = SpringUtil.getBean(UserResourceMapper.class);
+    private JedisUtil jedisUtil = SpringUtil.getBean(JedisUtil.class);
 
     private String deviceNo;
 
@@ -44,6 +54,9 @@ public class CaptureThread implements Runnable {
     private final static int FACE_TYPE = 1;
     private final static int BODY_TYPE = 2;
     private final static int FULL_TYPE = 3;
+
+    private final static String TODAY_CAPTURE_TOTAL = "FACESYS_TODAY_CAPTURE_TOTAL";
+    private final static String THIS_MONTH_CAPTURE_TOTAL = "FACESYS_THIS_MONTH_CAPTURE_TOTAL";
 
     public CaptureThread(String deviceNo, Map<Integer, String> captureMap) {
         this.deviceNo = deviceNo;
@@ -256,6 +269,55 @@ public class CaptureThread implements Runnable {
             parm.put("datetime", time / 1000);
             String result = BaseHttpUtil.httpPost(JSON.toJSONString(parm), PropertiesUtil.getSfgohttp() + SfgoHttpConstant.REID_ADD, null);
             this.logger.info("添加人体抓拍照返回信息：" + result);
+        }
+    }
+
+    private void transferData (SnapRecord snapRecord) {
+        Transfer transfer = new Transfer();
+        transfer.setType("capture");
+        transfer.setDeviceName(snapRecord.getDeviceName());
+        transfer.setCaptureTime(snapRecord.getCaptureTime());
+        transfer.setCaptureUrl(snapRecord.getCaptureUrl());
+        transfer.setPanoramaUrl(snapRecord.getPanoramaUrl());
+        int newTodayTotal = 0;
+        if (this.jedisUtil.get(TODAY_CAPTURE_TOTAL) == null){
+            this.jedisUtil.set(TODAY_CAPTURE_TOTAL, 1);
+            newTodayTotal = 1;
+        } else {
+            int oldTodayTotal = (int)this.jedisUtil.get(TODAY_CAPTURE_TOTAL);
+            this.jedisUtil.set(TODAY_CAPTURE_TOTAL, oldTodayTotal + 1);
+            newTodayTotal = oldTodayTotal + 1;
+        }
+        transfer.setTodayCaptureTotal(newTodayTotal);
+
+        int newThisMonthTotal = 0;
+        if (this.jedisUtil.get(THIS_MONTH_CAPTURE_TOTAL) == null){
+            this.jedisUtil.set(THIS_MONTH_CAPTURE_TOTAL, 1);
+            newThisMonthTotal = 1;
+        } else {
+            int oldThieMonthTotal = (int)this.jedisUtil.get(THIS_MONTH_CAPTURE_TOTAL);
+            this.jedisUtil.set(THIS_MONTH_CAPTURE_TOTAL, oldThieMonthTotal + 1);
+            newThisMonthTotal = oldThieMonthTotal + 1;
+        }
+
+        transfer.setThisMonthCaptureTotal(newThisMonthTotal);
+        for (String key : MyWebSocket.userIdMap.keySet()) {
+            if (MyWebSocket.userIdMap.get(key) != null) {
+                String[] strings = key.split("_");
+                String userId = strings[1];
+                UserResource userResource = new UserResource();
+                userResource.setUserId(userId);
+                userResource.setType(ResourceType.CAMERA.getValue());
+                List<UserResource> allResources = userResourceMapper.select(userResource);
+                if (allResources == null || allResources.size() == 0) {
+                    continue;
+                }
+                List<Integer> allResourceIds = allResources.stream().map(UserResource::getResourceId).collect(Collectors.toList());
+                if (!allResourceIds.contains(snapRecord.getDeviceId())) {
+                    continue;
+                }
+                MyWebSocket.userIdMap.get(key).sendText(JsonUtils.getFastjsonFromObject(transfer));
+            }
         }
     }
 }
