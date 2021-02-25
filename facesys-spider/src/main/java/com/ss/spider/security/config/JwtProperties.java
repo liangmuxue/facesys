@@ -13,7 +13,7 @@ public class JwtProperties {
     private static final int REFRESH_TOKEN_EXPTIME = 60;
     private static final String ISSUER = "http://www.clouwalk.cn";
     private static final String TOKEN_SIGN_KEY = "xm8EV6Hy5RMFK4EEACIDAwQus";
-    private Integer tokenExpirationTime = Integer.valueOf(30);
+    private Integer tokenExpirationTime = Integer.valueOf(1440);
 
 
     private String tokenIssuer = "http://www.clouwalk.cn";
@@ -22,7 +22,7 @@ public class JwtProperties {
     private String tokenSigningKey = "xm8EV6Hy5RMFK4EEACIDAwQus";
 
 
-    private Integer refreshTokenExpTime = Integer.valueOf(60);
+    private Integer refreshTokenExpTime = Integer.valueOf(1440);
 
 
     private String anonUrls;

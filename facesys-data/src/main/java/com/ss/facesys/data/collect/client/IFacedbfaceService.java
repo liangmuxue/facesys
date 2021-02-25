@@ -82,12 +82,11 @@ public interface IFacedbfaceService {
     /**
      * 重提人像集特征
      *
-     * @param faceId
-     * @param facePathFull
+     * @param orgDb
      * @return
      * @throws ServiceException
      */
-    void reFeature(String faceId, String facePathFull) throws ServiceException;
+    void reFeature(FacedbFace orgDb) throws ServiceException;
 
     /**
      * 根据Example条件更新人像集信息 facedbFace包含的不是null的属性值
