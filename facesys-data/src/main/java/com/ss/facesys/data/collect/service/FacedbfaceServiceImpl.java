@@ -191,13 +191,17 @@ public class FacedbfaceServiceImpl extends BaseServiceImpl implements IFacedbfac
             throw new ServiceException(ResultCode.FACEDBFACE_FACESYS_INSERT_FAIL);
         }
         // 新增汇聚平台数据
-        FacedbfaceDTO facedbfaceDTO = insertVplatFacedbface(facedbFace);
+        String faceId = String.valueOf(insertVplatFacedbface(facedbFace));
+        if(faceId==null){
+            throw new ServiceException(ResultCode.FACEDBFACE_VPLAT_FAIL);
+        }
+        Integer state = StatusEnum.EFFECT.getCode();
         // 更新人像系统数据
         FacedbFace update = new FacedbFace();
         update.setId(facedbFace.getId());
-        update.setFaceId(facedbfaceDTO.getId());
+        update.setFaceId(faceId);
 //        update.setFacePath(facedbfaceDTO.getFacePath());
-        update.setState(facedbfaceDTO.getState());
+        update.setState(state);
         try {
             facedbFaceMapper.updateByPrimaryKeySelective(update);
         } catch (Exception e) {
@@ -217,14 +221,18 @@ public class FacedbfaceServiceImpl extends BaseServiceImpl implements IFacedbfac
     public void update(FacedbFace facedbFace, FacedbFace orginal) throws ServiceException {
 //        duplicateCheck(facedbFace);
         recentImgCheck(facedbFace);
+        Long faceId = insertVplatFacedbface(facedbFace);
+        if(faceId==null){
+            throw new ServiceException(ResultCode.FACEDBFACE_VPLAT_FAIL);
+        }
+        facedbFace.setFaceId(String.valueOf(faceId));
+        facedbFace.setState(StatusEnum.EFFECT.getCode());
         // 更新人像系统数据
         try {
             facedbFaceMapper.updateByPrimaryKeySelective(facedbFace);
         } catch (Exception e) {
             throw new ServiceException(ResultCode.FACEDBFACE_FACESYS_UPDATE_FAIL);
         }
-        // 更新汇聚平台数据
-        updateVplatFacedbFace(facedbFace, orginal);
     }
 
     /**
@@ -236,20 +244,20 @@ public class FacedbfaceServiceImpl extends BaseServiceImpl implements IFacedbfac
     @Override
     public void delete(FacedbFace facedbFace) throws ServiceException {
         // 校验人像集是否布控
-        Facedb dbCheck = new Facedb();
-        dbCheck.setId(facedbFace.getFacedbId());
-        dbCheck = facedbMapper.selectByPrimaryKey(dbCheck);
-        if (dbCheck.getMonitorState() == CommonConstant.FACEDB_MONITOR_STATE_MONITORED) {
-            throw new ServiceException(ResultCode.FACEDB_DELETEFAIL_MONITOR);
-        }
+//        Facedb dbCheck = new Facedb();
+//        dbCheck.setId(facedbFace.getFacedbId());
+//        dbCheck = facedbMapper.selectByPrimaryKey(dbCheck);
+//        if (dbCheck.getMonitorState() == CommonConstant.FACEDB_MONITOR_STATE_MONITORED) {
+//            throw new ServiceException(ResultCode.FACEDB_DELETEFAIL_MONITOR);
+//        }
         // 删除人像系统数据
         try {
             facedbFaceMapper.updateByPrimaryKeySelective(facedbFace);
         } catch (Exception e) {
             throw new ServiceException(ResultCode.FACEDBFACE_FACESYS_DELETE_FAIL);
         }
-        // 删除汇聚平台数据
-        deleteVplatFacedbFace(Collections.singletonList(facedbFace.getFaceId()));
+//        // 删除汇聚平台数据
+//        deleteVplatFacedbFace(Collections.singletonList(facedbFace.getFaceId()));
     }
 
     /**
@@ -316,9 +324,9 @@ public class FacedbfaceServiceImpl extends BaseServiceImpl implements IFacedbfac
      * @param facedbFace
      * @return
      */
-    private FacedbfaceDTO insertVplatFacedbface(FacedbFace facedbFace) throws ServiceException {
+    private Long insertVplatFacedbface(FacedbFace facedbFace) throws ServiceException {
         FacedbfaceDTO dto = new FacedbfaceDTO();
-        String vId;
+        Long faceId =null;
         try {
             BeanUtils.copyProperties(facedbFace, dto, "facedbId");
             Facedb facedb = new Facedb();
@@ -326,30 +334,33 @@ public class FacedbfaceServiceImpl extends BaseServiceImpl implements IFacedbfac
             facedb.setStatus(StatusEnum.EFFECT.getCode());
             facedb = facedbMapper.selectOne(facedb);
             dto.setFacedbId(facedb.getFacedbId());
-            if (StringUtils.isNotBlank(facedbFace.getFacePath()) && !facedbFace.getFacePath().contains(FileConstant.FILE_HTTPADD)) {
-                String fullPath = FilePropertiesUtil.getHttpUrl() + facedbFace.getFacePath();
-                try {
-                    dto.setFaceImg(FileUtil.getBase64ByUrl(fullPath));
-                } catch (Exception e) {
-                    throw new ServiceException(ResultCode.IMG_TO_BASE64_FAIL);
-                }
-                dto.setFaceImgType(CommonConstant.IMGTYPE_BASE64);
+            String fullPath = !facedbFace.getFacePath().contains(FileConstant.FILE_HTTPADD) ? FilePropertiesUtil.getHttpUrl() + facedbFace.getFacePath() : facedbFace.getFacePath();
+            try {
+                dto.setFaceImg(FileUtil.getBase64ByUrl(fullPath));
+            } catch (Exception e) {
+                throw new ServiceException(ResultCode.IMG_TO_BASE64_FAIL);
             }
+            dto.setFaceImgType(CommonConstant.IMGTYPE_BASE64);
+            // 如果使用SFGO引擎，则需要生成对应引擎规则的ID
+            String engineId = getFaceDbEngineId(dto.getFacedbId());
+            faceId = com.ss.tools.UUIDUtils.encodeToFaceId(Integer.parseInt(engineId), (int) System.currentTimeMillis() / 1000, (int) (Math.random() * 10000));
             faceDetect(dto.getFaceImg());
-            JSONObject oceanResult = accessService.facedbfaceInsert(JsonUtils.getFastjsonFromObject(dto));
-            if (!StringUtils.checkSuccess(oceanResult)) {
-                throw new ServiceException(oceanResult.getString("code"), oceanResult.getString("message"));
+            JSONObject params = new JSONObject();
+            params.put("img", dto.getFaceImg());
+            params.put("groupId", dto.getFacedbId());
+            params.put("userId", faceId);
+            params.put("feature", null);
+            params.put("datetime", facedbFace.getUpdateTime() / 1000);
+            JSONObject oceanResult = accessService.facedbfaceInsert(params.toJSONString());
+            if (!"0".equals(oceanResult.getString("result"))) {
+                throw new ServiceException(oceanResult.getString("result"), oceanResult.getString("info"));
             }
-            vId = oceanResult.getString("data");
         } catch (ServiceException e) {
             throw e;
         } catch (Exception e) {
             throw new ServiceException(ResultCode.FACEDBFACE_VPLAT_FAIL);
         }
-        if (StringUtils.isBlank(vId)) {
-            throw new ServiceException(ResultCode.FACEDBFACE_VPLAT_FAIL);
-        }
-        return getVplatFacedbFace(vId);
+        return faceId;
     }
 
     /**
@@ -443,20 +454,14 @@ public class FacedbfaceServiceImpl extends BaseServiceImpl implements IFacedbfac
     /**
      * 重提人像集特征
      *
-     * @param faceId
+     * @param orgDb
      * @return
      * @throws ServiceException
      */
     @Override
-    public void reFeature(String faceId, String facePathFull) throws ServiceException {
+    public void reFeature(FacedbFace orgDb) throws ServiceException {
         try {
-            faceDetectByUrl(facePathFull);
-            JSONObject param = new JSONObject();
-            param.put("id", faceId);
-            JSONObject oceanResult = accessService.reFeatureFacedbFace(param.toJSONString());
-            if (!StringUtils.checkSuccess(oceanResult)) {
-                throw new ServiceException(oceanResult.getString("code"), oceanResult.getString("message"));
-            }
+            update(orgDb,null);
         } catch (ServiceException e) {
             throw e;
         } catch (Exception e) {
@@ -475,4 +480,13 @@ public class FacedbfaceServiceImpl extends BaseServiceImpl implements IFacedbfac
         facedbFaceMapper.updateByExampleSelective(facedbFace, example);
     }
 
+    /**
+     * 获取人像库序列值作为引擎底库id
+     *
+     * @param faceDbId
+     * @return
+     */
+    public String getFaceDbEngineId(String faceDbId){
+        return faceDbId.substring(faceDbId.length() - 6);
+    }
 }

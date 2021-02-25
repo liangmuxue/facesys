@@ -12,6 +12,7 @@ import com.ss.facesys.data.collect.client.IFacedbService;
 import com.ss.facesys.data.collect.client.IFacedbfaceService;
 import com.ss.facesys.data.collect.common.model.Facedb;
 import com.ss.facesys.data.collect.common.model.FacedbFace;
+import com.ss.facesys.data.collect.mapper.FacedbFaceMapper;
 import com.ss.facesys.data.collect.mapper.FacedbMapper;
 import com.ss.facesys.data.engine.common.dto.FacedbEngineDTO;
 import com.ss.facesys.data.engine.common.model.FacedbEngine;
@@ -59,6 +60,8 @@ public class FacedbServiceImpl extends BaseServiceImpl implements IFacedbService
     private OrganizationMapper organizationMapper;
     @Resource
     private UserResourceMapper userResourceMapper;
+    @Resource
+    private FacedbFaceMapper facedbFaceMapper;
 
 
     /**
@@ -214,12 +217,11 @@ public class FacedbServiceImpl extends BaseServiceImpl implements IFacedbService
         } catch (Exception e) {
             throw new ServiceException(ResultCode.FACEDB_ENGINE_BIND_FAIL);
         }
-        // 新增汇聚平台数据
-        String vId = insertVplatFacedb(facedb);
+        Long dbId = createDbId();
         // 更新人像系统数据
         Facedb update = new Facedb();
         update.setId(facedb.getId());
-        update.setFacedbId(vId);
+        update.setFacedbId(String.valueOf(dbId));
         try {
             facedbMapper.updateByPrimaryKeySelective(update);
         } catch (Exception e) {
@@ -281,8 +283,6 @@ public class FacedbServiceImpl extends BaseServiceImpl implements IFacedbService
         FacedbEngine facedbEngine = new FacedbEngine();
         facedbEngine.setFacedbId(facedb.getId());
         facedbEngineMapper.delete(facedbEngine);
-        // 删除汇聚平台数据
-        deleteVplatFacedb(dbCheck.getFacedbId());
     }
 
     private String insertVplatFacedb(Facedb facedb) throws ServiceException {
@@ -356,12 +356,12 @@ public class FacedbServiceImpl extends BaseServiceImpl implements IFacedbService
             if (CollectionUtils.isEmpty(checkList)) {
                 throw new ServiceException(ResultCode.FACEDB_ENGINE_BIND_REF_NOT_EXIST);
             }
-            JSONObject param = new JSONObject();
-            param.put("id", facedbId);
-            param.put("faceDBFaceStateInvalid", faceDBFaceStateInvalid);
-            JSONObject oceanResult = accessService.reFeatureFacedb(param.toJSONString());
-            if (!StringUtils.checkSuccess(oceanResult)) {
-                throw new ServiceException(oceanResult.getString("code"), oceanResult.getString("message"));
+            Example ffe = new Example(FacedbFace.class);
+            ffe.createCriteria().andEqualTo("status", StatusEnum.EFFECT.getCode()).andEqualTo("facedbId", id);
+            List<FacedbFace> facedbFaces = facedbFaceMapper.selectByExample(ffe);
+            if(facedbFaces.isEmpty()){return;}
+            for(FacedbFace f:facedbFaces){
+                facedbfaceService.update(f,null);
             }
         } catch (ServiceException e) {
             throw e;
