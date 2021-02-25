@@ -385,7 +385,7 @@ public class OsProxyService {
      * @return
      */
     public static JSONObject facedbfaceInsert(String parmJson) {
-        String resultString = BaseHttpUtil.httpPost(parmJson, PropertiesUtil.getOshttp() + HttpConstant.FACEDBFACE_INSERT, null);
+        String resultString = BaseHttpUtil.httpPost(parmJson, PropertiesUtil.getSfgohttp() + SfgoHttpConstant.FACE_ADD, null);
         return JSONObject.parseObject(resultString);
     }
 
