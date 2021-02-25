@@ -2,6 +2,7 @@ package com.ss.facesys.data.access.common.web;
 
 import com.ss.facesys.data.baseinfo.common.web.Device;
 import com.ss.valide.APIAddGroup;
+import com.ss.valide.APIDeltGroup;
 import com.ss.valide.APIEditGroup;
 import com.ss.valide.APIKeyStateGroup;
 import org.hibernate.validator.constraints.NotBlank;
@@ -43,6 +44,8 @@ public class MonVO {
     private List<Device> devices;
     private String facedbIds;
     private String cameraIds;
+    private List<String> cameraIdList;
+    private List<String> facedbIdList;
     private String userId;
     private String monitorCode;
     private String createUserId;
@@ -71,10 +74,13 @@ public class MonVO {
     private String cameraId;
 
     private String facedbId;
+    @NotNull(message = "monitor.adressIds.empty", groups = {APIEditGroup.class,APIKeyStateGroup.class, APIDeltGroup.class})
     private Integer id;
 
     @NotBlank(message = "monitor.policeUserIds.empty", groups = {APIAddGroup.class,APIEditGroup.class})
     private String policeUserIds;
+
+
 
     public Integer getMonitorMode() {
         return monitorMode;
@@ -378,5 +384,21 @@ public class MonVO {
 
     public void setPoliceUserIds(String policeUserIds) {
         this.policeUserIds = policeUserIds;
+    }
+
+    public List<String> getCameraIdList() {
+        return cameraIdList;
+    }
+
+    public void setCameraIdList(List<String> cameraIdList) {
+        this.cameraIdList = cameraIdList;
+    }
+
+    public List<String> getFacedbIdList() {
+        return facedbIdList;
+    }
+
+    public void setFacedbIdList(List<String> facedbIdList) {
+        this.facedbIdList = facedbIdList;
     }
 }

@@ -198,7 +198,7 @@ public class FacedbfaceController extends BaseController {
         ResponseEntity<String> resp = validite(bindingResult);
         FacedbFace orgDb = getOriginalDbObj(form.getId());
         try {
-            facedbfaceService.reFeature(orgDb.getFaceId(), orgDb.getFacePathFull());
+            facedbfaceService.reFeature(orgDb);
         } catch (ServiceException e) {
             this.logger.error("人像集重提特征失败，错误码：{}，异常信息：{}", e.getCode(), e.getMessage(), e);
             return createFailResponse(e);
