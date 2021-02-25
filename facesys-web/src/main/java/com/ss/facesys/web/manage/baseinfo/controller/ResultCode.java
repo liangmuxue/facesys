@@ -416,4 +416,11 @@ public class ResultCode {
     /** 移除重点人员失败编号 */
     public static final String FACEDB_PEOPLE_DELETE_FAILED_CODE = "70807020";
 
+    /** 报警配置信息查询失败编号 */
+    public static final String ALARMINFO_SELECT_FAILED_CODE = "70807021";
+    /** 报警配置信息修改失败编号 */
+    public static final String ALARMINFO_EDIT_FAILED_CODE = "70807022";
+    /** 报警上传文件失败编号 */
+    public static final String ALARMINFO_UPLOAD_FAILED_CODE = "70807023";
+
 }

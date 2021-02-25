@@ -69,6 +69,9 @@ public class PropertiesUtil {
 
     private static String monitorCode;
 
+    private static String voiceUrl;
+    private static String voiceIP;
+
     public static String getCaptureFile() {
         return captureFile;
     }
@@ -604,5 +607,21 @@ public class PropertiesUtil {
 
     public static void setMonitorCode(String monitorCode) {
         PropertiesUtil.monitorCode = monitorCode;
+    }
+
+    public static String getVoiceUrl() {
+        return voiceUrl;
+    }
+
+    public static void setVoiceUrl(String voiceUrl) {
+        PropertiesUtil.voiceUrl = voiceUrl;
+    }
+
+    public static String getVoiceIP() {
+        return voiceIP;
+    }
+
+    public static void setVoiceIP(String voiceIP) {
+        PropertiesUtil.voiceIP = voiceIP;
     }
 }

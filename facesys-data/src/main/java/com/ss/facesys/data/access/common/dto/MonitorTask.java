@@ -6,6 +6,7 @@ import tk.mybatis.mapper.code.IdentityDialect;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Table(name = "cw_monitor_task")
 public class MonitorTask {
@@ -59,6 +60,19 @@ public class MonitorTask {
     private String regionCode;
     @Column(name = "adress_ids")
     private String adressIds;
+
+    @Transient
+    private String cameraIdsName;
+    @Transient
+    private String facedbIdsName;
+    @Transient
+    private String alarmName;
+    @Transient
+    private String monitorTypeName;
+    @Transient
+    private String name;
+    @Transient
+    private String policeUserIdsName;
 
     public Integer getId() {
         return id;
@@ -250,5 +264,53 @@ public class MonitorTask {
 
     public void setAdressIds(String adressIds) {
         this.adressIds = adressIds;
+    }
+
+    public String getCameraIdsName() {
+        return cameraIdsName;
+    }
+
+    public void setCameraIdsName(String cameraIdsName) {
+        this.cameraIdsName = cameraIdsName;
+    }
+
+    public String getFacedbIdsName() {
+        return facedbIdsName;
+    }
+
+    public void setFacedbIdsName(String facedbIdsName) {
+        this.facedbIdsName = facedbIdsName;
+    }
+
+    public String getAlarmName() {
+        return alarmName;
+    }
+
+    public void setAlarmName(String alarmName) {
+        this.alarmName = alarmName;
+    }
+
+    public String getMonitorTypeName() {
+        return monitorTypeName;
+    }
+
+    public void setMonitorTypeName(String monitorTypeName) {
+        this.monitorTypeName = monitorTypeName;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getPoliceUserIdsName() {
+        return policeUserIdsName;
+    }
+
+    public void setPoliceUserIdsName(String policeUserIdsName) {
+        this.policeUserIdsName = policeUserIdsName;
     }
 }
