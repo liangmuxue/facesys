@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ss.facesys.data.access.mapper.MonMapper">
+
+    <!--查询此库下未删除的任务是否存在-->
+    <select id="selExistMonTask" parameterType="com.ss.facesys.data.access.common.web.MonVO" resultType="com.ss.facesys.data.access.common.dto.MonitorTask">
+        select
+            id
+        from
+            cw_monitor_task
+        where
+            delete_flag = #{deleteFlag}
+          and
+            find_in_set(#{facedbId},facedb_ids)
+          and
+            id != #{id}
+    </select>
+
+</mapper>

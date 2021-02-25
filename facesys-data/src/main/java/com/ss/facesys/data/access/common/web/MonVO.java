@@ -44,7 +44,6 @@ public class MonVO {
     private String facedbIds;
     private String cameraIds;
     private String userId;
-    @NotBlank(message = "monitor.monitorCode.empty", groups = {APIEditGroup.class, APIKeyStateGroup.class})
     private String monitorCode;
     private String createUserId;
     private String updateUserId;
