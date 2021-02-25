@@ -245,8 +245,6 @@ public class FacedbServiceImpl extends BaseServiceImpl implements IFacedbService
         } catch (Exception e) {
             throw new ServiceException(ResultCode.FACEDB_FACESYS_UPDATE_FAIL);
         }
-        // 更新汇聚平台数据
-        updateVplatFacedb(facedb);
     }
 
     /**
