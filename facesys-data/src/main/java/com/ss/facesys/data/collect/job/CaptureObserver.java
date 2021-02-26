@@ -47,7 +47,7 @@ public class CaptureObserver implements ApplicationRunner {
                         Map<Integer, String> captureMap = new HashMap<>();
                         captureMap.put(BODY_TYPE, bodyImg);
                         captureMap.put(FULL_TYPE, panoramaImgData);
-                        CaptureThread captureThread = new CaptureThread(deviceNo, captureMap);
+                        CaptureThread captureThread = new CaptureThread(null, deviceNo, captureMap);
                         CameraThreadPool.getThread().execute(captureThread);
                     }
                 }

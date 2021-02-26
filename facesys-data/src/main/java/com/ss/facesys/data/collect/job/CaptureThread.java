@@ -5,7 +5,9 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.j7cai.common.util.JsonUtils;
 import com.ss.facesys.data.collect.common.dto.Transfer;
+import com.ss.facesys.data.collect.common.model.DevicePersoncard;
 import com.ss.facesys.data.collect.common.model.SnapRecord;
+import com.ss.facesys.data.collect.mapper.DevicePersoncardMapper;
 import com.ss.facesys.data.collect.mapper.SnapRecordMapper;
 import com.ss.facesys.data.resource.common.model.Camera;
 import com.ss.facesys.data.resource.mapper.CameraMapper;
@@ -44,8 +46,11 @@ public class CaptureThread implements Runnable {
 
     private SnapRecordMapper snapRecordMapper = SpringUtil.getBean(SnapRecordMapper.class);
     private CameraMapper cameraMapper = SpringUtil.getBean(CameraMapper.class);
+    private DevicePersoncardMapper devicePersoncardMapper = SpringUtil.getBean(DevicePersoncardMapper.class);
     private UserResourceMapper userResourceMapper = SpringUtil.getBean(UserResourceMapper.class);
     private JedisUtil jedisUtil = SpringUtil.getBean(JedisUtil.class);
+
+    private Integer deviceType;
 
     private String deviceNo;
 
@@ -58,7 +63,8 @@ public class CaptureThread implements Runnable {
     private final static String TODAY_CAPTURE_TOTAL = "FACESYS_TODAY_CAPTURE_TOTAL";
     private final static String THIS_MONTH_CAPTURE_TOTAL = "FACESYS_THIS_MONTH_CAPTURE_TOTAL";
 
-    public CaptureThread(String deviceNo, Map<Integer, String> captureMap) {
+    public CaptureThread(Integer deviceType, String deviceNo, Map<Integer, String> captureMap) {
+        this.deviceType = deviceType;
         this.deviceNo = deviceNo;
         this.captureMap = captureMap;
     }
@@ -66,11 +72,25 @@ public class CaptureThread implements Runnable {
     @Override
     public void run() {
         try {
-            Camera c = new Camera();
-            c.setCameraId(deviceNo);
-            c.setState(0);
-            Camera camera = this.cameraMapper.selectOne(c);
-            if (camera == null) {
+            Camera camera = null;
+            DevicePersoncard devicePersoncard = null;
+            if (1 == deviceType) {
+                Camera c = new Camera();
+                c.setCameraId(deviceNo);
+                c.setState(0);
+                camera = this.cameraMapper.selectOne(c);
+                if (camera == null) {
+                    return;
+                }
+            } else if (2 == deviceType) {
+                DevicePersoncard dp = new DevicePersoncard();
+                dp.setDeviceCode(deviceNo);
+                dp.setStatus(1);
+                devicePersoncard = this.devicePersoncardMapper.selectOne(dp);
+                if (devicePersoncard == null) {
+                    return;
+                }
+            } else {
                 return;
             }
             //人脸照base64
@@ -197,8 +217,14 @@ public class CaptureThread implements Runnable {
                 snapRecord.setPanoramaUrl(fullUrl);
                 snapRecord.setCaptureType(FACE_TYPE);
                 snapRecord.setCaptureTime(time);
-                snapRecord.setDeviceId(camera.getId());
-                snapRecord.setDeviceName(camera.getCameraName());
+                if (1 == deviceType) {
+                    snapRecord.setDeviceId(camera.getId());
+                    snapRecord.setDeviceName(camera.getCameraName());
+                } else if (2 == deviceType) {
+                    snapRecord.setDeviceId(devicePersoncard.getId());
+                    snapRecord.setDeviceName(devicePersoncard.getDeviceName());
+                }
+                snapRecord.setDeviceType(deviceType);
                 snapRecord.setGlasses(glasses);
                 snapRecord.setSunglasses(sunglasses);
                 snapRecord.setMask(mask);
@@ -214,8 +240,14 @@ public class CaptureThread implements Runnable {
                 snapRecord.setPanoramaUrl(fullUrl);
                 snapRecord.setCaptureType(BODY_TYPE);
                 snapRecord.setCaptureTime(time);
-                snapRecord.setDeviceId(camera.getId());
-                snapRecord.setDeviceName(camera.getCameraName());
+                if (1 == deviceType) {
+                    snapRecord.setDeviceId(camera.getId());
+                    snapRecord.setDeviceName(camera.getCameraName());
+                } else if (2 == deviceType) {
+                    snapRecord.setDeviceId(devicePersoncard.getId());
+                    snapRecord.setDeviceName(devicePersoncard.getDeviceName());
+                }
+                snapRecord.setDeviceType(deviceType);
                 snapRecord.setGlasses(glasses);
                 snapRecord.setSunglasses(sunglasses);
                 snapRecord.setMask(mask);
@@ -231,12 +263,26 @@ public class CaptureThread implements Runnable {
             for (SnapRecord sr: snapRecords) {
                 if (FACE_TYPE == sr.getCaptureType()) {
                     //人脸类型入sfgo
-                    addSfgoCapture(sr.getId(), faceBase64, camera.getCameraId(), sr.getCaptureType(), time);
+                    String deviceId = null;
+                    if (1 == deviceType) {
+                        deviceId = camera.getCameraId();
+                    } else if (2 == deviceType) {
+                        deviceId = devicePersoncard.getDeviceId();
+                    }
+                    addSfgoCapture(sr.getId(), faceBase64, deviceId, sr.getCaptureType(), time);
+
                 }
                 if (BODY_TYPE == sr.getCaptureType()) {
                     //人体类型入sfgo
-                    addSfgoCapture(sr.getId(), bodyBase64, camera.getCameraId(), sr.getCaptureType(), time);
+                    String deviceId = null;
+                    if (1 == deviceType) {
+                        deviceId = camera.getCameraId();
+                    } else if (2 == deviceType) {
+                        deviceId = devicePersoncard.getDeviceId();
+                    }
+                    addSfgoCapture(sr.getId(), bodyBase64, deviceId, sr.getCaptureType(), time);
                 }
+                transferData(sr);
             }
         } catch (Exception e) {
             logger.info("抓拍照入库处理异常：" + e, e.toString());
@@ -252,10 +298,9 @@ public class CaptureThread implements Runnable {
      * @param time
      */
     private void addSfgoCapture(Integer captureId, String base64, String deviceId, Integer captureType, Long time) {
-        String substring = deviceId.substring(deviceId.lastIndexOf("_") + 1);
         if (FACE_TYPE == captureType) {
             JSONObject parm = new JSONObject();
-            parm.put("groupId", substring);
+            parm.put("groupId", deviceId);
             parm.put("userId", captureId);
             parm.put("img", base64);
             parm.put("datetime", time / 1000);
@@ -263,7 +308,7 @@ public class CaptureThread implements Runnable {
             this.logger.info("添加人脸抓拍照返回信息：" + result);
         } else if (BODY_TYPE == captureType) {
             JSONObject parm = new JSONObject();
-            parm.put("groupId", substring);
+            parm.put("groupId", deviceId);
             parm.put("userId", captureId);
             parm.put("img", base64);
             parm.put("datetime", time / 1000);

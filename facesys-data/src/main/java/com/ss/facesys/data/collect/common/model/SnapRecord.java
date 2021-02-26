@@ -28,6 +28,8 @@ public class SnapRecord {
     private Integer deviceId;
     @Column(name = "device_name")
     private String deviceName;
+    @Column(name = "device_type")
+    private Integer deviceType;
     private Integer glasses;
     private Integer sunglasses;
     private Integer mask;
@@ -91,6 +93,14 @@ public class SnapRecord {
 
     public void setDeviceName(String deviceName) {
         this.deviceName = deviceName;
+    }
+
+    public Integer getDeviceType() {
+        return deviceType;
+    }
+
+    public void setDeviceType(Integer deviceType) {
+        this.deviceType = deviceType;
     }
 
     public Integer getGlasses() {
