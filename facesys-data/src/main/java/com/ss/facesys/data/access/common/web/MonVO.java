@@ -22,7 +22,7 @@ public class MonVO {
     private Integer monitorMode;
     @NotBlank(message = "monitor.monitorName.empty", groups = {APIAddGroup.class, APIEditGroup.class})
     private String monitorName;
-    @NotNull(message = "monitor.monitorType.empty", groups = {APIAddGroup.class, APIEditGroup.class})
+    @NotNull(message = "monitor.monitorType.empty", groups = {APIAddGroup.class})
     private Integer monitorType;
     @NotNull(message = "monitor.monitorProperty.empty", groups = {APIAddGroup.class, APIEditGroup.class})
     private Integer monitorProperty;
@@ -44,6 +44,7 @@ public class MonVO {
     private List<Device> devices;
     private String facedbIds;
     private String cameraIds;
+    private String personcardDeviceIds;
     private List<String> cameraIdList;
     private List<String> facedbIdList;
     private String userId;
@@ -400,5 +401,13 @@ public class MonVO {
 
     public void setFacedbIdList(List<String> facedbIdList) {
         this.facedbIdList = facedbIdList;
+    }
+
+    public String getPersoncardDeviceIds() {
+        return personcardDeviceIds;
+    }
+
+    public void setPersoncardDeviceIds(String personcardDeviceIds) {
+        this.personcardDeviceIds = personcardDeviceIds;
     }
 }

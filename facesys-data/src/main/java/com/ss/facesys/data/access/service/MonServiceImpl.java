@@ -92,14 +92,15 @@ public class MonServiceImpl extends BaseServiceImpl {
      * @return
      */
     public String updateMonitor(MonVO para) throws ServiceException{
+        //校验设备
+        if(StringUtils.isBlank(para.getCameraIds()) && StringUtils.isBlank(para.getPersoncardDeviceIds())){
+            throw new ServiceException("设备不可为空！");
+        }
         //查询布控任务原数据
         MonitorTask oldMonitorTask = monMapper.selectByPrimaryKey(para.getId());
         //修改布控任务表
-        MonitorTask monitorTask = new MonitorTask();
-        BeanUtils.copyProperties(para,monitorTask);
-        monitorTask.setUpdateUserId(para.getUserId());
-        monitorTask.setUpdateTime(System.currentTimeMillis());
-        monMapper.updateByPrimaryKeySelective(monitorTask);
+        para.setUpdateTime(System.currentTimeMillis());
+        monMapper.updateMontask(para);
         //删除原任务用户关联表
         Example example = new Example(MonUserRef.class);
         example.createCriteria().andEqualTo("monitorId",para.getId());
@@ -109,7 +110,7 @@ public class MonServiceImpl extends BaseServiceImpl {
         List<String> userIdList = Arrays.asList(para.getPoliceUserIds().split(","));
         for (String userId : userIdList) {
             MonUserRef monUserRef = new MonUserRef();
-            monUserRef.setMonitorId(monitorTask.getId());
+            monUserRef.setMonitorId(para.getId());
             monUserRef.setUserId(userId);
             monUserRefs.add(monUserRef);
         }
@@ -185,9 +186,31 @@ public class MonServiceImpl extends BaseServiceImpl {
         PageHelper.startPage(para.getCurrentPage(), para.getPageSize());
         List<MonitorTask> monitorTasks = monMapper.selMonitorTask(para);
         for (MonitorTask monitorTask : monitorTasks) {
-            List<String> cameraIds = Arrays.asList(monitorTask.getCameraIds().split(","));
-            String cameraIdsName = monMapper.selcameraNames(cameraIds);
-            monitorTask.setCameraIdsName(cameraIdsName);
+            //获取设备名
+            String cameraIdsName = null;
+            if(StringUtils.isNotBlank(monitorTask.getCameraIds())) {
+                List<String> cameraIds = Arrays.asList(monitorTask.getCameraIds().split(","));
+                cameraIdsName = monMapper.selcameraNames(cameraIds);
+                monitorTask.setCameraIdsName(cameraIdsName);
+            }
+            //获取人像设备名
+            String personcardDeviceIdsName = null;
+            if(StringUtils.isNotBlank(monitorTask.getPersoncardDeviceIds())) {
+                List<String> personcardDeviceIds = Arrays.asList(monitorTask.getPersoncardDeviceIds().split(","));
+                personcardDeviceIdsName = monMapper.selPersoncardDeviceNames(personcardDeviceIds);
+                monitorTask.setPersoncardDeviceIdsName(personcardDeviceIdsName);
+            }
+            //拼装设备全名
+            if(personcardDeviceIdsName != null && cameraIdsName != null){
+                monitorTask.setCameraDeviceName(cameraIdsName + "," + personcardDeviceIdsName);
+            }else{
+                if(personcardDeviceIdsName != null){
+                    monitorTask.setCameraDeviceName(personcardDeviceIdsName);
+                }else{
+                    monitorTask.setCameraDeviceName(cameraIdsName);
+                }
+            }
+            //获取库名
             List<String> facedbIds = Arrays.asList(monitorTask.getFacedbIds().split(","));
             String facedbIdsName = monMapper.selFacedbNames(facedbIds);
             monitorTask.setFacedbIdsName(facedbIdsName);
@@ -203,10 +226,30 @@ public class MonServiceImpl extends BaseServiceImpl {
      */
     public MonitorTask selectMonitorDetail(MonVO para){
         MonitorTask monitorTask = monMapper.selMonitorDetail(para);
-        //查询设备名
-        List<String> cameraIds = Arrays.asList(monitorTask.getCameraIds().split(","));
-        String cameraIdsName = monMapper.selcameraNames(cameraIds);
-        monitorTask.setCameraIdsName(cameraIdsName);
+        //获取设备名
+        String cameraIdsName = null;
+        if(StringUtils.isNotBlank(monitorTask.getCameraIds())) {
+            List<String> cameraIds = Arrays.asList(monitorTask.getCameraIds().split(","));
+            cameraIdsName = monMapper.selcameraNames(cameraIds);
+            monitorTask.setCameraIdsName(cameraIdsName);
+        }
+        //获取人像设备名
+        String personcardDeviceIdsName = null;
+        if(StringUtils.isNotBlank(monitorTask.getPersoncardDeviceIds())) {
+            List<String> personcardDeviceIds = Arrays.asList(monitorTask.getPersoncardDeviceIds().split(","));
+            personcardDeviceIdsName = monMapper.selPersoncardDeviceNames(personcardDeviceIds);
+            monitorTask.setPersoncardDeviceIdsName(personcardDeviceIdsName);
+        }
+        //拼装设备全名
+        if(personcardDeviceIdsName != null && cameraIdsName != null){
+            monitorTask.setCameraDeviceName(cameraIdsName + "," + personcardDeviceIdsName);
+        }else{
+            if(personcardDeviceIdsName != null){
+                monitorTask.setCameraDeviceName(personcardDeviceIdsName);
+            }else{
+                monitorTask.setCameraDeviceName(cameraIdsName);
+            }
+        }
         //查询人像库名
         List<String> facedbIds = Arrays.asList(monitorTask.getFacedbIds().split(","));
         String facedbIdsName = monMapper.selFacedbNames(facedbIds);
