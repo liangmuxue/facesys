@@ -15,6 +15,7 @@ import com.ss.facesys.data.collect.common.model.InternetBar;
 import com.ss.facesys.data.collect.mapper.DevicePersoncardMapper;
 import com.ss.facesys.data.collect.mapper.HotelMapper;
 import com.ss.facesys.data.collect.mapper.InternetBarMapper;
+import com.ss.facesys.data.resource.common.web.CameraQueryVO;
 import com.ss.facesys.util.StringUtils;
 import com.ss.facesys.util.constant.CommonConstant;
 import com.ss.facesys.util.em.PersoncardMainEnum;
@@ -30,10 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -282,4 +280,59 @@ public class DevicePersoncardServiceImpl extends BaseServiceImpl implements IDev
         }
     }
 
+
+    @Override
+    public List<Organization> treeData(CameraQueryVO queryVO) {
+        Example example = new Example(Organization.class);
+        example.createCriteria().andEqualTo("status", StatusEnum.EFFECT.getCode());
+        example.orderBy("seq").asc();
+        List<Organization> organizations = organizationMapper.selectByExample(example);
+        Map<String, Organization> dataMap = new HashMap<>(16);
+        for (Organization organization : organizations) {
+            dataMap.put(organization.getOrgId(), organization);
+        }
+        List<Organization> cameras = this.devicePersoncardMapper.findTreeCameras(queryVO);
+        List<Organization> temp = new ArrayList<>();
+        for (Organization o: cameras) {
+            Organization organization = dataMap.get(o.getParentId());
+            while (true) {
+                if (temp.contains(organization)) {
+                    break;
+                } else {
+                    temp.add(organization);
+                    if (StringUtils.isEmpty(organization.getParentId()) || "0".equals(organization.getParentId())) {
+                        break;
+                    } else {
+                        organization = dataMap.get(organization.getParentId());
+                    }
+                }
+            }
+        }
+        temp.addAll(cameras);
+        return createOrgTree(temp);
+    }
+
+    private List<Organization> createOrgTree(List<Organization> organizationList) {
+        if (CollectionUtils.isEmpty(organizationList)) {
+            return Collections.emptyList();
+        }
+        // 创建根节点
+        Organization root = new Organization();
+        // 组装Map数据
+        Map<String, Organization> dataMap = new HashMap<>(16);
+        for (Organization organization : organizationList) {
+            dataMap.put(organization.getOrgId(), organization);
+        }
+        // 组装树形结构
+        Set<Map.Entry<String, Organization>> entrySet = dataMap.entrySet();
+        for (Map.Entry<String, Organization> entry : entrySet) {
+            Organization currentNode = entry.getValue();
+            if (StringUtils.isEmpty(currentNode.getParentId()) || "0".equals(currentNode.getParentId())) {
+                root.getChildren().add(currentNode);
+            } else {
+                dataMap.get(currentNode.getParentId()).getChildren().add(currentNode);
+            }
+        }
+        return root.getChildren();
+    }
 }

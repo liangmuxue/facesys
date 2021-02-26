@@ -3,7 +3,7 @@ package com.ss.facesys.data.access.common.dto;
 import javax.persistence.Column;
 import javax.persistence.Table;
 
-@Table(name = "monitor_user_ref")
+@Table(name = "cw_monitor_user_ref")
 public class MonUserRef {
 
     @Column(name = "monitor_id")

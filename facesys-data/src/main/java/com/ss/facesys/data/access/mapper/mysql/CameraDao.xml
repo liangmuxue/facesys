@@ -518,4 +518,26 @@
         </foreach>
 	</update>
 
+
+    <select id="findTreeCameras" parameterType="com.ss.facesys.data.resource.common.web.CameraQueryVO"
+            resultType="com.ss.spider.system.organization.model.Organization">
+        SELECT
+        a.id as orgId,
+        a.cameraId as remark,
+        a.cameraName as orgCname,
+        a.cameraState as status,
+        a.orgId as parentId
+        FROM
+        cw_base_camera a
+        <where>
+            a.state = 0
+            <if test="resources!=null and  resources.size()!=0">
+                AND a.id in
+                <foreach collection="resources" item="item" open="(" close=")" separator=",">
+                    #{item,jdbcType=INTEGER}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY a.cameraId DESC
+    </select>
 </mapper>

@@ -121,6 +121,10 @@ public class Organization extends DTEntity {
 
     @Transient
     private List<Organization> children = new ArrayList<>();
+    @Transient
+    private Integer onlineDeviceCount = 0;
+    @Transient
+    private Integer offlineDeviceCount = 0;
 
 
     public String getOrgId() {
@@ -373,4 +377,19 @@ public class Organization extends DTEntity {
                 .toString();
     }
 
+    public Integer getOnlineDeviceCount() {
+        return onlineDeviceCount;
+    }
+
+    public void setOnlineDeviceCount(Integer onlineDeviceCount) {
+        this.onlineDeviceCount = onlineDeviceCount;
+    }
+
+    public Integer getOfflineDeviceCount() {
+        return offlineDeviceCount;
+    }
+
+    public void setOfflineDeviceCount(Integer offlineDeviceCount) {
+        this.offlineDeviceCount = offlineDeviceCount;
+    }
 }

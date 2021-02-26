@@ -3,6 +3,7 @@ package com.ss.facesys.data.resource.service;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.j7cai.common.util.JsonUtils;
+import com.ss.enums.StatusEnum;
 import com.ss.facesys.data.baseinfo.common.model.User;
 import com.ss.facesys.data.baseinfo.service.BaseServiceImpl;
 import com.ss.facesys.data.resource.client.ICameraService;
@@ -22,21 +23,22 @@ import com.ss.facesys.util.em.Enums;
 import com.ss.facesys.util.em.ResourceType;
 import com.ss.facesys.util.http.BaseHttpUtil;
 import com.ss.facesys.util.jedis.JedisUtil;
+import com.ss.spider.system.organization.mapper.OrganizationMapper;
+import com.ss.spider.system.organization.model.Organization;
 import com.ss.spider.system.user.mapper.UserResourceMapper;
 import com.ss.spider.system.user.model.UserResource;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * CameraServiceImpl
@@ -54,6 +56,8 @@ public class CameraServiceImpl extends BaseServiceImpl implements ICameraService
     private CameraMapper cameraMapper;
     @Autowired
     private UserResourceMapper userResourceMapper;
+    @Autowired
+    private OrganizationMapper organizationMapper;
     @Resource
     public JedisUtil jedisUtil;
 
@@ -522,6 +526,77 @@ public class CameraServiceImpl extends BaseServiceImpl implements ICameraService
             LOG.error("获取相机VMS流失败" + e.getMessage(), e);
             throw e;
         }
+    }
+
+    @Override
+    public List<Organization> treeData(CameraQueryVO queryVO) {
+        Example example = new Example(Organization.class);
+        example.createCriteria().andEqualTo("status", StatusEnum.EFFECT.getCode());
+        example.orderBy("seq").asc();
+        List<Organization> organizations = organizationMapper.selectByExample(example);
+        Map<String, Organization> dataMap = new HashMap<>(16);
+        for (Organization organization : organizations) {
+            dataMap.put(organization.getOrgId(), organization);
+        }
+        List<Organization> cameras = this.cameraMapper.findTreeCameras(queryVO);
+        List<Organization> temp = new ArrayList<>();
+        for (Organization o: cameras) {
+            Organization organization = dataMap.get(o.getParentId());
+            while (true) {
+                if (temp.contains(organization)) {
+                    break;
+                } else {
+                    temp.add(organization);
+                    if (StringUtils.isEmpty(organization.getParentId()) || "0".equals(organization.getParentId())) {
+                        break;
+                    } else {
+                        organization = dataMap.get(organization.getParentId());
+                    }
+                }
+            }
+            o.setRemark("http://192.168.0.98:1080/flv?stream=" + o.getRemark() + "&app=live");
+        }
+        temp.addAll(cameras);
+        return createOrgTree(temp);
+    }
+
+    private List<Organization> createOrgTree(List<Organization> organizationList) {
+        if (CollectionUtils.isEmpty(organizationList)) {
+            return Collections.emptyList();
+        }
+        // 创建根节点
+        Organization root = new Organization();
+        // 组装Map数据
+        Map<String, Organization> dataMap = new HashMap<>(16);
+        for (Organization organization : organizationList) {
+            dataMap.put(organization.getOrgId(), organization);
+        }
+        // 组装树形结构
+        Set<Map.Entry<String, Organization>> entrySet = dataMap.entrySet();
+        for (Map.Entry<String, Organization> entry : entrySet) {
+            Organization currentNode = entry.getValue();
+            if (StringUtils.isEmpty(currentNode.getParentId()) || "0".equals(currentNode.getParentId())) {
+                root.getChildren().add(currentNode);
+            } else {
+                dataMap.get(currentNode.getParentId()).getChildren().add(currentNode);
+                if (StringUtils.isEmpty(currentNode.getOrgCode())) {
+                    String parentId = currentNode.getParentId();
+                    while (true) {
+                        Organization organization = dataMap.get(parentId);
+                        if (currentNode.getStatus() == 1) {
+                            organization.setOnlineDeviceCount(organization.getOnlineDeviceCount() + 1);
+                        } else if (currentNode.getStatus() == 0) {
+                            organization.setOfflineDeviceCount(organization.getOfflineDeviceCount() + 1);
+                        }
+                        if (StringUtils.isEmpty(organization.getParentId()) || "0".equals(organization.getParentId())) {
+                            break;
+                        }
+                        parentId = organization.getParentId();
+                    }
+                }
+            }
+        }
+        return root.getChildren();
     }
 
 }

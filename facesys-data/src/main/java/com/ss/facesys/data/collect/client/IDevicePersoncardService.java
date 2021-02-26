@@ -2,6 +2,8 @@ package com.ss.facesys.data.collect.client;
 
 import com.ss.exception.ServiceException;
 import com.ss.facesys.data.collect.common.model.DevicePersoncard;
+import com.ss.facesys.data.resource.common.web.CameraQueryVO;
+import com.ss.spider.system.organization.model.Organization;
 
 import java.util.List;
 
@@ -47,5 +49,13 @@ public interface IDevicePersoncardService {
      * @throws ServiceException
      */
     void deletePersonCard(DevicePersoncard devicePersoncard) throws ServiceException;
+
+    /**
+     * 查询人证设备树
+     *
+     * @param queryVO
+     * @return
+     */
+    List<Organization> treeData(CameraQueryVO queryVO);
 
 }

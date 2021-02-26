@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.ss.facesys.data.resource.common.dto.ImportCamera;
 import com.ss.facesys.data.resource.common.model.Camera;
 import com.ss.facesys.data.resource.common.web.CameraQueryVO;
+import com.ss.spider.system.organization.model.Organization;
 
 import java.util.List;
 import java.util.Map;
@@ -85,5 +86,7 @@ public interface ICameraService {
     Map<String, Object> playVideo(Camera paramCamera);
 
     JSONObject vmsPreview(String paramString) throws Exception;
+
+    List<Organization> treeData(CameraQueryVO queryVO);
 
 }

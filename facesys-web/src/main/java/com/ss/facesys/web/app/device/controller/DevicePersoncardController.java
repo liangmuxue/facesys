@@ -7,6 +7,8 @@ import com.ss.enums.StatusEnum;
 import com.ss.exception.ServiceException;
 import com.ss.facesys.data.collect.client.IDevicePersoncardService;
 import com.ss.facesys.data.collect.common.model.DevicePersoncard;
+import com.ss.facesys.data.resource.client.ICameraService;
+import com.ss.facesys.data.resource.common.web.CameraQueryVO;
 import com.ss.facesys.util.StringUtils;
 import com.ss.facesys.util.em.ResourceType;
 import com.ss.facesys.web.app.device.form.DevicePersoncardForm;
@@ -15,6 +17,7 @@ import com.ss.facesys.web.manage.baseinfo.controller.BaseController;
 import com.ss.response.PageEntity;
 import com.ss.response.ResponseEntity;
 import com.ss.spider.log.constants.ModuleCode;
+import com.ss.spider.system.organization.model.Organization;
 import com.ss.tools.DateUtils;
 import com.ss.valide.APIDeltGroup;
 import com.ss.valide.APIEditGroup;
@@ -24,12 +27,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * 人证设备
@@ -145,4 +146,19 @@ public class DevicePersoncardController extends BaseController {
         return devicePersoncardService.selectOne(vp);
     }
 
+    @RequestMapping(value = {"/tree"}, method = {RequestMethod.POST})
+    @OpLog(model = ModuleCode.BUSINESS, desc = "查询人证设备树", type = OperaTypeEnum.SELECT)
+    public ResponseEntity<List<Organization>> tree(CameraQueryVO queryVO) throws BindException {
+        ResponseEntity<List<Organization>> resp = createSuccResponse();
+        try {
+            List<Integer> resources = getAuthResources(queryVO.getUserId(), ResourceType.PERSONCARD, null);
+            queryVO.setResources(resources);
+            resp.setData(this.devicePersoncardService.treeData(queryVO));
+        } catch (Exception e) {
+            resp = createFailResponse();
+            resp.setMessage("设备树查询失败");
+            this.logger.error("设备树查询失败，原因：" + e.toString(), e);
+        }
+        return resp;
+    }
 }

@@ -16,4 +16,198 @@
             id != #{id}
     </select>
 
+    <!--查询布控任务-->
+    <select id="selMonitorTask" parameterType="com.ss.facesys.data.access.common.web.MonVO" resultType="com.ss.facesys.data.access.common.dto.MonitorTask">
+        select *
+        from(
+        select
+        m.id,
+        m.monitor_mode as monitorMode,
+        m.monitor_name as monitorName,
+        m.start_time as startTime,
+        m.end_time as endTime,
+        m.face_threshold as faceThreshold ,
+        a.alarm_name as alarmName,
+        e.enumName as monitorTypeName,
+        u.NAME as name,
+        m.create_time as  createTime,
+        case when m.end_time &lt; #{nowTime} then  3 else m.state end as state,
+        m.camera_ids as cameraIds,
+        m.personcard_device_ids as personcardDeviceIds,
+        m.facedb_ids as facedbIds,
+        m.monitor_code as monitorCode
+        from
+        cw_monitor_task m
+        left join cw_alarm_info a on m.alarm_id = a.id
+        left join cw_ge_user u on u.user_id = m.create_user_id
+        left join cw_base_enum e on e.enumValue = m.monitor_type and e.enumType ='MONITOR_TYPE'
+        <where>
+            <if test="monitorName != null and monitorName != '' ">
+                and  m.monitor_name like CONCAT('%', #{monitorName}, '%')
+            </if>
+            <if test="monitorType != null and monitorType != '' ">
+                and  m.monitor_type = #{monitorType}
+            </if>
+            <if test="cameraIdList != null and cameraIdList.size > 0 ">
+                and
+                <foreach collection="cameraIdList"  separator="or" open="(" close=")" item="item">
+                    find_in_set(#{item},m.camera_ids)
+                </foreach>
+            </if>
+            <if test="facedbIdList != null and facedbIdList.size > 0 ">
+                and
+                <foreach collection="facedbIdList"  separator="or" open="(" close=")" item="item">
+                    find_in_set(#{item},m.facedb_ids)
+                </foreach>
+            </if>
+            and
+              m.delete_flag = 1
+            and
+              m.create_user_id = #{userId}
+        </where>
+        order by
+          m.create_time
+        desc
+        ) a
+        <where>
+            <if test="state != null and state != '' ">
+                and a.state = #{state}
+            </if>
+        </where>
+    </select>
+
+    <!--查询设备名-->
+    <select id="selcameraNames" parameterType="java.lang.String" resultType="java.lang.String">
+        select
+        group_concat(cameraName)
+        from
+        cw_base_camera
+        where
+        id in
+        <foreach collection="cameraIds" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+    </select>
+
+    <!--查询人证设备名-->
+    <select id="selPersoncardDeviceNames" parameterType="java.lang.String" resultType="java.lang.String">
+        select
+        group_concat(device_name)
+        from
+        ss_device_personcard
+        where
+        id in
+        <foreach collection="personcardDeviceIds" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+    </select>
+
+    <!--查询人像库名-->
+    <select id="selFacedbNames" parameterType="java.lang.String" resultType="java.lang.String">
+        select
+        group_concat(name)
+        from
+        ss_facedb_info
+        where
+        id in
+        <foreach collection="facedbIds" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+    </select>
+
+    <!--查询布控任务详情-->
+    <select id="selMonitorDetail" parameterType="com.ss.facesys.data.access.common.web.MonVO" resultType="com.ss.facesys.data.access.common.dto.MonitorTask">
+        select
+            m.monitor_mode as monitorMode,
+            m.monitor_name as monitorName,
+            m.monitor_type as monitorType,
+            m.monitor_code as monitorCode,
+            e.enumName as monitorTypeName,
+            case when m.end_time &lt; #{nowTime} then  3 else m.state end as state,
+            m.monitor_property as monitorProperty,
+            e2.enumName as monitorPropertyName,
+            a.id as alarmId,
+            a.alarm_name as alarmName,
+            m.start_time as startTime,
+            m.end_time as endTime,
+            m.face_threshold as faceThreshold,
+            m.remark,
+            u.name as name,
+            m.create_time as  createTime,
+            m.camera_ids as cameraIds,
+            m.personcard_device_ids as personcardDeviceIds,
+            m.facedb_ids as facedbIds,
+            m.region_code as regionCode,
+            m.adress_ids as adressIds
+        from
+            cw_monitor_task m
+                left join cw_alarm_info a on m.alarm_id = a.id
+                left join cw_ge_user u on u.user_id = m.create_user_id
+                left join cw_base_enum e on e.enumValue = m.monitor_type and e.enumType ='MONITOR_TYPE'
+                left join cw_base_enum e2 on e2.enumValue = m.monitor_property and e2.enumType ='MONITOR_PROPERTY'
+        where
+            m.id = #{id}
+    </select>
+
+    <!--查询处警人名称-->
+    <select id="selMonUserName" parameterType="com.ss.facesys.data.access.common.web.MonVO" resultType="java.lang.String">
+        select
+          group_concat(u.name)
+        from
+            cw_monitor_task m
+        left join cw_monitor_user_ref r on m.id = r.monitor_id
+        left join cw_ge_user u on r.user_id = u.user_id
+        where
+            m.id = #{id}
+    </select>
+
+    <!--修改布控任务-->
+    <update id="updateMontask" parameterType="com.ss.facesys.data.access.common.web.MonVO">
+        update
+            cw_monitor_task
+        <set>
+            <if test="monitorName != null and monitorName != '' ">
+                monitor_name = #{monitorName},
+            </if>
+            <if test="monitorProperty != null">
+                monitor_property = #{monitorProperty},
+            </if>
+            <if test="alarmId != null">
+                alarm_id = #{alarmId},
+            </if>
+            <if test="startTime != null and startTime != '' ">
+                start_time = #{startTime},
+            </if>
+            <if test="endTime != null and endTime != '' ">
+                end_time = #{endTime},
+            </if>
+            <if test="faceThreshold != null">
+                face_threshold = #{faceThreshold},
+            </if>
+            <if test="endTime != null and endTime != '' ">
+                end_time = #{endTime},
+            </if>
+            <if test="state != null">
+                state = #{state},
+            </if>
+            <if test="remark != null and remark != '' ">
+                remark = #{remark},
+            </if>
+            <if test="facedbIds != null and facedbIds != '' ">
+                facedb_ids = #{facedbIds},
+            </if>
+            <if test="regionCode != null and regionCode != '' ">
+                region_code = #{regionCode},
+            </if>
+            <if test="adressIds != null and adressIds != '' ">
+                adress_ids = #{adressIds},
+            </if>
+                camera_ids = #{cameraIds},
+                personcard_device_ids = #{personcardDeviceIds},
+                update_user_id = #{userId},
+                update_time = #{updateTime}
+        </set>
+        where
+            id = #{id}
+    </update>
 </mapper>

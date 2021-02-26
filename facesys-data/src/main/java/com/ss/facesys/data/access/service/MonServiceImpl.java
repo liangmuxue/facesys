@@ -1,5 +1,6 @@
 package com.ss.facesys.data.access.service;
 
+import com.github.pagehelper.PageHelper;
 import com.ss.exception.ServiceException;
 import com.ss.facesys.data.access.common.dto.MonUserRef;
 import com.ss.facesys.data.access.common.dto.MonitorTask;
@@ -91,14 +92,15 @@ public class MonServiceImpl extends BaseServiceImpl {
      * @return
      */
     public String updateMonitor(MonVO para) throws ServiceException{
+        //校验设备
+        if(StringUtils.isBlank(para.getCameraIds()) && StringUtils.isBlank(para.getPersoncardDeviceIds())){
+            throw new ServiceException("设备不可为空！");
+        }
         //查询布控任务原数据
         MonitorTask oldMonitorTask = monMapper.selectByPrimaryKey(para.getId());
         //修改布控任务表
-        MonitorTask monitorTask = new MonitorTask();
-        BeanUtils.copyProperties(para,monitorTask);
-        monitorTask.setUpdateUserId(para.getUserId());
-        monitorTask.setUpdateTime(System.currentTimeMillis());
-        monMapper.updateByPrimaryKeySelective(monitorTask);
+        para.setUpdateTime(System.currentTimeMillis());
+        monMapper.updateMontask(para);
         //删除原任务用户关联表
         Example example = new Example(MonUserRef.class);
         example.createCriteria().andEqualTo("monitorId",para.getId());
@@ -108,18 +110,170 @@ public class MonServiceImpl extends BaseServiceImpl {
         List<String> userIdList = Arrays.asList(para.getPoliceUserIds().split(","));
         for (String userId : userIdList) {
             MonUserRef monUserRef = new MonUserRef();
-            monUserRef.setMonitorId(monitorTask.getId());
+            monUserRef.setMonitorId(para.getId());
             monUserRef.setUserId(userId);
             monUserRefs.add(monUserRef);
         }
         monUserRefMapper.insertList(monUserRefs);
         //修改原人像库布控状态
-        List<String> ids = Arrays.asList(oldMonitorTask.getFacedbIds().split(","));
+        updMonitorState(para.getId(),oldMonitorTask.getFacedbIds());
+        //修改新添加人像库布控状态
+        Example examp = new Example(Facedb.class);
+        List facedbIdList = Arrays.asList(para.getFacedbIds().split(","));
+        examp.createCriteria().andIn("id",facedbIdList);
+        Facedb facedb = new Facedb();
+        facedb.setMonitorState(MonitorStateEnum.YES.getCode());
+        facedbMapper.updateByExampleSelective(facedb,examp);
+        return "SUCCESS";
+    }
+
+    /**
+     * 启用/停用布控任务
+     *
+     * @param para
+     * @return
+     */
+    public String updateMonitorStatus(MonVO para){
+        //修改本地布控任务状态
+        MonitorTask monitorTask = new MonitorTask();
+        BeanUtils.copyProperties(para,monitorTask);
+        monitorTask.setUpdateUserId(para.getUserId());
+        monitorTask.setUpdateTime(System.currentTimeMillis());
+        monMapper.updateByPrimaryKeySelective(monitorTask);
+        return "SUCCESS";
+    }
+
+    /**
+     * 删除布控任务
+     *
+     * @param para
+     * @return
+     */
+    public String deleteMonitor(MonVO para) throws ServiceException{
+        //查询布控任务原数据
+        MonitorTask oldMonitorTask = monMapper.selectByPrimaryKey(para.getId());
+        //逻辑删除本地布控任务
+        MonitorTask monitorTask = new MonitorTask();
+        monitorTask.setId(para.getId());
+        monitorTask.setDeleteFlag(0);
+        monitorTask.setDeleteUserId(para.getUserId());
+        monitorTask.setDeleteTime(System.currentTimeMillis());
+        monMapper.updateByPrimaryKeySelective(monitorTask);
+        //删除关联表
+        Example example = new Example(MonUserRef.class);
+        example.createCriteria().andEqualTo("monitorId",para.getId());
+        monUserRefMapper.deleteByExample(example);
+        //修改布控状态
+        updMonitorState(para.getId(),oldMonitorTask.getFacedbIds());
+        return "SUCCESS";
+    }
+
+    /**
+     * 查询布控任务
+     *
+     * @param para
+     * @return
+     */
+    public List<MonitorTask> selectMonitor(MonVO para){
+        //查询布控任务
+        para.setNowTime(System.currentTimeMillis());
+        if(StringUtils.isNotBlank(para.getCameraIds())) {
+            para.setCameraIdList(Arrays.asList(para.getCameraIds().split(",")));
+        }
+        if(StringUtils.isNotBlank(para.getFacedbIds())) {
+            para.setFacedbIdList(Arrays.asList(para.getFacedbIds().split(",")));
+        }
+        PageHelper.startPage(para.getCurrentPage(), para.getPageSize());
+        List<MonitorTask> monitorTasks = monMapper.selMonitorTask(para);
+        for (MonitorTask monitorTask : monitorTasks) {
+            //获取设备名
+            String cameraIdsName = null;
+            if(StringUtils.isNotBlank(monitorTask.getCameraIds())) {
+                List<String> cameraIds = Arrays.asList(monitorTask.getCameraIds().split(","));
+                cameraIdsName = monMapper.selcameraNames(cameraIds);
+                monitorTask.setCameraIdsName(cameraIdsName);
+            }
+            //获取人像设备名
+            String personcardDeviceIdsName = null;
+            if(StringUtils.isNotBlank(monitorTask.getPersoncardDeviceIds())) {
+                List<String> personcardDeviceIds = Arrays.asList(monitorTask.getPersoncardDeviceIds().split(","));
+                personcardDeviceIdsName = monMapper.selPersoncardDeviceNames(personcardDeviceIds);
+                monitorTask.setPersoncardDeviceIdsName(personcardDeviceIdsName);
+            }
+            //拼装设备全名
+            if(personcardDeviceIdsName != null && cameraIdsName != null){
+                monitorTask.setCameraDeviceName(cameraIdsName + "," + personcardDeviceIdsName);
+            }else{
+                if(personcardDeviceIdsName != null){
+                    monitorTask.setCameraDeviceName(personcardDeviceIdsName);
+                }else{
+                    monitorTask.setCameraDeviceName(cameraIdsName);
+                }
+            }
+            //获取库名
+            List<String> facedbIds = Arrays.asList(monitorTask.getFacedbIds().split(","));
+            String facedbIdsName = monMapper.selFacedbNames(facedbIds);
+            monitorTask.setFacedbIdsName(facedbIdsName);
+        }
+        return monitorTasks;
+    }
+
+    /**
+     * 查询布控任务详情
+     *
+     * @param para
+     * @return+
+     */
+    public MonitorTask selectMonitorDetail(MonVO para){
+        MonitorTask monitorTask = monMapper.selMonitorDetail(para);
+        //获取设备名
+        String cameraIdsName = null;
+        if(StringUtils.isNotBlank(monitorTask.getCameraIds())) {
+            List<String> cameraIds = Arrays.asList(monitorTask.getCameraIds().split(","));
+            cameraIdsName = monMapper.selcameraNames(cameraIds);
+            monitorTask.setCameraIdsName(cameraIdsName);
+        }
+        //获取人像设备名
+        String personcardDeviceIdsName = null;
+        if(StringUtils.isNotBlank(monitorTask.getPersoncardDeviceIds())) {
+            List<String> personcardDeviceIds = Arrays.asList(monitorTask.getPersoncardDeviceIds().split(","));
+            personcardDeviceIdsName = monMapper.selPersoncardDeviceNames(personcardDeviceIds);
+            monitorTask.setPersoncardDeviceIdsName(personcardDeviceIdsName);
+        }
+        //拼装设备全名
+        if(personcardDeviceIdsName != null && cameraIdsName != null){
+            monitorTask.setCameraDeviceName(cameraIdsName + "," + personcardDeviceIdsName);
+        }else{
+            if(personcardDeviceIdsName != null){
+                monitorTask.setCameraDeviceName(personcardDeviceIdsName);
+            }else{
+                monitorTask.setCameraDeviceName(cameraIdsName);
+            }
+        }
+        //查询人像库名
+        List<String> facedbIds = Arrays.asList(monitorTask.getFacedbIds().split(","));
+        String facedbIdsName = monMapper.selFacedbNames(facedbIds);
+        monitorTask.setFacedbIdsName(facedbIdsName);
+        //查询处警人名
+        String policeUserIdsName = monMapper.selMonUserName(para);
+        monitorTask.setPoliceUserIdsName(policeUserIdsName);
+        return monitorTask;
+    }
+
+    /**
+     * 修改人像库表中的布控状态
+     *
+     * @param monitorId 布控任务主键
+     * @param facedbIds 库id(逗号分隔)
+     * @return
+     */
+    public void updMonitorState (Integer monitorId,String facedbIds){
+        List<String> ids = Arrays.asList(facedbIds.split(","));
         for (String id : ids) {
             //判断此库下是否还存在其他布控任务
             MonVO monVO = new MonVO();
             monVO.setDeleteFlag(1);
-            monVO.setId(monitorTask.getId());
+            monVO.setId(monitorId);
             monVO.setFacedbId(id);
             List<MonitorTask> monitorTasks = monMapper.selExistMonTask(monVO);
             if(CollectionUtils.isEmpty(monitorTasks)){
@@ -130,13 +284,5 @@ public class MonServiceImpl extends BaseServiceImpl {
                 facedbMapper.updateByPrimaryKeySelective(facedb);
             }
         }
-        //修改新添加人像库布控状态
-        Example examp = new Example(Facedb.class);
-        List facedbIdList = Arrays.asList(para.getFacedbIds().split(","));
-        examp.createCriteria().andIn("id",facedbIdList);
-        Facedb facedb = new Facedb();
-        facedb.setMonitorState(MonitorStateEnum.YES.getCode());
-        facedbMapper.updateByExampleSelective(facedb,examp);
-        return "SUCCESS";
     }
 }

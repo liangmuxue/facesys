@@ -23,9 +23,11 @@ import com.ss.facesys.web.manage.baseinfo.controller.ResultCode;
 import com.ss.response.PageEntity;
 import com.ss.response.ResponseEntity;
 import com.ss.spider.log.constants.ModuleCode;
+import com.ss.spider.system.organization.model.Organization;
 import com.ss.valide.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -335,6 +337,22 @@ public class CameraController extends BaseController {
             resp = createFailResponse();
             resp.setMessage("播放录像失败");
             this.logger.error("相机播放录像失败，原因：" + e.toString(), e);
+        }
+        return resp;
+    }
+
+    @RequestMapping(value = {"/tree"}, method = {RequestMethod.POST})
+    @OpLog(model = ModuleCode.BUSINESS, desc = "查询设备树", type = OperaTypeEnum.SELECT)
+    public ResponseEntity<List<Organization>> tree(CameraQueryVO queryVO) throws BindException {
+        ResponseEntity<List<Organization>> resp = createSuccResponse();
+        try {
+            List<Integer> resources = getAuthResources(queryVO.getUserId(), ResourceType.CAMERA, null);
+            queryVO.setResources(resources);
+            resp.setData(this.cameraService.treeData(queryVO));
+        } catch (Exception e) {
+            resp = createFailResponse();
+            resp.setMessage("设备树查询失败");
+            this.logger.error("设备树查询失败，原因：" + e.toString(), e);
         }
         return resp;
     }
