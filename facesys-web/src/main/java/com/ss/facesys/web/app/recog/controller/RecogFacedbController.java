@@ -99,7 +99,7 @@ public class RecogFacedbController extends BaseController {
             }
             JSONObject oceanResult;
             try {
-                oceanResult = this.accessService.getRecogRegisterDb(getVplatParam(facedbQuery));
+                oceanResult = this.accessService.getRecogRegisterDb(params.toJSONString());
                 if (!StringUtils.checkSuccess(oceanResult)) {
                     throw new ServiceException(oceanResult.getString("result"), oceanResult.getString("message"));
                 }
@@ -120,7 +120,27 @@ public class RecogFacedbController extends BaseController {
                 faceIdList.add(String.valueOf(c.getUserId()));
             }
             Example ffe = new Example(FacedbFace.class);
-            ffe.createCriteria().andEqualTo("status", StatusEnum.EFFECT.getCode()).andIn("faceId",faceIdList);
+            Example.Criteria criteria = ffe.createCriteria();
+            criteria.andEqualTo("status", StatusEnum.EFFECT.getCode()).andIn("faceId",faceIdList);
+            if(StringUtils.isNotBlank(facedbQuery.getName())){
+                criteria.andEqualTo("name",facedbQuery.getName());
+            }
+            if(StringUtils.isNotBlank(facedbQuery.getCardId())){
+                criteria.andEqualTo("cardId",facedbQuery.getCardId());
+            }
+            if(facedbQuery.getGender()!=null && !"".equals(facedbQuery.getGender())){
+                criteria.andEqualTo("gender",facedbQuery.getGender());
+            }
+            if(facedbQuery.getNation()!=null && !"".equals(facedbQuery.getNation())){
+                criteria.andEqualTo("nation",facedbQuery.getNation());
+            }
+            if(facedbQuery.getAgeB()!=null && !"".equals(facedbQuery.getAgeB())
+                    && facedbQuery.getAgeE()!=null && !"".equals(facedbQuery.getAgeE()) ){
+                Calendar calendar = Calendar.getInstance();
+                calendar.add(Calendar.YEAR, 1);
+                int i = calendar.get(Calendar.YEAR);
+                criteria.andBetween("birthday",(i-facedbQuery.getAgeE())+"0000",(i-facedbQuery.getAgeB())+"0000");
+            }
             List<FacedbFace> facedbFaces = facedbFaceMapper.selectByExample(ffe);
             if(facedbFaces.isEmpty()){
                 resp.setData(assemblePage(new ArrayList<>(), null, null));
@@ -152,9 +172,8 @@ public class RecogFacedbController extends BaseController {
                     Date date = new Date();
                     DateFormat formats = new SimpleDateFormat("yyyy");
                     String format = formats.format(date);
-                    SimpleDateFormat sdf=new SimpleDateFormat("yyyy");
-                    String sd = sdf.format(new Date(Long.parseLong(String.valueOf(f.getBirthday()))));
-                    f.setAge(Integer.parseInt(format) - Integer.parseInt(sd));
+                    String substring = f.getBirthday().substring(0, 4);
+                    f.setAge(Integer.parseInt(format) - Integer.parseInt(substring));
                 }else{
                     f.setAge(null);
                 }

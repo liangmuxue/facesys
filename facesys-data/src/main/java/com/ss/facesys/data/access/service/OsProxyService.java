@@ -538,6 +538,17 @@ public class OsProxyService {
     }
 
     /**
+     * 检索人体抓拍库数据
+     *
+     * @param parmJson
+     * @return
+     */
+    public static JSONObject getRecogCameraBodyDb(String parmJson) {
+        String resultString = BaseHttpUtil.httpPost(parmJson, PropertiesUtil.getSfgohttp() + SfgoHttpConstant.REID_SEARCH, null);
+        return JSONObject.parseObject(resultString);
+    }
+
+    /**
      * 1:N 注册库
      *
      * @param parmJson

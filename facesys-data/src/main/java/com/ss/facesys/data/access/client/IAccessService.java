@@ -47,6 +47,8 @@ public interface IAccessService {
      */
     JSONObject getRecogCameraDb(String paramString);
 
+    JSONObject getRecogCameraBodyDb(String paramString);
+
     JSONObject getRecogTerminalDb(String paramString);
 
     /**

@@ -41,6 +41,11 @@ public class AccessServiceImpl implements IAccessService {
     }
 
     @Override
+    public JSONObject getRecogCameraBodyDb(String parmJson) {
+        return OsProxyService.getRecogCameraBodyDb(parmJson);
+    }
+
+    @Override
     public JSONObject getRecogTerminalDb(String parmJson) {
         return OsProxyService.getRecogTerminalDb(parmJson);
     }
