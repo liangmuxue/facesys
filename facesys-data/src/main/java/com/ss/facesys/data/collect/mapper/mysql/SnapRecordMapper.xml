@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.facesys.data.collect.mapper.SnapRecordMapper">
+
+    <!--根据Id查询抓拍记录-->
+    <select id="getById"
+            resultType="com.ss.facesys.data.baseinfo.common.dto.PersonCaptureDTO">
+        SELECT
+        main.id as captureId,
+        main.capture_time as createTime,
+        main.capture_url AS captureUrl,
+        main.panorama_url AS panoramaUrl,
+        main.device_id AS deviceId,
+        main.device_name AS deviceName,
+        main.capture_type as captureType,
+        main.gender as gender,
+        main.age as age,
+        main.age_type as ageType,
+        main.sunglasses as sunGlassesState,
+        main.glasses as glassesState,
+        main.mask as maskState,
+        main.minority as nation
+        FROM
+        ss_snap_record main
+        <where>
+            <if test="idList != null and idList.size > 0 ">
+                main.id in
+                <foreach collection="idList" index="index" item="item" open="("
+                         separator="," close=")">
+                    #{item.userId}
+                </foreach>
+            </if>
+        </where>
+    </select>
+</mapper>

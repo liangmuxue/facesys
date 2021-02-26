@@ -88,7 +88,7 @@ public class MyMessageServiceImpl implements IMyMessageService {
             example3.createCriteria().andEqualTo("enumType", "alarm_grade").andEqualTo("enumValue", a.getAlarmGrade());
             List<BaseEnums> baseEnums1 = this.enumMapper.selectByExample(example3);
             if(!baseEnums1.isEmpty()){
-                a.setAlarmGradeName(baseEnums.get(0).getEnumName());
+                a.setAlarmGradeName(baseEnums1.get(0).getEnumName());
             }
         }
         return myMessages;

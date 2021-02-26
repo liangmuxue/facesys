@@ -34,6 +34,8 @@ public class MonitorTask {
     private String cameraIds;
     @Column(name = "facedb_ids")
     private String facedbIds;
+    @Column(name = "personcard_device_ids")
+    private String personcardDeviceIds;
     @Column(name = "remark")
     private String remark;
     @Column(name = "state")
@@ -63,6 +65,10 @@ public class MonitorTask {
 
     @Transient
     private String cameraIdsName;
+    @Transient
+    private String personcardDeviceIdsName;
+    @Transient
+    private String cameraDeviceName;
     @Transient
     private String facedbIdsName;
     @Transient
@@ -312,5 +318,29 @@ public class MonitorTask {
 
     public void setPoliceUserIdsName(String policeUserIdsName) {
         this.policeUserIdsName = policeUserIdsName;
+    }
+
+    public String getPersoncardDeviceIds() {
+        return personcardDeviceIds;
+    }
+
+    public void setPersoncardDeviceIds(String personcardDeviceIds) {
+        this.personcardDeviceIds = personcardDeviceIds;
+    }
+
+    public String getPersoncardDeviceIdsName() {
+        return personcardDeviceIdsName;
+    }
+
+    public void setPersoncardDeviceIdsName(String personcardDeviceIdsName) {
+        this.personcardDeviceIdsName = personcardDeviceIdsName;
+    }
+
+    public String getCameraDeviceName() {
+        return cameraDeviceName;
+    }
+
+    public void setCameraDeviceName(String cameraDeviceName) {
+        this.cameraDeviceName = cameraDeviceName;
     }
 }

@@ -38,7 +38,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * 1:N 抓拍库检索
+ * 1:N 行人再识别
  *
  * @author FrancisYs
  * @date 2019/12/20
@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping({"/recog"})
-public class RecogCameraCaptureController extends BaseController {
+public class RecogBodyCaptureController extends BaseController {
 
     @Resource
     private IAccessService accessService;
@@ -55,8 +55,8 @@ public class RecogCameraCaptureController extends BaseController {
     @Resource
     private SnapRecordMapper snapRecordMapper;
 
-    @PostMapping(value = {"/cameraDb"})
-    @OpLog(model = ModuleCode.BUSINESS, desc = "1:N 抓拍库检索", type = OperaTypeEnum.SEARCH)
+    @PostMapping(value = {"/bodyDb"})
+    @OpLog(model = ModuleCode.BUSINESS, desc = "1:N 行人再识别", type = OperaTypeEnum.SEARCH)
     public ResponseEntity<Map<String, Object>> recog(@RequestBody @Validated RecogCaptureQuery captureQuery, BindingResult bindingResult) throws BindException {
         ResponseEntity<Map<String, Object>> resp = validite(bindingResult);
         try {
@@ -66,6 +66,7 @@ public class RecogCameraCaptureController extends BaseController {
             JSONObject params = new JSONObject();
             //根据条件决定传参是特征值字符串还是图片
             params.put("img", captureQuery.getImg());
+            captureQuery.getDeviceIds().add(2000045);
             params.put("groupId", StringUtils.join(captureQuery.getDeviceIds(), ","));
             if (captureQuery.getTopN() != null) {
                 params.put("topN", captureQuery.getTopN());
@@ -86,7 +87,7 @@ public class RecogCameraCaptureController extends BaseController {
             }
             JSONObject oceanResult;
             try {
-                oceanResult = this.accessService.getRecogCameraDb(params.toJSONString());
+                oceanResult = this.accessService.getRecogCameraBodyDb(params.toJSONString());
                 if (!StringUtils.checkSuccess(oceanResult)) {
                     throw new ServiceException(oceanResult.getString("result"), oceanResult.getString("message"));
                 }
@@ -128,7 +129,7 @@ public class RecogCameraCaptureController extends BaseController {
                     }
                 });
             }
-            resp.setData(assemblePage(filterCondition(resultList, captureQuery), null, null));
+            resp.setData(assemblePage(filterBodyCondition(resultList, captureQuery), null, null));
         } catch (ServiceException e) {
             this.logger.error("1:N 抓拍库检索失败，错误码：{}，异常信息：{}", e.getCode(), e.getMessage(), e);
             return createFailResponse(e);
@@ -206,13 +207,23 @@ public class RecogCameraCaptureController extends BaseController {
                                 ((maskState = captureQuery.getMaskState()) == null || personCaptureDTO.getMaskState().equals(maskState)) &&
                                 ((minorityState = captureQuery.getMinorityState()) == null || personCaptureDTO.getNation() != 1);
                 boolean genderValid = (gender = captureQuery.getGender()) == null || personCaptureDTO.getGender().equals(gender);
+                if (ageValid && propertyValid && genderValid) {
+                    filter.add(personCaptureDTO);
+                }
+            }
+        }
+        return filter;
+    }
+
+    private List<PersonCaptureDTO> filterBodyCondition(List<PersonCaptureDTO> resultList, RecogCaptureQuery captureQuery) {
+        List<PersonCaptureDTO> filter = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(resultList)) {
+            for (PersonCaptureDTO personCaptureDTO : resultList) {
                 personCaptureDTO.setCaptureUrlFull(FilePropertiesUtil.getHttpUrl() + personCaptureDTO.getCaptureUrl());
                 if(StringUtils.isNotBlank(personCaptureDTO.getPanoramaUrl())) {
                     personCaptureDTO.setPanoramaUrlFull(FilePropertiesUtil.getHttpUrl() + personCaptureDTO.getPanoramaUrl());
                 }
-                if (ageValid && propertyValid && genderValid) {
-                    filter.add(personCaptureDTO);
-                }
+                filter.add(personCaptureDTO);
             }
         }
         return filter;

@@ -200,7 +200,8 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     public static boolean checkSuccess(JSONObject resultStr) {
         if ("00000000".equals(resultStr.getString("code")) || "0"
                 .equals(resultStr.getString("code")) || "0"
-                .equals(resultStr.getString("respCode"))) {
+                .equals(resultStr.getString("respCode")) || "0"
+                .equals(resultStr.getString("result"))) {
             return true;
         }
         return false;

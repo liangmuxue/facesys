@@ -74,7 +74,7 @@ public class MonController extends BaseController {
             resp = createFailResponse();
             resp.setCode(ResultCode.MONITOR_EDIT_FAILED_CODE);
             this.logger.error("修改布控失败，原因：" + e.toString(), e);
-            resp.setMessage("修改布控失败");
+            resp.setMessage("修改布控失败!" + e.getMessage());
         }
         return resp;
     }
