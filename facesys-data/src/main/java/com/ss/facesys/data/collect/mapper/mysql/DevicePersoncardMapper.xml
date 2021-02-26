@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.facesys.data.collect.mapper.DevicePersoncardMapper">
+
+	<select id="findTreeCameras" parameterType="com.ss.facesys.data.resource.common.web.CameraQueryVO"
+			resultType="com.ss.spider.system.organization.model.Organization">
+		SELECT
+		a.id as orgId,
+		a.device_id as remark,
+		a.device_name as orgCname,
+		a.online_state as status,
+		a.org_id as parentId
+		FROM
+		ss_device_personcard a
+		<where>
+			a.status = 1
+			<if test="resources!=null and  resources.size()!=0">
+				AND a.id in
+				<foreach collection="resources" item="item" open="(" close=")" separator=",">
+					#{item,jdbcType=INTEGER}
+				</foreach>
+			</if>
+		</where>
+		ORDER BY a.device_id DESC
+	</select>
+
+	
+</mapper>
