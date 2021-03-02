@@ -1,5 +1,7 @@
 package com.ss.facesys.data.collect.common.model;
 
+import com.ss.facesys.util.StringUtils;
+
 import java.util.Date;
 
 /**
@@ -60,6 +62,7 @@ public class AlarmRecord {
     private String registerUrl;
     private String regId;
     private String regdb;
+    private String regdbType;
     private Integer regdbId;
     private String regdbName;
     private float score;
@@ -533,5 +536,13 @@ public class AlarmRecord {
 
     public void setCreateTime(Long createTime) {
         this.createTime = createTime;
+    }
+
+    public String getRegdbType() {
+        return regdbType;
+    }
+
+    public void setRegdbType(String regdbType) {
+        this.regdbType = regdbType;
     }
 }

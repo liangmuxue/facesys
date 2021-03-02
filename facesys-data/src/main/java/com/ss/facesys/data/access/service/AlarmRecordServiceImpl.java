@@ -296,6 +296,7 @@ public class AlarmRecordServiceImpl {
                                             Facedb facedbMess = facedbMapper.selectOne(facedb);
                                             alarmRecord.setRegdbName(facedbMess.getName());
                                             alarmRecord.setRegdbId(facedbMess.getId());
+                                            alarmRecord.setRegdbType(facedbMess.getType());
                                         }
                                     }
                                     //获取对比值
@@ -326,7 +327,13 @@ public class AlarmRecordServiceImpl {
         }
         Example example = new Example(AlarmRecord.class);
         example.createCriteria().andIn("monitorId",monIdList);
-       // if()
+        if(StringUtils.isNotBlank(para.getName())){
+            example.and().andLike("name",para.getName());
+        }
+        if(StringUtils.isNotBlank(para.getCardId())){
+            example.and().andLike("cardId",para.getCardId());
+        }
+      //  if()
         return null;
     }
 }
