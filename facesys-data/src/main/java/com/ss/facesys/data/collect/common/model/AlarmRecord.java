@@ -1,8 +1,7 @@
 package com.ss.facesys.data.collect.common.model;
 
-import com.ss.facesys.util.StringUtils;
-
-import java.util.Date;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * AlarmRecord 预警记录
@@ -10,8 +9,10 @@ import java.util.Date;
  * @date 2019/8/23
  * @email yaoshuai@ss-cas.com
  */
+@Table(name = "cw_alarm_record")
 public class AlarmRecord {
 
+    @Id
     private int id;
     private Integer alarmId;
     private String alarmName;
@@ -30,6 +31,7 @@ public class AlarmRecord {
     private Long captureTime;
     private Long alarmTime;
     private String deviceId;
+    private String deviceNo;
     private String deviceCode;
     private int deviceType;
     private String deviceName;
@@ -41,6 +43,7 @@ public class AlarmRecord {
     private String panoramaUrlFull;
     private Float qualityScore;
     private Integer age;
+    private Integer ageGroup;
     private Integer gender;
     private Integer maskState;
     private Integer glassesState;
@@ -544,5 +547,21 @@ public class AlarmRecord {
 
     public void setRegdbType(String regdbType) {
         this.regdbType = regdbType;
+    }
+
+    public String getDeviceNo() {
+        return deviceNo;
+    }
+
+    public void setDeviceNo(String deviceNo) {
+        this.deviceNo = deviceNo;
+    }
+
+    public Integer getAgeGroup() {
+        return ageGroup;
+    }
+
+    public void setAgeGroup(Integer ageGroup) {
+        this.ageGroup = ageGroup;
     }
 }

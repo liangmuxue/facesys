@@ -273,9 +273,9 @@ public class CaptureThread implements Runnable {
                         deviceId = devicePersoncard.getDeviceId();
                     }
                     addSfgoCapture(sr.getId(), faceBase64, deviceId, sr.getCaptureType(), time);
-
-                }
-                if (BODY_TYPE == sr.getCaptureType()) {
+                    transferData(sr);
+                    alarmRecordService.dealAlarmEvent(sr);
+                } else if (BODY_TYPE == sr.getCaptureType()) {
                     //人体类型入sfgo
                     String deviceId = null;
                     if (1 == deviceType) {
@@ -285,8 +285,6 @@ public class CaptureThread implements Runnable {
                     }
                     addSfgoCapture(sr.getId(), bodyBase64, deviceId, sr.getCaptureType(), time);
                 }
-                transferData(sr);
-                alarmRecordService.dealAlarmEvent(sr);
             }
         } catch (Exception e) {
             logger.info("抓拍照入库处理异常：" + e, e.toString());
