@@ -19,9 +19,8 @@ public class ImgCollectionForm {
     private Integer id;
     @NotNull(message = "{imgCollection.dataType.empty}", groups = {APIAddGroup.class})
     private Integer dataType;
-    // 不是dataId，是原始数据的主键id
-    @NotNull(message = "{imgCollection.captureId.empty}", groups = {APIAddGroup.class})
-    private String captureId;
+    @NotNull(message = "{imgCollection.dataId.empty}", groups = {APIAddGroup.class})
+    private Integer dataId;
     private String remark;
     private String userId;
 
@@ -41,12 +40,12 @@ public class ImgCollectionForm {
         this.dataType = dataType;
     }
 
-    public String getCaptureId() {
-        return captureId;
+    public Integer getDataId() {
+        return dataId;
     }
 
-    public void setCaptureId(String captureId) {
-        this.captureId = captureId;
+    public void setDataId(Integer dataId) {
+        this.dataId = dataId;
     }
 
     public String getRemark() {
@@ -67,13 +66,12 @@ public class ImgCollectionForm {
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", ImgCollectionForm.class.getSimpleName() + "[", "]")
-                .add("id=" + id)
-                .add("dataType=" + dataType)
-                .add("captureId=" + captureId)
-                .add("remark=" + remark)
-                .add("userId='" + userId + "'")
-                .toString();
+        return "ImgCollectionForm{" +
+                "id=" + id +
+                ", dataType=" + dataType +
+                ", dataId='" + dataId + '\'' +
+                ", remark='" + remark + '\'' +
+                ", userId='" + userId + '\'' +
+                '}';
     }
-
 }

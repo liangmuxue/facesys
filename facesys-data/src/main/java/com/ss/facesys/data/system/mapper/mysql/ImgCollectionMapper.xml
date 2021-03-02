@@ -22,18 +22,6 @@
         FROM ss_img_collection
         <where>
             user_id = #{userId}
-            AND ( (data_type in (1,3) AND FIND_IN_SET(data_id, #{captureDataIds})) OR (data_type = 2 AND FIND_IN_SET(data_id, #{personcardDataIds})) )
-            <!--<choose>-->
-                <!--<when test="captureDataIds != null and captureDataIds != '' and personcardDataIds != null and personcardDataIds != ''">-->
-                    <!--AND ( (data_type in (1,3) AND FIND_IN_SET(data_id, #{captureDataIds})) OR (data_type = 2 AND FIND_IN_SET(data_id, #{personcardDataIds})) )-->
-                <!--</when>-->
-                <!--<when test="captureDataIds != null and captureDataIds != ''">-->
-                    <!--AND (data_type in (1,3) AND FIND_IN_SET(data_id, #{captureDataIds}))-->
-                <!--</when>-->
-                <!--<when test="personcardDataIds != null and personcardDataIds != ''">-->
-                    <!--AND (data_type = 2 AND FIND_IN_SET(data_id, #{personcardDataIds}))-->
-                <!--</when>-->
-            <!--</choose>-->
             <if test="collectionTimeMin != null and collectionTimeMin != '' and collectionTimeMax != null and collectionTimeMax != ''">
                 AND collection_time BETWEEN #{collectionTimeMin} and #{collectionTimeMax}
             </if>

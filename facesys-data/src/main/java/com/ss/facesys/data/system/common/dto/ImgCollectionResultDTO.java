@@ -25,6 +25,14 @@ public class ImgCollectionResultDTO {
     private Long dataCreateTime;
     private CollectionCaptureDetail collectionCaptureDetail;
     private CollectionPersoncardDetail collectionPersoncardDetail;
+    private String panoramaUrl;
+    private Integer age;
+    private Integer gender;
+    private String genderName;
+    private String nationName;
+    private Integer maskState;
+    private Integer glassesState;
+    private Integer sunGlassesState;
 
     public Integer getId() {
         return id;
@@ -112,6 +120,70 @@ public class ImgCollectionResultDTO {
 
     public void setCollectionPersoncardDetail(CollectionPersoncardDetail collectionPersoncardDetail) {
         this.collectionPersoncardDetail = collectionPersoncardDetail;
+    }
+
+    public String getPanoramaUrl() {
+        return panoramaUrl;
+    }
+
+    public void setPanoramaUrl(String panoramaUrl) {
+        this.panoramaUrl = panoramaUrl;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+
+    public Integer getGender() {
+        return gender;
+    }
+
+    public void setGender(Integer gender) {
+        this.gender = gender;
+    }
+
+    public String getGenderName() {
+        return genderName;
+    }
+
+    public void setGenderName(String genderName) {
+        this.genderName = genderName;
+    }
+
+    public String getNationName() {
+        return nationName;
+    }
+
+    public void setNationName(String nationName) {
+        this.nationName = nationName;
+    }
+
+    public Integer getMaskState() {
+        return maskState;
+    }
+
+    public void setMaskState(Integer maskState) {
+        this.maskState = maskState;
+    }
+
+    public Integer getGlassesState() {
+        return glassesState;
+    }
+
+    public void setGlassesState(Integer glassesState) {
+        this.glassesState = glassesState;
+    }
+
+    public Integer getSunGlassesState() {
+        return sunGlassesState;
+    }
+
+    public void setSunGlassesState(Integer sunGlassesState) {
+        this.sunGlassesState = sunGlassesState;
     }
 
     @Override

@@ -71,6 +71,7 @@ public class PersonCaptureDTO {
     private Float rightBlinkScore;
     private Integer rightBlinkState;
     private String genderName;
+    private String nationName;
 
     public String getCaptureId() {
         return this.captureId;
@@ -691,7 +692,6 @@ public class PersonCaptureDTO {
         this.rightBlinkState = rightBlinkState;
     }
 
-
     @Override
     public String toString() {
         return "PersonCaptureDTO [captureId=" + this.captureId + ", captureUrl=" + this.captureUrl + ", captureUrlFull=" + this.captureUrlFull + ", captureTime=" + this.captureTime + ", panoramaId=" + this.panoramaId + ", panoramaUrl=" + this.panoramaUrl + ", panoramaUrlFull=" + this.panoramaUrlFull + ", deviceId=" + this.deviceId + ", deviceName=" + this.deviceName + ", deviceAddress=" + this.deviceAddress + ", devExtField1=" + this.devExtField1 + ", devExtField2=" + this.devExtField2 + ", devExtField3=" + this.devExtField3 + ", lng=" + this.lng + ", lat=" + this.lat + ", age=" + this.age + ", gender=" + this.gender + ", race=" + this.race + ", qualityScore=" + this.qualityScore + ", faceTotalScore=" + this.faceTotalScore + ", lightScore=" + this.lightScore + ", maskScore=" + this.maskScore + ", maskState=" + this.maskState + ", clarityScore=" + this.clarityScore + ", glassesScore=" + this.glassesScore + ", glassesState=" + this.glassesState + ", mouthScore=" + this.mouthScore + ", faceClarityScore=" + this.faceClarityScore + ", sunGlassesScore=" + this.sunGlassesScore + ", sunGlassesState=" + this.sunGlassesState + ", nation=" + this.nation + ", pitch=" + this.pitch + ", yaw=" + this.yaw + ", roll=" + this.roll + ", x=" + this.x + ", y=" + this.y + ", width=" + this.width + ", height=" + this.height + ", printFaceScore=" + this.printFaceScore + ", fromSystem=" + this.fromSystem + ", isLinkage=" + this.isLinkage + ", createTime=" + this.createTime + ", recogScore=" + this.recogScore + ", egCaptureId=" + this.egCaptureId + ", captureType=" + this.captureType + ", deviceType=" + this.deviceType + ", subType=" + this.subType + ", faceId=" + this.faceId + ", authResult=" + this.authResult + ", videoId=" + this.videoId + ", featureStatus=" + this.featureStatus + ", icCardType=" + this.icCardType + ", icCardNo=" + this.icCardNo + ", captureExtField1=" + this.captureExtField1 + ", captureExtField2=" + this.captureExtField2 + ", captureExtField3=" + this.captureExtField3 + ", captureExtField4=" + this.captureExtField4 + ", captureExtField5=" + this.captureExtField5 + ", leftBlinkScore=" + this.leftBlinkScore + ", leftBlinkState=" + this.leftBlinkState + ", rightBlinkScore=" + this.rightBlinkScore + ", rightBlinkState=" + this.rightBlinkState + "]";
@@ -703,5 +703,13 @@ public class PersonCaptureDTO {
 
     public void setGenderName(String genderName) {
         this.genderName = genderName;
+    }
+
+    public String getNationName() {
+        return nationName;
+    }
+
+    public void setNationName(String nationName) {
+        this.nationName = nationName;
     }
 }
