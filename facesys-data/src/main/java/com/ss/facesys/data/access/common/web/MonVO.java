@@ -64,7 +64,7 @@ public class MonVO {
     private Integer currentPage;
     private Integer pageSize;
     private Long nowTime;
-    @NotBlank(message = "monitor.regionCode.empty", groups = {APIAddGroup.class, APIEditGroup.class})
+    //@NotBlank(message = "monitor.regionCode.empty", groups = {APIAddGroup.class, APIEditGroup.class})
     private String regionCode;
     //@NotBlank(message = "monitor.adressIds.empty", groups = {APIAddGroup.class,APIEditGroup.class})
     private String adressIds;
