@@ -9,6 +9,7 @@ package com.ss.facesys.data.collect.common.dto;
  **/
 public class Transfer {
 
+    private Integer id;
     private String type;
     private String deviceName;
     private Long captureTime;
@@ -29,6 +30,14 @@ public class Transfer {
     private Integer todayCaptureTotal;
     private Integer thisMonthCaptureTotal;
     private Integer todayAlarmTotal;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public String getType() {
         return type;

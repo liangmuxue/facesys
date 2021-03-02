@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.j7cai.common.util.JsonUtils;
+import com.ss.facesys.data.access.service.AlarmRecordServiceImpl;
 import com.ss.facesys.data.collect.common.dto.Transfer;
 import com.ss.facesys.data.collect.common.model.DevicePersoncard;
 import com.ss.facesys.data.collect.common.model.SnapRecord;
@@ -17,6 +18,7 @@ import com.ss.facesys.util.StringUtils;
 import com.ss.facesys.util.constant.SfgoHttpConstant;
 import com.ss.facesys.util.em.AgeTypeEnum;
 import com.ss.facesys.util.em.ResourceType;
+import com.ss.facesys.util.file.FilePropertiesUtil;
 import com.ss.facesys.util.jedis.JedisUtil;
 import com.ss.facesys.util.netty.MyWebSocket;
 import com.ss.spider.system.user.mapper.UserResourceMapper;
@@ -49,6 +51,7 @@ public class CaptureThread implements Runnable {
     private DevicePersoncardMapper devicePersoncardMapper = SpringUtil.getBean(DevicePersoncardMapper.class);
     private UserResourceMapper userResourceMapper = SpringUtil.getBean(UserResourceMapper.class);
     private JedisUtil jedisUtil = SpringUtil.getBean(JedisUtil.class);
+    private AlarmRecordServiceImpl alarmRecordService = SpringUtil.getBean(AlarmRecordServiceImpl.class);
 
     private Integer deviceType;
 
@@ -106,17 +109,17 @@ public class CaptureThread implements Runnable {
             //全景照路径
             String fullUrl = null;
             if (faceBase64 != null) {
-                faceUrl = "/" + System.currentTimeMillis() + "_face.jpg";
+                faceUrl = "/capture/" + System.currentTimeMillis() + "_face.jpg";
                 String faceImgPath = PropertiesUtil.getCaptureUrl() + faceUrl;
                 FileUtil.saveBase64ToFile(faceBase64, faceImgPath);
             }
             if (bodyBase64 != null) {
-                bodyUrl = "/" + System.currentTimeMillis() + "_body.jpg";
+                bodyUrl = "/capture/" + System.currentTimeMillis() + "_body.jpg";
                 String bodyImgPath = PropertiesUtil.getCaptureUrl() + bodyUrl;
                 FileUtil.saveBase64ToFile(bodyBase64, bodyImgPath);
             }
             if (fullBase64 != null) {
-                fullUrl = "/" + System.currentTimeMillis() + "_full.jpg";
+                fullUrl = "/capture/" + System.currentTimeMillis() + "_full.jpg";
                 String fullImgPath = PropertiesUtil.getCaptureUrl() + fullUrl;
                 FileUtil.saveBase64ToFile(fullBase64, fullImgPath);
             }
@@ -283,6 +286,7 @@ public class CaptureThread implements Runnable {
                     addSfgoCapture(sr.getId(), bodyBase64, deviceId, sr.getCaptureType(), time);
                 }
                 transferData(sr);
+                alarmRecordService.dealAlarmEvent(sr);
             }
         } catch (Exception e) {
             logger.info("抓拍照入库处理异常：" + e, e.toString());
@@ -319,11 +323,12 @@ public class CaptureThread implements Runnable {
 
     private void transferData (SnapRecord snapRecord) {
         Transfer transfer = new Transfer();
+        transfer.setId(snapRecord.getId());
         transfer.setType("capture");
         transfer.setDeviceName(snapRecord.getDeviceName());
         transfer.setCaptureTime(snapRecord.getCaptureTime());
-        transfer.setCaptureUrl(snapRecord.getCaptureUrl());
-        transfer.setPanoramaUrl(snapRecord.getPanoramaUrl());
+        transfer.setCaptureUrl(FilePropertiesUtil.getHttpUrl() + snapRecord.getCaptureUrl());
+        transfer.setPanoramaUrl(FilePropertiesUtil.getHttpUrl() + snapRecord.getPanoramaUrl());
         int newTodayTotal = 0;
         if (this.jedisUtil.get(TODAY_CAPTURE_TOTAL) == null){
             this.jedisUtil.set(TODAY_CAPTURE_TOTAL, 1);
