@@ -68,31 +68,8 @@ public class ImgCollectionController extends BaseController {
     @RequestMapping(value = {"/pages"}, method = {RequestMethod.POST})
     public ResponseEntity<PageEntity<ImgCollectionResultDTO>> pages(@RequestBody @Validated({APIPageGroup.class}) ImgCollectionQuery query, BindingResult bindingResult) throws BindException {
         ResponseEntity<PageEntity<ImgCollectionResultDTO>> resp = validite(bindingResult);
-        List<String> captureDeviceIds, personcardDeviceIds;
-        // 查询【用户权限下】【未删除】的相机设备
-        Camera camera = new Camera();
-        camera.setState(CommonConstant.DELETE_FLAG_EXIST);
-        List<Integer> existCameraIds = cameraMapper.select(camera).stream().map(Camera::getId).collect(Collectors.toList());
-        Example cameraExample = new Example(Camera.class);
-        cameraExample.createCriteria().andIn("id", getAuthResources(query.getUserId(), ResourceType.CAMERA, existCameraIds));
-        captureDeviceIds = cameraMapper.selectByExample(cameraExample).stream().map(Camera::getCameraId).collect(Collectors.toList());
-        // 查询【未删除】离线视频设备
-        OfflineVideo offlineVideo = new OfflineVideo();
-        offlineVideo.setStatus(StatusEnum.EFFECT.getCode());
-        List<String> existVideoIds = offlineVideoMapper.select(offlineVideo).stream().map(OfflineVideo::getDeviceId).collect(Collectors.toList());
-        // 整合抓拍类型收藏数据明细的主键集合
-        captureDeviceIds.addAll(existVideoIds);
-        // 查询【用户权限下】【未删除】的人证设备--人证类型收藏数据明细的主键集合
-        DevicePersoncard personcard = new DevicePersoncard();
-        personcard.setStatus(StatusEnum.EFFECT.getCode());
-        List<Integer> existsPersoncardIds = devicePersoncardMapper.select(personcard).stream().map(DevicePersoncard::getId).collect(Collectors.toList());
-        Example personcardExample = new Example(DevicePersoncard.class);
-        personcardExample.createCriteria().andIn("id", getAuthResources(query.getUserId(), ResourceType.PERSONCARD, existsPersoncardIds));
-        personcardDeviceIds = devicePersoncardMapper.selectByExample(personcardExample).stream().map(DevicePersoncard::getDeviceId).collect(Collectors.toList());
         ImgCollection imgCollection = new ImgCollection();
         BeanUtils.copyProperties(query, imgCollection);
-        imgCollection.setCaptureDeviceIds(captureDeviceIds.stream().filter(StringUtils::isNotBlank).collect(Collectors.toList()));
-        imgCollection.setPersoncardDeviceIds(personcardDeviceIds.stream().filter(StringUtils::isNotBlank).collect(Collectors.toList()));
         Page<ImgCollectionResultDTO> data = (Page) imgCollectionService.pages(imgCollection, query.getCurrentPage(), query.getPageSize());
         resp.setData(new PageEntity(data));
         return resp;
