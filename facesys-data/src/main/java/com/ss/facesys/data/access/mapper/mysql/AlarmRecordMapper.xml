@@ -3,7 +3,7 @@
 <mapper namespace="com.ss.facesys.data.access.mapper.AlarmRecordMapper">
 
     <!--插入黑名单报警信息-->
-    <insert id="insertAlarmRecord" parameterType="com.ss.facesys.data.collect.common.model.AlarmRecord">
+    <insert id="insertBlackListRecord" parameterType="com.ss.facesys.data.collect.common.model.AlarmRecord">
         insert into cw_alarm_record
         (
             alarmId,
@@ -13,6 +13,7 @@
             colorCode,
             voiceUrl,
             monitorId,
+            monitorCode,
             monitorName,
             monitorType,
             monitorProperty,
@@ -49,8 +50,7 @@
             pitch,
             yaw,
             roll,
-            cardNation,
-            attribute
+            cardNation
         )values(
                    #{alarmId},
                    #{alarmName},
@@ -59,6 +59,7 @@
                    #{colorCode},
                    #{voiceUrl},
                    #{monitorId},
+                   #{monitorCode},
                    #{monitorName},
                    #{monitorType},
                    #{monitorProperty},
@@ -78,7 +79,7 @@
                    #{captureUrlFull},
                    #{panoramaUrlFull},
                    #{remark},
-                   now(),
+                   #{createTime},
                    #{score},
                    #{registerUrl},
                    #{regId},
@@ -95,8 +96,7 @@
                    #{pitch},
                    #{yaw},
                    #{roll},
-                   #{cardNation},
-                   #{attribute}
+                   #{cardNation}
                )
     </insert>
 
@@ -110,6 +110,7 @@
             colorCode,
             voiceUrl,
             monitorId,
+            monitorCode,
             monitorName,
             monitorType,
             monitorProperty,
@@ -136,8 +137,7 @@
             yaw,
             roll,
             remark,
-            createTime,
-            attribute)
+            createTime)
         values (#{alarmId},
                 #{alarmName},
                 #{tipFlag},
@@ -145,6 +145,7 @@
                 #{colorCode},
                 #{voiceUrl},
                 #{monitorId},
+                #{monitorCode},
                 #{monitorName},
                 #{monitorType},
                 #{monitorProperty},
@@ -171,8 +172,8 @@
                 #{yaw},
                 #{roll},
                 #{remark},
-                now(),
-                #{attribute})
+                #{createTime}
+                )
     </insert>
 
 

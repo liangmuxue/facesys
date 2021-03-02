@@ -9,6 +9,7 @@ import com.ss.annotation.OpLog;
 import com.ss.enums.OperaTypeEnum;
 import com.ss.facesys.data.access.client.IAccessService;
 import com.ss.facesys.data.access.common.dto.MonitorTask;
+import com.ss.facesys.data.access.common.web.AlarmRecordsVO;
 import com.ss.facesys.data.access.common.web.MonVO;
 import com.ss.facesys.data.access.mapper.AlarmRecordMapper;
 import com.ss.facesys.data.access.mapper.MonMapper;
@@ -68,9 +69,9 @@ public class AlarmRecordController extends BaseController {
     @Resource
     private AlarmRecordServiceImpl alarmRecordService;
 
-    /*@RequestMapping(value = {"/selBlackRecord"}, method = {RequestMethod.POST})
+    @RequestMapping(value = {"/selBlackRecord"}, method = {RequestMethod.POST})
     @OpLog(model = "80007", desc = "查询黑名单报警信息", type = OperaTypeEnum.SELECT)
-    public ResponseEntity<PageEntity<AlarmRecord>> selBlackRecord(@RequestBody @Validated(APIGetsGroup.class) AlarmVO para, BindingResult bindingResult) throws Exception {
+    public ResponseEntity<PageEntity<AlarmRecord>> selBlackRecord(@RequestBody @Validated(APIGetsGroup.class) AlarmRecordsVO para, BindingResult bindingResult) throws Exception {
         ResponseEntity<PageEntity<AlarmRecord>> resp = validite(bindingResult);
         try {
             Page<AlarmRecord> data =  (Page) this.alarmRecordService.selBlackRecord(para);
@@ -83,7 +84,7 @@ public class AlarmRecordController extends BaseController {
             resp.setMessage("查询报警信息失败");
         }
         return resp;
-    }*/
+    }
 
 
     

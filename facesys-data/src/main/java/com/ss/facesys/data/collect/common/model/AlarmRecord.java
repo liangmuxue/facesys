@@ -17,7 +17,8 @@ public class AlarmRecord {
     private Integer voiceFlag;
     private String colorCode;
     private String voiceUrl;
-    private String monitorId;
+    private Integer monitorId;
+    private String monitorCode;
     private String monitorName;
     private int monitorType;
     private Integer monitorProperty;
@@ -50,6 +51,7 @@ public class AlarmRecord {
     private String width;
     private String height;
     private String remark;
+    private Long createTime;
     private String birthday;
     private String cardNation;
     private String cardId;
@@ -57,7 +59,8 @@ public class AlarmRecord {
     private Integer cardGender;
     private String registerUrl;
     private String regId;
-    private String regdbId;
+    private String regdb;
+    private Integer regdbId;
     private String regdbName;
     private float score;
 
@@ -79,15 +82,21 @@ public class AlarmRecord {
         this.alarmId = alarmId;
     }
 
-    public String getMonitorId() {
-        return this.monitorId;
+    public Integer getMonitorId() {
+        return monitorId;
     }
 
-
-    public void setMonitorId(String monitorId) {
+    public void setMonitorId(Integer monitorId) {
         this.monitorId = monitorId;
     }
 
+    public String getMonitorCode() {
+        return monitorCode;
+    }
+
+    public void setMonitorCode(String monitorCode) {
+        this.monitorCode = monitorCode;
+    }
 
     public String getMonitorName() {
         return this.monitorName;
@@ -446,11 +455,19 @@ public class AlarmRecord {
         this.regId = regId;
     }
 
-    public String getRegdbId() {
+    public String getRegdb() {
+        return regdb;
+    }
+
+    public void setRegdb(String regdb) {
+        this.regdb = regdb;
+    }
+
+    public Integer getRegdbId() {
         return regdbId;
     }
 
-    public void setRegdbId(String regdbId) {
+    public void setRegdbId(Integer regdbId) {
         this.regdbId = regdbId;
     }
 
@@ -508,5 +525,13 @@ public class AlarmRecord {
 
     public void setVoiceUrl(String voiceUrl) {
         this.voiceUrl = voiceUrl;
+    }
+
+    public Long getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Long createTime) {
+        this.createTime = createTime;
     }
 }
