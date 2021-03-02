@@ -10,6 +10,7 @@ import com.ss.facesys.data.access.mapper.MonMapper;
 import com.ss.facesys.data.baseinfo.common.model.BaseEnums;
 import com.ss.facesys.data.baseinfo.mapper.EnumMapper;
 import com.ss.facesys.data.collect.common.model.*;
+import com.ss.facesys.data.collect.common.web.AlarmVO;
 import com.ss.facesys.data.collect.mapper.DevicePersoncardMapper;
 import com.ss.facesys.data.collect.mapper.FacedbFaceMapper;
 import com.ss.facesys.data.collect.mapper.FacedbMapper;
@@ -56,6 +57,7 @@ public class AlarmRecordServiceImpl {
     private AlarmRecordMapper alarmRecordMapper;
 
     public void dealAlarmEvent(SnapRecord snapRecord){
+
         MonVO monVO = new MonVO();
         monVO.setEndTime(System.currentTimeMillis());
         monVO.setDeleteFlag(1);
@@ -293,4 +295,9 @@ public class AlarmRecordServiceImpl {
             }
         }
     }
+
+    /*public List<AlarmRecord> selBlackRecord(AlarmVO para){
+        Example example = new Example(AlarmRecord.class);
+        example.createCriteria().andEqualTo("")
+    }*/
 }

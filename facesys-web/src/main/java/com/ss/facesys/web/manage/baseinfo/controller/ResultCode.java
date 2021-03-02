@@ -423,4 +423,9 @@ public class ResultCode {
     /** 报警上传文件失败编号 */
     public static final String ALARMINFO_UPLOAD_FAILED_CODE = "70807023";
 
+    /** 查询报警信息失败编号 */
+    public static final String ALARMRECORD_FAILED_CODE = "70807024";
+    /** 修改报警信息失败编号 */
+    public static final String ALARMRECORD_EDIT_FAILED_CODE = "70807025";
+
 }
