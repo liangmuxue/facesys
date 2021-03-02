@@ -163,7 +163,7 @@ public class AnalysisTaskJob implements SimpleJob {
                 }
                 captureIds = new ArrayList<String>();
                 captureIds.add(ad.getCaptureId());
-                groups.put(ad.getDeviceId(), captureIds);
+                groups.put(String.valueOf(ad.getDeviceId()), captureIds);
             }
 
             for (String k : groups.keySet()) {

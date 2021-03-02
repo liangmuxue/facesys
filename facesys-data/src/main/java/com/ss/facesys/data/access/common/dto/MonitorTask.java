@@ -87,6 +87,8 @@ public class MonitorTask {
     private String colorCode;
     @Transient
     private String voiceUrl;
+    @Transient
+    private String monitorUserName;
 
     public Integer getId() {
         return id;
@@ -382,5 +384,13 @@ public class MonitorTask {
 
     public void setVoiceUrl(String voiceUrl) {
         this.voiceUrl = voiceUrl;
+    }
+
+    public String getMonitorUserName() {
+        return monitorUserName;
+    }
+
+    public void setMonitorUserName(String monitorUserName) {
+        this.monitorUserName = monitorUserName;
     }
 }

@@ -242,10 +242,12 @@
             ai.tip_flag as tipFlag,
             ai.voice_flag as voiceFlag,
             ai.color_code as colorCode,
-            ai.voice_url as voiceUrl
+            ai.voice_url as voiceUrl,
+            u.name as monitorUserName
         from
             cw_monitor_task mt
                 left join cw_alarm_info ai on mt.alarm_id = ai.id
+                left join cw_ge_user u on u.user_id = mt.create_user_id
         <where>
             <if test="cameraId != null and cameraId != '' ">
                 find_in_set(#{cameraId},mt.camera_ids)
