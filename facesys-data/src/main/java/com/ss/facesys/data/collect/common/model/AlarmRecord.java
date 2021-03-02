@@ -15,10 +15,12 @@ public class AlarmRecord {
     private String monitorId;
     private String monitorName;
     private int monitorType;
+    private Integer monitorProperty;
+    private Integer topn;
     private Float alarmScore;
     private String captureId;
-    private Date captureTime;
-    private Date alarmTime;
+    private Long captureTime;
+    private Long alarmTime;
     private String deviceId;
     private String deviceCode;
     private int deviceType;
@@ -30,6 +32,10 @@ public class AlarmRecord {
     private String captureUrlFull;
     private String panoramaUrlFull;
     private Float qualityScore;
+    private Integer age;
+    private Integer gender;
+    private Integer maskState;
+    private Integer glassesState;
     private String snId;
     private String pitch;
     private String yaw;
@@ -38,6 +44,17 @@ public class AlarmRecord {
     private String y;
     private String width;
     private String height;
+    private String remark;
+    private String birthday;
+    private String cardNation;
+    private String cardId;
+    private String name;
+    private Integer cardGender;
+    private String registerUrl;
+    private String regId;
+    private String regdbId;
+    private String regdbName;
+    private float score;
 
     public int getId() {
         return this.id;
@@ -109,25 +126,21 @@ public class AlarmRecord {
     }
 
 
-    public Date getCaptureTime() {
-        return this.captureTime;
+    public Long getCaptureTime() {
+        return captureTime;
     }
 
-
-    public void setCaptureTime(Date captureTime) {
+    public void setCaptureTime(Long captureTime) {
         this.captureTime = captureTime;
     }
 
-
-    public Date getAlarmTime() {
-        return this.alarmTime;
+    public Long getAlarmTime() {
+        return alarmTime;
     }
 
-
-    public void setAlarmTime(Date alarmTime) {
+    public void setAlarmTime(Long alarmTime) {
         this.alarmTime = alarmTime;
     }
-
 
     public String getDeviceId() {
         return this.deviceId;
@@ -318,4 +331,139 @@ public class AlarmRecord {
         this.height = height;
     }
 
+    public Integer getMonitorProperty() {
+        return monitorProperty;
+    }
+
+    public void setMonitorProperty(Integer monitorProperty) {
+        this.monitorProperty = monitorProperty;
+    }
+
+    public Integer getTopn() {
+        return topn;
+    }
+
+    public void setTopn(Integer topn) {
+        this.topn = topn;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+
+    public Integer getGender() {
+        return gender;
+    }
+
+    public void setGender(Integer gender) {
+        this.gender = gender;
+    }
+
+    public Integer getMaskState() {
+        return maskState;
+    }
+
+    public void setMaskState(Integer maskState) {
+        this.maskState = maskState;
+    }
+
+    public Integer getGlassesState() {
+        return glassesState;
+    }
+
+    public void setGlassesState(Integer glassesState) {
+        this.glassesState = glassesState;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public String getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(String birthday) {
+        this.birthday = birthday;
+    }
+
+    public String getCardNation() {
+        return cardNation;
+    }
+
+    public void setCardNation(String cardNation) {
+        this.cardNation = cardNation;
+    }
+
+    public String getCardId() {
+        return cardId;
+    }
+
+    public void setCardId(String cardId) {
+        this.cardId = cardId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Integer getCardGender() {
+        return cardGender;
+    }
+
+    public void setCardGender(Integer cardGender) {
+        this.cardGender = cardGender;
+    }
+
+    public String getRegisterUrl() {
+        return registerUrl;
+    }
+
+    public void setRegisterUrl(String registerUrl) {
+        this.registerUrl = registerUrl;
+    }
+
+    public String getRegId() {
+        return regId;
+    }
+
+    public void setRegId(String regId) {
+        this.regId = regId;
+    }
+
+    public String getRegdbId() {
+        return regdbId;
+    }
+
+    public void setRegdbId(String regdbId) {
+        this.regdbId = regdbId;
+    }
+
+    public String getRegdbName() {
+        return regdbName;
+    }
+
+    public void setRegdbName(String regdbName) {
+        this.regdbName = regdbName;
+    }
+
+    public float getScore() {
+        return score;
+    }
+
+    public void setScore(float score) {
+        this.score = score;
+    }
 }

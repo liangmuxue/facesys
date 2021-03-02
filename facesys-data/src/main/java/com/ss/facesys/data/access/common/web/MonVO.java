@@ -72,7 +72,8 @@ public class MonVO {
     private String monitorPictures;
     private List <String> ids;
 
-    private String cameraId;
+    private Integer cameraId;
+    private Integer personcardDeviceId;
 
     private String facedbId;
     @NotNull(message = "monitor.adressIds.empty", groups = {APIEditGroup.class,APIKeyStateGroup.class, APIDeltGroup.class})
@@ -355,12 +356,20 @@ public class MonVO {
         this.ids = ids;
     }
 
-    public String getCameraId() {
+    public Integer getCameraId() {
         return cameraId;
     }
 
-    public void setCameraId(String cameraId) {
+    public void setCameraId(Integer cameraId) {
         this.cameraId = cameraId;
+    }
+
+    public Integer getPersoncardDeviceId() {
+        return personcardDeviceId;
+    }
+
+    public void setPersoncardDeviceId(Integer personcardDeviceId) {
+        this.personcardDeviceId = personcardDeviceId;
     }
 
     public String getFacedbId() {

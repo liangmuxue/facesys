@@ -210,4 +210,55 @@
         where
             id = #{id}
     </update>
+
+    <select id="selTasksByCamera" parameterType="com.ss.facesys.data.access.common.web.MonVO" resultType="com.ss.facesys.data.access.common.dto.MonitorTask">
+        select
+            mt.id,
+            mt.monitor_mode as monitorMode,
+            mt.monitor_name as monitorName,
+            mt.monitor_type as monitorType,
+            mt.monitor_property as monitorProperty,
+            mt.alarm_id as alarmId,
+            mt.start_time as startTime,
+            mt.end_time as endTime,
+            mt.face_threshold as faceThreshold,
+            mt.camera_ids as cameraIds,
+            mt.personcard_device_ids as personcardDeviceIds,
+            mt.region_code as regionCode,
+            mt.adress_ids as adressIds,
+            mt.facedb_ids as facedbIds,
+            mt.remark,
+            mt.state,
+            mt.delete_flag as deleteFlag,
+            mt.monitor_code as monitorCode,
+            mt.org_id as orgId,
+            mt.create_user_id as createUserId,
+            mt.create_time as createTime,
+            mt.update_user_id as updateUserId,
+            mt.update_time as updateTime,
+            mt.delete_user_id as deleteUserId,
+            mt.delete_time as deleteTime,
+            ai.alarm_name as alarmName,
+            ai.tip_flag as tipFlag,
+            ai.voice_flag as voiceFlag,
+            ai.color_code as colorCode,
+            ai.voice_url as voiceUrl
+        from
+            cw_monitor_task mt
+                left join cw_alarm_info ai on mt.alarm_id = ai.id
+        <where>
+            <if test="cameraId != null and cameraId != '' ">
+                find_in_set(#{cameraId},mt.camera_ids)
+            </if>
+            <if test="personcardDeviceId != null and personcardDeviceId != '' ">
+                find_in_set(#{personcardDeviceId},mt.personcard_device_ids)
+            </if>
+            and
+              mt.end_time &gt;= #{endTime}
+            and
+              mt.delete_flag = #{deleteFlag}
+            and
+              mt.state = #{state}
+        </where>
+    </select>
 </mapper>
