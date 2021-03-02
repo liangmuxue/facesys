@@ -59,7 +59,8 @@ public class AlarmRecord {
     private Integer cardGender;
     private String registerUrl;
     private String regId;
-    private String regdbId;
+    private String regdb;
+    private Integer regdbId;
     private String regdbName;
     private float score;
 
@@ -454,11 +455,19 @@ public class AlarmRecord {
         this.regId = regId;
     }
 
-    public String getRegdbId() {
+    public String getRegdb() {
+        return regdb;
+    }
+
+    public void setRegdb(String regdb) {
+        this.regdb = regdb;
+    }
+
+    public Integer getRegdbId() {
         return regdbId;
     }
 
-    public void setRegdbId(String regdbId) {
+    public void setRegdbId(Integer regdbId) {
         this.regdbId = regdbId;
     }
 

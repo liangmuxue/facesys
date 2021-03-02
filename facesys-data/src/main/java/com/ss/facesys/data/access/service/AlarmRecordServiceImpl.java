@@ -289,12 +289,13 @@ public class AlarmRecordServiceImpl {
                                         alarmRecord.setRegId(facedbFaceMess.getFaceId());
                                         //获取库信息
                                         if (jsonObject.containsKey("groupId")) {
-                                            alarmRecord.setRegdbId(jsonObject.getString("groupId"));
+                                            alarmRecord.setRegdb(jsonObject.getString("groupId"));
                                             //查询库名
                                             Facedb facedb = new Facedb();
                                             facedb.setFacedbId(jsonObject.getString("groupId"));
                                             Facedb facedbMess = facedbMapper.selectOne(facedb);
                                             alarmRecord.setRegdbName(facedbMess.getName());
+                                            alarmRecord.setRegdbId(facedbMess.getId());
                                         }
                                     }
                                     //获取对比值
