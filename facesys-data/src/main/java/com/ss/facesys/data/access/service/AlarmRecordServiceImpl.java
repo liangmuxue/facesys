@@ -92,7 +92,7 @@ public class AlarmRecordServiceImpl {
                     //人脸注册库1:N准备数据
                     Map<String, Object> facedbMap = new HashMap<>();
                     facedbMap.put("groupId", groupId);
-                    facedbMap.put("img", snapRecord.getCaptureUrl());
+                    facedbMap.put("img",FilePropertiesUtil.getHttpUrl() + snapRecord.getCaptureUrl());
                     facedbMap.put("topN", 1);
                     Float[] thresholdScore = new Float[2];
                     thresholdScore[0] = monitorTask.getFaceThreshold() / 100;

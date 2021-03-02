@@ -66,7 +66,7 @@ public class MonVO {
     private Long nowTime;
     @NotBlank(message = "monitor.regionCode.empty", groups = {APIAddGroup.class, APIEditGroup.class})
     private String regionCode;
-    @NotBlank(message = "monitor.adressIds.empty", groups = {APIAddGroup.class,APIEditGroup.class})
+    //@NotBlank(message = "monitor.adressIds.empty", groups = {APIAddGroup.class,APIEditGroup.class})
     private String adressIds;
 
     private String monitorPictures;

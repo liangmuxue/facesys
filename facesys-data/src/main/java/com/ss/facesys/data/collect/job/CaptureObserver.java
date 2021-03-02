@@ -62,7 +62,7 @@ public class CaptureObserver implements ApplicationRunner {
 //            }
             String panoramaImgData = null;
             try {
-                File file = new File("C:\\Users\\李爽超\\Desktop\\p.txt");
+                File file = new File("F:\\home\\takePhone\\p.txt");
                 if (file.isFile() && file.exists()) {
                     InputStreamReader isr = new InputStreamReader(new FileInputStream(file), "utf-8");
                     BufferedReader br = new BufferedReader(isr);
@@ -79,7 +79,7 @@ public class CaptureObserver implements ApplicationRunner {
             }
             String faceData = null;
             try {
-                File file = new File("C:\\Users\\李爽超\\Desktop\\c.txt");
+                File file = new File("F:\\home\\takePhone\\c.txt");
                 if (file.isFile() && file.exists()) {
                     InputStreamReader isr = new InputStreamReader(new FileInputStream(file), "utf-8");
                     BufferedReader br = new BufferedReader(isr);
