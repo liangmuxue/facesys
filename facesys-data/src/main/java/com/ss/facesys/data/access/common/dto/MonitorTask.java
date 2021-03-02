@@ -79,6 +79,14 @@ public class MonitorTask {
     private String name;
     @Transient
     private String policeUserIdsName;
+    @Transient
+    private Integer tipFlag;
+    @Transient
+    private Integer voiceFlag;
+    @Transient
+    private String colorCode;
+    @Transient
+    private String voiceUrl;
 
     public Integer getId() {
         return id;
@@ -342,5 +350,37 @@ public class MonitorTask {
 
     public void setCameraDeviceName(String cameraDeviceName) {
         this.cameraDeviceName = cameraDeviceName;
+    }
+
+    public Integer getTipFlag() {
+        return tipFlag;
+    }
+
+    public void setTipFlag(Integer tipFlag) {
+        this.tipFlag = tipFlag;
+    }
+
+    public Integer getVoiceFlag() {
+        return voiceFlag;
+    }
+
+    public void setVoiceFlag(Integer voiceFlag) {
+        this.voiceFlag = voiceFlag;
+    }
+
+    public String getColorCode() {
+        return colorCode;
+    }
+
+    public void setColorCode(String colorCode) {
+        this.colorCode = colorCode;
+    }
+
+    public String getVoiceUrl() {
+        return voiceUrl;
+    }
+
+    public void setVoiceUrl(String voiceUrl) {
+        this.voiceUrl = voiceUrl;
     }
 }

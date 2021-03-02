@@ -7,6 +7,11 @@
         insert into cw_alarm_record
         (
             alarmId,
+            alarmName,
+            tipFlag,
+            voiceFlag,
+            colorCode,
+            voiceUrl,
             monitorId,
             monitorName,
             monitorType,
@@ -48,6 +53,11 @@
             attribute
         )values(
                    #{alarmId},
+                   #{alarmName},
+                   #{tipFlag},
+                   #{voiceFlag},
+                   #{colorCode},
+                   #{voiceUrl},
                    #{monitorId},
                    #{monitorName},
                    #{monitorType},
@@ -94,6 +104,11 @@
     <insert id="insertStrangerRecord" parameterType="com.ss.facesys.data.collect.common.model.AlarmRecord">
         insert into cw_alarm_record(
             alarmId,
+            alarmName,
+            tipFlag,
+            voiceFlag,
+            colorCode,
+            voiceUrl,
             monitorId,
             monitorName,
             monitorType,
@@ -124,6 +139,11 @@
             createTime,
             attribute)
         values (#{alarmId},
+                #{alarmName},
+                #{tipFlag},
+                #{voiceFlag},
+                #{colorCode},
+                #{voiceUrl},
                 #{monitorId},
                 #{monitorName},
                 #{monitorType},

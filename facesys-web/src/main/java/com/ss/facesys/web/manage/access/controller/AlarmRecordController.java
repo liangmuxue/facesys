@@ -117,7 +117,14 @@ public class AlarmRecordController {
                             if (!resObj.containsKey("faces")) {
                                 //不存在即报警
                                 AlarmRecord alarmRecord = new AlarmRecord();
-                                alarmRecord.setAlarmId(UUIDUtils.getUUID());
+                                //报警配置信息
+                                alarmRecord.setAlarmId(monitorTask.getAlarmId());
+                                alarmRecord.setAlarmName(monitorTask.getAlarmName());
+                                alarmRecord.setTipFlag(monitorTask.getTipFlag());
+                                alarmRecord.setVoiceFlag(monitorTask.getVoiceFlag());
+                                alarmRecord.setColorCode(monitorTask.getColorCode());
+                                alarmRecord.setVoiceUrl(monitorTask.getVoiceUrl());
+                                //布控信息
                                 alarmRecord.setMonitorId(monitorTask.getMonitorCode());
                                 alarmRecord.setMonitorName(monitorTask.getMonitorName());
                                 alarmRecord.setMonitorType(monitorTask.getMonitorType());
@@ -183,7 +190,14 @@ public class AlarmRecordController {
                             if (faceData != null) {
                                 JSONObject jsonObject = faceData.getJSONObject(0);
                                 AlarmRecord alarmRecord = new AlarmRecord();
-                                alarmRecord.setAlarmId(UUIDUtils.getUUID());
+                                //报警配置信息
+                                alarmRecord.setAlarmId(monitorTask.getAlarmId());
+                                alarmRecord.setAlarmName(monitorTask.getAlarmName());
+                                alarmRecord.setTipFlag(monitorTask.getTipFlag());
+                                alarmRecord.setVoiceFlag(monitorTask.getVoiceFlag());
+                                alarmRecord.setColorCode(monitorTask.getColorCode());
+                                alarmRecord.setVoiceUrl(monitorTask.getVoiceUrl());
+                                //布控信息
                                 alarmRecord.setMonitorId(monitorTask.getMonitorCode());
                                 alarmRecord.setMonitorName(monitorTask.getMonitorName());
                                 alarmRecord.setMonitorType(monitorTask.getMonitorType());

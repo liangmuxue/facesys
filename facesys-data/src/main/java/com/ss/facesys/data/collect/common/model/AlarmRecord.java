@@ -11,7 +11,12 @@ import java.util.Date;
 public class AlarmRecord {
 
     private int id;
-    private String alarmId;
+    private Integer alarmId;
+    private String alarmName;
+    private Integer tipFlag;
+    private Integer voiceFlag;
+    private String colorCode;
+    private String voiceUrl;
     private String monitorId;
     private String monitorName;
     private int monitorType;
@@ -66,15 +71,13 @@ public class AlarmRecord {
     }
 
 
-    public String getAlarmId() {
-        return this.alarmId;
+    public Integer getAlarmId() {
+        return alarmId;
     }
 
-
-    public void setAlarmId(String alarmId) {
+    public void setAlarmId(Integer alarmId) {
         this.alarmId = alarmId;
     }
-
 
     public String getMonitorId() {
         return this.monitorId;
@@ -465,5 +468,45 @@ public class AlarmRecord {
 
     public void setScore(float score) {
         this.score = score;
+    }
+
+    public String getAlarmName() {
+        return alarmName;
+    }
+
+    public void setAlarmName(String alarmName) {
+        this.alarmName = alarmName;
+    }
+
+    public Integer getTipFlag() {
+        return tipFlag;
+    }
+
+    public void setTipFlag(Integer tipFlag) {
+        this.tipFlag = tipFlag;
+    }
+
+    public Integer getVoiceFlag() {
+        return voiceFlag;
+    }
+
+    public void setVoiceFlag(Integer voiceFlag) {
+        this.voiceFlag = voiceFlag;
+    }
+
+    public String getColorCode() {
+        return colorCode;
+    }
+
+    public void setColorCode(String colorCode) {
+        this.colorCode = colorCode;
+    }
+
+    public String getVoiceUrl() {
+        return voiceUrl;
+    }
+
+    public void setVoiceUrl(String voiceUrl) {
+        this.voiceUrl = voiceUrl;
     }
 }
