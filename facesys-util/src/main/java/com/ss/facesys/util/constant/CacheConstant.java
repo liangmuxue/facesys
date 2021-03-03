@@ -156,4 +156,6 @@ public class CacheConstant {
 
     public static final String DB_INFO = "DB_INFO";
 
+    public static final String SELECTED_DEVICE = "SELECTED_DEVICE";
+
 }

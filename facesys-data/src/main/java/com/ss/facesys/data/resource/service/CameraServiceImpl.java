@@ -567,7 +567,7 @@ public class CameraServiceImpl extends BaseServiceImpl implements ICameraService
         // 创建根节点
         Organization root = new Organization();
         // 组装Map数据
-        Map<String, Organization> dataMap = new HashMap<>(16);
+        Map<String, Organization> dataMap = new LinkedHashMap<>();
         for (Organization organization : organizationList) {
             dataMap.put(organization.getOrgId(), organization);
         }

@@ -531,6 +531,9 @@
         cw_base_camera a
         <where>
             a.state = 0
+            <if test="cameraName !=null and cameraName !=''">
+                AND a.cameraName LIKE CONCAT('%', #{cameraName}, '%')
+            </if>
             <if test="resources!=null and  resources.size()!=0">
                 AND a.id in
                 <foreach collection="resources" item="item" open="(" close=")" separator=",">
