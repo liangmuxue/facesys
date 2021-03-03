@@ -1,10 +1,13 @@
 package com.ss.facesys.util.netty;
 
 import com.alibaba.fastjson.JSONObject;
+import com.ss.facesys.util.constant.CacheConstant;
+import com.ss.facesys.util.jedis.JedisUtil;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.timeout.IdleStateEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 import org.yeauty.annotation.*;
@@ -24,9 +27,11 @@ import java.util.*;
 @Component
 public class MyWebSocket {
 
-
     private static final Logger logger = LoggerFactory.getLogger(MyWebSocket.class);
     public static Map<String, Session> userIdMap = new HashMap<>();
+
+    @Autowired
+    private JedisUtil jedisUtil;
 
     @OnOpen
     public void onOpen(Session session, HttpHeaders headers, @RequestParam String req, @RequestParam MultiValueMap reqMap, @PathVariable String arg, @PathVariable Map pathMap) throws IOException {
@@ -54,9 +59,16 @@ public class MyWebSocket {
 
         logger.info("接收到的信息websocket请求：" + message);
         JSONObject jsonObject = JSONObject.parseObject(message);
-        String userId = jsonObject.getString("userId");
-        userIdMap.put(userId, session);
-        logger.info("userId加入map：" + userId);
+        String type = jsonObject.getString("type");
+        if ("register".equals(type)) {
+            String userId = jsonObject.getString("userId");
+            userIdMap.put(userId, session);
+            logger.info("userId加入map：" + userId);
+        } else if ("selectedDevice".equals(type)) {
+            String userId = jsonObject.getString("userId");
+            String deviceIds = jsonObject.getString("deviceIds");
+            this.jedisUtil.hset(CacheConstant.SELECTED_DEVICE, userId, deviceIds);
+        }
     }
 
     @OnBinary

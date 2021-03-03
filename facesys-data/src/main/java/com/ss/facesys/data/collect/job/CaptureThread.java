@@ -15,6 +15,7 @@ import com.ss.facesys.data.resource.mapper.CameraMapper;
 import com.ss.facesys.util.PropertiesUtil;
 import com.ss.facesys.util.SpringUtil;
 import com.ss.facesys.util.StringUtils;
+import com.ss.facesys.util.constant.CacheConstant;
 import com.ss.facesys.util.constant.SfgoHttpConstant;
 import com.ss.facesys.util.em.AgeTypeEnum;
 import com.ss.facesys.util.em.ResourceType;
@@ -362,6 +363,10 @@ public class CaptureThread implements Runnable {
                 }
                 List<Integer> allResourceIds = allResources.stream().map(UserResource::getResourceId).collect(Collectors.toList());
                 if (!allResourceIds.contains(snapRecord.getDeviceId())) {
+                    continue;
+                }
+                String deviceIds = String.valueOf(this.jedisUtil.hget(CacheConstant.SELECTED_DEVICE, key));
+                if (StringUtils.isBlank(deviceIds) || !deviceIds.contains(snapRecord.getDeviceId().toString())) {
                     continue;
                 }
                 MyWebSocket.userIdMap.get(key).sendText(JsonUtils.getFastjsonFromObject(transfer));

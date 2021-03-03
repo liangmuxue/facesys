@@ -62,9 +62,29 @@ public class VictoryServiceImpl implements IVictoryService {
         example.createCriteria().andEqualTo("status", StatusEnum.EFFECT.getCode());
         example.orderBy("seq").asc();
         List<Organization> organizations = organizationMapper.selectByExample(example);
+        Map<String, Organization> dataMap = new HashMap<>(16);
+        for (Organization organization : organizations) {
+            dataMap.put(organization.getOrgId(), organization);
+        }
         List<Organization> allUsers = this.victoryMapper.findAllUsers();
-        organizations.addAll(allUsers);
-        return createOrgTree(organizations);
+        List<Organization> temp = new ArrayList<>();
+        for (Organization o: allUsers) {
+            Organization organization = dataMap.get(o.getParentId());
+            while (true) {
+                if (temp.contains(organization)) {
+                    break;
+                } else {
+                    temp.add(organization);
+                    if (StringUtils.isEmpty(organization.getParentId()) || "0".equals(organization.getParentId())) {
+                        break;
+                    } else {
+                        organization = dataMap.get(organization.getParentId());
+                    }
+                }
+            }
+        }
+        temp.addAll(allUsers);
+        return createOrgTree(temp);
     }
 
     /**
@@ -172,7 +192,7 @@ public class VictoryServiceImpl implements IVictoryService {
         // 创建根节点
         Organization root = new Organization();
         // 组装Map数据
-        Map<String, Organization> dataMap = new HashMap<>(16);
+        Map<String, Organization> dataMap = new LinkedHashMap<>();
         for (Organization organization : organizationList) {
             dataMap.put(organization.getOrgId(), organization);
         }
