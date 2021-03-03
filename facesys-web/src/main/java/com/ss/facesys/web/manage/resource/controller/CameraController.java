@@ -341,6 +341,12 @@ public class CameraController extends BaseController {
         return resp;
     }
 
+    /**
+     * 查询设备树
+     * @param queryVO
+     * @return
+     * @throws BindException
+     */
     @RequestMapping(value = {"/tree"}, method = {RequestMethod.POST})
     @OpLog(model = ModuleCode.BUSINESS, desc = "查询设备树", type = OperaTypeEnum.SELECT)
     public ResponseEntity<List<Organization>> tree(@RequestBody CameraQueryVO queryVO) throws BindException {
@@ -353,6 +359,26 @@ public class CameraController extends BaseController {
             resp = createFailResponse();
             resp.setMessage("设备树查询失败");
             this.logger.error("设备树查询失败，原因：" + e.toString(), e);
+        }
+        return resp;
+    }
+
+    /**
+     * 查询全部设备列表
+     * @param queryVO
+     * @return
+     * @throws BindException
+     */
+    @RequestMapping(value = {"/list"}, method = {RequestMethod.POST})
+    @OpLog(model = ModuleCode.BUSINESS, desc = "查询全部设备列表", type = OperaTypeEnum.SELECT)
+    public ResponseEntity<List<Camera>> cameraList(@RequestBody CameraQueryVO queryVO) throws BindException {
+        ResponseEntity<List<Camera>> resp = createSuccResponse();
+        try {
+            resp.setData(this.cameraService.getCameraList(queryVO));
+        } catch (Exception e) {
+            resp = createFailResponse();
+            resp.setMessage("查询全部设备列表失败");
+            this.logger.error("查询全部设备列表失败，原因：" + e.toString(), e);
         }
         return resp;
     }

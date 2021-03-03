@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
+import com.j7cai.common.util.JsonUtils;
 import com.ss.facesys.data.access.common.dto.MonUserRef;
 import com.ss.facesys.data.access.common.dto.MonitorTask;
 import com.ss.facesys.data.access.common.web.AlarmRecordsVO;
@@ -13,6 +14,7 @@ import com.ss.facesys.data.access.mapper.MonMapper;
 import com.ss.facesys.data.access.mapper.MonUserRefMapper;
 import com.ss.facesys.data.baseinfo.common.model.BaseEnums;
 import com.ss.facesys.data.baseinfo.mapper.EnumMapper;
+import com.ss.facesys.data.collect.common.dto.Transfer;
 import com.ss.facesys.data.collect.common.model.*;
 import com.ss.facesys.data.collect.common.web.AlarmRecordVO;
 import com.ss.facesys.data.collect.common.web.AlarmVO;
@@ -23,10 +25,17 @@ import com.ss.facesys.data.resource.common.model.Camera;
 import com.ss.facesys.data.resource.mapper.CameraMapper;
 import com.ss.facesys.util.PropertiesUtil;
 import com.ss.facesys.util.StringUtils;
+import com.ss.facesys.util.constant.CacheConstant;
 import com.ss.facesys.util.constant.SfgoHttpConstant;
+import com.ss.facesys.util.em.AgeTypeEnum;
+import com.ss.facesys.util.em.Enums;
 import com.ss.facesys.util.em.MonitorTypeEnum;
 import com.ss.facesys.util.em.ResourceType;
 import com.ss.facesys.util.file.FilePropertiesUtil;
+import com.ss.facesys.util.jedis.JedisUtil;
+import com.ss.facesys.util.netty.MyWebSocket;
+import com.ss.spider.system.user.mapper.UserResourceMapper;
+import com.ss.spider.system.user.model.UserResource;
 import com.ss.tools.DateUtils;
 import com.ss.tools.FileUtils;
 import com.ss.utils.BaseHttpUtil;
@@ -41,6 +50,7 @@ import javax.annotation.Resource;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class AlarmRecordServiceImpl {
@@ -63,6 +73,10 @@ public class AlarmRecordServiceImpl {
     private AlarmRecordMapper alarmRecordMapper;
     @Resource
     private MonUserRefMapper monUserRefMapper;
+    @Resource
+    private JedisUtil jedisUtil;
+    @Resource
+    private UserResourceMapper userResourceMapper;
 
     public void dealAlarmEvent(SnapRecord snapRecord){
 
@@ -189,6 +203,7 @@ public class AlarmRecordServiceImpl {
                                 alarmRecord.setCreateTime(System.currentTimeMillis());
                                 alarmRecordMapper.insertStrangerRecord(alarmRecord);
                                 logger.info("人脸照下陌生人报警记录插入成功");
+                                transferData(alarmRecord);
                             }
                         }
                         //判断任务类型为黑名单报警
@@ -314,6 +329,7 @@ public class AlarmRecordServiceImpl {
                                     alarmRecord.setCreateTime(System.currentTimeMillis());
                                     alarmRecordMapper.insertBlackListRecord(alarmRecord);
                                     logger.info("人脸照下黑名单报警记录插入成功");
+                                    transferData(alarmRecord);
                                 }
                             }
                         }
@@ -458,6 +474,70 @@ public class AlarmRecordServiceImpl {
             return "SUCCESS";
         }else{
             return "FAILED";
+        }
+    }
+
+    private void transferData (AlarmRecord alarmRecord) {
+        Transfer transfer = new Transfer();
+        transfer.setId(alarmRecord.getId());
+        transfer.setType("alarm");
+        transfer.setDeviceName(alarmRecord.getDeviceName());
+        transfer.setCaptureTime(alarmRecord.getCaptureTime());
+        transfer.setCaptureUrl(alarmRecord.getCaptureUrlFull());
+        transfer.setPanoramaUrl(alarmRecord.getPanoramaUrlFull());
+        transfer.setFaceUrl(alarmRecord.getRegisterUrl());
+        transfer.setRecogScore(alarmRecord.getScore());
+        transfer.setPeopleName(alarmRecord.getName());
+        if (alarmRecord.getGender() != null) {
+            transfer.setGenderName(Enums.Gender.getName(alarmRecord.getGender()));
+        }
+        if (alarmRecord.getAgeGroup() != null) {
+            transfer.setAgeTypeName(AgeTypeEnum.getMessage(alarmRecord.getAgeGroup()));
+        }
+        transfer.setFacedbName(alarmRecord.getRegdbName());
+        transfer.setNationName(alarmRecord.getCardNation());
+        transfer.setCardNo(alarmRecord.getCardId());
+        transfer.setGlasses(alarmRecord.getGlassesState());
+        transfer.setMask(alarmRecord.getMaskState());
+        transfer.setAlarmName(alarmRecord.getAlarmName());
+        transfer.setColorCode(alarmRecord.getColorCode());
+        if (alarmRecord.getVoiceFlag() == 1) {
+            transfer.setVoiceUrl(alarmRecord.getVoiceUrl());
+        }
+        int newTodayTotal = 0;
+        if (this.jedisUtil.get(CacheConstant.TODAY_ALARM_TOTAL) == null){
+            this.jedisUtil.set(CacheConstant.TODAY_ALARM_TOTAL, 1);
+            newTodayTotal = 1;
+        } else {
+            int oldTodayTotal = (int)this.jedisUtil.get(CacheConstant.TODAY_ALARM_TOTAL);
+            this.jedisUtil.set(CacheConstant.TODAY_ALARM_TOTAL, oldTodayTotal + 1);
+            newTodayTotal = oldTodayTotal + 1;
+        }
+        transfer.setTodayAlarmTotal(newTodayTotal);
+        if (alarmRecord.getTipFlag() == 0) {
+            return;
+        }
+        for (String key : MyWebSocket.userIdMap.keySet()) {
+            if (MyWebSocket.userIdMap.get(key) != null) {
+                String[] strings = key.split("_");
+                String userId = strings[1];
+                UserResource userResource = new UserResource();
+                userResource.setUserId(userId);
+                userResource.setType(ResourceType.CAMERA.getValue());
+                List<UserResource> allResources = userResourceMapper.select(userResource);
+                if (allResources == null || allResources.size() == 0) {
+                    continue;
+                }
+                List<Integer> allResourceIds = allResources.stream().map(UserResource::getResourceId).collect(Collectors.toList());
+                if (!allResourceIds.contains(alarmRecord.getDeviceId())) {
+                    continue;
+                }
+                String deviceIds = String.valueOf(this.jedisUtil.hget(CacheConstant.SELECTED_DEVICE, key));
+                if (StringUtils.isBlank(deviceIds) || !deviceIds.contains(alarmRecord.getDeviceId().toString())) {
+                    continue;
+                }
+                MyWebSocket.userIdMap.get(key).sendText(JsonUtils.getFastjsonFromObject(transfer));
+            }
         }
     }
 }

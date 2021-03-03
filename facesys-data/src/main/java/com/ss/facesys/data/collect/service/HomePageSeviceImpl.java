@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * com.ss.facesys.data.collect.service
+ * 首页
  *
  * @author 李爽超 chao
  * @create 2021/03/02
@@ -47,6 +47,11 @@ public class HomePageSeviceImpl implements IHomePageService {
     @Resource
     private HomePageMapper homePageMapper;
 
+    /**
+     * 首页基础数据统计查询
+     * @param homePageBase
+     * @return
+     */
     @Override
     public HomePageBase get(HomePageBase homePageBase) {
 
@@ -63,9 +68,9 @@ public class HomePageSeviceImpl implements IHomePageService {
         homePageBase.setVictoryTotal(victoryTotal);
 
         if (StringUtils.isNotBlank(homePageBase.getSceneIds())) {
-            List<String> sceneList = Arrays.asList(homePageBase.getSceneIds().split(","));
+            List<String> sceneIdList = Arrays.asList(homePageBase.getSceneIds().split(","));
             Example example1 = new Example(Camera.class);
-            example1.createCriteria().andIn("sceneId", sceneList).andEqualTo("state", 0);
+            example1.createCriteria().andIn("sceneId", sceneIdList).andEqualTo("state", 0);
             //接入设备总数
             int deviceCount = this.cameraMapper.selectCountByExample(example1);
             homePageBase.setDeviceTotal(deviceCount);
@@ -97,13 +102,23 @@ public class HomePageSeviceImpl implements IHomePageService {
             //重点人员感知总数
             int focusOnPeopleTotal = this.alarmRecordMapper.selectCountByExample(example3);
             homePageBase.setFocusOnPeopleTotal(focusOnPeopleTotal);
+        } else {
+            homePageBase.setDeviceTotal(0);
+            homePageBase.setCaptureTotal(0);
+            homePageBase.setFocusOnPeopleTotal(0);
+            homePageBase.setAlarmTotal(0);
         }
         return homePageBase;
     }
 
+    /**
+     * 首页应用场景统计查询
+     * @param homePageScene
+     * @return
+     */
     @Override
     public List<HomePageScene> get(HomePageScene homePageScene) {
-
+        //查询场景下设备总数
         List<HomePageScene> deviceScenes = this.homePageMapper.deviceTotalByScene(homePageScene);
         if (StringUtils.isBlank(homePageScene.getSceneIds())) {
             for (HomePageScene hps: deviceScenes) {
@@ -111,15 +126,22 @@ public class HomePageSeviceImpl implements IHomePageService {
             }
             return deviceScenes;
         }
+        //查询场景下抓拍总数
         List<HomePageScene> captureScenes = this.homePageMapper.captureTotalByScene(homePageScene);
         Map<Integer, HomePageScene> homePageSceneMap = captureScenes.stream().collect(
                 Collectors.toMap( e -> e.getSceneId(),  e -> e));
+        //设备总数、抓拍总数合并
         for (HomePageScene hps: deviceScenes) {
             hps.setCaptureTotal(homePageSceneMap.get(hps.getSceneId()).getCaptureTotal());
         }
         return deviceScenes;
     }
 
+    /**
+     * 首页单个设备统计查询
+     * @param homePageDevice
+     * @return
+     */
     @Override
     public HomePageDevice get(HomePageDevice homePageDevice) {
         Example example1 = new Example(SnapRecord.class);
@@ -129,11 +151,11 @@ public class HomePageSeviceImpl implements IHomePageService {
         //人脸抓拍总数
         int captureTotal = this.snapRecordMapper.selectCountByExample(example1);
         homePageDevice.setCaptureTotal(captureTotal);
-        Example example3 = new Example(AlarmRecord.class);
-        example3.createCriteria().andEqualTo("deviceType", Enums.AlarmDeviceType.CAMERA.getCode())
+        Example example2 = new Example(AlarmRecord.class);
+        example2.createCriteria().andEqualTo("deviceType", Enums.AlarmDeviceType.CAMERA.getCode())
                 .andEqualTo("deviceId", homePageDevice.getDeviceId());
         //布控报警总数
-        int alarmTotal = this.alarmRecordMapper.selectCountByExample(example3);
+        int alarmTotal = this.alarmRecordMapper.selectCountByExample(example2);
         homePageDevice.setAlarmTotal(alarmTotal);
         return homePageDevice;
     }

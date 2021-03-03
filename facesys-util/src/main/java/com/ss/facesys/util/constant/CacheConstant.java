@@ -158,4 +158,6 @@ public class CacheConstant {
 
     public static final String SELECTED_DEVICE = "SELECTED_DEVICE";
 
+    public static final String TODAY_ALARM_TOTAL = "TODAY_ALARM_TOTAL";
+
 }

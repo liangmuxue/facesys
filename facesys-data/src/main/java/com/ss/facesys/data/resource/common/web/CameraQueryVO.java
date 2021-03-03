@@ -33,6 +33,7 @@ public class CameraQueryVO extends Pagination {
     private List<Integer> resources;
     private List<String> orgIds;
     private String userId;
+    private String sceneIds;
 
     public String getVillageCode() {
         return villageCode;
@@ -147,5 +148,13 @@ public class CameraQueryVO extends Pagination {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getSceneIds() {
+        return sceneIds;
+    }
+
+    public void setSceneIds(String sceneIds) {
+        this.sceneIds = sceneIds;
     }
 }

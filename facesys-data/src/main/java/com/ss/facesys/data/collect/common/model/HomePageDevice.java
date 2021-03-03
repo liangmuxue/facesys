@@ -10,6 +10,9 @@ package com.ss.facesys.data.collect.common.model;
 public class HomePageDevice {
 
     private Integer deviceId;
+    private String deviceName;
+    private Float lon;
+    private Float lat;
     private Integer captureTotal;
     private Integer alarmTotal;
 
@@ -19,6 +22,30 @@ public class HomePageDevice {
 
     public void setDeviceId(Integer deviceId) {
         this.deviceId = deviceId;
+    }
+
+    public String getDeviceName() {
+        return deviceName;
+    }
+
+    public void setDeviceName(String deviceName) {
+        this.deviceName = deviceName;
+    }
+
+    public Float getLon() {
+        return lon;
+    }
+
+    public void setLon(Float lon) {
+        this.lon = lon;
+    }
+
+    public Float getLat() {
+        return lat;
+    }
+
+    public void setLat(Float lat) {
+        this.lat = lat;
     }
 
     public Integer getCaptureTotal() {

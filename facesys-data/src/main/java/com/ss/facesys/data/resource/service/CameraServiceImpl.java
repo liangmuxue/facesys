@@ -560,6 +560,16 @@ public class CameraServiceImpl extends BaseServiceImpl implements ICameraService
         return createOrgTree(temp);
     }
 
+    @Override
+    public List<Camera> getCameraList(CameraQueryVO queryVO) {
+        List<String> sceneIdList = Arrays.asList(queryVO.getSceneIds().split(","));
+        Example example1 = new Example(Camera.class);
+        example1.createCriteria().andIn("sceneId", sceneIdList).andEqualTo("state", 0);
+        //接入全设备
+        List<Camera> cameras = this.cameraMapper.selectByExample(example1);
+        return cameras;
+    }
+
     private List<Organization> createOrgTree(List<Organization> organizationList) {
         if (CollectionUtils.isEmpty(organizationList)) {
             return Collections.emptyList();

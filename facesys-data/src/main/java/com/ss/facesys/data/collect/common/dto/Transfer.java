@@ -30,6 +30,9 @@ public class Transfer {
     private Integer todayCaptureTotal;
     private Integer thisMonthCaptureTotal;
     private Integer todayAlarmTotal;
+    private String voiceUrl;
+    private String colorCode;
+    private String alarmName;
 
     public Integer getId() {
         return id;
@@ -197,5 +200,29 @@ public class Transfer {
 
     public void setTodayAlarmTotal(Integer todayAlarmTotal) {
         this.todayAlarmTotal = todayAlarmTotal;
+    }
+
+    public String getVoiceUrl() {
+        return voiceUrl;
+    }
+
+    public void setVoiceUrl(String voiceUrl) {
+        this.voiceUrl = voiceUrl;
+    }
+
+    public String getColorCode() {
+        return colorCode;
+    }
+
+    public void setColorCode(String colorCode) {
+        this.colorCode = colorCode;
+    }
+
+    public String getAlarmName() {
+        return alarmName;
+    }
+
+    public void setAlarmName(String alarmName) {
+        this.alarmName = alarmName;
     }
 }

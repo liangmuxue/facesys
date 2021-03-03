@@ -1,40 +1,53 @@
 package com.ss.facesys.util.em;
 
+
 public enum AgeTypeEnum {
 
-    AGEa("儿童", "0-6"),
-    AGEb("少年", "7-17"),
-    AGEc("青年", "18-40"),
-    AGEd("中年", "41-65"),
-    AGEe("老年", "66-120");
-
-    private String name;
-
-    private String code;
+    CHILDREN(1, "儿童"),
 
 
-    AgeTypeEnum(String name, String code) {
-        this.name = name;
+    JUVENILE(2, "少年"),
+
+
+    YOUTH(3, "青年"),
+
+
+    MIDDLE(4, "中年"),
+
+
+    OLD(5, "老年");
+
+
+    private int code;
+
+
+    private String message;
+
+
+    AgeTypeEnum(int code, String message) {
         this.code = code;
+        this.message = message;
     }
 
 
-    public String getCode() {
+    public static String getMessage(int code) {
+        for (AgeTypeEnum re : values()) {
+            if (re.getCode() == code) {
+                return re.getMessage();
+            }
+        }
+
+        return "";
+    }
+
+
+    public int getCode() {
         return this.code;
     }
 
 
-    public String getName() {
-        return this.name;
+    public String getMessage() {
+        return this.message;
     }
 
-
-    public static String getName(String code) {
-        for (AgeTypeEnum c : values()) {
-            if (c.getCode() == code) {
-                return c.name;
-            }
-        }
-        return null;
-    }
 }

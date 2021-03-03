@@ -21,7 +21,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 /**
- * com.ss.facesys.web.manage.collect.controller
+ * 首页
  *
  * @author 李爽超 chao
  * @create 2021/03/02
@@ -36,6 +36,13 @@ public class HomePageController extends BaseController {
     @Resource
     private IHomePageService homePage;
 
+    /**
+     * 首页基础数据统计查询
+     * @param para
+     * @param bindingResult
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = {"/getHomePageBase"}, method = {RequestMethod.POST})
     @OpLog(model = ModuleCode.RESOURCE, desc = "首页基础数据统计查询", type = OperaTypeEnum.SEARCH)
     public ResponseEntity<HomePageBase> getHomePageBase(@RequestBody HomePageBase para , BindingResult bindingResult) throws Exception {
@@ -52,6 +59,13 @@ public class HomePageController extends BaseController {
         return resp;
     }
 
+    /**
+     * 首页应用场景统计查询
+     * @param para
+     * @param bindingResult
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = {"/getHomePageScene"}, method = {RequestMethod.POST})
     @OpLog(model = ModuleCode.RESOURCE, desc = "首页应用场景统计查询", type = OperaTypeEnum.SEARCH)
     public ResponseEntity<List<HomePageScene>> getHomePageScene(@RequestBody HomePageScene para , BindingResult bindingResult) throws Exception {
@@ -60,7 +74,7 @@ public class HomePageController extends BaseController {
             List<HomePageScene> data = this.homePage.get(para);
             resp.setData(data);
         } catch (Exception e) {
-            //首页基础数据统计查询失败处理
+            //首页应用场景统计查询失败处理
             this.logger.error("首页应用场景统计查询失败原因：+" + e.toString(), e);
             resp = createFailResponse();
             resp.setMessage("操作失败！请联系管理员！");
@@ -68,6 +82,13 @@ public class HomePageController extends BaseController {
         return resp;
     }
 
+    /**
+     * 首页单个设备统计查询
+     * @param para
+     * @param bindingResult
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = {"/getHomePageDevice"}, method = {RequestMethod.POST})
     @OpLog(model = ModuleCode.RESOURCE, desc = "首页单个设备统计查询", type = OperaTypeEnum.SEARCH)
     public ResponseEntity<HomePageDevice> getHomePageDevice(@RequestBody HomePageDevice para , BindingResult bindingResult) throws Exception {
@@ -76,7 +97,7 @@ public class HomePageController extends BaseController {
             HomePageDevice data = this.homePage.get(para);
             resp.setData(data);
         } catch (Exception e) {
-            //首页基础数据统计查询失败处理
+            //首页单个设备统计查询失败处理
             this.logger.error("首页应用场景统计查询失败原因：+" + e.toString(), e);
             resp = createFailResponse();
             resp.setMessage("操作失败！请联系管理员！");

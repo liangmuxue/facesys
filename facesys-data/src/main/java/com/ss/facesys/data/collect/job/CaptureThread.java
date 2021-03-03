@@ -17,20 +17,18 @@ import com.ss.facesys.util.SpringUtil;
 import com.ss.facesys.util.StringUtils;
 import com.ss.facesys.util.constant.CacheConstant;
 import com.ss.facesys.util.constant.SfgoHttpConstant;
-import com.ss.facesys.util.em.AgeTypeEnum;
+import com.ss.facesys.util.em.AgeTypeRangeEnum;
 import com.ss.facesys.util.em.ResourceType;
 import com.ss.facesys.util.file.FilePropertiesUtil;
 import com.ss.facesys.util.jedis.JedisUtil;
 import com.ss.facesys.util.netty.MyWebSocket;
 import com.ss.spider.system.user.mapper.UserResourceMapper;
 import com.ss.spider.system.user.model.UserResource;
-import com.ss.tools.FileUtils;
 import com.ss.util.nasstorage.file.FileUtil;
 import com.ss.utils.BaseHttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -186,11 +184,11 @@ public class CaptureThread implements Runnable {
                     //年龄
                     if (faceFeatureJson.containsKey("age")) {
                         age = faceFeatureJson.getInteger("age");
-                        String[] ageA = AgeTypeEnum.AGEa.getCode().split("-");
-                        String[] ageB = AgeTypeEnum.AGEb.getCode().split("-");
-                        String[] ageC = AgeTypeEnum.AGEc.getCode().split("-");
-                        String[] ageD = AgeTypeEnum.AGEd.getCode().split("-");
-                        String[] ageE = AgeTypeEnum.AGEe.getCode().split("-");
+                        String[] ageA = AgeTypeRangeEnum.AGEa.getCode().split("-");
+                        String[] ageB = AgeTypeRangeEnum.AGEb.getCode().split("-");
+                        String[] ageC = AgeTypeRangeEnum.AGEc.getCode().split("-");
+                        String[] ageD = AgeTypeRangeEnum.AGEd.getCode().split("-");
+                        String[] ageE = AgeTypeRangeEnum.AGEe.getCode().split("-");
                         if (age > Integer.parseInt(ageA[0]) && age < Integer.parseInt(ageA[1])) {
                             ageType = 1;
                         } else if (age > Integer.parseInt(ageB[0]) && age < Integer.parseInt(ageB[1])) {
