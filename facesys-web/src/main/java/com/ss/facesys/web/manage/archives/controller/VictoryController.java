@@ -76,10 +76,10 @@ public class VictoryController extends BaseController {
      */
     @RequestMapping(value = {"/tree"}, method = {RequestMethod.POST})
     @OpLog(model = ModuleCode.BUSINESS, desc = "查询账户树", type = OperaTypeEnum.SELECT)
-    public ResponseEntity<List<Organization>> tree() throws BindException {
+    public ResponseEntity<List<Organization>> tree(@RequestBody VictoryVO victoryVO) throws BindException {
         ResponseEntity<List<Organization>> resp = createSuccResponse();
         try {
-            resp.setData(this.victoryService.treeData());
+            resp.setData(this.victoryService.treeData(victoryVO));
         } catch (Exception e) {
             resp = createFailResponse();
             resp.setMessage("账户树查询失败");
