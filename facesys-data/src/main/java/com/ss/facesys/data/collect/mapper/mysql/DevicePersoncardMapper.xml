@@ -17,7 +17,7 @@
 		<where>
 			a.status = 1
 			<if test="cameraName !=null and cameraName !=''">
-				AND a.cameraName LIKE CONCAT('%', #{cameraName}, '%')
+				AND a.device_name LIKE CONCAT('%', #{cameraName}, '%')
 			</if>
 			<if test="resources!=null and  resources.size()!=0">
 				AND a.id in

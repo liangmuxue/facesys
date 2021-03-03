@@ -148,7 +148,7 @@ public class DevicePersoncardController extends BaseController {
 
     @RequestMapping(value = {"/tree"}, method = {RequestMethod.POST})
     @OpLog(model = ModuleCode.BUSINESS, desc = "查询人证设备树", type = OperaTypeEnum.SELECT)
-    public ResponseEntity<List<Organization>> tree(CameraQueryVO queryVO) throws BindException {
+    public ResponseEntity<List<Organization>> tree(@RequestBody CameraQueryVO queryVO) throws BindException {
         ResponseEntity<List<Organization>> resp = createSuccResponse();
         try {
             List<Integer> resources = getAuthResources(queryVO.getUserId(), ResourceType.PERSONCARD, null);
