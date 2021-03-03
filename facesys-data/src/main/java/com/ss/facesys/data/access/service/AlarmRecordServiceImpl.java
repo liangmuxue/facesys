@@ -14,8 +14,6 @@ import com.ss.facesys.data.access.mapper.MonUserRefMapper;
 import com.ss.facesys.data.baseinfo.common.model.BaseEnums;
 import com.ss.facesys.data.baseinfo.mapper.EnumMapper;
 import com.ss.facesys.data.collect.common.model.*;
-import com.ss.facesys.data.collect.common.web.AlarmRecordVO;
-import com.ss.facesys.data.collect.common.web.AlarmVO;
 import com.ss.facesys.data.collect.mapper.DevicePersoncardMapper;
 import com.ss.facesys.data.collect.mapper.FacedbFaceMapper;
 import com.ss.facesys.data.collect.mapper.FacedbMapper;
