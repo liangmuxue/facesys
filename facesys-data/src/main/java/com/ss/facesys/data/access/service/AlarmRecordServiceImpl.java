@@ -195,6 +195,8 @@ public class AlarmRecordServiceImpl {
                                 alarmRecord.setGender(snapRecord.getGender());
                                 alarmRecord.setMaskState(snapRecord.getMask());
                                 alarmRecord.setGlassesState(snapRecord.getGlasses());
+                                alarmRecord.setSunGlassesState(snapRecord.getSunglasses());
+                                alarmRecord.setMinority(snapRecord.getMinority());
                                 //获取备注
                                 alarmRecord.setRemark(monitorTask.getRemark());
                                 //插入陌生人报警记录
@@ -270,6 +272,8 @@ public class AlarmRecordServiceImpl {
                                     //获取特征值
                                     alarmRecord.setMaskState(snapRecord.getMask());
                                     alarmRecord.setGlassesState(snapRecord.getGlasses());
+                                    alarmRecord.setSunGlassesState(snapRecord.getSunglasses());
+                                    alarmRecord.setMinority(snapRecord.getMinority());
                                     //获取备注
                                     alarmRecord.setRemark(monitorTask.getRemark());
                                     //查询人员信息

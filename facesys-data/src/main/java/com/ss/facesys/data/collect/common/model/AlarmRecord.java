@@ -47,6 +47,8 @@ public class AlarmRecord {
     private Integer gender;
     private Integer maskState;
     private Integer glassesState;
+    private Integer sunGlassesState;
+    private Integer minority;
     private String snId;
     private String pitch;
     private String yaw;
@@ -573,5 +575,21 @@ public class AlarmRecord {
 
     public void setState(Integer state) {
         this.state = state;
+    }
+
+    public Integer getSunGlassesState() {
+        return sunGlassesState;
+    }
+
+    public void setSunGlassesState(Integer sunGlassesState) {
+        this.sunGlassesState = sunGlassesState;
+    }
+
+    public Integer getMinority() {
+        return minority;
+    }
+
+    public void setMinority(Integer minority) {
+        this.minority = minority;
     }
 }
