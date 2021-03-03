@@ -30,7 +30,7 @@ public interface VictoryMapper extends SsMapper<Victory> {
      * 查询所有账户
      * @return
      */
-    List<Organization> findAllUsers();
+    List<Organization> findAllUsers(VictoryVO victoryVO);
 
     /**
      * 添加战果汇总

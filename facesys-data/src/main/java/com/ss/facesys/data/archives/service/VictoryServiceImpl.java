@@ -57,7 +57,7 @@ public class VictoryServiceImpl implements IVictoryService {
      */
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public List<Organization> treeData() {
+    public List<Organization> treeData(VictoryVO victoryVO) {
         Example example = new Example(Organization.class);
         example.createCriteria().andEqualTo("status", StatusEnum.EFFECT.getCode());
         example.orderBy("seq").asc();
@@ -66,7 +66,7 @@ public class VictoryServiceImpl implements IVictoryService {
         for (Organization organization : organizations) {
             dataMap.put(organization.getOrgId(), organization);
         }
-        List<Organization> allUsers = this.victoryMapper.findAllUsers();
+        List<Organization> allUsers = this.victoryMapper.findAllUsers(victoryVO);
         List<Organization> temp = new ArrayList<>();
         for (Organization o: allUsers) {
             Organization organization = dataMap.get(o.getParentId());
