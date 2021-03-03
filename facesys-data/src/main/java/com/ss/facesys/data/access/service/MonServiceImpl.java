@@ -255,8 +255,9 @@ public class MonServiceImpl extends BaseServiceImpl {
         String facedbIdsName = monMapper.selFacedbNames(facedbIds);
         monitorTask.setFacedbIdsName(facedbIdsName);
         //查询处警人名
-        String policeUserIdsName = monMapper.selMonUserName(para);
-        monitorTask.setPoliceUserIdsName(policeUserIdsName);
+        MonitorTask monitorTasks = monMapper.selMonUserName(para);
+        monitorTask.setPoliceUserIds(monitorTasks.getUserIds());
+        monitorTask.setPoliceUserIdsName(monitorTasks.getLoginNames());
         return monitorTask;
     }
 

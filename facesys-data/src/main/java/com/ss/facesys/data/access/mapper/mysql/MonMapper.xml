@@ -150,9 +150,10 @@
     </select>
 
     <!--查询处警人名称-->
-    <select id="selMonUserName" parameterType="com.ss.facesys.data.access.common.web.MonVO" resultType="java.lang.String">
+    <select id="selMonUserName" parameterType="com.ss.facesys.data.access.common.web.MonVO" resultType="com.ss.facesys.data.access.common.dto.MonitorTask">
         select
-          group_concat(u.name)
+          group_concat(u.login_name) as loginNames,
+          group_concat(u.user_id) as userIds
         from
             cw_monitor_task m
         left join cw_monitor_user_ref r on m.id = r.monitor_id

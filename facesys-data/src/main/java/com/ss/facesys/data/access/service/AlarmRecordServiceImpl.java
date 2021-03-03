@@ -391,4 +391,73 @@ public class AlarmRecordServiceImpl {
             return null;
         }
     }
+
+    public List<AlarmRecord> selStrangerRecord(AlarmRecordsVO para){
+        //处警人可查看报警信息
+        MonUserRef monUserRef = new MonUserRef();
+        monUserRef.setUserId(para.getUserId());
+        List<MonUserRef> monUserRefList = monUserRefMapper.select(monUserRef);
+        if(CollectionUtils.isNotEmpty(monUserRefList)) {
+            List<Integer> monIdList = new ArrayList();
+            for (MonUserRef userRef : monUserRefList) {
+                monIdList.add(userRef.getMonitorId());
+            }
+            Example example = new Example(AlarmRecord.class);
+            example.createCriteria().andIn("monitorId", monIdList).andEqualTo("monitorType", MonitorTypeEnum.STRANGER.getCode());
+            //布控任务
+            if (para.getMonitorId() != null) {
+                example.and().andEqualTo("monitorId", para.getMonitorId());
+            }
+            //设备条件
+            if (StringUtils.isNotBlank(para.getCameraIds()) && StringUtils.isNotBlank(para.getPersoncardDeviceIds())) {
+                List cameraIdList = Arrays.asList(para.getCameraIds().split(","));
+                List personcardDebiceIdList = Arrays.asList(para.getPersoncardDeviceIds().split(","));
+                example.and().andEqualTo("deviceType", ResourceType.CAMERA.getValue())
+                        .andIn("deviceId", cameraIdList)
+                        .orEqualTo("deviceType", ResourceType.PERSONCARD.getValue())
+                        .andIn("deviceId", personcardDebiceIdList);
+
+            } else {
+                if (StringUtils.isNotBlank(para.getCameraIds())) {
+                    List cameraIdList = Arrays.asList(para.getCameraIds().split(","));
+                    example.and().andEqualTo("deviceType", ResourceType.CAMERA.getValue())
+                            .andIn("deviceId", cameraIdList);
+                }
+                if (StringUtils.isNotBlank(para.getPersoncardDeviceIds())) {
+                    List personcardDebiceIdList = Arrays.asList(para.getPersoncardDeviceIds().split(","));
+                    example.and().andEqualTo("deviceType", ResourceType.PERSONCARD.getValue())
+                            .andIn("deviceId", personcardDebiceIdList);
+                }
+            }
+            //报警等级
+            if (para.getAlarmId() != null) {
+                example.and().andEqualTo("alarmId", para.getAlarmId());
+            }
+            //报警时间
+            if (para.getStartTime() != null  && !"".equals(para.getEndTime())) {
+                example.and().andBetween("alarmTime", para.getStartTime(), para.getEndTime());
+            }
+            //状态
+            if (para.getState() != null) {
+                example.and().andEqualTo("state", para.getState());
+            }
+            PageHelper.startPage(para.getCurrentPage(), para.getPageSize());
+            List<AlarmRecord> alarmRecords = alarmRecordMapper.selectByExample(example);
+            return alarmRecords;
+        }else{
+            return null;
+        }
+    }
+
+    public String updateState(AlarmRecordsVO para){
+        AlarmRecord alarmRecord = new AlarmRecord();
+        alarmRecord.setState(para.getState());
+        alarmRecord.setId(para.getId());
+        int i = alarmRecordMapper.updateByPrimaryKeySelective(alarmRecord);
+        if(i > 0){
+            return "SUCCESS";
+        }else{
+            return "FAILED";
+        }
+    }
 }
