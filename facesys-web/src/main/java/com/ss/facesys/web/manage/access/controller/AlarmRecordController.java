@@ -86,9 +86,42 @@ public class AlarmRecordController extends BaseController {
         return resp;
     }
 
+    @RequestMapping(value = {"/selStrangerRecord"}, method = {RequestMethod.POST})
+    @OpLog(model = "80007", desc = "查询陌生人报警信息", type = OperaTypeEnum.SELECT)
+    public ResponseEntity<PageEntity<AlarmRecord>> selStrangerRecord(@RequestBody @Validated(APIGetsGroup.class) AlarmRecordsVO para, BindingResult bindingResult) throws Exception {
+        ResponseEntity<PageEntity<AlarmRecord>> resp = validite(bindingResult);
+        try {
+            Page<AlarmRecord> data =  (Page) this.alarmRecordService.selStrangerRecord(para);
+            resp.setData(new PageEntity<>(data));
+            resp.setMessage("查询报警信息成功");
+        }catch (Exception e) {
+            resp = createFailResponse();
+            resp.setCode(ResultCode.ALARMRECORD_FAILED_CODE);
+            this.logger.error("查询报警信息失败，原因：" + e.toString(), e);
+            resp.setMessage("查询报警信息失败");
+        }
+        return resp;
+    }
 
-    
-
+    @RequestMapping(value = {"/updateState"}, method = {RequestMethod.POST})
+    @OpLog(model = "80007", desc = "修改报警记录状态", type = OperaTypeEnum.SELECT)
+    public ResponseEntity<String> updateState(@RequestBody @Validated(APIGetsGroup.class) AlarmRecordsVO para, BindingResult bindingResult) throws Exception {
+        ResponseEntity<String> resp = validite(bindingResult);
+        try {
+            String message = this.alarmRecordService.updateState(para);
+            if("SUCCESS".equals(message)) {
+                resp.setMessage("修改报警记录状态成功");
+            }else{
+                resp.setMessage("修改报警记录状态失败");
+            }
+        }catch (Exception e) {
+            resp = createFailResponse();
+            resp.setCode(ResultCode.ALARMRECORD_EDIT_FAILED_CODE);
+            this.logger.error("修改报警记录状态失败，原因：" + e.toString(), e);
+            resp.setMessage("修改报警记录状态失败");
+        }
+        return resp;
+    }
 
 
 }

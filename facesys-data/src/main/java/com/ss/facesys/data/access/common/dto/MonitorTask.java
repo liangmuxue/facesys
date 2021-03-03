@@ -80,6 +80,8 @@ public class MonitorTask {
     @Transient
     private String policeUserIdsName;
     @Transient
+    private String policeUserIds;
+    @Transient
     private Integer tipFlag;
     @Transient
     private Integer voiceFlag;
@@ -87,6 +89,12 @@ public class MonitorTask {
     private String colorCode;
     @Transient
     private String voiceUrl;
+    @Transient
+    private String monitorUserName;
+    @Transient
+    private String loginNames;
+    @Transient
+    private String userIds;
 
     public Integer getId() {
         return id;
@@ -382,5 +390,37 @@ public class MonitorTask {
 
     public void setVoiceUrl(String voiceUrl) {
         this.voiceUrl = voiceUrl;
+    }
+
+    public String getMonitorUserName() {
+        return monitorUserName;
+    }
+
+    public void setMonitorUserName(String monitorUserName) {
+        this.monitorUserName = monitorUserName;
+    }
+
+    public String getLoginNames() {
+        return loginNames;
+    }
+
+    public void setLoginNames(String loginNames) {
+        this.loginNames = loginNames;
+    }
+
+    public String getUserIds() {
+        return userIds;
+    }
+
+    public void setUserIds(String userIds) {
+        this.userIds = userIds;
+    }
+
+    public String getPoliceUserIds() {
+        return policeUserIds;
+    }
+
+    public void setPoliceUserIds(String policeUserIds) {
+        this.policeUserIds = policeUserIds;
     }
 }

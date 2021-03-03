@@ -13,7 +13,7 @@ import javax.persistence.Table;
 public class AlarmRecord {
 
     @Id
-    private int id;
+    private Integer id;
     private Integer alarmId;
     private String alarmName;
     private Integer tipFlag;
@@ -23,17 +23,17 @@ public class AlarmRecord {
     private Integer monitorId;
     private String monitorCode;
     private String monitorName;
-    private int monitorType;
+    private Integer monitorType;
     private Integer monitorProperty;
     private Integer topn;
     private Float alarmScore;
     private String captureId;
     private Long captureTime;
     private Long alarmTime;
-    private String deviceId;
+    private Integer deviceId;
     private String deviceNo;
     private String deviceCode;
-    private int deviceType;
+    private Integer deviceType;
     private String deviceName;
     private String deviceAddress;
     private String lng;
@@ -56,6 +56,7 @@ public class AlarmRecord {
     private String width;
     private String height;
     private String remark;
+    private Integer state;
     private Long createTime;
     private String birthday;
     private String cardNation;
@@ -68,17 +69,16 @@ public class AlarmRecord {
     private String regdbType;
     private Integer regdbId;
     private String regdbName;
+    private String monitorUserName;
     private float score;
 
-    public int getId() {
-        return this.id;
+    public Integer getId() {
+        return id;
     }
 
-
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
-
 
     public Integer getAlarmId() {
         return alarmId;
@@ -114,15 +114,13 @@ public class AlarmRecord {
     }
 
 
-    public int getMonitorType() {
-        return this.monitorType;
+    public Integer getMonitorType() {
+        return monitorType;
     }
 
-
-    public void setMonitorType(int monitorType) {
+    public void setMonitorType(Integer monitorType) {
         this.monitorType = monitorType;
     }
-
 
     public Float getAlarmScore() {
         return this.alarmScore;
@@ -160,15 +158,13 @@ public class AlarmRecord {
         this.alarmTime = alarmTime;
     }
 
-    public String getDeviceId() {
-        return this.deviceId;
+    public Integer getDeviceId() {
+        return deviceId;
     }
 
-
-    public void setDeviceId(String deviceId) {
+    public void setDeviceId(Integer deviceId) {
         this.deviceId = deviceId;
     }
-
 
     public String getDeviceCode() {
         return this.deviceCode;
@@ -180,15 +176,13 @@ public class AlarmRecord {
     }
 
 
-    public int getDeviceType() {
-        return this.deviceType;
+    public Integer getDeviceType() {
+        return deviceType;
     }
 
-
-    public void setDeviceType(int deviceType) {
+    public void setDeviceType(Integer deviceType) {
         this.deviceType = deviceType;
     }
-
 
     public String getDeviceName() {
         return this.deviceName;
@@ -563,5 +557,21 @@ public class AlarmRecord {
 
     public void setAgeGroup(Integer ageGroup) {
         this.ageGroup = ageGroup;
+    }
+
+    public String getMonitorUserName() {
+        return monitorUserName;
+    }
+
+    public void setMonitorUserName(String monitorUserName) {
+        this.monitorUserName = monitorUserName;
+    }
+
+    public Integer getState() {
+        return state;
+    }
+
+    public void setState(Integer state) {
+        this.state = state;
     }
 }

@@ -23,6 +23,7 @@
             captureTime,
             alarmTime,
             deviceId,
+            deviceNo,
             deviceCode,
             deviceType,
             deviceName,
@@ -40,6 +41,7 @@
             regdb,
             regdbId,
             regdbName,
+            monitorUserName,
             name,
             cardId,
             birthday,
@@ -70,6 +72,7 @@
                    #{captureTime},
                    #{alarmTime},
                    #{deviceId},
+                   #{deviceNo},
                    #{deviceCode},
                    #{deviceType},
                    #{deviceName},
@@ -87,6 +90,7 @@
                    #{regdb},
                    #{regdbId},
                    #{regdbName},
+                   #{monitorUserName},
                    #{name},
                    #{cardId},
                    #{birthday},
@@ -122,6 +126,7 @@
             captureTime,
             alarmTime,
             deviceId,
+            deviceNo,
             deviceCode,
             deviceType,
             deviceName,
@@ -139,7 +144,8 @@
             yaw,
             roll,
             remark,
-            createTime)
+            createTime,
+            monitorUserName)
         values (#{alarmId},
                 #{alarmName},
                 #{tipFlag},
@@ -157,6 +163,7 @@
                 #{captureTime},
                 #{alarmTime},
                 #{deviceId},
+                #{deviceNo},
                 #{deviceCode},
                 #{deviceType},
                 #{deviceName},
@@ -174,7 +181,8 @@
                 #{yaw},
                 #{roll},
                 #{remark},
-                #{createTime}
+                #{createTime},
+                #{monitorUserName}
                 )
     </insert>
 

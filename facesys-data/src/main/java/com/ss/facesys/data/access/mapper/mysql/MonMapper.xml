@@ -150,9 +150,10 @@
     </select>
 
     <!--查询处警人名称-->
-    <select id="selMonUserName" parameterType="com.ss.facesys.data.access.common.web.MonVO" resultType="java.lang.String">
+    <select id="selMonUserName" parameterType="com.ss.facesys.data.access.common.web.MonVO" resultType="com.ss.facesys.data.access.common.dto.MonitorTask">
         select
-          group_concat(u.name)
+          group_concat(u.login_name) as loginNames,
+          group_concat(u.user_id) as userIds
         from
             cw_monitor_task m
         left join cw_monitor_user_ref r on m.id = r.monitor_id
@@ -242,10 +243,12 @@
             ai.tip_flag as tipFlag,
             ai.voice_flag as voiceFlag,
             ai.color_code as colorCode,
-            ai.voice_url as voiceUrl
+            ai.voice_url as voiceUrl,
+            u.name as monitorUserName
         from
             cw_monitor_task mt
                 left join cw_alarm_info ai on mt.alarm_id = ai.id
+                left join cw_ge_user u on u.user_id = mt.create_user_id
         <where>
             <if test="cameraId != null and cameraId != '' ">
                 find_in_set(#{cameraId},mt.camera_ids)

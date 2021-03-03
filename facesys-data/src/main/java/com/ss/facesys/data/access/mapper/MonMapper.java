@@ -17,7 +17,7 @@ public interface MonMapper extends SsMapper<MonitorTask> {
     String selPersoncardDeviceNames(@Param("personcardDeviceIds") List personcardDeviceIds);
     String selFacedbNames(@Param("facedbIds") List facedbIds);
     MonitorTask selMonitorDetail(MonVO para);
-    String selMonUserName(MonVO para);
+    MonitorTask selMonUserName(MonVO para);
     Integer updateMontask(MonVO para);
 
     List<MonitorTask> selTasksByCamera(MonVO para);

@@ -3,6 +3,7 @@ package com.ss.facesys.data.access.service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.PageHelper;
 import com.ss.facesys.data.access.common.dto.MonUserRef;
 import com.ss.facesys.data.access.common.dto.MonitorTask;
 import com.ss.facesys.data.access.common.web.AlarmRecordsVO;
@@ -101,8 +102,8 @@ public class AlarmRecordServiceImpl {
                     facedbMap.put("groupId", groupId);
                     String base64ByUrl = null;
                     try {
-                        //base64ByUrl = FileUtils.getBase64ByUrl(FilePropertiesUtil.getHttpUrl() + snapRecord.getCaptureUrl());
-                        base64ByUrl = FileUtils.getImageStr("F:\\home\\program\\ss_facesys_resource\\media" + snapRecord.getCaptureUrl().replace("/capture/","\\capture\\"));
+                        base64ByUrl = FileUtils.getBase64ByUrl(FilePropertiesUtil.getHttpUrl() + snapRecord.getCaptureUrl());
+                        //base64ByUrl = FileUtils.getImageStr("F:\\home\\program\\ss_facesys_resource\\media" + snapRecord.getCaptureUrl().replace("/capture/","\\capture\\"));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -129,6 +130,7 @@ public class AlarmRecordServiceImpl {
                                 alarmRecord.setColorCode(monitorTask.getColorCode());
                                 alarmRecord.setVoiceUrl(monitorTask.getVoiceUrl());
                                 //布控信息
+                                alarmRecord.setMonitorUserName(monitorTask.getMonitorUserName());
                                 alarmRecord.setMonitorId(monitorTask.getId());
                                 alarmRecord.setMonitorCode(monitorTask.getMonitorCode());
                                 alarmRecord.setMonitorName(monitorTask.getMonitorName());
@@ -146,7 +148,8 @@ public class AlarmRecordServiceImpl {
                                     Camera cameraMess = new Camera();
                                     cameraMess.setId(snapRecord.getDeviceId());
                                     Camera cameraMesss = cameraMapper.selectOne(cameraMess);
-                                    alarmRecord.setDeviceId(cameraMesss.getCameraId());
+                                    alarmRecord.setDeviceId(cameraMesss.getId());
+                                    alarmRecord.setDeviceNo(cameraMesss.getCameraId());
                                     alarmRecord.setDeviceCode(cameraMesss.getProductCode());
                                     alarmRecord.setDeviceType(ResourceType.CAMERA.getValue());
                                     alarmRecord.setDeviceName(cameraMesss.getCameraName());
@@ -167,7 +170,8 @@ public class AlarmRecordServiceImpl {
                                     DevicePersoncard devicePersoncard = new DevicePersoncard();
                                     devicePersoncard.setId(snapRecord.getDeviceId());
                                     DevicePersoncard deviceMess = devicePersoncardMapper.selectOne(devicePersoncard);
-                                    alarmRecord.setDeviceId(deviceMess.getDeviceId());
+                                    alarmRecord.setDeviceId(deviceMess.getId());
+                                    alarmRecord.setDeviceNo(deviceMess.getDeviceId());
                                     alarmRecord.setDeviceCode(deviceMess.getDeviceCode());
                                     alarmRecord.setDeviceType(ResourceType.PERSONCARD.getValue());
                                     alarmRecord.setDeviceName(deviceMess.getDeviceName());
@@ -203,6 +207,7 @@ public class AlarmRecordServiceImpl {
                                     alarmRecord.setColorCode(monitorTask.getColorCode());
                                     alarmRecord.setVoiceUrl(monitorTask.getVoiceUrl());
                                     //布控信息
+                                    alarmRecord.setMonitorUserName(monitorTask.getMonitorUserName());
                                     alarmRecord.setMonitorId(monitorTask.getId());
                                     alarmRecord.setMonitorCode(monitorTask.getMonitorCode());
                                     alarmRecord.setMonitorName(monitorTask.getMonitorName());
@@ -219,7 +224,8 @@ public class AlarmRecordServiceImpl {
                                         Camera cameraMess = new Camera();
                                         cameraMess.setId(snapRecord.getDeviceId());
                                         Camera cameraMesss = cameraMapper.selectOne(cameraMess);
-                                        alarmRecord.setDeviceId(cameraMesss.getCameraId());
+                                        alarmRecord.setDeviceId(cameraMesss.getId());
+                                        alarmRecord.setDeviceNo(cameraMesss.getCameraId());
                                         alarmRecord.setDeviceCode(cameraMesss.getProductCode());
                                         alarmRecord.setDeviceType(ResourceType.CAMERA.getValue());
                                         alarmRecord.setDeviceName(cameraMesss.getCameraName());
@@ -240,7 +246,8 @@ public class AlarmRecordServiceImpl {
                                         DevicePersoncard devicePersoncard = new DevicePersoncard();
                                         devicePersoncard.setId(snapRecord.getDeviceId());
                                         DevicePersoncard deviceMess = devicePersoncardMapper.selectOne(devicePersoncard);
-                                        alarmRecord.setDeviceId(deviceMess.getDeviceId());
+                                        alarmRecord.setDeviceId(deviceMess.getId());
+                                        alarmRecord.setDeviceNo(deviceMess.getDeviceId());
                                         alarmRecord.setDeviceCode(deviceMess.getDeviceCode());
                                         alarmRecord.setDeviceType(ResourceType.PERSONCARD.getValue());
                                         alarmRecord.setDeviceName(deviceMess.getDeviceName());
@@ -321,19 +328,136 @@ public class AlarmRecordServiceImpl {
         MonUserRef monUserRef = new MonUserRef();
         monUserRef.setUserId(para.getUserId());
         List<MonUserRef> monUserRefList = monUserRefMapper.select(monUserRef);
-        List<Integer> monIdList = new ArrayList();
-        for (MonUserRef userRef : monUserRefList) {
-            monIdList.add(userRef.getMonitorId());
+        if(CollectionUtils.isNotEmpty(monUserRefList)) {
+            List<Integer> monIdList = new ArrayList();
+            for (MonUserRef userRef : monUserRefList) {
+                monIdList.add(userRef.getMonitorId());
+            }
+            Example example = new Example(AlarmRecord.class);
+            example.createCriteria().andIn("monitorId", monIdList).andEqualTo("monitorType", MonitorTypeEnum.BLACK.getCode());
+            if (StringUtils.isNotBlank(para.getName())) {
+                example.and().andLike("name",'%' + para.getName() + "%");
+            }
+            if (StringUtils.isNotBlank(para.getCardId())) {
+                example.and().andLike("cardId", '%' + para.getCardId() + "%");
+            }
+            if (StringUtils.isNotBlank(para.getFacedbIds())) {
+                List facedbList = Arrays.asList(para.getFacedbIds().split(","));
+                example.and().andIn("regdbId", facedbList);
+            }
+            //设备条件
+            if (StringUtils.isNotBlank(para.getCameraIds()) && StringUtils.isNotBlank(para.getPersoncardDeviceIds())) {
+                List cameraIdList = Arrays.asList(para.getCameraIds().split(","));
+                List personcardDebiceIdList = Arrays.asList(para.getPersoncardDeviceIds().split(","));
+                example.and().andEqualTo("deviceType", ResourceType.CAMERA.getValue())
+                        .andIn("deviceId", cameraIdList)
+                        .orEqualTo("deviceType", ResourceType.PERSONCARD.getValue())
+                        .andIn("deviceId", personcardDebiceIdList);
+
+            } else {
+                if (StringUtils.isNotBlank(para.getCameraIds())) {
+                    List cameraIdList = Arrays.asList(para.getCameraIds().split(","));
+                    example.and().andEqualTo("deviceType", ResourceType.CAMERA.getValue())
+                            .andIn("deviceId", cameraIdList);
+                }
+                if (StringUtils.isNotBlank(para.getPersoncardDeviceIds())) {
+                    List personcardDebiceIdList = Arrays.asList(para.getPersoncardDeviceIds().split(","));
+                    example.and().andEqualTo("deviceType", ResourceType.PERSONCARD.getValue())
+                            .andIn("deviceId", personcardDebiceIdList);
+                }
+            }
+            if (para.getMonitorId() != null) {
+                example.and().andEqualTo("monitorId", para.getMonitorId());
+            }
+            if (para.getAlarmId() != null) {
+                example.and().andEqualTo("alarmId", para.getAlarmId());
+            }
+            if (para.getState() != null) {
+                example.and().andEqualTo("state", para.getState());
+            }
+            if (para.getStartTime() != null  && !"".equals(para.getEndTime())) {
+                example.and().andBetween("alarmTime", para.getStartTime(), para.getEndTime());
+            }
+            if (StringUtils.isNotBlank(para.getMonitorUserName())) {
+                example.and().andLike("monitorUserName",'%' + para.getMonitorUserName() + '%');
+            }
+            if (StringUtils.isNotBlank(para.getRemark())) {
+                example.and().andLike("remark",'%' + para.getRemark() + '%');
+            }
+            PageHelper.startPage(para.getCurrentPage(), para.getPageSize());
+            List<AlarmRecord> alarmRecords = alarmRecordMapper.selectByExample(example);
+            return alarmRecords;
+        }else{
+            return null;
         }
-        Example example = new Example(AlarmRecord.class);
-        example.createCriteria().andIn("monitorId",monIdList);
-        if(StringUtils.isNotBlank(para.getName())){
-            example.and().andLike("name",para.getName());
+    }
+
+    public List<AlarmRecord> selStrangerRecord(AlarmRecordsVO para){
+        //处警人可查看报警信息
+        MonUserRef monUserRef = new MonUserRef();
+        monUserRef.setUserId(para.getUserId());
+        List<MonUserRef> monUserRefList = monUserRefMapper.select(monUserRef);
+        if(CollectionUtils.isNotEmpty(monUserRefList)) {
+            List<Integer> monIdList = new ArrayList();
+            for (MonUserRef userRef : monUserRefList) {
+                monIdList.add(userRef.getMonitorId());
+            }
+            Example example = new Example(AlarmRecord.class);
+            example.createCriteria().andIn("monitorId", monIdList).andEqualTo("monitorType", MonitorTypeEnum.STRANGER.getCode());
+            //布控任务
+            if (para.getMonitorId() != null) {
+                example.and().andEqualTo("monitorId", para.getMonitorId());
+            }
+            //设备条件
+            if (StringUtils.isNotBlank(para.getCameraIds()) && StringUtils.isNotBlank(para.getPersoncardDeviceIds())) {
+                List cameraIdList = Arrays.asList(para.getCameraIds().split(","));
+                List personcardDebiceIdList = Arrays.asList(para.getPersoncardDeviceIds().split(","));
+                example.and().andEqualTo("deviceType", ResourceType.CAMERA.getValue())
+                        .andIn("deviceId", cameraIdList)
+                        .orEqualTo("deviceType", ResourceType.PERSONCARD.getValue())
+                        .andIn("deviceId", personcardDebiceIdList);
+
+            } else {
+                if (StringUtils.isNotBlank(para.getCameraIds())) {
+                    List cameraIdList = Arrays.asList(para.getCameraIds().split(","));
+                    example.and().andEqualTo("deviceType", ResourceType.CAMERA.getValue())
+                            .andIn("deviceId", cameraIdList);
+                }
+                if (StringUtils.isNotBlank(para.getPersoncardDeviceIds())) {
+                    List personcardDebiceIdList = Arrays.asList(para.getPersoncardDeviceIds().split(","));
+                    example.and().andEqualTo("deviceType", ResourceType.PERSONCARD.getValue())
+                            .andIn("deviceId", personcardDebiceIdList);
+                }
+            }
+            //报警等级
+            if (para.getAlarmId() != null) {
+                example.and().andEqualTo("alarmId", para.getAlarmId());
+            }
+            //报警时间
+            if (para.getStartTime() != null  && !"".equals(para.getEndTime())) {
+                example.and().andBetween("alarmTime", para.getStartTime(), para.getEndTime());
+            }
+            //状态
+            if (para.getState() != null) {
+                example.and().andEqualTo("state", para.getState());
+            }
+            PageHelper.startPage(para.getCurrentPage(), para.getPageSize());
+            List<AlarmRecord> alarmRecords = alarmRecordMapper.selectByExample(example);
+            return alarmRecords;
+        }else{
+            return null;
         }
-        if(StringUtils.isNotBlank(para.getCardId())){
-            example.and().andLike("cardId",para.getCardId());
+    }
+
+    public String updateState(AlarmRecordsVO para){
+        AlarmRecord alarmRecord = new AlarmRecord();
+        alarmRecord.setState(para.getState());
+        alarmRecord.setId(para.getId());
+        int i = alarmRecordMapper.updateByPrimaryKeySelective(alarmRecord);
+        if(i > 0){
+            return "SUCCESS";
+        }else{
+            return "FAILED";
         }
-      //  if()
-        return null;
     }
 }
