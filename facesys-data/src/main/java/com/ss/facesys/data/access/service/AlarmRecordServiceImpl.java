@@ -335,12 +335,15 @@ public class AlarmRecordServiceImpl {
             }
             Example example = new Example(AlarmRecord.class);
             example.createCriteria().andIn("monitorId", monIdList).andEqualTo("monitorType", MonitorTypeEnum.BLACK.getCode());
+            //姓名
             if (StringUtils.isNotBlank(para.getName())) {
                 example.and().andLike("name",'%' + para.getName() + "%");
             }
+            //证件号
             if (StringUtils.isNotBlank(para.getCardId())) {
                 example.and().andLike("cardId", '%' + para.getCardId() + "%");
             }
+            //人像库
             if (StringUtils.isNotBlank(para.getFacedbIds())) {
                 List facedbList = Arrays.asList(para.getFacedbIds().split(","));
                 example.and().andIn("regdbId", facedbList);
@@ -384,6 +387,7 @@ public class AlarmRecordServiceImpl {
             if (StringUtils.isNotBlank(para.getRemark())) {
                 example.and().andLike("remark",'%' + para.getRemark() + '%');
             }
+            example.orderBy("createTime").desc();
             PageHelper.startPage(para.getCurrentPage(), para.getPageSize());
             List<AlarmRecord> alarmRecords = alarmRecordMapper.selectByExample(example);
             return alarmRecords;
@@ -441,6 +445,50 @@ public class AlarmRecordServiceImpl {
             if (para.getState() != null) {
                 example.and().andEqualTo("state", para.getState());
             }
+            example.orderBy("createTime").desc();
+            PageHelper.startPage(para.getCurrentPage(), para.getPageSize());
+            List<AlarmRecord> alarmRecords = alarmRecordMapper.selectByExample(example);
+            return alarmRecords;
+        }else{
+            return null;
+        }
+    }
+
+    public List<AlarmRecord> selInconformityRecord(AlarmRecordsVO para){
+        //处警人可查看报警信息
+        MonUserRef monUserRef = new MonUserRef();
+        monUserRef.setUserId(para.getUserId());
+        List<MonUserRef> monUserRefList = monUserRefMapper.select(monUserRef);
+        if(CollectionUtils.isNotEmpty(monUserRefList)) {
+            List<Integer> monIdList = new ArrayList();
+            for (MonUserRef userRef : monUserRefList) {
+                monIdList.add(userRef.getMonitorId());
+            }
+            Example example = new Example(AlarmRecord.class);
+            example.createCriteria().andIn("monitorId", monIdList).andEqualTo("monitorType", MonitorTypeEnum.INCONFORMITY.getCode());
+            //姓名
+            if (StringUtils.isNotBlank(para.getName())) {
+                example.and().andLike("name", '%' + para.getName() + "%");
+            }
+            //证件号
+            if (StringUtils.isNotBlank(para.getCardId())) {
+                example.and().andLike("cardId", '%' + para.getCardId() + "%");
+            }
+            //人证设备
+            if (StringUtils.isNotBlank(para.getPersoncardDeviceIds())) {
+                List personcardDebiceIdList = Arrays.asList(para.getPersoncardDeviceIds().split(","));
+                example.and().andEqualTo("deviceType", ResourceType.PERSONCARD.getValue())
+                        .andIn("deviceId", personcardDebiceIdList);
+            }
+            //报警时间
+            if (para.getStartTime() != null && !"".equals(para.getEndTime())) {
+                example.and().andBetween("alarmTime", para.getStartTime(), para.getEndTime());
+            }
+            //状态
+            if (para.getState() != null) {
+                example.and().andEqualTo("state", para.getState());
+            }
+            example.orderBy("createTime").desc();
             PageHelper.startPage(para.getCurrentPage(), para.getPageSize());
             List<AlarmRecord> alarmRecords = alarmRecordMapper.selectByExample(example);
             return alarmRecords;
@@ -460,4 +508,6 @@ public class AlarmRecordServiceImpl {
             return "FAILED";
         }
     }
+
+
 }

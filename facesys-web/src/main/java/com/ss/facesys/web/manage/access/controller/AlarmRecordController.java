@@ -103,6 +103,23 @@ public class AlarmRecordController extends BaseController {
         return resp;
     }
 
+    @RequestMapping(value = {"/selInconformityRecord"}, method = {RequestMethod.POST})
+    @OpLog(model = "80007", desc = "查询人证不符报警信息", type = OperaTypeEnum.SELECT)
+    public ResponseEntity<PageEntity<AlarmRecord>> selInconformityRecord(@RequestBody @Validated(APIGetsGroup.class) AlarmRecordsVO para, BindingResult bindingResult) throws Exception {
+        ResponseEntity<PageEntity<AlarmRecord>> resp = validite(bindingResult);
+        try {
+            Page<AlarmRecord> data =  (Page) this.alarmRecordService.selInconformityRecord(para);
+            resp.setData(new PageEntity<>(data));
+            resp.setMessage("查询报警信息成功");
+        }catch (Exception e) {
+            resp = createFailResponse();
+            resp.setCode(ResultCode.ALARMRECORD_FAILED_CODE);
+            this.logger.error("查询报警信息失败，原因：" + e.toString(), e);
+            resp.setMessage("查询报警信息失败");
+        }
+        return resp;
+    }
+
     @RequestMapping(value = {"/updateState"}, method = {RequestMethod.POST})
     @OpLog(model = "80007", desc = "修改报警记录状态", type = OperaTypeEnum.SELECT)
     public ResponseEntity<String> updateState(@RequestBody @Validated(APIGetsGroup.class) AlarmRecordsVO para, BindingResult bindingResult) throws Exception {

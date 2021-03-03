@@ -3,7 +3,9 @@ package com.ss.facesys.util.em;
 public enum MonitorTypeEnum {
 
     BLACK(1, "黑名单"),
-    STRANGER(2, "陌生人");
+    STRANGER(2, "陌生人"),
+    GATHER(3, "聚集"),
+    INCONFORMITY(4, "人证不符");
 
     private String name;
     private int code;
