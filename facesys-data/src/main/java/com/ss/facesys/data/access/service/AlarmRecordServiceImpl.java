@@ -547,8 +547,10 @@ public class AlarmRecordServiceImpl {
         transfer.setFacedbName(alarmRecord.getRegdbName());
         transfer.setNationName(alarmRecord.getCardNation());
         transfer.setCardNo(alarmRecord.getCardId());
+        transfer.setSunglasses(alarmRecord.getSunGlassesState());
         transfer.setGlasses(alarmRecord.getGlassesState());
         transfer.setMask(alarmRecord.getMaskState());
+        transfer.setMinority(alarmRecord.getMinority());
         transfer.setAlarmName(alarmRecord.getAlarmName());
         transfer.setColorCode(alarmRecord.getColorCode());
         if (alarmRecord.getVoiceFlag() == 1) {
