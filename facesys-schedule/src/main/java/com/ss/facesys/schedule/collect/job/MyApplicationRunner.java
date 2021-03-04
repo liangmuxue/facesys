@@ -1,6 +1,7 @@
 package com.ss.facesys.schedule.collect.job;
 
 import com.ss.facesys.data.baseinfo.common.job.StockSimpleJob;
+import com.ss.facesys.schedule.st.job.AlarmHourJob;
 import com.ss.facesys.util.DateUtil;
 import com.ss.facesys.util.autoconfigure.JobProperties;
 import com.ss.facesys.util.constant.CacheConstant;
@@ -135,6 +136,9 @@ public class MyApplicationRunner implements ApplicationRunner {
         //this.stockSimpleJob.addSimpleJobScheduler(FaceDataLookDayJob.class, JobProperties.getDataLookDay(), tc, sp, true);
         //像机设备在线离线验证定时任务
         this.stockSimpleJob.addSimpleJobScheduler(IpJob.class, JobProperties.getIpJob(), tc, sp, true);
+
+        //报警统计定时任务
+        this.stockSimpleJob.addSimpleJobScheduler(AlarmHourJob.class, JobProperties.getAlarmHourJob(), tc, sp, true);
     }
 
 }

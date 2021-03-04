@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.facesys.data.statistic.mapper.AlarmHourMapper">
+
+    <!--查询报警记录-->
+    <select id="selAlarmRecord" resultType="com.ss.facesys.data.collect.common.model.AlarmRecord">
+        select
+            count(id) as cnt,
+            monitorType
+        from
+            cw_alarm_record
+        where
+            alarmTime &gt;= #{startTime} and alarmTime &lt; #{endTime}
+        group by
+            monitorType
+    </select>
+
+    <!--查询定时表-->
+    <select id="selAlarmCount" parameterType="com.ss.facesys.data.access.common.web.AnalysisCountVO" resultType="com.ss.facesys.data.statistic.common.dto.AlarmHour">
+        select
+            sum(black_count) as blackCount,
+            sum(stranger_count) as strangerCount,
+            sum(gather_count) as gatherCount,
+            sum(inconformity_count) as inconformityCount,
+            date
+        from
+            cw_st_alarm
+        where
+            date between #{startTime} and #{endTime}
+        group by
+            date
+    </select>
+</mapper>

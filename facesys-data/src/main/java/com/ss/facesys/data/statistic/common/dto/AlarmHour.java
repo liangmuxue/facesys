@@ -6,6 +6,7 @@ import tk.mybatis.mapper.code.IdentityDialect;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Table(name = "cw_st_alarm")
 public class AlarmHour {
@@ -26,6 +27,7 @@ public class AlarmHour {
     private Integer date;
     @Column(name = "create_time")
     private Long createTime;
+
 
 
     public Integer getId() {
@@ -91,4 +93,5 @@ public class AlarmHour {
     public void setCreateTime(Long createTime) {
         this.createTime = createTime;
     }
+
 }

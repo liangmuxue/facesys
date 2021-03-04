@@ -428,4 +428,7 @@ public class ResultCode {
     /** 修改报警信息失败编号 */
     public static final String ALARMRECORD_EDIT_FAILED_CODE = "70807025";
 
+    /** 查询报警统计失败编号 */
+    public static final String ANALYSISCOUNT_SEL_FAILED_CODE = "70807026";
+
 }
