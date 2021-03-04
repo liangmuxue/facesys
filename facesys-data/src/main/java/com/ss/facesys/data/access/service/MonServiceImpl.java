@@ -180,6 +180,9 @@ public class MonServiceImpl extends BaseServiceImpl {
         if(StringUtils.isNotBlank(para.getCameraIds())) {
             para.setCameraIdList(Arrays.asList(para.getCameraIds().split(",")));
         }
+        if(StringUtils.isNotBlank(para.getPersoncardDeviceIds())){
+            para.setPersoncardDeviceIdList(Arrays.asList(para.getPersoncardDeviceIds().split(",")));
+        }
         if(StringUtils.isNotBlank(para.getFacedbIds())) {
             para.setFacedbIdList(Arrays.asList(para.getFacedbIds().split(",")));
         }

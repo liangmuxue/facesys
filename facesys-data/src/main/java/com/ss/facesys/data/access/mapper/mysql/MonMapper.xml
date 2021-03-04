@@ -48,12 +48,33 @@
             <if test="monitorType != null and monitorType != '' ">
                 and  m.monitor_type = #{monitorType}
             </if>
-            <if test="cameraIdList != null and cameraIdList.size > 0 ">
-                and
-                <foreach collection="cameraIdList"  separator="or" open="(" close=")" item="item">
-                    find_in_set(#{item},m.camera_ids)
-                </foreach>
-            </if>
+            <choose>
+                <when test="cameraIdList != null and cameraIdList.size > 0 and personcardDeviceIdList != null and personcardDeviceIdList.size > 0 ">
+                    and (
+                    <foreach collection="cameraIdList" separator="or" open="(" close=")" item="item">
+                        find_in_set(#{item},m.camera_ids)
+                    </foreach>
+                    or
+                    <foreach collection="personcardDeviceIdList" separator="or" open="(" close=")" item="item">
+                        find_in_set(#{item},m.personcard_device_ids)
+                    </foreach>
+                      )
+                </when>
+                <otherwise>
+                    <if test="cameraIdList != null and cameraIdList.size > 0 ">
+                        and
+                        <foreach collection="cameraIdList"  separator="or" open="(" close=")" item="item">
+                            find_in_set(#{item},m.camera_ids)
+                        </foreach>
+                    </if>
+                    <if test="personcardDeviceIdList != null and personcardDeviceIdList.size > 0 ">
+                        and
+                        <foreach collection="personcardDeviceIdList"  separator="or" open="(" close=")" item="item">
+                            find_in_set(#{item},m.personcard_device_ids)
+                        </foreach>
+                    </if>
+                </otherwise>
+            </choose>
             <if test="facedbIdList != null and facedbIdList.size > 0 ">
                 and
                 <foreach collection="facedbIdList"  separator="or" open="(" close=")" item="item">

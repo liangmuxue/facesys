@@ -46,6 +46,7 @@ public class MonVO {
     private String cameraIds;
     private String personcardDeviceIds;
     private List<String> cameraIdList;
+    private List<String> personcardDeviceIdList;
     private List<String> facedbIdList;
     private String userId;
     private String monitorCode;
@@ -417,6 +418,15 @@ public class MonVO {
     }
 
     public void setPersoncardDeviceIds(String personcardDeviceIds) {
+
         this.personcardDeviceIds = personcardDeviceIds;
+    }
+
+    public List<String> getPersoncardDeviceIdList() {
+        return personcardDeviceIdList;
+    }
+
+    public void setPersoncardDeviceIdList(List<String> personcardDeviceIdList) {
+        this.personcardDeviceIdList = personcardDeviceIdList;
     }
 }
