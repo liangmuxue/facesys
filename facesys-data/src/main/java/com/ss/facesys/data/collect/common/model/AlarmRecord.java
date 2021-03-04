@@ -2,6 +2,7 @@ package com.ss.facesys.data.collect.common.model;
 
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * AlarmRecord 预警记录
@@ -73,6 +74,9 @@ public class AlarmRecord {
     private String regdbName;
     private String monitorUserName;
     private float score;
+
+    @Transient
+    private Integer cnt;
 
     public Integer getId() {
         return id;
@@ -591,5 +595,13 @@ public class AlarmRecord {
 
     public void setMinority(Integer minority) {
         this.minority = minority;
+    }
+
+    public Integer getCnt() {
+        return cnt;
+    }
+
+    public void setCnt(Integer cnt) {
+        this.cnt = cnt;
     }
 }

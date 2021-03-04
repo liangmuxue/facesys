@@ -31,6 +31,8 @@ public class JobProperties {
     private static String dataLookWeek;
     private static String ipJob;
 
+    private static String alarmHourJob;
+
     public static int getShardingTotalCount() {
         return shardingTotalCount;
     }
@@ -246,5 +248,13 @@ public class JobProperties {
 
     public static void setIpJob(String ipJob) {
         JobProperties.ipJob = ipJob;
+    }
+
+    public static String getAlarmHourJob() {
+        return alarmHourJob;
+    }
+
+    public static void setAlarmHourJob(String alarmHourJob) {
+        JobProperties.alarmHourJob = alarmHourJob;
     }
 }
