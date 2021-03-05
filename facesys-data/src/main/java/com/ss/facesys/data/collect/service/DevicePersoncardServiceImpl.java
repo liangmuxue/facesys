@@ -6,6 +6,9 @@ import com.github.pagehelper.PageHelper;
 import com.ss.enums.StatusEnum;
 import com.ss.exception.ServiceException;
 import com.ss.facesys.data.access.client.IAccessService;
+import com.ss.facesys.data.access.common.dto.MonitorTask;
+import com.ss.facesys.data.access.common.web.MonVO;
+import com.ss.facesys.data.access.mapper.MonMapper;
 import com.ss.facesys.data.baseinfo.common.util.EntityUtil;
 import com.ss.facesys.data.baseinfo.service.BaseServiceImpl;
 import com.ss.facesys.data.collect.client.IDevicePersoncardService;
@@ -15,9 +18,11 @@ import com.ss.facesys.data.collect.common.model.InternetBar;
 import com.ss.facesys.data.collect.mapper.DevicePersoncardMapper;
 import com.ss.facesys.data.collect.mapper.HotelMapper;
 import com.ss.facesys.data.collect.mapper.InternetBarMapper;
+import com.ss.facesys.data.resource.common.dto.ImportCamera;
 import com.ss.facesys.data.resource.common.web.CameraQueryVO;
 import com.ss.facesys.util.StringUtils;
 import com.ss.facesys.util.constant.CommonConstant;
+import com.ss.facesys.util.em.MonitorStateEnum;
 import com.ss.facesys.util.em.PersoncardMainEnum;
 import com.ss.facesys.util.em.ResourceType;
 import com.ss.facesys.util.em.ResultCode;
@@ -26,6 +31,7 @@ import com.ss.spider.system.organization.model.Organization;
 import com.ss.spider.system.user.mapper.UserResourceMapper;
 import com.ss.spider.system.user.model.UserResource;
 import org.apache.commons.collections.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
@@ -58,6 +64,8 @@ public class DevicePersoncardServiceImpl extends BaseServiceImpl implements IDev
     private OrganizationMapper organizationMapper;
     @Resource
     private UserResourceMapper userResourceMapper;
+    @Resource
+    private MonMapper monMapper;
 
 
     /**
@@ -87,6 +95,27 @@ public class DevicePersoncardServiceImpl extends BaseServiceImpl implements IDev
         // 初始化分页查询条件
         PageHelper.startPage(currentPage, pageSize);
         List<DevicePersoncard> personcards = devicePersoncardMapper.selectByExample(example);
+        MonVO monVO = new MonVO();
+        monVO.setEndTime(System.currentTimeMillis());
+        MonitorTask monitorTask = this.monMapper.selMonResource(monVO);
+        if (StringUtils.isNotBlank(monitorTask.getCameraIds())) {
+            String[] personcardDeviceIds = monitorTask.getPersoncardDeviceIds().split(",");
+            List<String> personcardDeviceIdList = Arrays.asList(personcardDeviceIds);
+            for (DevicePersoncard dp: personcards) {
+                if(personcardDeviceIdList.contains(String.valueOf(dp.getId()))){
+                    dp.setMonitorState(MonitorStateEnum.YES.getCode());
+                    dp.setMonitorStateName(MonitorStateEnum.YES.getName());
+                }else {
+                    dp.setMonitorState(MonitorStateEnum.NO.getCode());
+                    dp.setMonitorStateName(MonitorStateEnum.NO.getName());
+                }
+            }
+        } else {
+            for (DevicePersoncard dp: personcards) {
+                dp.setMonitorState(MonitorStateEnum.NO.getCode());
+                dp.setMonitorStateName(MonitorStateEnum.NO.getName());
+            }
+        }
         if (CollectionUtils.isNotEmpty(personcards)) {
             Map<String, Organization> orgMap = getOrgMapByIds(personcards.stream().map(DevicePersoncard::getOrgId).collect(Collectors.toList()));
             Map<Integer, Hotel> hotelMap = getHotelMapByIds(personcards.stream()
@@ -221,10 +250,20 @@ public class DevicePersoncardServiceImpl extends BaseServiceImpl implements IDev
     @Override
     public void deletePersonCard(DevicePersoncard devicePersoncard) throws ServiceException {
         // 校验底库是否布控
-        DevicePersoncard dbCheck = devicePersoncardMapper.selectByPrimaryKey(devicePersoncard);
-        if (dbCheck.getMonitorState() == CommonConstant.FACEDB_MONITOR_STATE_MONITORED) {
-            throw new ServiceException(ResultCode.PERSONCARD_DELETEFAIL_MONITOR);
+        MonVO monVO = new MonVO();
+        monVO.setEndTime(System.currentTimeMillis());
+        MonitorTask monitorTask = this.monMapper.selMonResource(monVO);
+        if (StringUtils.isNotBlank(monitorTask.getPersoncardDeviceIds())) {
+            String[] personcardDeviceIds = monitorTask.getPersoncardDeviceIds().split(",");
+            List<String> personcardDeviceIdList = Arrays.asList(personcardDeviceIds);
+            if(personcardDeviceIdList.contains(String.valueOf(devicePersoncard.getId()))){
+                throw new ServiceException(ResultCode.PERSONCARD_DELETEFAIL_MONITOR);
+            }
         }
+//        DevicePersoncard dbCheck = devicePersoncardMapper.selectByPrimaryKey(devicePersoncard);
+//        if (dbCheck.getMonitorState() == CommonConstant.FACEDB_MONITOR_STATE_MONITORED) {
+//            throw new ServiceException(ResultCode.PERSONCARD_DELETEFAIL_MONITOR);
+//        }
         try {
             devicePersoncardMapper.updateByPrimaryKeySelective(devicePersoncard);
         } catch (Exception e) {

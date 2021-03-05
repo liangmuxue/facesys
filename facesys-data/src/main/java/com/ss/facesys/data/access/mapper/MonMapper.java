@@ -22,4 +22,5 @@ public interface MonMapper extends SsMapper<MonitorTask> {
 
     List<MonitorTask> selTasksByCamera(MonVO para);
 
+    MonitorTask selMonResource(MonVO para);
 }
