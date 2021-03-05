@@ -57,4 +57,21 @@ public class AnalysisCountController extends BaseController {
         }
         return resp;
     }
+
+    @RequestMapping(value = {"/snapRecord"}, method = {RequestMethod.POST})
+    @OpLog(model = "80007", desc = "分析抓拍统计", type = OperaTypeEnum.ADD)
+    public ResponseEntity<Map<String,Object>> snapRecord(@RequestBody @Validated(APIAddGroup.class) AnalysisCountVO para, BindingResult bindingResult) throws Exception {
+        ResponseEntity<Map<String,Object>> resp = validite(bindingResult);
+        try {
+            Map<String, Object> map = this.analysisCountService.selSnapCount(para);
+            resp.setData(map);
+            resp.setMessage("查询成功");
+        }catch (Exception e) {
+            resp = createFailResponse();
+            resp.setCode(ResultCode.ANALYSISCOUNT_SEL_FAILED_CODE);
+            this.logger.error("查询失败，原因：" + e.toString(), e);
+            resp.setMessage("查询失败" + e.getMessage());
+        }
+        return resp;
+    }
 }
