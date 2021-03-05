@@ -151,13 +151,13 @@ public class OfflineVideoController extends BaseController {
             if (num > 0) {
                 resp.setMessage("视频上传成功");
             } else {
-                para.setStatus(NumberConstant.FOUR);
+                para.setStatus(NumberConstant.THREE);
                 this.offlineVideoService.updateStatus(para);
                 resp = createFailResponse();
                 resp.setMessage("视频上传失败，请联系管理员");
             }
         } catch (IOException e) {
-            para.setStatus(NumberConstant.FOUR);
+            para.setStatus(NumberConstant.THREE);
             this.offlineVideoService.updateStatus(para);
             this.logger.error("离线视频上传失败原因：+" + e.toString(), e);
             resp = createFailResponse();

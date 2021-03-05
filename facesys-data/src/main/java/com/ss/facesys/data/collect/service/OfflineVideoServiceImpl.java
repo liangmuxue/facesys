@@ -112,30 +112,7 @@ public class OfflineVideoServiceImpl extends BaseServiceImpl implements IOffline
     @Override
     public int deleteOfflineVideo(OfflineVideoVO offlineVideoVO) {
 
-        boolean flag = true;
-        int num = 0;
-        OfflineVideo detail = this.offlineVideoMapper.detail(offlineVideoVO);
-        if (detail.getDeviceId() != null) {
-            JSONObject resultJson;
-            Map<String, Object> parm = null;
-            String postUrl = null;
-            String deviceId = null;
-            postUrl = PropertiesUtil.getOshttp() + HttpConstant.VIDEO_DELETE;
-            // 设置请求参数
-            parm = new HashMap<String, Object>();
-            parm.put("deviceId", detail.getDeviceId());
-            // 发送请求调用欧神接口
-            String result = BaseHttpUtil.httpPost(JsonUtils.getFastjsonFromObject(parm), postUrl, null);
-            this.logger.info("离线视频删除" + result);
-
-            resultJson = JSONObject.parseObject(result);
-            if (resultJson == null || !StringUtils.checkSuccess(resultJson)) {
-                flag = false;
-            }
-        }
-        if (flag) {
-            num = this.offlineVideoMapper.deleteOfflineVideo(offlineVideoVO);
-        }
+        int num = this.offlineVideoMapper.deleteOfflineVideo(offlineVideoVO);
         return num;
     }
 
@@ -152,37 +129,9 @@ public class OfflineVideoServiceImpl extends BaseServiceImpl implements IOffline
         if (detail == null) {
             return 0;
         }
-        JSONObject resultJson;
-        Map<String, Object> parm = null;
-        String postUrl = null;
-        String deviceId = null;
-        postUrl = PropertiesUtil.getOshttp() + HttpConstant.VIDEO_ADD;
-        // 设置请求参数
-        parm = new HashMap<String, Object>();
-        parm.put("deviceName", detail.getName());
-        parm.put("path", offlineVideoVO.getDepositUrl());
-        // 发送请求调用欧神接口
-        String result = BaseHttpUtil.httpPost(JsonUtils.getFastjsonFromObject(parm), postUrl, null);
-        this.logger.info("离线视频新增" + result);
-
-        resultJson = JSONObject.parseObject(result);
-        if (resultJson != null && StringUtils.checkSuccess(resultJson)) {
-            deviceId = resultJson.getString("data");
-            offlineVideoVO.setDeviceId(deviceId);
-        } else {
-            offlineVideoVO.setStatus(NumberConstant.FOUR);
-        }
+        offlineVideoVO.setStatus(NumberConstant.TWO);
         //关联ocean设备编号
         int num = this.offlineVideoMapper.insertDeviceId(offlineVideoVO);
-        if(num > 0 && deviceId != null) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    //离线视频抽帧
-                    analysisVideo(offlineVideoVO);
-                }
-            }).start();
-        }
         return num;
     }
 

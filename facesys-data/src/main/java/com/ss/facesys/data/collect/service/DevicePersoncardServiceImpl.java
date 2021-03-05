@@ -98,7 +98,7 @@ public class DevicePersoncardServiceImpl extends BaseServiceImpl implements IDev
         MonVO monVO = new MonVO();
         monVO.setEndTime(System.currentTimeMillis());
         MonitorTask monitorTask = this.monMapper.selMonResource(monVO);
-        if (StringUtils.isNotBlank(monitorTask.getCameraIds())) {
+        if (monitorTask != null && StringUtils.isNotBlank(monitorTask.getCameraIds())) {
             String[] personcardDeviceIds = monitorTask.getPersoncardDeviceIds().split(",");
             List<String> personcardDeviceIdList = Arrays.asList(personcardDeviceIds);
             for (DevicePersoncard dp: personcards) {
@@ -253,7 +253,7 @@ public class DevicePersoncardServiceImpl extends BaseServiceImpl implements IDev
         MonVO monVO = new MonVO();
         monVO.setEndTime(System.currentTimeMillis());
         MonitorTask monitorTask = this.monMapper.selMonResource(monVO);
-        if (StringUtils.isNotBlank(monitorTask.getPersoncardDeviceIds())) {
+        if (monitorTask != null && StringUtils.isNotBlank(monitorTask.getPersoncardDeviceIds())) {
             String[] personcardDeviceIds = monitorTask.getPersoncardDeviceIds().split(",");
             List<String> personcardDeviceIdList = Arrays.asList(personcardDeviceIds);
             if(personcardDeviceIdList.contains(String.valueOf(devicePersoncard.getId()))){
