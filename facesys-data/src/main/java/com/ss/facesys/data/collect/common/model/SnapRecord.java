@@ -3,6 +3,7 @@ package com.ss.facesys.data.collect.common.model;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * com.ss.facesys.data.collect.common.model
@@ -38,6 +39,11 @@ public class SnapRecord {
     private Integer age;
     @Column(name = "age_type")
     private Integer ageType;
+
+    @Transient
+    private Long startTime;
+    @Transient
+    private Long endTime;
 
     public Integer getId() {
         return id;
@@ -157,5 +163,21 @@ public class SnapRecord {
 
     public void setAgeType(Integer ageType) {
         this.ageType = ageType;
+    }
+
+    public Long getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(Long startTime) {
+        this.startTime = startTime;
+    }
+
+    public Long getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Long endTime) {
+        this.endTime = endTime;
     }
 }

@@ -2,6 +2,7 @@ package com.ss.facesys.schedule.collect.job;
 
 import com.ss.facesys.data.baseinfo.common.job.StockSimpleJob;
 import com.ss.facesys.schedule.st.job.AlarmHourJob;
+import com.ss.facesys.schedule.st.job.SnapHourJob;
 import com.ss.facesys.util.DateUtil;
 import com.ss.facesys.util.autoconfigure.JobProperties;
 import com.ss.facesys.util.constant.CacheConstant;
@@ -139,6 +140,8 @@ public class MyApplicationRunner implements ApplicationRunner {
 
         //报警统计定时任务
         this.stockSimpleJob.addSimpleJobScheduler(AlarmHourJob.class, JobProperties.getAlarmHourJob(), tc, sp, true);
+        //抓拍统计定时任务
+        this.stockSimpleJob.addSimpleJobScheduler(SnapHourJob.class, JobProperties.getSnapHourJob(), tc, sp, true);
     }
 
 }

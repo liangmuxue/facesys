@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.facesys.data.statistic.mapper.SnapHourMapper">
+
+    <!--查询抓拍记录-->
+    <select id="selSnapRecord" parameterType="com.ss.facesys.data.collect.common.model.SnapRecord" resultType="java.lang.Integer">
+        select
+            count(id)
+        from
+            ss_snap_record
+        where
+            device_id = #{deviceId}
+        and
+            device_type = #{deviceType}
+        and
+            capture_type =#{captureType}
+        and
+            capture_time &gt;= #{startTime} and capture_time &lt; #{endTime}
+    </select>
+
+    <!--查询抓拍定时表-->
+    <select id="selSnapCount" parameterType="com.ss.facesys.data.access.common.web.AnalysisCountVO" resultType="com.ss.facesys.data.statistic.common.dto.SnapHour">
+        select
+            sum(count) as count,
+            date
+        from
+            cw_st_snap
+        where
+            date between #{startTime} and #{endTime}
+        group by
+            date
+    </select>
+
+    <!--查询设备下抓拍数-->
+    <select id="selDeviceSnapCount" parameterType="com.ss.facesys.data.access.common.web.AnalysisCountVO" resultType="com.ss.facesys.data.statistic.common.dto.SnapHour">
+        select
+            sum(s.count) as count,
+            s.device_id as deviceId,
+            c.cameraName
+        from
+            cw_st_snap s
+        left join
+            cw_base_camera c on c.id = s.device_id
+        where
+            date between #{startTime} and #{endTime}
+        group by
+            device_id
+    </select>
+</mapper>
