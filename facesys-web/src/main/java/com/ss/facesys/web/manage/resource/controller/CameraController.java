@@ -247,7 +247,11 @@ public class CameraController extends BaseController {
             this.logger.error("删除像机失败的原因+" + e.toString(), e);
             resp = createFailResponse();
             resp.setCode(ResultCode.CAMERADELETE_FAILED_CODE);
-            resp.setMessage("删除像机失败");
+            if (StringUtils.isNotBlank(e.getMessage())) {
+                resp.setMessage(e.getMessage());
+            } else {
+                resp.setMessage("删除像机失败");
+            }
         }
         return resp;
     }

@@ -285,4 +285,17 @@
               mt.state = #{state}
         </where>
     </select>
+
+    <select id="selMonResource" parameterType="com.ss.facesys.data.access.common.web.MonVO" resultType="com.ss.facesys.data.access.common.dto.MonitorTask">
+        select
+            group_concat(camera_ids) as cameraIds,
+            group_concat(personcard_device_ids) as personcardDeviceIds,
+            group_concat(facedb_ids) as facedbIds
+        from
+            cw_monitor_task
+        where
+            delete_flag = 1
+          and
+            end_time &gt;= #{endTime}
+    </select>
 </mapper>
