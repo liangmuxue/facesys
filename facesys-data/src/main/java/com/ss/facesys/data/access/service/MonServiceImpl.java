@@ -75,13 +75,13 @@ public class MonServiceImpl extends BaseServiceImpl {
             monUserRefs.add(monUserRef);
         }
         monUserRefMapper.insertList(monUserRefs);
-        //修改人像库布控状态
+        /*//修改人像库布控状态
         Example example = new Example(Facedb.class);
         List facedbIdList = Arrays.asList(para.getFacedbIds().split(","));
         example.createCriteria().andIn("id",facedbIdList);
         Facedb facedb = new Facedb();
         facedb.setMonitorState(MonitorStateEnum.YES.getCode());
-        facedbMapper.updateByExampleSelective(facedb,example);
+        facedbMapper.updateByExampleSelective(facedb,example);*/
         return "SUCCESS";
     }
 
@@ -115,7 +115,7 @@ public class MonServiceImpl extends BaseServiceImpl {
             monUserRefs.add(monUserRef);
         }
         monUserRefMapper.insertList(monUserRefs);
-        //修改原人像库布控状态
+        /*//修改原人像库布控状态
         updMonitorState(para.getId(),oldMonitorTask.getFacedbIds());
         //修改新添加人像库布控状态
         Example examp = new Example(Facedb.class);
@@ -123,7 +123,7 @@ public class MonServiceImpl extends BaseServiceImpl {
         examp.createCriteria().andIn("id",facedbIdList);
         Facedb facedb = new Facedb();
         facedb.setMonitorState(MonitorStateEnum.YES.getCode());
-        facedbMapper.updateByExampleSelective(facedb,examp);
+        facedbMapper.updateByExampleSelective(facedb,examp);*/
         return "SUCCESS";
     }
 
@@ -163,8 +163,8 @@ public class MonServiceImpl extends BaseServiceImpl {
         Example example = new Example(MonUserRef.class);
         example.createCriteria().andEqualTo("monitorId",para.getId());
         monUserRefMapper.deleteByExample(example);
-        //修改布控状态
-        updMonitorState(para.getId(),oldMonitorTask.getFacedbIds());
+        /*//修改布控状态
+        updMonitorState(para.getId(),oldMonitorTask.getFacedbIds());*/
         return "SUCCESS";
     }
 
