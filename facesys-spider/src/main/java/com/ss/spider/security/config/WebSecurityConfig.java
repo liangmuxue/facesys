@@ -36,6 +36,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public static final String FORM_BASED_LOGIN_ENTRY_POINT = "/auth/login";
     public static final String TOKEN_REFRESH_ENTRY_POINT = "/auth/token";
     public static final String TOKEN_BASED_AUTH_ENTRY_POINT = "/**";
+    public static final String SYSPARA_INFOMAP_ENTRY_POINT = "/syspara/infoMap";
     @Autowired
     private RestAuthenticationEntryPoint authenticationEntryPoint;
     @Autowired
@@ -67,6 +68,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected JwtTokenAuthenticationProcessingFilter buildJwtTokenAuthenticationProcessingFilter()
             throws Exception {
         List<String> pathsToSkip = new ArrayList<String>();
+        pathsToSkip.add(SYSPARA_INFOMAP_ENTRY_POINT);
         pathsToSkip.add(TOKEN_REFRESH_ENTRY_POINT);
         pathsToSkip.add(FORM_BASED_LOGIN_ENTRY_POINT);
         String[] anonUrls = getAnonUrls();
@@ -107,7 +109,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        ((HttpSecurity) ((ExpressionUrlAuthorizationConfigurer.AuthorizedUrl) ((HttpSecurity) ((ExpressionUrlAuthorizationConfigurer.AuthorizedUrl) ((ExpressionUrlAuthorizationConfigurer.AuthorizedUrl) ((ExpressionUrlAuthorizationConfigurer.AuthorizedUrl) ((ExpressionUrlAuthorizationConfigurer.AuthorizedUrl) ((HttpSecurity) ((HttpSecurity) ((HttpSecurity) http
+        ((HttpSecurity) ((ExpressionUrlAuthorizationConfigurer.AuthorizedUrl) ((HttpSecurity) ((ExpressionUrlAuthorizationConfigurer.AuthorizedUrl) ((ExpressionUrlAuthorizationConfigurer.AuthorizedUrl) ((ExpressionUrlAuthorizationConfigurer.AuthorizedUrl) ((ExpressionUrlAuthorizationConfigurer.AuthorizedUrl) ((ExpressionUrlAuthorizationConfigurer.AuthorizedUrl) ((HttpSecurity) ((HttpSecurity) ((HttpSecurity) http
                 .csrf().disable())
                 .exceptionHandling()
                 .authenticationEntryPoint(this.authenticationEntryPoint)
@@ -122,6 +124,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(new String[]{FORM_BASED_LOGIN_ENTRY_POINT})).permitAll()
 
                 .antMatchers(new String[]{TOKEN_REFRESH_ENTRY_POINT})).permitAll()
+
+                .antMatchers(new String[]{SYSPARA_INFOMAP_ENTRY_POINT})).permitAll()
 
                 .antMatchers(new String[]{"/console"})).permitAll()
 
