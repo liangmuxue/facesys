@@ -36,6 +36,12 @@ public class AlarmMessage implements Serializable {
   private String alarmGradeName;
   @Transient
   private String monitorName;
+  @Transient
+  private String colorCode;
+  @Transient
+  private String peopleName;
+  @Transient
+  private String deviceName;
 
   public Integer getId() {
     return id;
@@ -131,5 +137,29 @@ public class AlarmMessage implements Serializable {
 
   public void setMonitorName(String monitorName) {
     this.monitorName = monitorName;
+  }
+
+  public String getColorCode() {
+    return colorCode;
+  }
+
+  public void setColorCode(String colorCode) {
+    this.colorCode = colorCode;
+  }
+
+  public String getPeopleName() {
+    return peopleName;
+  }
+
+  public void setPeopleName(String peopleName) {
+    this.peopleName = peopleName;
+  }
+
+  public String getDeviceName() {
+    return deviceName;
+  }
+
+  public void setDeviceName(String deviceName) {
+    this.deviceName = deviceName;
   }
 }
