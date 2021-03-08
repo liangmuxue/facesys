@@ -1,5 +1,6 @@
 package com.ss.facesys.data.system.service;
 
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.ss.facesys.data.access.common.dto.MonitorTask;
 import com.ss.facesys.data.baseinfo.common.model.BaseEnums;
@@ -69,7 +70,11 @@ public class MyMessageServiceImpl implements IMyMessageService {
         PageHelper.startPage(myMessageQuery.getCurrentPage(), myMessageQuery.getPageSize());
         List<AlarmMessage> myMessages = this.alarmMessageServiceMapper.selectByExample(example);
         if(myMessages.isEmpty()){
-            return new ArrayList<>();
+            Page paged = new Page(myMessageQuery.getCurrentPage(), myMessageQuery.getPageSize());
+            paged.setTotal(myMessages.size());
+            paged.setReasonable(false);
+            paged.addAll(myMessages);
+            return paged;
         }
         for(AlarmMessage a :myMessages){
             Example example1 = new Example(MonitorTask.class);
