@@ -24,7 +24,7 @@ import java.util.Map;
  * @create 2021/02/24
  * @email lishuangchao@ss-cas.com
  **/
-@Component
+//@Component
 public class CaptureObserver implements ApplicationRunner {
 
     private Logger logger = LoggerFactory.getLogger(CaptureObserver.class);
@@ -38,67 +38,67 @@ public class CaptureObserver implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-//        while (true) {
+        while (true) {
+            try {
+                Long size = stringRedisTemplate.opsForList().size("q_body_data_sec");
+                for (int i = 0; i < size; i++) {
+                    String msg = stringRedisTemplate.opsForList().leftPop("q_body_data_sec");
+                    if (msg != null) {
+                        JSONObject jsonObject = JSONObject.parseObject(msg);
+                        String panoramaImgName = jsonObject.getString("panoramaImgName");
+                        String panoramaImgData = jsonObject.getString("panoramaImgData");
+                        String bodyImg = jsonObject.getString("bodyImg");
+                        String deviceNo = jsonObject.getString("deviceNo");
+                        Map<Integer, String> captureMap = new HashMap<>();
+                        captureMap.put(BODY_TYPE, bodyImg);
+                        captureMap.put(FULL_TYPE, panoramaImgData);
+                        CaptureThread captureThread = new CaptureThread(1, deviceNo, captureMap);
+                        CameraThreadPool.getThread().execute(captureThread);
+                    }
+                }
+                Thread.sleep(1000);
+            } catch (Exception e) {
+                logger.info("监听redis抓拍照信息异常：" + e, e.toString());
+            }
+//            String panoramaImgData = null;
 //            try {
-//                Long size = stringRedisTemplate.opsForList().size("q_body_data_sec");
-//                for (int i = 0; i < size; i++) {
-//                    String msg = stringRedisTemplate.opsForList().leftPop("q_body_data_sec");
-//                    if (msg != null) {
-//                        JSONObject jsonObject = JSONObject.parseObject(msg);
-//                        String panoramaImgName = jsonObject.getString("panoramaImgName");
-//                        String panoramaImgData = jsonObject.getString("panoramaImgData");
-//                        String bodyImg = jsonObject.getString("bodyImg");
-//                        String deviceNo = jsonObject.getString("deviceNo");
-//                        Map<Integer, String> captureMap = new HashMap<>();
-//                        captureMap.put(BODY_TYPE, bodyImg);
-//                        captureMap.put(FULL_TYPE, panoramaImgData);
-//                        CaptureThread captureThread = new CaptureThread(1, deviceNo, captureMap);
-//                        CameraThreadPool.getThread().execute(captureThread);
+//                File file = new File("F:\\home\\takePhone\\p.txt");
+//                if (file.isFile() && file.exists()) {
+//                    InputStreamReader isr = new InputStreamReader(new FileInputStream(file), "utf-8");
+//                    BufferedReader br = new BufferedReader(isr);
+//                    String lineTxt = null;
+//                    while ((lineTxt = br.readLine()) != null) {
+//                        panoramaImgData = lineTxt;
 //                    }
+//                    br.close();
+//                } else {
+//                    System.out.println("文件不存在!");
 //                }
-//                Thread.sleep(1000);
 //            } catch (Exception e) {
-//                logger.info("监听redis抓拍照信息异常：" + e, e.toString());
+//                System.out.println("文件读取错误!");
 //            }
-            String panoramaImgData = null;
-            try {
-                File file = new File("F:\\home\\takePhone\\p.txt");
-                if (file.isFile() && file.exists()) {
-                    InputStreamReader isr = new InputStreamReader(new FileInputStream(file), "utf-8");
-                    BufferedReader br = new BufferedReader(isr);
-                    String lineTxt = null;
-                    while ((lineTxt = br.readLine()) != null) {
-                        panoramaImgData = lineTxt;
-                    }
-                    br.close();
-                } else {
-                    System.out.println("文件不存在!");
-                }
-            } catch (Exception e) {
-                System.out.println("文件读取错误!");
-            }
-            String faceData = null;
-            try {
-                File file = new File("F:\\home\\takePhone\\c.txt");
-                if (file.isFile() && file.exists()) {
-                    InputStreamReader isr = new InputStreamReader(new FileInputStream(file), "utf-8");
-                    BufferedReader br = new BufferedReader(isr);
-                    String lineTxt = null;
-                    while ((lineTxt = br.readLine()) != null) {
-                        faceData = lineTxt;
-                    }
-                    br.close();
-                } else {
-                    System.out.println("文件不存在!");
-                }
-            } catch (Exception e) {
-                System.out.println("文件读取错误!");
-            }
-            Map<Integer, String> captureMap = new HashMap<>();
-            captureMap.put(FACE_TYPE, faceData);
-            captureMap.put(FULL_TYPE, panoramaImgData);
-            CaptureThread captureThread = new CaptureThread(1, "800421020105000107", captureMap);
-            CameraThreadPool.getThread().execute(captureThread);
-//        }
+//            String faceData = null;
+//            try {
+//                File file = new File("F:\\home\\takePhone\\c.txt");
+//                if (file.isFile() && file.exists()) {
+//                    InputStreamReader isr = new InputStreamReader(new FileInputStream(file), "utf-8");
+//                    BufferedReader br = new BufferedReader(isr);
+//                    String lineTxt = null;
+//                    while ((lineTxt = br.readLine()) != null) {
+//                        faceData = lineTxt;
+//                    }
+//                    br.close();
+//                } else {
+//                    System.out.println("文件不存在!");
+//                }
+//            } catch (Exception e) {
+//                System.out.println("文件读取错误!");
+//            }
+//            Map<Integer, String> captureMap = new HashMap<>();
+//            captureMap.put(FACE_TYPE, faceData);
+//            captureMap.put(FULL_TYPE, panoramaImgData);
+//            CaptureThread captureThread = new CaptureThread(1, "800421020105000107", captureMap);
+//            CameraThreadPool.getThread().execute(captureThread);
+        }
     }
 }

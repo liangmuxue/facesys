@@ -4,6 +4,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.j7cai.common.util.JsonUtils;
 import com.ss.enums.StatusEnum;
+import com.ss.facesys.data.access.common.dto.MonitorTask;
+import com.ss.facesys.data.access.common.web.MonVO;
+import com.ss.facesys.data.access.mapper.MonMapper;
 import com.ss.facesys.data.baseinfo.common.model.User;
 import com.ss.facesys.data.baseinfo.service.BaseServiceImpl;
 import com.ss.facesys.data.resource.client.ICameraService;
@@ -20,6 +23,7 @@ import com.ss.facesys.util.constant.CommonConstant;
 import com.ss.facesys.util.constant.HttpConstant;
 import com.ss.facesys.util.constant.NumberConstant;
 import com.ss.facesys.util.em.Enums;
+import com.ss.facesys.util.em.MonitorStateEnum;
 import com.ss.facesys.util.em.ResourceType;
 import com.ss.facesys.util.http.BaseHttpUtil;
 import com.ss.facesys.util.jedis.JedisUtil;
@@ -52,12 +56,14 @@ public class CameraServiceImpl extends BaseServiceImpl implements ICameraService
 
     private static final Log LOG = LogFactory.getLog(CameraServiceImpl.class);
 
-    @Autowired
+    @Resource
     private CameraMapper cameraMapper;
-    @Autowired
+    @Resource
     private UserResourceMapper userResourceMapper;
-    @Autowired
+    @Resource
     private OrganizationMapper organizationMapper;
+    @Resource
+    private MonMapper monMapper;
     @Resource
     public JedisUtil jedisUtil;
 
@@ -264,6 +270,16 @@ public class CameraServiceImpl extends BaseServiceImpl implements ICameraService
 //                }
 //            }
 //        }
+        MonVO monVO = new MonVO();
+        monVO.setEndTime(System.currentTimeMillis());
+        MonitorTask monitorTask = this.monMapper.selMonResource(monVO);
+        if (monitorTask != null && StringUtils.isNotBlank(monitorTask.getCameraIds())) {
+            String[] cameraIds = monitorTask.getCameraIds().split(",");
+            List<String> cameraIdList = Arrays.asList(cameraIds);
+            if(cameraIdList.contains(String.valueOf(camera.getId()))){
+                throw new Exception("无法删除，需在布控任务中，编辑移除该设备的布控，方可删除");
+            }
+        }
         int num = this.cameraMapper.deleteCamera(camera);
         UserResource userResource = new UserResource();
         userResource.setResourceId(camera.getId());
@@ -317,6 +333,27 @@ public class CameraServiceImpl extends BaseServiceImpl implements ICameraService
         }
         PageHelper.startPage(queryVO.getCurrentPage(), queryVO.getPageSize());
         List<ImportCamera> findAllCameras = this.cameraMapper.findAllCameras(queryVO);
+        MonVO monVO = new MonVO();
+        monVO.setEndTime(System.currentTimeMillis());
+        MonitorTask monitorTask = this.monMapper.selMonResource(monVO);
+        if (monitorTask != null && StringUtils.isNotBlank(monitorTask.getCameraIds())) {
+            String[] cameraIds = monitorTask.getCameraIds().split(",");
+            List<String> cameraIdList = Arrays.asList(cameraIds);
+            for (ImportCamera importCamera: findAllCameras) {
+                if(cameraIdList.contains(String.valueOf(importCamera.getId()))){
+                    importCamera.setMonitorStatus(MonitorStateEnum.YES.getCode());
+                    importCamera.setMonitorStatusName(MonitorStateEnum.YES.getName());
+                }else {
+                    importCamera.setMonitorStatus(MonitorStateEnum.NO.getCode());
+                    importCamera.setMonitorStatusName(MonitorStateEnum.NO.getName());
+                }
+            }
+        } else {
+            for (ImportCamera importCamera: findAllCameras) {
+                importCamera.setMonitorStatus(MonitorStateEnum.NO.getCode());
+                importCamera.setMonitorStatusName(MonitorStateEnum.NO.getName());
+            }
+        }
         return findAllCameras;
     }
 
@@ -560,6 +597,16 @@ public class CameraServiceImpl extends BaseServiceImpl implements ICameraService
         return createOrgTree(temp);
     }
 
+    @Override
+    public List<Camera> getCameraList(CameraQueryVO queryVO) {
+        List<String> sceneIdList = Arrays.asList(queryVO.getSceneIds().split(","));
+        Example example1 = new Example(Camera.class);
+        example1.createCriteria().andIn("sceneId", sceneIdList).andEqualTo("state", 0);
+        //接入全设备
+        List<Camera> cameras = this.cameraMapper.selectByExample(example1);
+        return cameras;
+    }
+
     private List<Organization> createOrgTree(List<Organization> organizationList) {
         if (CollectionUtils.isEmpty(organizationList)) {
             return Collections.emptyList();
@@ -567,7 +614,7 @@ public class CameraServiceImpl extends BaseServiceImpl implements ICameraService
         // 创建根节点
         Organization root = new Organization();
         // 组装Map数据
-        Map<String, Organization> dataMap = new HashMap<>(16);
+        Map<String, Organization> dataMap = new LinkedHashMap<>();
         for (Organization organization : organizationList) {
             dataMap.put(organization.getOrgId(), organization);
         }

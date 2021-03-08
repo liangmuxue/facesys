@@ -89,4 +89,6 @@ public interface ICameraService {
 
     List<Organization> treeData(CameraQueryVO queryVO);
 
+    List<Camera> getCameraList(CameraQueryVO queryVO);
+
 }

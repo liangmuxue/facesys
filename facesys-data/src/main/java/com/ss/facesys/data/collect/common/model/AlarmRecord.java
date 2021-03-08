@@ -2,6 +2,7 @@ package com.ss.facesys.data.collect.common.model;
 
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * AlarmRecord 预警记录
@@ -47,6 +48,8 @@ public class AlarmRecord {
     private Integer gender;
     private Integer maskState;
     private Integer glassesState;
+    private Integer sunGlassesState;
+    private Integer minority;
     private String snId;
     private String pitch;
     private String yaw;
@@ -71,6 +74,9 @@ public class AlarmRecord {
     private String regdbName;
     private String monitorUserName;
     private float score;
+
+    @Transient
+    private Integer cnt;
 
     public Integer getId() {
         return id;
@@ -573,5 +579,29 @@ public class AlarmRecord {
 
     public void setState(Integer state) {
         this.state = state;
+    }
+
+    public Integer getSunGlassesState() {
+        return sunGlassesState;
+    }
+
+    public void setSunGlassesState(Integer sunGlassesState) {
+        this.sunGlassesState = sunGlassesState;
+    }
+
+    public Integer getMinority() {
+        return minority;
+    }
+
+    public void setMinority(Integer minority) {
+        this.minority = minority;
+    }
+
+    public Integer getCnt() {
+        return cnt;
+    }
+
+    public void setCnt(Integer cnt) {
+        this.cnt = cnt;
     }
 }

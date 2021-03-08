@@ -1,5 +1,7 @@
 package com.ss.facesys.data.archives.common.model;
 
+import javax.persistence.Column;
+import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -11,22 +13,38 @@ import javax.persistence.Transient;
 **/
 @Table(name = "cw_base_victory")
 public class Victory {
-    private static final long serialVersionUID = 1L;
+
+    @Id
     private Integer id;
+    @Column(name = "victory_name")
     private String victoryName;
     @Transient
     private String userIds;
     @Transient
     private String userNames;
+    @Column(name = "solve_time")
     private String solveTime;
+    @Column(name = "case_code")
     private String caseCode;
+    @Column(name = "case_type")
     private Integer caseType;
+    @Column(name = "case_detail")
     private String caseDetail;
+    @Column(name = "picture_one")
     private String pictureOne;
+    @Column(name = "picture_two")
     private String pictureTwo;
+    @Column(name = "picture_three")
     private String pictureThree;
+    @Column(name = "picture_four")
     private String pictureFour;
+    @Column(name = "picture_five")
     private String pictureFive;
+    @Column(name = "create_time")
+    private Long createTime;
+    @Column(name = "update_time")
+    private Long updateTime;
+    private Integer status;
     @Transient
     private String caseTypeName;
 
@@ -132,6 +150,30 @@ public class Victory {
 
     public void setPictureFive(String pictureFive) {
         this.pictureFive = pictureFive;
+    }
+
+    public Long getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Long createTime) {
+        this.createTime = createTime;
+    }
+
+    public Long getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Long updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 
     public String getCaseTypeName() {

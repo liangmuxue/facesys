@@ -48,12 +48,33 @@
             <if test="monitorType != null and monitorType != '' ">
                 and  m.monitor_type = #{monitorType}
             </if>
-            <if test="cameraIdList != null and cameraIdList.size > 0 ">
-                and
-                <foreach collection="cameraIdList"  separator="or" open="(" close=")" item="item">
-                    find_in_set(#{item},m.camera_ids)
-                </foreach>
-            </if>
+            <choose>
+                <when test="cameraIdList != null and cameraIdList.size > 0 and personcardDeviceIdList != null and personcardDeviceIdList.size > 0 ">
+                    and (
+                    <foreach collection="cameraIdList" separator="or" open="(" close=")" item="item">
+                        find_in_set(#{item},m.camera_ids)
+                    </foreach>
+                    or
+                    <foreach collection="personcardDeviceIdList" separator="or" open="(" close=")" item="item">
+                        find_in_set(#{item},m.personcard_device_ids)
+                    </foreach>
+                      )
+                </when>
+                <otherwise>
+                    <if test="cameraIdList != null and cameraIdList.size > 0 ">
+                        and
+                        <foreach collection="cameraIdList"  separator="or" open="(" close=")" item="item">
+                            find_in_set(#{item},m.camera_ids)
+                        </foreach>
+                    </if>
+                    <if test="personcardDeviceIdList != null and personcardDeviceIdList.size > 0 ">
+                        and
+                        <foreach collection="personcardDeviceIdList"  separator="or" open="(" close=")" item="item">
+                            find_in_set(#{item},m.personcard_device_ids)
+                        </foreach>
+                    </if>
+                </otherwise>
+            </choose>
             <if test="facedbIdList != null and facedbIdList.size > 0 ">
                 and
                 <foreach collection="facedbIdList"  separator="or" open="(" close=")" item="item">
@@ -150,9 +171,10 @@
     </select>
 
     <!--查询处警人名称-->
-    <select id="selMonUserName" parameterType="com.ss.facesys.data.access.common.web.MonVO" resultType="java.lang.String">
+    <select id="selMonUserName" parameterType="com.ss.facesys.data.access.common.web.MonVO" resultType="com.ss.facesys.data.access.common.dto.MonitorTask">
         select
-          group_concat(u.name)
+          group_concat(u.login_name) as loginNames,
+          group_concat(u.user_id) as userIds
         from
             cw_monitor_task m
         left join cw_monitor_user_ref r on m.id = r.monitor_id
@@ -262,5 +284,18 @@
             and
               mt.state = #{state}
         </where>
+    </select>
+
+    <select id="selMonResource" parameterType="com.ss.facesys.data.access.common.web.MonVO" resultType="com.ss.facesys.data.access.common.dto.MonitorTask">
+        select
+            group_concat(camera_ids) as cameraIds,
+            group_concat(personcard_device_ids) as personcardDeviceIds,
+            group_concat(facedb_ids) as facedbIds
+        from
+            cw_monitor_task
+        where
+            delete_flag = 1
+          and
+            end_time &gt;= #{endTime}
     </select>
 </mapper>

@@ -75,13 +75,13 @@ public class MonServiceImpl extends BaseServiceImpl {
             monUserRefs.add(monUserRef);
         }
         monUserRefMapper.insertList(monUserRefs);
-        //修改人像库布控状态
+        /*//修改人像库布控状态
         Example example = new Example(Facedb.class);
         List facedbIdList = Arrays.asList(para.getFacedbIds().split(","));
         example.createCriteria().andIn("id",facedbIdList);
         Facedb facedb = new Facedb();
         facedb.setMonitorState(MonitorStateEnum.YES.getCode());
-        facedbMapper.updateByExampleSelective(facedb,example);
+        facedbMapper.updateByExampleSelective(facedb,example);*/
         return "SUCCESS";
     }
 
@@ -115,7 +115,7 @@ public class MonServiceImpl extends BaseServiceImpl {
             monUserRefs.add(monUserRef);
         }
         monUserRefMapper.insertList(monUserRefs);
-        //修改原人像库布控状态
+        /*//修改原人像库布控状态
         updMonitorState(para.getId(),oldMonitorTask.getFacedbIds());
         //修改新添加人像库布控状态
         Example examp = new Example(Facedb.class);
@@ -123,7 +123,7 @@ public class MonServiceImpl extends BaseServiceImpl {
         examp.createCriteria().andIn("id",facedbIdList);
         Facedb facedb = new Facedb();
         facedb.setMonitorState(MonitorStateEnum.YES.getCode());
-        facedbMapper.updateByExampleSelective(facedb,examp);
+        facedbMapper.updateByExampleSelective(facedb,examp);*/
         return "SUCCESS";
     }
 
@@ -163,8 +163,8 @@ public class MonServiceImpl extends BaseServiceImpl {
         Example example = new Example(MonUserRef.class);
         example.createCriteria().andEqualTo("monitorId",para.getId());
         monUserRefMapper.deleteByExample(example);
-        //修改布控状态
-        updMonitorState(para.getId(),oldMonitorTask.getFacedbIds());
+        /*//修改布控状态
+        updMonitorState(para.getId(),oldMonitorTask.getFacedbIds());*/
         return "SUCCESS";
     }
 
@@ -179,6 +179,9 @@ public class MonServiceImpl extends BaseServiceImpl {
         para.setNowTime(System.currentTimeMillis());
         if(StringUtils.isNotBlank(para.getCameraIds())) {
             para.setCameraIdList(Arrays.asList(para.getCameraIds().split(",")));
+        }
+        if(StringUtils.isNotBlank(para.getPersoncardDeviceIds())){
+            para.setPersoncardDeviceIdList(Arrays.asList(para.getPersoncardDeviceIds().split(",")));
         }
         if(StringUtils.isNotBlank(para.getFacedbIds())) {
             para.setFacedbIdList(Arrays.asList(para.getFacedbIds().split(",")));
@@ -255,8 +258,9 @@ public class MonServiceImpl extends BaseServiceImpl {
         String facedbIdsName = monMapper.selFacedbNames(facedbIds);
         monitorTask.setFacedbIdsName(facedbIdsName);
         //查询处警人名
-        String policeUserIdsName = monMapper.selMonUserName(para);
-        monitorTask.setPoliceUserIdsName(policeUserIdsName);
+        MonitorTask monitorTasks = monMapper.selMonUserName(para);
+        monitorTask.setPoliceUserIds(monitorTasks.getUserIds());
+        monitorTask.setPoliceUserIdsName(monitorTasks.getLoginNames());
         return monitorTask;
     }
 

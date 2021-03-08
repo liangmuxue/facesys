@@ -2,6 +2,7 @@ package com.ss.facesys.data.access.common.web;
 
 public class AlarmRecordsVO {
 
+    private Integer id;
     private String userId;
     private String name;
     private String cardId;
@@ -19,6 +20,14 @@ public class AlarmRecordsVO {
     private Integer currentPage;
     private Integer pageSize;
 
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public String getUserId() {
         return userId;

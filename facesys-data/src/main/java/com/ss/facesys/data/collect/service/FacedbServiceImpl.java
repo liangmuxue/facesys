@@ -6,6 +6,9 @@ import com.ss.enums.StatusEnum;
 import com.ss.exception.ServiceException;
 import com.ss.facesys.data.access.client.IAccessService;
 import com.ss.facesys.data.access.common.dto.FaceDbDTO;
+import com.ss.facesys.data.access.common.dto.MonitorTask;
+import com.ss.facesys.data.access.common.web.MonVO;
+import com.ss.facesys.data.access.mapper.MonMapper;
 import com.ss.facesys.data.baseinfo.common.util.EntityUtil;
 import com.ss.facesys.data.baseinfo.service.BaseServiceImpl;
 import com.ss.facesys.data.collect.client.IFacedbService;
@@ -17,8 +20,10 @@ import com.ss.facesys.data.collect.mapper.FacedbMapper;
 import com.ss.facesys.data.engine.common.dto.FacedbEngineDTO;
 import com.ss.facesys.data.engine.common.model.FacedbEngine;
 import com.ss.facesys.data.engine.mapper.FacedbEngineMapper;
+import com.ss.facesys.data.resource.common.dto.ImportCamera;
 import com.ss.facesys.util.StringUtils;
 import com.ss.facesys.util.constant.CommonConstant;
+import com.ss.facesys.util.em.MonitorStateEnum;
 import com.ss.facesys.util.em.ResourceType;
 import com.ss.facesys.util.em.ResultCode;
 import com.ss.spider.system.organization.mapper.OrganizationMapper;
@@ -62,6 +67,8 @@ public class FacedbServiceImpl extends BaseServiceImpl implements IFacedbService
     private UserResourceMapper userResourceMapper;
     @Resource
     private FacedbFaceMapper facedbFaceMapper;
+    @Resource
+    private MonMapper monMapper;
 
 
     /**
@@ -78,6 +85,27 @@ public class FacedbServiceImpl extends BaseServiceImpl implements IFacedbService
         }
         example.orderBy("updateTime").desc();
         List<Facedb> facedbs = facedbMapper.selectByExample(example);
+        MonVO monVO = new MonVO();
+        monVO.setEndTime(System.currentTimeMillis());
+        MonitorTask monitorTask = this.monMapper.selMonResource(monVO);
+        if (monitorTask != null && StringUtils.isNotBlank(monitorTask.getFacedbIds())) {
+            String[] facedbIds = monitorTask.getFacedbIds().split(",");
+            List<String> facedbIdList = Arrays.asList(facedbIds);
+            for (Facedb f : facedbs) {
+                if (facedbIdList.contains(String.valueOf(f.getId()))) {
+                    f.setMonitorState(MonitorStateEnum.YES.getCode());
+                    f.setMonitorStateName(MonitorStateEnum.YES.getName());
+                } else {
+                    f.setMonitorState(MonitorStateEnum.NO.getCode());
+                    f.setMonitorStateName(MonitorStateEnum.NO.getName());
+                }
+            }
+        } else {
+            for (Facedb f : facedbs) {
+                f.setMonitorState(MonitorStateEnum.NO.getCode());
+                f.setMonitorStateName(MonitorStateEnum.NO.getName());
+            }
+        }
         if (CollectionUtils.isNotEmpty(facedbs)) {
             for (Facedb db : facedbs) {
                 // 字典值处理：monitorState、type
@@ -106,9 +134,9 @@ public class FacedbServiceImpl extends BaseServiceImpl implements IFacedbService
         if (StringUtils.isNotBlank(facedb.getOrgId())) {
             example.and().andIn("orgId", getAllOrgNodes(facedb.getOrgId()));
         }
-        if (facedb.getMonitorState() != null) {
-            example.and().andEqualTo("monitorState", facedb.getMonitorState());
-        }
+//        if (facedb.getMonitorState() != null) {
+//            example.and().andEqualTo("monitorState", facedb.getMonitorState());
+//        }
         if (CollectionUtils.isNotEmpty(facedb.getIds())) {
             example.and().andIn("id", facedb.getIds());
         }
@@ -116,6 +144,39 @@ public class FacedbServiceImpl extends BaseServiceImpl implements IFacedbService
         // 初始化分页查询条件
         PageHelper.startPage(currentPage, pageSize);
         List<Facedb> facedbs = facedbMapper.selectByExample(example);
+        MonVO monVO = new MonVO();
+        monVO.setEndTime(System.currentTimeMillis());
+        MonitorTask monitorTask = this.monMapper.selMonResource(monVO);
+        if (monitorTask != null && StringUtils.isNotBlank(monitorTask.getFacedbIds())) {
+            String[] facedbIds = monitorTask.getFacedbIds().split(",");
+            List<String> facedbIdList = Arrays.asList(facedbIds);
+            for (Facedb f : facedbs) {
+                if (facedbIdList.contains(String.valueOf(f.getId()))) {
+                    f.setMonitorState(MonitorStateEnum.YES.getCode());
+                    f.setMonitorStateName(MonitorStateEnum.YES.getName());
+                } else {
+                    f.setMonitorState(MonitorStateEnum.NO.getCode());
+                    f.setMonitorStateName(MonitorStateEnum.NO.getName());
+                }
+            }
+        } else {
+            for (Facedb f : facedbs) {
+                f.setMonitorState(MonitorStateEnum.NO.getCode());
+                f.setMonitorStateName(MonitorStateEnum.NO.getName());
+            }
+        }
+        if (facedb.getMonitorState() != null) {
+            Iterator<Facedb> iterator = facedbs.iterator();
+            while (iterator.hasNext()) {
+                Facedb f = iterator.next();
+                if (facedb.getMonitorState() == MonitorStateEnum.NO.getCode() && f.getMonitorState() != MonitorStateEnum.NO.getCode()) {
+                    iterator.remove();
+                } else if (facedb.getMonitorState() == MonitorStateEnum.YES.getCode() && f.getMonitorState() != MonitorStateEnum.YES.getCode()) {
+                    iterator.remove();
+                }
+            }
+        }
+
         if (CollectionUtils.isNotEmpty(facedbs)) {
             Map<String, Organization> orgMap = getOrgMapByIds(facedbs.stream().map(Facedb::getOrgId).collect(Collectors.toList()));
             for (Facedb db : facedbs) {
@@ -256,10 +317,20 @@ public class FacedbServiceImpl extends BaseServiceImpl implements IFacedbService
     @Override
     public void deleteFacedb(Facedb facedb) throws ServiceException {
         // 校验底库是否布控
-        Facedb dbCheck = facedbMapper.selectByPrimaryKey(facedb);
-        if (dbCheck.getMonitorState() == CommonConstant.FACEDB_MONITOR_STATE_MONITORED) {
-            throw new ServiceException(ResultCode.FACEDB_DELETEFAIL_MONITOR);
+        MonVO monVO = new MonVO();
+        monVO.setEndTime(System.currentTimeMillis());
+        MonitorTask monitorTask = this.monMapper.selMonResource(monVO);
+        if (monitorTask != null && StringUtils.isNotBlank(monitorTask.getFacedbIds())) {
+            String[] facedbIds = monitorTask.getFacedbIds().split(",");
+            List<String> facedbIdList = Arrays.asList(facedbIds);
+            if (facedbIdList.contains(String.valueOf(facedb.getId()))) {
+                throw new ServiceException(ResultCode.FACEDB_DELETEFAIL_MONITOR);
+            }
         }
+//        Facedb dbCheck = facedbMapper.selectByPrimaryKey(facedb);
+//        if (dbCheck.getMonitorState() == CommonConstant.FACEDB_MONITOR_STATE_MONITORED) {
+//            throw new ServiceException(ResultCode.FACEDB_DELETEFAIL_MONITOR);
+//        }
         // 删除人像系统数据
         FacedbFace facedbFace = new FacedbFace();
         facedbFace.setFacedbId(facedb.getId());
@@ -357,9 +428,11 @@ public class FacedbServiceImpl extends BaseServiceImpl implements IFacedbService
             Example ffe = new Example(FacedbFace.class);
             ffe.createCriteria().andEqualTo("status", StatusEnum.EFFECT.getCode()).andEqualTo("facedbId", id);
             List<FacedbFace> facedbFaces = facedbFaceMapper.selectByExample(ffe);
-            if(facedbFaces.isEmpty()){return;}
-            for(FacedbFace f:facedbFaces){
-                facedbfaceService.update(f,null);
+            if (facedbFaces.isEmpty()) {
+                return;
+            }
+            for (FacedbFace f : facedbFaces) {
+                facedbfaceService.update(f, null);
             }
         } catch (ServiceException e) {
             throw e;

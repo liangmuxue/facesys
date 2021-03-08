@@ -12,10 +12,10 @@ public class HomePageBase {
     private Integer faceTotal;
     private Integer deviceTotal;
     private Integer captureTotal;
-    private Integer focusOnPeople;
+    private Integer focusOnPeopleTotal;
     private Integer alarmTotal;
     private Integer victoryTotal;
-    private String scenes;
+    private String sceneIds;
 
     public Integer getFaceTotal() {
         return faceTotal;
@@ -41,12 +41,12 @@ public class HomePageBase {
         this.captureTotal = captureTotal;
     }
 
-    public Integer getFocusOnPeople() {
-        return focusOnPeople;
+    public Integer getFocusOnPeopleTotal() {
+        return focusOnPeopleTotal;
     }
 
-    public void setFocusOnPeople(Integer focusOnPeople) {
-        this.focusOnPeople = focusOnPeople;
+    public void setFocusOnPeopleTotal(Integer focusOnPeopleTotal) {
+        this.focusOnPeopleTotal = focusOnPeopleTotal;
     }
 
     public Integer getAlarmTotal() {
@@ -65,11 +65,11 @@ public class HomePageBase {
         this.victoryTotal = victoryTotal;
     }
 
-    public String getScenes() {
-        return scenes;
+    public String getSceneIds() {
+        return sceneIds;
     }
 
-    public void setScenes(String scenes) {
-        this.scenes = scenes;
+    public void setSceneIds(String sceneIds) {
+        this.sceneIds = sceneIds;
     }
 }

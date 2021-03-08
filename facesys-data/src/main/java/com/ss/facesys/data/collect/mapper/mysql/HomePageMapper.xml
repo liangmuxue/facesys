@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ss.facesys.data.collect.mapper.HomePageMapper">
+
+	<!--查询场景下设备总数-->
+	<select id="deviceTotalByScene" resultType="com.ss.facesys.data.collect.common.model.HomePageScene" parameterType="com.ss.facesys.data.collect.common.model.HomePageScene">
+		select
+		count(c.state = 0) as deviceTotal,
+		s.id as sceneId,
+		s.scene as sceneName
+		from
+		cw_base_scene s
+		left join cw_base_camera c on c.sceneId = s.id and c.state = 0
+		<where>
+			<if test="sceneIds != null and sceneIds != ''">
+				FIND_IN_SET(s.id,#{sceneIds})
+			</if>
+		</where>
+		group by s.id
+	</select>
+
+	<!--查询场景下抓拍总数-->
+	<select id="captureTotalByScene" resultType="com.ss.facesys.data.collect.common.model.HomePageScene" parameterType="com.ss.facesys.data.collect.common.model.HomePageScene">
+		select
+		count(r.id != 0) as captureTotal,
+		s.id as sceneId,
+		s.scene as sceneName
+		from
+		cw_base_scene s
+		left join cw_base_camera c on c.sceneId = s.id
+		left join ss_snap_record r on r.device_id = c.id
+		<where>
+			<if test="sceneIds != null and sceneIds != ''">
+				FIND_IN_SET(s.id,#{sceneIds})
+			</if>
+		</where>
+		group by s.id
+	</select>
+
+</mapper>

@@ -26,26 +26,28 @@ public class MonVO {
     private Integer monitorType;
     @NotNull(message = "monitor.monitorProperty.empty", groups = {APIAddGroup.class, APIEditGroup.class})
     private Integer monitorProperty;
-    @NotNull(message = "monitor.alarmId .empty", groups = {APIAddGroup.class, APIEditGroup.class})
+    @NotNull(message = "monitor.alarmId.empty", groups = {APIAddGroup.class, APIEditGroup.class})
     private Integer alarmId;
-    @NotNull(message = "monitor.startTime .empty", groups = {APIAddGroup.class, APIEditGroup.class})
+    @NotNull(message = "monitor.startTime.empty", groups = {APIAddGroup.class, APIEditGroup.class})
     private Long startTime;
-    @NotNull(message = "monitor.endTime .empty", groups = {APIAddGroup.class, APIEditGroup.class})
+    @NotNull(message = "monitor.endTime.empty", groups = {APIAddGroup.class, APIEditGroup.class})
     private Long endTime;
-    @NotNull(message = "monitor.faceThreshold .empty", groups = {APIAddGroup.class, APIEditGroup.class})
+    @NotNull(message = "monitor.faceThreshold.empty", groups = {APIAddGroup.class, APIEditGroup.class})
     private Float faceThreshold;
     //@NotNull(message = "monitor.bodyThreshold .empty", groups = {APIAddGroup.class, APIEditGroup.class})
     //private Float bodyThreshold;
-    @NotNull(message = "monitor.state .empty", groups = {APIAddGroup.class, APIEditGroup.class,APIKeyStateGroup.class})
+    @NotNull(message = "monitor.state.empty", groups = {APIAddGroup.class, APIEditGroup.class,APIKeyStateGroup.class})
     private Integer state;
     private String remark;
     /*@NotNull(message = "monitor.cameraProductCodes.empty", groups = {APIAddGroup.class, APIEditGroup.class})
     private List<String> cameraProductCodes;*/
     private List<Device> devices;
+    @NotBlank(message = "monitor.facedbIds.empty", groups = {APIAddGroup.class, APIEditGroup.class})
     private String facedbIds;
     private String cameraIds;
     private String personcardDeviceIds;
     private List<String> cameraIdList;
+    private List<String> personcardDeviceIdList;
     private List<String> facedbIdList;
     private String userId;
     private String monitorCode;
@@ -417,6 +419,15 @@ public class MonVO {
     }
 
     public void setPersoncardDeviceIds(String personcardDeviceIds) {
+
         this.personcardDeviceIds = personcardDeviceIds;
+    }
+
+    public List<String> getPersoncardDeviceIdList() {
+        return personcardDeviceIdList;
+    }
+
+    public void setPersoncardDeviceIdList(List<String> personcardDeviceIdList) {
+        this.personcardDeviceIdList = personcardDeviceIdList;
     }
 }

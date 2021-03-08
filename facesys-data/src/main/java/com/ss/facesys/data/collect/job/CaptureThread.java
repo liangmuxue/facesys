@@ -15,21 +15,20 @@ import com.ss.facesys.data.resource.mapper.CameraMapper;
 import com.ss.facesys.util.PropertiesUtil;
 import com.ss.facesys.util.SpringUtil;
 import com.ss.facesys.util.StringUtils;
+import com.ss.facesys.util.constant.CacheConstant;
 import com.ss.facesys.util.constant.SfgoHttpConstant;
-import com.ss.facesys.util.em.AgeTypeEnum;
+import com.ss.facesys.util.em.AgeTypeRangeEnum;
 import com.ss.facesys.util.em.ResourceType;
 import com.ss.facesys.util.file.FilePropertiesUtil;
 import com.ss.facesys.util.jedis.JedisUtil;
 import com.ss.facesys.util.netty.MyWebSocket;
 import com.ss.spider.system.user.mapper.UserResourceMapper;
 import com.ss.spider.system.user.model.UserResource;
-import com.ss.tools.FileUtils;
 import com.ss.util.nasstorage.file.FileUtil;
 import com.ss.utils.BaseHttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -185,11 +184,11 @@ public class CaptureThread implements Runnable {
                     //年龄
                     if (faceFeatureJson.containsKey("age")) {
                         age = faceFeatureJson.getInteger("age");
-                        String[] ageA = AgeTypeEnum.AGEa.getCode().split("-");
-                        String[] ageB = AgeTypeEnum.AGEb.getCode().split("-");
-                        String[] ageC = AgeTypeEnum.AGEc.getCode().split("-");
-                        String[] ageD = AgeTypeEnum.AGEd.getCode().split("-");
-                        String[] ageE = AgeTypeEnum.AGEe.getCode().split("-");
+                        String[] ageA = AgeTypeRangeEnum.AGEa.getCode().split("-");
+                        String[] ageB = AgeTypeRangeEnum.AGEb.getCode().split("-");
+                        String[] ageC = AgeTypeRangeEnum.AGEc.getCode().split("-");
+                        String[] ageD = AgeTypeRangeEnum.AGEd.getCode().split("-");
+                        String[] ageE = AgeTypeRangeEnum.AGEe.getCode().split("-");
                         if (age > Integer.parseInt(ageA[0]) && age < Integer.parseInt(ageA[1])) {
                             ageType = 1;
                         } else if (age > Integer.parseInt(ageB[0]) && age < Integer.parseInt(ageB[1])) {
@@ -362,6 +361,10 @@ public class CaptureThread implements Runnable {
                 }
                 List<Integer> allResourceIds = allResources.stream().map(UserResource::getResourceId).collect(Collectors.toList());
                 if (!allResourceIds.contains(snapRecord.getDeviceId())) {
+                    continue;
+                }
+                String deviceIds = String.valueOf(this.jedisUtil.hget(CacheConstant.SELECTED_DEVICE, key));
+                if (StringUtils.isBlank(deviceIds) || !deviceIds.contains(snapRecord.getDeviceId().toString())) {
                     continue;
                 }
                 MyWebSocket.userIdMap.get(key).sendText(JsonUtils.getFastjsonFromObject(transfer));

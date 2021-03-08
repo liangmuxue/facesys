@@ -25,7 +25,7 @@ public interface IVictoryService {
    * 账户树查询
    * @return
    */
-  List<Organization> treeData();
+  List<Organization> treeData(VictoryVO victoryVO);
 
   /**
    * 添加战果汇总

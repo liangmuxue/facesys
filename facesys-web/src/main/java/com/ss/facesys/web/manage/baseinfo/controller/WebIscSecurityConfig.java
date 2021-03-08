@@ -32,6 +32,7 @@ public class WebIscSecurityConfig extends WebMvcConfigurerAdapter {
         addInterceptor.excludePathPatterns("/role/resource/list");
         addInterceptor.excludePathPatterns("/user/role/list");
         addInterceptor.excludePathPatterns("/user/get");
+        addInterceptor.excludePathPatterns("/syspara/infoMap");
         addInterceptor.addPathPatterns("/**");
     }
 
