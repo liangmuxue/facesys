@@ -2,6 +2,7 @@ package com.ss.facesys.web.app.recog.query;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.StringJoiner;
 
@@ -18,6 +19,10 @@ public class RecogQuery implements Serializable {
     private String faceA;
     @NotBlank(message = "{recog.faceB.empty}")
     private String faceB;
+    @NotNull(message = "{recog.imgType.empty}")
+    private Integer typeA;
+    @NotNull(message = "{recog.imgType.empty}")
+    private Integer typeB;
 
 
     public String getFaceA() {
@@ -34,6 +39,22 @@ public class RecogQuery implements Serializable {
 
     public void setFaceB(String faceB) {
         this.faceB = faceB;
+    }
+
+    public Integer getTypeA() {
+        return typeA;
+    }
+
+    public void setTypeA(Integer typeA) {
+        this.typeA = typeA;
+    }
+
+    public Integer getTypeB() {
+        return typeB;
+    }
+
+    public void setTypeB(Integer typeB) {
+        this.typeB = typeB;
     }
 
     @Override
