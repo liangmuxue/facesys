@@ -81,7 +81,7 @@
             <if test="gender != null">
                 AND gender = #{gender}
             </if>
-            <if test="ageType != null">
+            <if test="ageType != null and ageType != -1">
                 AND age_type = #{ageType}
             </if>
             <if test="startAge != null">
