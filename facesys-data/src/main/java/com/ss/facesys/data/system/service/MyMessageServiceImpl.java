@@ -66,13 +66,13 @@ public class MyMessageServiceImpl implements IMyMessageService {
         Example example = new Example(AlarmMessage.class);
         Example.Criteria criteria = example.createCriteria();
         if (StringUtil.isNotEmpty(myMessageQuery.getKeyword())) {
-            criteria.andEqualTo("content", myMessageQuery.getKeyword());
+            criteria.andLike("content", "%" + myMessageQuery.getKeyword() + "%");
         }
         if (myMessageQuery.getAlarmType() != null && !"".equals(myMessageQuery.getAlarmType()) && !myMessageQuery.getAlarmType().equals(0)) {
-            criteria.andEqualTo("alarmType", myMessageQuery.getKeyword());
+            criteria.andEqualTo("alarmType", myMessageQuery.getAlarmType());
         }
         if (myMessageQuery.getAlarmGrade() != null && !"".equals(myMessageQuery.getAlarmGrade()) && !myMessageQuery.getAlarmGrade().equals(0)) {
-            criteria.andEqualTo("alarmGrade", myMessageQuery.getKeyword());
+            criteria.andEqualTo("alarmGrade", myMessageQuery.getAlarmGrade());
         }
         if (myMessageQuery.getStartTime()!=null && !"".equals(myMessageQuery.getStartTime()) &&
                 myMessageQuery.getEndTime()!=null && !"".equals(myMessageQuery.getEndTime())) {
