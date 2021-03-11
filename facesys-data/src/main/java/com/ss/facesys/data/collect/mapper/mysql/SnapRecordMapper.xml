@@ -37,4 +37,60 @@
             </if>
         </where>
     </select>
+
+    <select id="page" parameterType="com.ss.facesys.data.collect.common.web.SnapRecordVO" resultType="com.ss.facesys.data.collect.common.model.SnapRecord">
+        select
+        id,
+        capture_url as captureUrl,
+        panorama_url as panoramaUrl,
+        capture_type as captureType,
+        capture_time as captureTime,
+        device_id as deviceId,
+        device_name as deviceName,
+        device_type as deviceType,
+        glasses,
+        sunglasses,
+        mask,
+        minority,
+        gender,
+        age,
+        age_type as ageType
+        from ss_snap_record main
+        <where>
+            <if test="startTime != null">
+                <![CDATA[ AND capture_time >= #{startTime} ]]>
+            </if>
+            <if test="endTime != null">
+                <![CDATA[ AND capture_time <= #{endTime} ]]>
+            </if>
+            <if test="deviceIds != null and deviceIds != ''">
+                AND FIND_IN_SET(device_id,#{deviceIds})
+            </if>
+            <if test="glasses != null">
+                AND glasses = #{glasses}
+            </if>
+            <if test="sunglasses != null">
+                AND sunglasses = #{sunglasses}
+            </if>
+            <if test="mask != null">
+                AND mask = #{mask}
+            </if>
+            <if test="minority != null">
+                AND minority = #{minority}
+            </if>
+            <if test="gender != null">
+                AND gender = #{gender}
+            </if>
+            <if test="ageType != null and ageType != -1">
+                AND age_type = #{ageType}
+            </if>
+            <if test="startAge != null">
+                <![CDATA[ AND age >= #{startAge} ]]>
+            </if>
+            <if test="endAge != null">
+                <![CDATA[ AND age <= #{endAge} ]]>
+            </if>
+        </where>
+        order by capture_time desc
+    </select>
 </mapper>

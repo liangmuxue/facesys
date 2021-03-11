@@ -273,7 +273,7 @@ public class CameraServiceImpl extends BaseServiceImpl implements ICameraService
         MonVO monVO = new MonVO();
         monVO.setEndTime(System.currentTimeMillis());
         MonitorTask monitorTask = this.monMapper.selMonResource(monVO);
-        if (StringUtils.isNotBlank(monitorTask.getCameraIds())) {
+        if (monitorTask != null && StringUtils.isNotBlank(monitorTask.getCameraIds())) {
             String[] cameraIds = monitorTask.getCameraIds().split(",");
             List<String> cameraIdList = Arrays.asList(cameraIds);
             if(cameraIdList.contains(String.valueOf(camera.getId()))){
@@ -336,7 +336,7 @@ public class CameraServiceImpl extends BaseServiceImpl implements ICameraService
         MonVO monVO = new MonVO();
         monVO.setEndTime(System.currentTimeMillis());
         MonitorTask monitorTask = this.monMapper.selMonResource(monVO);
-        if (StringUtils.isNotBlank(monitorTask.getCameraIds())) {
+        if (monitorTask != null && StringUtils.isNotBlank(monitorTask.getCameraIds())) {
             String[] cameraIds = monitorTask.getCameraIds().split(",");
             List<String> cameraIdList = Arrays.asList(cameraIds);
             for (ImportCamera importCamera: findAllCameras) {

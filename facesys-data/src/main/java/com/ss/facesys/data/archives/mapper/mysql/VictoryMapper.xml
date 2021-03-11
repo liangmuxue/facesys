@@ -20,7 +20,9 @@
 			v.picture_three as pictureThree,
 			v.picture_four as pictureFour,
 			v.picture_five as pictureFive,
-			e.enumName as caseTypeName
+			e.enumName as caseTypeName,
+			v.create_time as createTime,
+			v.update_time as updateTime
 		FROM
 			cw_base_victory v
 			LEFT JOIN cw_base_enum e ON e.enumType = 'CASE_TYPE' AND v.case_type = e.enumValue
@@ -168,6 +170,6 @@
 	</select>
 	<!--查询战果排行-->
 	<select id="findRank" resultType="com.ss.facesys.data.archives.common.model.CasePolice">
-		SELECT COUNT(distinct victory_id) as count, user_name as userName, picture_url as pictureUrl FROM cw_base_case_police GROUP BY user_name ORDER BY COUNT(distinct victory_id)
+		SELECT COUNT(distinct victory_id) as count, user_name as userName, picture_url as pictureUrl FROM cw_base_case_police GROUP BY user_name ORDER BY COUNT(distinct victory_id) DESC
 	</select>
 </mapper>

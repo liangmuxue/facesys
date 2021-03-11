@@ -293,8 +293,8 @@ public class FacedbfaceServiceImpl extends BaseServiceImpl implements IFacedbfac
                 throw new ServiceException(ResultCode.FACEDBFACE_FACESYS_DELETE_FAIL);
             }
             // 删除汇聚平台数据
-            List<String> faceIdList = deleteList.stream().map(FacedbFace::getFaceId).collect(Collectors.toList());
-            deleteVplatFacedbFace(faceIdList);
+//            List<String> faceIdList = deleteList.stream().map(FacedbFace::getFaceId).collect(Collectors.toList());
+//            deleteVplatFacedbFace(faceIdList);
         }
     }
 
