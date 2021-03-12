@@ -45,6 +45,7 @@ public class AlarmRecord {
     private Float qualityScore;
     private Integer age;
     private Integer ageGroup;
+    private String ageGroupName;
     private Integer gender;
     private Integer maskState;
     private Integer glassesState;
@@ -603,5 +604,13 @@ public class AlarmRecord {
 
     public void setCnt(Integer cnt) {
         this.cnt = cnt;
+    }
+
+    public String getAgeGroupName() {
+        return ageGroupName;
+    }
+
+    public void setAgeGroupName(String ageGroupName) {
+        this.ageGroupName = ageGroupName;
     }
 }

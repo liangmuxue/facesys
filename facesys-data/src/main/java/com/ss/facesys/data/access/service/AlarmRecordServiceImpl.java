@@ -25,10 +25,7 @@ import com.ss.facesys.util.PropertiesUtil;
 import com.ss.facesys.util.StringUtils;
 import com.ss.facesys.util.constant.CacheConstant;
 import com.ss.facesys.util.constant.SfgoHttpConstant;
-import com.ss.facesys.util.em.AgeTypeEnum;
-import com.ss.facesys.util.em.Enums;
-import com.ss.facesys.util.em.MonitorTypeEnum;
-import com.ss.facesys.util.em.ResourceType;
+import com.ss.facesys.util.em.*;
 import com.ss.facesys.util.file.FilePropertiesUtil;
 import com.ss.facesys.util.jedis.JedisUtil;
 import com.ss.facesys.util.netty.MyWebSocket;
@@ -305,7 +302,29 @@ public class AlarmRecordServiceImpl {
                                             } catch (ParseException e) {
                                                 e.printStackTrace();
                                             }
-                                            alarmRecord.setAge(DateUtils.getAgeByBirth(bithday));
+                                            int age = DateUtils.getAgeByBirth(bithday);
+                                            String[] ageA = AgeTypeRangeEnum.AGEa.getCode().split("-");
+                                            String[] ageB = AgeTypeRangeEnum.AGEb.getCode().split("-");
+                                            String[] ageC = AgeTypeRangeEnum.AGEc.getCode().split("-");
+                                            String[] ageD = AgeTypeRangeEnum.AGEd.getCode().split("-");
+                                            String[] ageE = AgeTypeRangeEnum.AGEe.getCode().split("-");
+                                            if (age > Integer.parseInt(ageA[0]) && age < Integer.parseInt(ageA[1])) {
+                                                alarmRecord.setAgeGroupName(AgeTypeRangeEnum.AGEa.getName());
+                                                alarmRecord.setAgeGroup(AgeTypeEnum.CHILDREN.getCode());
+                                            } else if (age > Integer.parseInt(ageB[0]) && age < Integer.parseInt(ageB[1])) {
+                                                alarmRecord.setAgeGroupName(AgeTypeRangeEnum.AGEb.getName());
+                                                alarmRecord.setAgeGroup(AgeTypeEnum.JUVENILE.getCode());
+                                            } else if (age > Integer.parseInt(ageC[0]) && age < Integer.parseInt(ageC[1])) {
+                                                alarmRecord.setAgeGroupName(AgeTypeRangeEnum.AGEc.getName());
+                                                alarmRecord.setAgeGroup(AgeTypeEnum.YOUTH.getCode());
+                                            } else if (age > Integer.parseInt(ageD[0]) && age < Integer.parseInt(ageD[1])) {
+                                                alarmRecord.setAgeGroupName(AgeTypeRangeEnum.AGEd.getName());
+                                                alarmRecord.setAgeGroup(AgeTypeEnum.MIDDLE.getCode());
+                                            } else if (age > Integer.parseInt(ageE[0]) && age < Integer.parseInt(ageE[1])) {
+                                                alarmRecord.setAgeGroupName(AgeTypeRangeEnum.AGEe.getName());
+                                                alarmRecord.setAgeGroup(AgeTypeEnum.OLD.getCode());
+                                            }
+                                            alarmRecord.setAge(age);
                                         } else {
                                             alarmRecord.setAge(null);
                                         }
