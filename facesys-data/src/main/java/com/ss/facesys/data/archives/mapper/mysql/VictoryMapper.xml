@@ -30,10 +30,10 @@
 		<where>
 			v.status = 1
 			<if test="beginTime != null and beginTime != ''">
-				AND  <![CDATA[v.solve_time >= #{beginTime}]]>
+				AND  <![CDATA[v.create_time >= #{beginTime}]]>
 			</if>
 			<if test="endTime != null and endTime != ''">
-				AND  <![CDATA[v.solve_time <= #{endTime}]]>
+				AND  <![CDATA[v.create_time <= #{endTime}]]>
 			</if>
 			<if test="victoryName != null and victoryName != ''">
 				AND v.victory_name like concat('%', #{victoryName,jdbcType=VARCHAR},'%')
@@ -170,6 +170,6 @@
 	</select>
 	<!--查询战果排行-->
 	<select id="findRank" resultType="com.ss.facesys.data.archives.common.model.CasePolice">
-		SELECT COUNT(distinct victory_id) as count, user_name as userName, picture_url as pictureUrl FROM cw_base_case_police GROUP BY user_name ORDER BY COUNT(distinct victory_id) DESC
+		SELECT COUNT(distinct victory_id) as count, user_name as userName, picture_url as pictureUrl FROM cw_base_case_police GROUP BY user_name ORDER BY COUNT(distinct victory_id) DESC LIMIT 0, 2
 	</select>
 </mapper>
