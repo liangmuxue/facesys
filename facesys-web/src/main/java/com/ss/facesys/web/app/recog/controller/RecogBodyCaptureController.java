@@ -129,7 +129,7 @@ public class RecogBodyCaptureController extends BaseController {
                     }
                 });
             }
-            resp.setData(assemblePage(filterBodyCondition(resultList, captureQuery), null, null));
+            resp.setData(assemblePage(filterBodyCondition(resultList, captureQuery), captureQuery.getCurrentPage(), captureQuery.getPageSize()));
         } catch (ServiceException e) {
             this.logger.error("1:N 抓拍库检索失败，错误码：{}，异常信息：{}", e.getCode(), e.getMessage(), e);
             return createFailResponse(e);

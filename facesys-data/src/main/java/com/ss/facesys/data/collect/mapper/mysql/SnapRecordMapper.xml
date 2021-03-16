@@ -57,6 +57,9 @@
         age_type as ageType
         from ss_snap_record main
         <where>
+            <if test="captureType != null">
+                AND capture_type = #{captureType}
+            </if>
             <if test="startTime != null">
                 <![CDATA[ AND capture_time >= #{startTime} ]]>
             </if>
