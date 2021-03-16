@@ -117,7 +117,7 @@ public class AlarmRecordServiceImpl {
                         e.printStackTrace();
                     }
                     facedbMap.put("img",base64ByUrl);
-                    facedbMap.put("topN", 1);
+                    facedbMap.put("topN", PropertiesUtil.getTopN());
                     Float[] thresholdScore = new Float[2];
                     thresholdScore[0] = monitorTask.getFaceThreshold() / 100;
                     thresholdScore[1] = 1F;
@@ -130,77 +130,26 @@ public class AlarmRecordServiceImpl {
                         if (monitorTask.getMonitorType().equals(MonitorTypeEnum.STRANGER.getCode())) {
                             if (!resObj.containsKey("faces")) {
                                 //不存在即报警
-                                AlarmRecord alarmRecord = new AlarmRecord();
-                                //报警配置信息
-                                alarmRecord.setAlarmId(monitorTask.getAlarmId());
-                                alarmRecord.setAlarmName(monitorTask.getAlarmName());
-                                alarmRecord.setTipFlag(monitorTask.getTipFlag());
-                                alarmRecord.setVoiceFlag(monitorTask.getVoiceFlag());
-                                alarmRecord.setColorCode(monitorTask.getColorCode());
-                                alarmRecord.setVoiceUrl(monitorTask.getVoiceUrl());
-                                //布控信息
-                                alarmRecord.setMonitorUserName(monitorTask.getMonitorUserName());
-                                alarmRecord.setMonitorId(monitorTask.getId());
-                                alarmRecord.setMonitorCode(monitorTask.getMonitorCode());
-                                alarmRecord.setMonitorName(monitorTask.getMonitorName());
-                                alarmRecord.setMonitorType(monitorTask.getMonitorType());
-                                alarmRecord.setMonitorProperty(monitorTask.getMonitorProperty());
-                                alarmRecord.setTopn(1);
-                                alarmRecord.setAlarmScore(monitorTask.getFaceThreshold() / 100);
-                                alarmRecord.setCaptureId(String.valueOf(snapRecord.getId()));
-                                alarmRecord.setCaptureTime(snapRecord.getCaptureTime());
-                                alarmRecord.setAlarmTime(System.currentTimeMillis());
-                                alarmRecord.setDeviceType(snapRecord.getDeviceType());
-                                //查询设备相关信息
-                                if (alarmRecord.getDeviceType() == ResourceType.CAMERA.getValue()) {
-                                    //相机设备
-                                    Camera cameraMess = new Camera();
-                                    cameraMess.setId(snapRecord.getDeviceId());
-                                    Camera cameraMesss = cameraMapper.selectOne(cameraMess);
-                                    alarmRecord.setDeviceId(cameraMesss.getId());
-                                    alarmRecord.setDeviceNo(cameraMesss.getCameraId());
-                                    alarmRecord.setDeviceCode(cameraMesss.getProductCode());
-                                    alarmRecord.setDeviceType(ResourceType.CAMERA.getValue());
-                                    alarmRecord.setDeviceName(cameraMesss.getCameraName());
-                                    //设备地址暂存
-                                    alarmRecord.setDeviceAddress(cameraMesss.getInstallAdd());
-                                    alarmRecord.setLng(String.valueOf(cameraMesss.getLon()));
-                                    alarmRecord.setLat(String.valueOf(cameraMesss.getLat()));
-                                    alarmRecord.setPanoramaId(String.valueOf(snapRecord.getId()));
-                                    alarmRecord.setCaptureUrlFull(FilePropertiesUtil.getHttpUrl() + snapRecord.getCaptureUrl());
-                                    if (StringUtils.isNotBlank(snapRecord.getPanoramaUrl())) {
-                                        alarmRecord.setPanoramaUrlFull(FilePropertiesUtil.getHttpUrl() + snapRecord.getPanoramaUrl());
-                                    } else {
-                                        alarmRecord.setPanoramaUrlFull(null);
+                                faceStrangerAlarm(monitorTask,snapRecord);
+                            }
+                            if(resObj.containsKey("faces")){
+                                //sfgo比对成功，校验业务层是否删除
+                                JSONArray faceData = (JSONArray) resObj.get("faces");
+                                if (faceData != null) {
+                                    //循环取值
+                                    List<String> userList = new ArrayList<>();
+                                    for (int i = 0; i < faceData.size(); i++) {
+                                        JSONObject json = faceData.getJSONObject(i);
+                                        userList.add(json.getString("userId"));
+                                    }
+                                    Example example1 = new Example(FacedbFace.class);
+                                    example1.createCriteria().andEqualTo("status",1).andIn("faceId",userList);
+                                    List<FacedbFace> facedbFaces = facedbFaceMapper.selectByExample(example1);
+                                    if(CollectionUtils.isEmpty(facedbFaces)){
+                                        //业务层无此人，陌生人报警
+                                        faceStrangerAlarm(monitorTask,snapRecord);
                                     }
                                 }
-                                if (alarmRecord.getDeviceType() == ResourceType.PERSONCARD.getValue()) {
-                                    //人证设备
-                                    DevicePersoncard devicePersoncard = new DevicePersoncard();
-                                    devicePersoncard.setId(snapRecord.getDeviceId());
-                                    DevicePersoncard deviceMess = devicePersoncardMapper.selectOne(devicePersoncard);
-                                    alarmRecord.setDeviceId(deviceMess.getId());
-                                    alarmRecord.setDeviceNo(deviceMess.getDeviceId());
-                                    alarmRecord.setDeviceCode(deviceMess.getDeviceCode());
-                                    alarmRecord.setDeviceType(ResourceType.PERSONCARD.getValue());
-                                    alarmRecord.setDeviceName(deviceMess.getDeviceName());
-                                    alarmRecord.setLng(String.valueOf(deviceMess.getLon()));
-                                    alarmRecord.setLat(String.valueOf(deviceMess.getLat()));
-                                }
-                                //获取特征值
-                                alarmRecord.setAge(snapRecord.getAge());
-                                alarmRecord.setGender(snapRecord.getGender());
-                                alarmRecord.setMaskState(snapRecord.getMask());
-                                alarmRecord.setGlassesState(snapRecord.getGlasses());
-                                alarmRecord.setSunGlassesState(snapRecord.getSunglasses());
-                                alarmRecord.setMinority(snapRecord.getMinority());
-                                //获取备注
-                                alarmRecord.setRemark(monitorTask.getRemark());
-                                //插入陌生人报警记录
-                                alarmRecord.setCreateTime(System.currentTimeMillis());
-                                alarmRecordMapper.insertStrangerRecord(alarmRecord);
-                                logger.info("人脸照下陌生人报警记录插入成功");
-                                transferData(alarmRecord);
                             }
                         }
                         //判断任务类型为黑名单报警
@@ -209,148 +158,19 @@ public class AlarmRecordServiceImpl {
                                 //存在即报警
                                 JSONArray faceData = (JSONArray) resObj.get("faces");
                                 if (faceData != null) {
-                                    JSONObject jsonObject = faceData.getJSONObject(0);
-                                    AlarmRecord alarmRecord = new AlarmRecord();
-                                    //报警配置信息
-                                    alarmRecord.setAlarmId(monitorTask.getAlarmId());
-                                    alarmRecord.setAlarmName(monitorTask.getAlarmName());
-                                    alarmRecord.setTipFlag(monitorTask.getTipFlag());
-                                    alarmRecord.setVoiceFlag(monitorTask.getVoiceFlag());
-                                    alarmRecord.setColorCode(monitorTask.getColorCode());
-                                    alarmRecord.setVoiceUrl(monitorTask.getVoiceUrl());
-                                    //布控信息
-                                    alarmRecord.setMonitorUserName(monitorTask.getMonitorUserName());
-                                    alarmRecord.setMonitorId(monitorTask.getId());
-                                    alarmRecord.setMonitorCode(monitorTask.getMonitorCode());
-                                    alarmRecord.setMonitorName(monitorTask.getMonitorName());
-                                    alarmRecord.setMonitorType(monitorTask.getMonitorType());
-                                    alarmRecord.setMonitorProperty(monitorTask.getMonitorProperty());
-                                    alarmRecord.setTopn(1);
-                                    alarmRecord.setAlarmScore(monitorTask.getFaceThreshold() / 100);
-                                    alarmRecord.setCaptureId(String.valueOf(snapRecord.getId()));
-                                    alarmRecord.setCaptureTime(snapRecord.getCaptureTime());
-                                    alarmRecord.setAlarmTime(System.currentTimeMillis());
-                                    //查询设备相关信息
-                                    if (snapRecord.getDeviceType().equals(ResourceType.CAMERA.getValue())) {
-                                        //相机设备
-                                        Camera cameraMess = new Camera();
-                                        cameraMess.setId(snapRecord.getDeviceId());
-                                        Camera cameraMesss = cameraMapper.selectOne(cameraMess);
-                                        alarmRecord.setDeviceId(cameraMesss.getId());
-                                        alarmRecord.setDeviceNo(cameraMesss.getCameraId());
-                                        alarmRecord.setDeviceCode(cameraMesss.getProductCode());
-                                        alarmRecord.setDeviceType(ResourceType.CAMERA.getValue());
-                                        alarmRecord.setDeviceName(cameraMesss.getCameraName());
-                                        //设备地址暂存
-                                        alarmRecord.setDeviceAddress(cameraMesss.getInstallAdd());
-                                        alarmRecord.setLng(String.valueOf(cameraMesss.getLon()));
-                                        alarmRecord.setLat(String.valueOf(cameraMesss.getLat()));
-                                        alarmRecord.setPanoramaId(String.valueOf(snapRecord.getId()));
-                                        alarmRecord.setCaptureUrlFull(FilePropertiesUtil.getHttpUrl() + snapRecord.getCaptureUrl());
-                                        if (StringUtils.isNotBlank(snapRecord.getPanoramaUrl())) {
-                                            alarmRecord.setPanoramaUrlFull(FilePropertiesUtil.getHttpUrl() + snapRecord.getPanoramaUrl());
-                                        } else {
-                                            alarmRecord.setPanoramaUrlFull(null);
-                                        }
-                                    }
-                                    if (snapRecord.getDeviceType().equals(ResourceType.PERSONCARD.getValue())) {
-                                        //人证设备
-                                        DevicePersoncard devicePersoncard = new DevicePersoncard();
-                                        devicePersoncard.setId(snapRecord.getDeviceId());
-                                        DevicePersoncard deviceMess = devicePersoncardMapper.selectOne(devicePersoncard);
-                                        alarmRecord.setDeviceId(deviceMess.getId());
-                                        alarmRecord.setDeviceNo(deviceMess.getDeviceId());
-                                        alarmRecord.setDeviceCode(deviceMess.getDeviceCode());
-                                        alarmRecord.setDeviceType(ResourceType.PERSONCARD.getValue());
-                                        alarmRecord.setDeviceName(deviceMess.getDeviceName());
-                                        alarmRecord.setLng(String.valueOf(deviceMess.getLon()));
-                                        alarmRecord.setLat(String.valueOf(deviceMess.getLat()));
-                                    }
-                                    //获取特征值
-                                    alarmRecord.setMaskState(snapRecord.getMask());
-                                    alarmRecord.setGlassesState(snapRecord.getGlasses());
-                                    alarmRecord.setSunGlassesState(snapRecord.getSunglasses());
-                                    alarmRecord.setMinority(snapRecord.getMinority());
-                                    //获取备注
-                                    alarmRecord.setRemark(monitorTask.getRemark());
-                                    //查询人员信息
-                                    if (jsonObject.containsKey("userId")) {
+                                    //循环取值
+                                    for (int i = 0; i < faceData.size(); i++) {
+                                        JSONObject jsonObject = faceData.getJSONObject(i);
                                         FacedbFace facedbFace = new FacedbFace();
+                                        facedbFace.setStatus(1);
                                         facedbFace.setFaceId(jsonObject.getString("userId"));
-                                        FacedbFace facedbFaceMess = facedbFaceMapper.selectOne(facedbFace);
-                                        alarmRecord.setBirthday(facedbFaceMess.getBirthday());
-                                        //获取民族名
-                                        if (facedbFaceMess.getNation() != null) {
-                                            BaseEnums baseEnums = new BaseEnums();
-                                            baseEnums.setEnumType("NATION");
-                                            baseEnums.setEnumValue(facedbFaceMess.getNation());
-                                            BaseEnums baseEnumss = enumMapper.selectOne(baseEnums);
-                                            alarmRecord.setCardNation(baseEnumss.getEnumName());
-                                        } else {
-                                            alarmRecord.setCardNation(null);
-                                        }
-                                        alarmRecord.setCardId(facedbFaceMess.getCardId());
-                                        alarmRecord.setName(facedbFaceMess.getName());
-                                        alarmRecord.setCardGender(facedbFaceMess.getGender());
-                                        alarmRecord.setGender(facedbFaceMess.getGender());
-                                        //获取年龄
-                                        if (StringUtils.isNotBlank(facedbFaceMess.getBirthday())) {
-                                            SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
-                                            Date bithday = null;
-                                            try {
-                                                bithday = format.parse(facedbFaceMess.getBirthday());
-                                            } catch (ParseException e) {
-                                                e.printStackTrace();
-                                            }
-                                            int age = DateUtils.getAgeByBirth(bithday);
-                                            String[] ageA = AgeTypeRangeEnum.AGEa.getCode().split("-");
-                                            String[] ageB = AgeTypeRangeEnum.AGEb.getCode().split("-");
-                                            String[] ageC = AgeTypeRangeEnum.AGEc.getCode().split("-");
-                                            String[] ageD = AgeTypeRangeEnum.AGEd.getCode().split("-");
-                                            String[] ageE = AgeTypeRangeEnum.AGEe.getCode().split("-");
-                                            if (age > Integer.parseInt(ageA[0]) && age < Integer.parseInt(ageA[1])) {
-                                                alarmRecord.setAgeGroupName(AgeTypeRangeEnum.AGEa.getName());
-                                                alarmRecord.setAgeGroup(AgeTypeEnum.CHILDREN.getCode());
-                                            } else if (age > Integer.parseInt(ageB[0]) && age < Integer.parseInt(ageB[1])) {
-                                                alarmRecord.setAgeGroupName(AgeTypeRangeEnum.AGEb.getName());
-                                                alarmRecord.setAgeGroup(AgeTypeEnum.JUVENILE.getCode());
-                                            } else if (age > Integer.parseInt(ageC[0]) && age < Integer.parseInt(ageC[1])) {
-                                                alarmRecord.setAgeGroupName(AgeTypeRangeEnum.AGEc.getName());
-                                                alarmRecord.setAgeGroup(AgeTypeEnum.YOUTH.getCode());
-                                            } else if (age > Integer.parseInt(ageD[0]) && age < Integer.parseInt(ageD[1])) {
-                                                alarmRecord.setAgeGroupName(AgeTypeRangeEnum.AGEd.getName());
-                                                alarmRecord.setAgeGroup(AgeTypeEnum.MIDDLE.getCode());
-                                            } else if (age > Integer.parseInt(ageE[0]) && age < Integer.parseInt(ageE[1])) {
-                                                alarmRecord.setAgeGroupName(AgeTypeRangeEnum.AGEe.getName());
-                                                alarmRecord.setAgeGroup(AgeTypeEnum.OLD.getCode());
-                                            }
-                                            alarmRecord.setAge(age);
-                                        } else {
-                                            alarmRecord.setAge(null);
-                                        }
-                                        alarmRecord.setRegisterUrl(FilePropertiesUtil.getHttpUrl() + facedbFaceMess.getFacePath());
-                                        alarmRecord.setRegId(facedbFaceMess.getFaceId());
-                                        //获取库信息
-                                        if (jsonObject.containsKey("groupId")) {
-                                            alarmRecord.setRegdb(jsonObject.getString("groupId"));
-                                            //查询库名
-                                            Facedb facedb = new Facedb();
-                                            facedb.setFacedbId(jsonObject.getString("groupId"));
-                                            Facedb facedbMess = facedbMapper.selectOne(facedb);
-                                            alarmRecord.setRegdbName(facedbMess.getName());
-                                            alarmRecord.setRegdbId(facedbMess.getId());
-                                            alarmRecord.setRegdbType(facedbMess.getType());
+                                        FacedbFace facedbFace1 = facedbFaceMapper.selectOne(facedbFace);
+                                        if(facedbFace1 != null){
+                                            //业务层未删除此人时报警
+                                            faceBlackAlarm(monitorTask,snapRecord,jsonObject);
+                                            break;
                                         }
                                     }
-                                    //获取对比值
-                                    if (jsonObject.containsKey("score")) {
-                                        alarmRecord.setScore(jsonObject.getFloat("score") / 100);
-                                    }
-                                    //插入黑名单报警记录
-                                    alarmRecord.setCreateTime(System.currentTimeMillis());
-                                    alarmRecordMapper.insertBlackListRecord(alarmRecord);
-                                    logger.info("人脸照下黑名单报警记录插入成功");
-                                    transferData(alarmRecord);
                                 }
                             }
                         }
@@ -358,6 +178,235 @@ public class AlarmRecordServiceImpl {
                 }
             }
         }
+    }
+
+    /**
+     * 人脸陌生人报警
+     * @param monitorTask
+     * @param snapRecord
+     */
+    private void faceStrangerAlarm(MonitorTask monitorTask, SnapRecord snapRecord){
+        AlarmRecord alarmRecord = new AlarmRecord();
+        //报警配置信息
+        alarmRecord.setAlarmId(monitorTask.getAlarmId());
+        alarmRecord.setAlarmName(monitorTask.getAlarmName());
+        alarmRecord.setTipFlag(monitorTask.getTipFlag());
+        alarmRecord.setVoiceFlag(monitorTask.getVoiceFlag());
+        alarmRecord.setColorCode(monitorTask.getColorCode());
+        alarmRecord.setVoiceUrl(monitorTask.getVoiceUrl());
+        //布控信息
+        alarmRecord.setMonitorUserName(monitorTask.getMonitorUserName());
+        alarmRecord.setMonitorId(monitorTask.getId());
+        alarmRecord.setMonitorCode(monitorTask.getMonitorCode());
+        alarmRecord.setMonitorName(monitorTask.getMonitorName());
+        alarmRecord.setMonitorType(monitorTask.getMonitorType());
+        alarmRecord.setMonitorProperty(monitorTask.getMonitorProperty());
+        alarmRecord.setTopn(PropertiesUtil.getTopN());
+        alarmRecord.setAlarmScore(monitorTask.getFaceThreshold() / 100);
+        alarmRecord.setCaptureId(String.valueOf(snapRecord.getId()));
+        alarmRecord.setCaptureTime(snapRecord.getCaptureTime());
+        alarmRecord.setAlarmTime(System.currentTimeMillis());
+        alarmRecord.setDeviceType(snapRecord.getDeviceType());
+        //查询设备相关信息
+        if (alarmRecord.getDeviceType() == ResourceType.CAMERA.getValue()) {
+            //相机设备
+            Camera cameraMess = new Camera();
+            cameraMess.setId(snapRecord.getDeviceId());
+            Camera cameraMesss = cameraMapper.selectOne(cameraMess);
+            alarmRecord.setDeviceId(cameraMesss.getId());
+            alarmRecord.setDeviceNo(cameraMesss.getCameraId());
+            alarmRecord.setDeviceCode(cameraMesss.getProductCode());
+            alarmRecord.setDeviceType(ResourceType.CAMERA.getValue());
+            alarmRecord.setDeviceName(cameraMesss.getCameraName());
+            //设备地址暂存
+            alarmRecord.setDeviceAddress(cameraMesss.getInstallAdd());
+            alarmRecord.setLng(String.valueOf(cameraMesss.getLon()));
+            alarmRecord.setLat(String.valueOf(cameraMesss.getLat()));
+            alarmRecord.setPanoramaId(String.valueOf(snapRecord.getId()));
+            alarmRecord.setCaptureUrlFull(FilePropertiesUtil.getHttpUrl() + snapRecord.getCaptureUrl());
+            if (StringUtils.isNotBlank(snapRecord.getPanoramaUrl())) {
+                alarmRecord.setPanoramaUrlFull(FilePropertiesUtil.getHttpUrl() + snapRecord.getPanoramaUrl());
+            } else {
+                alarmRecord.setPanoramaUrlFull(null);
+            }
+        }
+        if (alarmRecord.getDeviceType() == ResourceType.PERSONCARD.getValue()) {
+            //人证设备
+            DevicePersoncard devicePersoncard = new DevicePersoncard();
+            devicePersoncard.setId(snapRecord.getDeviceId());
+            DevicePersoncard deviceMess = devicePersoncardMapper.selectOne(devicePersoncard);
+            alarmRecord.setDeviceId(deviceMess.getId());
+            alarmRecord.setDeviceNo(deviceMess.getDeviceId());
+            alarmRecord.setDeviceCode(deviceMess.getDeviceCode());
+            alarmRecord.setDeviceType(ResourceType.PERSONCARD.getValue());
+            alarmRecord.setDeviceName(deviceMess.getDeviceName());
+            alarmRecord.setLng(String.valueOf(deviceMess.getLon()));
+            alarmRecord.setLat(String.valueOf(deviceMess.getLat()));
+        }
+        //获取特征值
+        alarmRecord.setAge(snapRecord.getAge());
+        alarmRecord.setGender(snapRecord.getGender());
+        alarmRecord.setMaskState(snapRecord.getMask());
+        alarmRecord.setGlassesState(snapRecord.getGlasses());
+        alarmRecord.setSunGlassesState(snapRecord.getSunglasses());
+        alarmRecord.setMinority(snapRecord.getMinority());
+        //获取备注
+        alarmRecord.setRemark(monitorTask.getRemark());
+        //插入陌生人报警记录
+        alarmRecord.setCreateTime(System.currentTimeMillis());
+        alarmRecordMapper.insertStrangerRecord(alarmRecord);
+        logger.info("人脸照下陌生人报警记录插入成功");
+        transferData(alarmRecord);
+    }
+
+    /**
+     * 人脸黑名单报警
+     * @param monitorTask
+     * @param snapRecord
+     * @param jsonObject
+     */
+    private void faceBlackAlarm(MonitorTask monitorTask, SnapRecord snapRecord,JSONObject jsonObject ){
+        AlarmRecord alarmRecord = new AlarmRecord();
+        //报警配置信息
+        alarmRecord.setAlarmId(monitorTask.getAlarmId());
+        alarmRecord.setAlarmName(monitorTask.getAlarmName());
+        alarmRecord.setTipFlag(monitorTask.getTipFlag());
+        alarmRecord.setVoiceFlag(monitorTask.getVoiceFlag());
+        alarmRecord.setColorCode(monitorTask.getColorCode());
+        alarmRecord.setVoiceUrl(monitorTask.getVoiceUrl());
+        //布控信息
+        alarmRecord.setMonitorUserName(monitorTask.getMonitorUserName());
+        alarmRecord.setMonitorId(monitorTask.getId());
+        alarmRecord.setMonitorCode(monitorTask.getMonitorCode());
+        alarmRecord.setMonitorName(monitorTask.getMonitorName());
+        alarmRecord.setMonitorType(monitorTask.getMonitorType());
+        alarmRecord.setMonitorProperty(monitorTask.getMonitorProperty());
+        alarmRecord.setTopn(1);
+        alarmRecord.setAlarmScore(monitorTask.getFaceThreshold() / 100);
+        alarmRecord.setCaptureId(String.valueOf(snapRecord.getId()));
+        alarmRecord.setCaptureTime(snapRecord.getCaptureTime());
+        alarmRecord.setAlarmTime(System.currentTimeMillis());
+        //查询设备相关信息
+        if (snapRecord.getDeviceType().equals(ResourceType.CAMERA.getValue())) {
+            //相机设备
+            Camera cameraMess = new Camera();
+            cameraMess.setId(snapRecord.getDeviceId());
+            Camera cameraMesss = cameraMapper.selectOne(cameraMess);
+            alarmRecord.setDeviceId(cameraMesss.getId());
+            alarmRecord.setDeviceNo(cameraMesss.getCameraId());
+            alarmRecord.setDeviceCode(cameraMesss.getProductCode());
+            alarmRecord.setDeviceType(ResourceType.CAMERA.getValue());
+            alarmRecord.setDeviceName(cameraMesss.getCameraName());
+            //设备地址暂存
+            alarmRecord.setDeviceAddress(cameraMesss.getInstallAdd());
+            alarmRecord.setLng(String.valueOf(cameraMesss.getLon()));
+            alarmRecord.setLat(String.valueOf(cameraMesss.getLat()));
+            alarmRecord.setPanoramaId(String.valueOf(snapRecord.getId()));
+            alarmRecord.setCaptureUrlFull(FilePropertiesUtil.getHttpUrl() + snapRecord.getCaptureUrl());
+            if (StringUtils.isNotBlank(snapRecord.getPanoramaUrl())) {
+                alarmRecord.setPanoramaUrlFull(FilePropertiesUtil.getHttpUrl() + snapRecord.getPanoramaUrl());
+            } else {
+                alarmRecord.setPanoramaUrlFull(null);
+            }
+        }
+        if (snapRecord.getDeviceType().equals(ResourceType.PERSONCARD.getValue())) {
+            //人证设备
+            DevicePersoncard devicePersoncard = new DevicePersoncard();
+            devicePersoncard.setId(snapRecord.getDeviceId());
+            DevicePersoncard deviceMess = devicePersoncardMapper.selectOne(devicePersoncard);
+            alarmRecord.setDeviceId(deviceMess.getId());
+            alarmRecord.setDeviceNo(deviceMess.getDeviceId());
+            alarmRecord.setDeviceCode(deviceMess.getDeviceCode());
+            alarmRecord.setDeviceType(ResourceType.PERSONCARD.getValue());
+            alarmRecord.setDeviceName(deviceMess.getDeviceName());
+            alarmRecord.setLng(String.valueOf(deviceMess.getLon()));
+            alarmRecord.setLat(String.valueOf(deviceMess.getLat()));
+        }
+        //获取特征值
+        alarmRecord.setMaskState(snapRecord.getMask());
+        alarmRecord.setGlassesState(snapRecord.getGlasses());
+        alarmRecord.setSunGlassesState(snapRecord.getSunglasses());
+        alarmRecord.setMinority(snapRecord.getMinority());
+        //获取备注
+        alarmRecord.setRemark(monitorTask.getRemark());
+        //查询人员信息
+        if (jsonObject.containsKey("userId")) {
+            FacedbFace facedbFace = new FacedbFace();
+            facedbFace.setFaceId(jsonObject.getString("userId"));
+            FacedbFace facedbFaceMess = facedbFaceMapper.selectOne(facedbFace);
+            alarmRecord.setBirthday(facedbFaceMess.getBirthday());
+            //获取民族名
+            if (facedbFaceMess.getNation() != null) {
+                BaseEnums baseEnums = new BaseEnums();
+                baseEnums.setEnumType("NATION");
+                baseEnums.setEnumValue(facedbFaceMess.getNation());
+                BaseEnums baseEnumss = enumMapper.selectOne(baseEnums);
+                alarmRecord.setCardNation(baseEnumss.getEnumName());
+            } else {
+                alarmRecord.setCardNation(null);
+            }
+            alarmRecord.setCardId(facedbFaceMess.getCardId());
+            alarmRecord.setName(facedbFaceMess.getName());
+            alarmRecord.setCardGender(facedbFaceMess.getGender());
+            alarmRecord.setGender(facedbFaceMess.getGender());
+            //获取年龄
+            if (StringUtils.isNotBlank(facedbFaceMess.getBirthday())) {
+                SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+                Date bithday = null;
+                try {
+                    bithday = format.parse(facedbFaceMess.getBirthday());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                int age = DateUtils.getAgeByBirth(bithday);
+                String[] ageA = AgeTypeRangeEnum.AGEa.getCode().split("-");
+                String[] ageB = AgeTypeRangeEnum.AGEb.getCode().split("-");
+                String[] ageC = AgeTypeRangeEnum.AGEc.getCode().split("-");
+                String[] ageD = AgeTypeRangeEnum.AGEd.getCode().split("-");
+                String[] ageE = AgeTypeRangeEnum.AGEe.getCode().split("-");
+                if (age > Integer.parseInt(ageA[0]) && age < Integer.parseInt(ageA[1])) {
+                    alarmRecord.setAgeGroupName(AgeTypeRangeEnum.AGEa.getName());
+                    alarmRecord.setAgeGroup(AgeTypeEnum.CHILDREN.getCode());
+                } else if (age > Integer.parseInt(ageB[0]) && age < Integer.parseInt(ageB[1])) {
+                    alarmRecord.setAgeGroupName(AgeTypeRangeEnum.AGEb.getName());
+                    alarmRecord.setAgeGroup(AgeTypeEnum.JUVENILE.getCode());
+                } else if (age > Integer.parseInt(ageC[0]) && age < Integer.parseInt(ageC[1])) {
+                    alarmRecord.setAgeGroupName(AgeTypeRangeEnum.AGEc.getName());
+                    alarmRecord.setAgeGroup(AgeTypeEnum.YOUTH.getCode());
+                } else if (age > Integer.parseInt(ageD[0]) && age < Integer.parseInt(ageD[1])) {
+                    alarmRecord.setAgeGroupName(AgeTypeRangeEnum.AGEd.getName());
+                    alarmRecord.setAgeGroup(AgeTypeEnum.MIDDLE.getCode());
+                } else if (age > Integer.parseInt(ageE[0]) && age < Integer.parseInt(ageE[1])) {
+                    alarmRecord.setAgeGroupName(AgeTypeRangeEnum.AGEe.getName());
+                    alarmRecord.setAgeGroup(AgeTypeEnum.OLD.getCode());
+                }
+                alarmRecord.setAge(age);
+            } else {
+                alarmRecord.setAge(null);
+            }
+            alarmRecord.setRegisterUrl(FilePropertiesUtil.getHttpUrl() + facedbFaceMess.getFacePath());
+            alarmRecord.setRegId(facedbFaceMess.getFaceId());
+            //获取库信息
+            if (jsonObject.containsKey("groupId")) {
+                alarmRecord.setRegdb(jsonObject.getString("groupId"));
+                //查询库名
+                Facedb facedb = new Facedb();
+                facedb.setFacedbId(jsonObject.getString("groupId"));
+                Facedb facedbMess = facedbMapper.selectOne(facedb);
+                alarmRecord.setRegdbName(facedbMess.getName());
+                alarmRecord.setRegdbId(facedbMess.getId());
+                alarmRecord.setRegdbType(facedbMess.getType());
+            }
+        }
+        //获取对比值
+        if (jsonObject.containsKey("score")) {
+            alarmRecord.setScore(jsonObject.getFloat("score") / 100);
+        }
+        //插入黑名单报警记录
+        alarmRecord.setCreateTime(System.currentTimeMillis());
+        alarmRecordMapper.insertBlackListRecord(alarmRecord);
+        logger.info("人脸照下黑名单报警记录插入成功");
+        transferData(alarmRecord);
     }
 
     public List<AlarmRecord> selBlackRecord(AlarmRecordsVO para){
