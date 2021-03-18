@@ -15,7 +15,7 @@ import java.util.List;
 @Mapper
 public interface SnapRecordMapper extends SsMapper<SnapRecord> {
 
-    List<PersonCaptureDTO> getById(@Param("idList") List<CompareResultDTO> idList);
+    List<PersonCaptureDTO> getById(@Param("idList") List<CompareResultDTO> idList, @Param("ageB")Integer ageB, @Param("ageE")Integer ageE, @Param("gender")Integer gender);
 
     List<SnapRecord> page(SnapRecordVO snapRecordVO);
 }

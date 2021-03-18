@@ -101,7 +101,7 @@ public class RecogCameraCaptureController extends BaseController {
                 resp.setData(assemblePage(filterCondition(new ArrayList<>() , captureQuery), null, null));
                 return resp;
             }
-            List<PersonCaptureDTO> resultList = snapRecordMapper.getById(resultList1);
+            List<PersonCaptureDTO> resultList = snapRecordMapper.getById(resultList1, null, null, null);
             if(resultList.isEmpty()){
                 resp.setData(assemblePage(filterCondition(new ArrayList<>() , captureQuery), null, null));
                 return resp;

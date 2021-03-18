@@ -35,6 +35,15 @@
                     #{item.userId}
                 </foreach>
             </if>
+            <if test="gender != null">
+                AND main.gender = #{gender}
+            </if>
+            <if test="ageB != null">
+                <![CDATA[ AND main.age >= #{ageB} ]]>
+            </if>
+            <if test="ageE != null">
+                <![CDATA[ AND main.age <= #{ageE} ]]>
+            </if>
         </where>
     </select>
 
