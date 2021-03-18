@@ -103,7 +103,7 @@ public class AlarmRecordServiceImpl {
                         if (groupId == null) {
                             groupId = facedb.getFacedbId();
                         } else {
-                            groupId = "," + groupId;
+                            groupId = groupId + "," + facedb.getFacedbId();
                         }
                     }
                     //人脸注册库1:N准备数据
