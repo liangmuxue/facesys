@@ -1,5 +1,6 @@
 package com.ss.facesys.web.app.recog.query;
 
+import com.ss.request.Pagination;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.NotNull;
@@ -13,7 +14,7 @@ import java.util.StringJoiner;
  * @date 2019/12/20
  * @email yaoshuai@ss-cas.com
  */
-public class RecogFacedbQuery {
+public class RecogFacedbQuery extends Pagination {
 
     private List<Integer> facedbIds;
     private List<String> vplatFacedbIds;

@@ -1,6 +1,8 @@
 package com.ss.facesys.web.app.recog.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.ss.annotation.OpLog;
 import com.ss.enums.OperaTypeEnum;
 import com.ss.enums.StatusEnum;
@@ -23,6 +25,7 @@ import com.ss.facesys.util.file.FilePropertiesUtil;
 import com.ss.facesys.util.http.BaseFormatJsonUtil;
 import com.ss.facesys.web.app.recog.query.RecogFacedbQuery;
 import com.ss.facesys.web.manage.baseinfo.controller.BaseController;
+import com.ss.response.PageEntity;
 import com.ss.response.ResponseEntity;
 import com.ss.spider.log.constants.ModuleCode;
 import com.ss.spider.system.organization.model.Organization;
@@ -69,8 +72,8 @@ public class RecogFacedbController extends BaseController {
 
     @PostMapping(value = {"/registerDb"})
     @OpLog(model = ModuleCode.BUSINESS, desc = "1:N 注册库检索", type = OperaTypeEnum.SEARCH)
-    public ResponseEntity<Map<String, Object>> recog(@RequestBody @Validated RecogFacedbQuery facedbQuery, BindingResult bindingResult) throws BindException {
-        ResponseEntity<Map<String, Object>> resp = validite(bindingResult);
+    public ResponseEntity<PageEntity<FacedbFace>> recog(@RequestBody @Validated RecogFacedbQuery facedbQuery, BindingResult bindingResult) throws BindException {
+        ResponseEntity<PageEntity<FacedbFace>> resp = validite(bindingResult);
         try {
             paramCheck(facedbQuery);
             facedbCheck(facedbQuery);
@@ -111,7 +114,14 @@ public class RecogFacedbController extends BaseController {
 
             List<CompareResultDTO> resultList1 = BaseFormatJsonUtil.formatList(oceanResult.get("faces"), CompareResultDTO.class);
             if(resultList1 == null  || resultList1.isEmpty()){
-                resp.setData(assemblePage(new ArrayList<>(), null, null));
+                Page<FacedbFace> page = new Page<>();
+                page.setPageSize(facedbQuery.getPageSize());
+                page.setPageNum(facedbQuery.getCurrentPage());
+                page.setTotal(0);
+                page.setStartRow(0);
+                page.setEndRow(0);
+                page.setReasonable(true);
+                resp.setData(new PageEntity(page));
                 return resp;
             }
             // 将结果转换为数据传输对象
@@ -141,9 +151,10 @@ public class RecogFacedbController extends BaseController {
                 int i = calendar.get(Calendar.YEAR);
                 criteria.andBetween("birthday",(i-facedbQuery.getAgeE())+"0000",(i-facedbQuery.getAgeB())+"0000");
             }
+            PageHelper.startPage(facedbQuery.getCurrentPage(), facedbQuery.getPageSize());
             List<FacedbFace> facedbFaces = facedbFaceMapper.selectByExample(ffe);
             if(facedbFaces.isEmpty()){
-                resp.setData(assemblePage(new ArrayList<>(), null, null));
+                resp.setData(new PageEntity((Page) facedbFaces));
                 return resp;
             }
             //封装信息
@@ -192,7 +203,7 @@ public class RecogFacedbController extends BaseController {
                     }
                 });
             }
-            resp.setData(assemblePage(facedbFaces, null, null));
+            resp.setData(new PageEntity((Page) facedbFaces));
         } catch (ServiceException e) {
             this.logger.error("1:N 抓拍库检索失败，错误码：{}，异常信息：{}", e.getCode(), e.getMessage(), e);
             return createFailResponse(e);

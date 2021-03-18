@@ -113,7 +113,14 @@ public class RecogBodyCaptureController extends BaseController {
                 return resp;
             }
             PageHelper.startPage(captureQuery.getCurrentPage(), captureQuery.getPageSize());
-            List<PersonCaptureDTO> resultList = snapRecordMapper.getById(resultList1, captureQuery.getAgeB(), captureQuery.getAgeE(), captureQuery.getGender());
+            List<PersonCaptureDTO> resultList = snapRecordMapper.getById(resultList1,
+                    captureQuery.getAgeB(),
+                    captureQuery.getAgeE(),
+                    captureQuery.getGender(),
+                    captureQuery.getGlassesState(),
+                    captureQuery.getSunglassesState(),
+                    captureQuery.getMaskState(),
+                    captureQuery.getMinorityState());
             if(resultList.isEmpty()){
                 resp.setData(new PageEntity((Page) resultList));
                 return resp;

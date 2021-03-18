@@ -63,7 +63,7 @@ public abstract class BaseHttpUtil {
             InterfaceBean interf = new InterfaceBean();
             interf.setMethod("POST");
             // 非鉴权请求：访问前校验token有效性，失效则重新获取
-            if (!requestUrl.equals(PropertiesUtil.getOshttp() + HttpConstant.TOKEN)) {
+            if (!requestUrl.equals(PropertiesUtil.getOshttp() + HttpConstant.TOKEN) && !requestUrl.contains(PropertiesUtil.getSfgohttp())) {
                 if (System.currentTimeMillis() > tokenTime) {
                     login();
                 }

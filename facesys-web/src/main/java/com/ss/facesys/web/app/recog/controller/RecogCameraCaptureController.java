@@ -1,6 +1,8 @@
 package com.ss.facesys.web.app.recog.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.ss.annotation.OpLog;
 import com.ss.enums.OperaTypeEnum;
 import com.ss.exception.ServiceException;
@@ -19,6 +21,7 @@ import com.ss.facesys.util.file.FilePropertiesUtil;
 import com.ss.facesys.util.http.BaseFormatJsonUtil;
 import com.ss.facesys.web.app.recog.query.RecogCaptureQuery;
 import com.ss.facesys.web.manage.baseinfo.controller.BaseController;
+import com.ss.response.PageEntity;
 import com.ss.response.ResponseEntity;
 import com.ss.spider.log.constants.ModuleCode;
 import com.ss.tools.Base64ImageUtils;
@@ -57,8 +60,8 @@ public class RecogCameraCaptureController extends BaseController {
 
     @PostMapping(value = {"/cameraDb"})
     @OpLog(model = ModuleCode.BUSINESS, desc = "1:N 抓拍库检索", type = OperaTypeEnum.SEARCH)
-    public ResponseEntity<Map<String, Object>> recog(@RequestBody @Validated RecogCaptureQuery captureQuery, BindingResult bindingResult) throws BindException {
-        ResponseEntity<Map<String, Object>> resp = validite(bindingResult);
+    public ResponseEntity<PageEntity<PersonCaptureDTO>> recog(@RequestBody @Validated RecogCaptureQuery captureQuery, BindingResult bindingResult) throws BindException {
+        ResponseEntity<PageEntity<PersonCaptureDTO>> resp = validite(bindingResult);
         try {
             paramCheck(captureQuery);
             deviceCheck(captureQuery);
@@ -98,12 +101,27 @@ public class RecogCameraCaptureController extends BaseController {
             // 将结果转换为数据传输对象
             List<CompareResultDTO> resultList1 = BaseFormatJsonUtil.formatList(oceanResult.get("datas"), CompareResultDTO.class);
             if(resultList1 == null || resultList1.isEmpty()){
-                resp.setData(assemblePage(filterCondition(new ArrayList<>() , captureQuery), null, null));
+                Page<PersonCaptureDTO> page = new Page<>();
+                page.setPageSize(captureQuery.getPageSize());
+                page.setPageNum(captureQuery.getCurrentPage());
+                page.setTotal(0);
+                page.setStartRow(0);
+                page.setEndRow(0);
+                page.setReasonable(true);
+                resp.setData(new PageEntity(page));
                 return resp;
             }
-            List<PersonCaptureDTO> resultList = snapRecordMapper.getById(resultList1, null, null, null);
+            PageHelper.startPage(captureQuery.getCurrentPage(), captureQuery.getPageSize());
+            List<PersonCaptureDTO> resultList = snapRecordMapper.getById(resultList1,
+                    captureQuery.getAgeB(),
+                    captureQuery.getAgeE(),
+                    captureQuery.getGender(),
+                    captureQuery.getGlassesState(),
+                    captureQuery.getSunglassesState(),
+                    captureQuery.getMaskState(),
+                    captureQuery.getMinorityState());
             if(resultList.isEmpty()){
-                resp.setData(assemblePage(filterCondition(new ArrayList<>() , captureQuery), null, null));
+                resp.setData(new PageEntity((Page) resultList));
                 return resp;
             }
             for(PersonCaptureDTO p:resultList){
@@ -128,7 +146,8 @@ public class RecogCameraCaptureController extends BaseController {
                     }
                 });
             }
-            resp.setData(assemblePage(filterCondition(resultList, captureQuery), null, null));
+            filterBodyCondition(resultList, captureQuery);
+            resp.setData(new PageEntity((Page) resultList));
         } catch (ServiceException e) {
             this.logger.error("1:N 抓拍库检索失败，错误码：{}，异常信息：{}", e.getCode(), e.getMessage(), e);
             return createFailResponse(e);
@@ -216,6 +235,17 @@ public class RecogCameraCaptureController extends BaseController {
             }
         }
         return filter;
+    }
+
+    private void filterBodyCondition(List<PersonCaptureDTO> resultList, RecogCaptureQuery captureQuery) {
+        if (CollectionUtils.isNotEmpty(resultList)) {
+            for (PersonCaptureDTO personCaptureDTO : resultList) {
+                personCaptureDTO.setCaptureUrlFull(FilePropertiesUtil.getHttpUrl() + personCaptureDTO.getCaptureUrl());
+                if(StringUtils.isNotBlank(personCaptureDTO.getPanoramaUrl())) {
+                    personCaptureDTO.setPanoramaUrlFull(FilePropertiesUtil.getHttpUrl() + personCaptureDTO.getPanoramaUrl());
+                }
+            }
+        }
     }
 
     private Map<String, Object> assemblePage(List<PersonCaptureDTO> resultList, Integer currentPage, Integer pageSize) {

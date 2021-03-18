@@ -44,6 +44,18 @@
             <if test="ageE != null">
                 <![CDATA[ AND main.age <= #{ageE} ]]>
             </if>
+            <if test="glasses != null">
+                AND glasses = #{glasses}
+            </if>
+            <if test="sunglasses != null">
+                AND sunglasses = #{sunglasses}
+            </if>
+            <if test="mask != null">
+                AND mask = #{mask}
+            </if>
+            <if test="minority != null">
+                AND minority = #{minority}
+            </if>
         </where>
     </select>
 

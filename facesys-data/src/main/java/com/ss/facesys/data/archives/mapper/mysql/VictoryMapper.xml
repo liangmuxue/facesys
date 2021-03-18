@@ -9,8 +9,8 @@
 		SELECT
 			v.id,
 			v.victory_name as victoryName,
-			GROUP_CONCAT(distinct cp.user_id ORDER BY cp.user_id) as userIds,
-			GROUP_CONCAT(distinct cp.user_name ORDER BY cp.user_id) as userNames,
+			GROUP_CONCAT(cp.user_id ORDER BY cp.user_id) as userIds,
+			GROUP_CONCAT(cp.user_name ORDER BY cp.user_id) as userNames,
 			v.solve_time as solveTime,
 			v.case_code as caseCode,
 			v.case_type as caseType,

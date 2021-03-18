@@ -73,7 +73,7 @@ public class ImgCollectionServiceImpl implements IImgCollectionService {
                     CompareResultDTO compareResultDTO = new CompareResultDTO();
                     compareResultDTO.setUserId(Long.valueOf(resultDTO.getDataId()));
                     compareResultDTOS.add(compareResultDTO);
-                    List<PersonCaptureDTO> resultList = snapRecordMapper.getById(compareResultDTOS, null, null, null);
+                    List<PersonCaptureDTO> resultList = snapRecordMapper.getById(compareResultDTOS, null, null, null, null, null, null, null);
                     if(!resultList.isEmpty()){
                         resultDTO.setDeviceName(resultList.get(0).getDeviceName());
                         resultDTO.setDataCreateTime(resultList.get(0).getCreateTime());
