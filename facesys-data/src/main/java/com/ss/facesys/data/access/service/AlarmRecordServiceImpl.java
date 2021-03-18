@@ -281,7 +281,7 @@ public class AlarmRecordServiceImpl {
         alarmRecord.setMonitorName(monitorTask.getMonitorName());
         alarmRecord.setMonitorType(monitorTask.getMonitorType());
         alarmRecord.setMonitorProperty(monitorTask.getMonitorProperty());
-        alarmRecord.setTopn(1);
+        alarmRecord.setTopn(PropertiesUtil.getTopN());
         alarmRecord.setAlarmScore(monitorTask.getFaceThreshold() / 100);
         alarmRecord.setCaptureId(String.valueOf(snapRecord.getId()));
         alarmRecord.setCaptureTime(snapRecord.getCaptureTime());
