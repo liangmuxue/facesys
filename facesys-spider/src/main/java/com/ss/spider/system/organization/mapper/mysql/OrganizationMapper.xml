@@ -124,9 +124,10 @@
 		main.PARENT_ID, main.DEPARTH, main.CREATE_TIME, main.CREATE_USER_ID, main.UPDATE_TIME, main.UPDATE_USER_ID,
 		main.REMARK, main.LINK_MAN_NAME, main.LINK_MAN_DEPT, main.LINK_MAN_POS, main.LINK_MAN_TEL, main.LINK_MAN_FAX,
 		main.LINK_MAN_EMAIL, main.DELETE_TIME, main.DELETE_USER_ID, main.FROM_SYSTEM, main.IS_LINKAGE,
-		u.LOGIN_NAME AS createUserName
-		  from CW_GE_ORGANIZATION main
-		  left join CW_GE_USER u on main.CREATE_USER_ID = u.USER_ID
+		u1.LOGIN_NAME AS createUserName, u2.LOGIN_NAME AS updateUserName
+		from CW_GE_ORGANIZATION main
+		  left join CW_GE_USER u1 on main.CREATE_USER_ID = u1.USER_ID
+		  left join CW_GE_USER u2 on main.UPDATE_USER_ID = u2.USER_ID
 		 where 1 = 1
 		<if test="orgId != null and orgId != ''">
 		 	and main.ORG_ID = #{orgId, jdbcType=VARCHAR}
