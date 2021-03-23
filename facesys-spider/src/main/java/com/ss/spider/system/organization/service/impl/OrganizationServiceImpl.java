@@ -99,11 +99,9 @@ public class OrganizationServiceImpl extends AbstractSsServiceImpl<Organization>
      */
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public List<Organization> treeData() {
-        Example example = new Example(Organization.class);
-        example.createCriteria().andEqualTo("status", StatusEnum.EFFECT.getCode());
-        example.orderBy("seq").asc();
-        List<Organization> organizations = organizationMapper.selectByExample(example);
+    public List<Organization> treeData(Organization organization) {
+        organization.setStatus(StatusEnum.EFFECT.getCode());
+        List<Organization> organizations = organizationMapper.list(organization);
         return createOrgTree(organizations);
     }
 

@@ -125,6 +125,8 @@ public class Organization extends DTEntity {
     private Integer onlineDeviceCount = 0;
     @Transient
     private Integer offlineDeviceCount = 0;
+    @Transient
+    private String createUserName;
 
 
     public String getOrgId() {
@@ -391,5 +393,13 @@ public class Organization extends DTEntity {
 
     public void setOfflineDeviceCount(Integer offlineDeviceCount) {
         this.offlineDeviceCount = offlineDeviceCount;
+    }
+
+    public String getCreateUserName() {
+        return createUserName;
+    }
+
+    public void setCreateUserName(String createUserName) {
+        this.createUserName = createUserName;
     }
 }

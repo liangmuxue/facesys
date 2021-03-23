@@ -46,14 +46,15 @@
 	<!--查询所有账户-->
 	<select id="findAllUsers" resultType="com.ss.spider.system.organization.model.Organization" parameterType="com.ss.facesys.data.archives.common.web.VictoryVO">
 		SELECT
-			user_id as orgId,
-			login_name as orgCname,
-			org_id as parentId
+		main.user_id as orgId,
+		main.login_name as orgCname,
+		main.org_id as parentId
 		FROM
-			cw_ge_user
-		WHERE status != -1 AND org_id != "" AND org_id IS NOT NULL
+			cw_ge_user main
+		left join cw_ge_organization o on main.org_id = o.org_id
+		WHERE main.status != -1 AND main.org_id != "" AND main.org_id IS NOT NULL AND o.status = 1
 		<if test="userNames != null and userNames != ''">
-			AND login_name like concat('%', #{userNames,jdbcType=VARCHAR},'%')
+			AND main.login_name like concat('%', #{userNames,jdbcType=VARCHAR},'%')
 		</if>
 	</select>
 

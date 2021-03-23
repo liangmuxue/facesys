@@ -41,7 +41,7 @@ public interface OrganizationService<Organization> extends SsService<Organizatio
      *
      * @return
      */
-    List<Organization> treeData();
+    List<Organization> treeData(Organization organization);
 
     /**
      * 查询单位及全部子节点集合

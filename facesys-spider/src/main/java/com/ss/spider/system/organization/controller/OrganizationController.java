@@ -98,10 +98,10 @@ public class OrganizationController extends AbstractController {
      */
     @RequestMapping(value = {"/tree"}, method = {RequestMethod.POST})
     @OpLog(model = ModuleCode.SYSTEM, desc = "查询单位树", type = OperaTypeEnum.SELECT)
-    public ResponseEntity<List<Organization>> tree() throws BindException {
+    public ResponseEntity<List<Organization>> tree(@RequestBody Organization organization) throws BindException {
         ResponseEntity<List<Organization>> resp = createSuccResponse();
         try {
-            resp.setData(this.organizationService.treeData());
+            resp.setData(this.organizationService.treeData(organization));
         } catch (Exception e) {
             resp = createFailResponse();
             resp.setMessage("单位树查询失败");

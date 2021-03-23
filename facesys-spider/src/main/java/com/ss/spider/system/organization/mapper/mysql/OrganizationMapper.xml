@@ -14,10 +14,10 @@
 		<result column="STATUS"    			property="status"    			jdbcType="INTEGER" />
 		<result column="PARENT_ID"    		property="parentId"    			jdbcType="VARCHAR" />
 		<result column="DEPARTH"    			property="departh"    			jdbcType="VARCHAR" />
-		<result column="CREATED_TIME"    	property="createTime"    		jdbcType="BIGINT" />
-		<result column="CREATED_USERID"    	property="createUserId"    	jdbcType="VARCHAR" />
-		<result column="UPDATED_TIME"    	property="updateTime"    		jdbcType="BIGINT" />
-		<result column="UPDATED_USERID"    	property="updateUserId"    	jdbcType="VARCHAR" />
+		<result column="CREATE_TIME"    	property="createTime"    		jdbcType="BIGINT" />
+		<result column="CREATE_USER_ID"    	property="createUserId"    	jdbcType="VARCHAR" />
+		<result column="UPDATE_TIME"    	property="updateTime"    		jdbcType="BIGINT" />
+		<result column="UPDATE_USER_ID"    	property="updateUserId"    	jdbcType="VARCHAR" />
 		<result column="REMARK"    			property="remark"    			jdbcType="VARCHAR" />
 		<result column="LINK_MAN_NAME"    	property="linkManName"    		jdbcType="VARCHAR" />
 		<result column="LINK_MAN_DEPT"    	property="linkManDept"    		jdbcType="VARCHAR" />
@@ -25,8 +25,8 @@
 		<result column="LINK_MAN_TEL"    	property="linkManTel"    		jdbcType="VARCHAR" />
 		<result column="LINK_MAN_FAX"    	property="linkManFax"    		jdbcType="VARCHAR" />
 		<result column="LINK_MAN_EMAIL"    	property="linkManEmail"    		jdbcType="VARCHAR" />
-		<result column="DELETED_TIME"    	property="deleteTime"    		jdbcType="BIGINT" />
-		<result column="DELETED_USERID"    	property="deleteUserId"    	jdbcType="VARCHAR" />
+		<result column="DELETE_TIME"    	property="deleteTime"    		jdbcType="BIGINT" />
+		<result column="DELETE_USER_ID"    	property="deleteUserId"    	jdbcType="VARCHAR" />
 		<result column="FROM_SYSTEM"    		property="fromSystem"    		jdbcType="VARCHAR" />
 		<result column="IS_LINKAGE"    		property="isLinkage"    		jdbcType="SMALLINT" />
 	</resultMap>
@@ -120,97 +120,99 @@
 	
 	
 	<select id="list" parameterType="com.ss.spider.system.organization.model.Organization" resultMap="BaseOrganizationMap">
-		select ORG_ID, ORG_CODE, ORG_CNAME, ORG_ENAME, ADDRESS, ZIP_CODE, TELEPHONE, FAX, STATUS,
-			   PARENT_ID, DEPARTH, CREATED_TIME, CREATED_USERID, UPDATED_TIME, UPDATED_USERID,
-			   REMARK, LINK_MAN_NAME, LINK_MAN_DEPT, LINK_MAN_POS, LINK_MAN_TEL, LINK_MAN_FAX,
-			   LINK_MAN_EMAIL, DELETED_TIME, DELETED_USERID, FROM_SYSTEM, IS_LINKAGE
-		  from CW_GE_ORGANIZATION
+		select main.ORG_ID, main.ORG_CODE, main.ORG_CNAME, main.ORG_ENAME, main.ADDRESS, main.ZIP_CODE, main.TELEPHONE, main.FAX, main.STATUS,
+		main.PARENT_ID, main.DEPARTH, main.CREATE_TIME, main.CREATE_USER_ID, main.UPDATE_TIME, main.UPDATE_USER_ID,
+		main.REMARK, main.LINK_MAN_NAME, main.LINK_MAN_DEPT, main.LINK_MAN_POS, main.LINK_MAN_TEL, main.LINK_MAN_FAX,
+		main.LINK_MAN_EMAIL, main.DELETE_TIME, main.DELETE_USER_ID, main.FROM_SYSTEM, main.IS_LINKAGE,
+		u.LOGIN_NAME AS createUserName
+		  from CW_GE_ORGANIZATION main
+		  left join CW_GE_USER u on main.CREATE_USER_ID = u.USER_ID
 		 where 1 = 1
 		<if test="orgId != null and orgId != ''">
-		 	and ORG_ID = #{orgId, jdbcType=VARCHAR}
+		 	and main.ORG_ID = #{orgId, jdbcType=VARCHAR}
 		</if>
 		 
 		<choose>
 		 	<when test="status != null">
-		 		and STATUS = #{status, jdbcType=INTEGER}
+		 		and main.STATUS = #{status, jdbcType=INTEGER}
 		 	</when>
 		 	<otherwise>
-		 		and STATUS in (0, 1)
+		 		and main.STATUS in (0, 1)
 		 	</otherwise>
 		</choose>
 		 	
 		<if test="parentId != null and parentId != ''">
 			<choose>
 				<when test="parentId eq '-1'">
-					and PARENT_ID is null
+					and main.PARENT_ID is null
 				</when>
 				<otherwise>
-					and PARENT_ID = #{parentId, jdbcType=VARCHAR}
+					and main.PARENT_ID = #{parentId, jdbcType=VARCHAR}
 				</otherwise>
 			</choose>
 		</if>
 		
 		<if test="departh != null and departh !=''">
-			and CONCAT('|',DEPARTH, '|') like CONCAT('%|', #{departh, jdbcType=VARCHAR}, '|%')
+			and CONCAT('|',main.DEPARTH, '|') like CONCAT('%|', #{departh, jdbcType=VARCHAR}, '|%')
 		</if>
 		
 		<if test="fax != null and fax != ''">
-			and FAX like CONCAT('%', #{fax, jdbcType=VARCHAR}, '%')
+			and main.FAX like CONCAT('%', #{fax, jdbcType=VARCHAR}, '%')
 		</if>
 		
 		<if test="zipCode != null and zipCode != ''">
-		 	and ZIP_CODE like CONCAT('%', #{zipCode, jdbcType=VARCHAR}, '%')
+		 	and main.ZIP_CODE like CONCAT('%', #{zipCode, jdbcType=VARCHAR}, '%')
 		</if>
 		 
 		<if test="orgCode != null and orgCode != ''">
-			and ORG_CODE like CONCAT('%', #{orgCode, jdbcType=VARCHAR}, '%')
+			and main.ORG_CODE like CONCAT('%', #{orgCode, jdbcType=VARCHAR}, '%')
 		</if>
 		
 		<if test="orgCname != null and orgCname != ''">
-			and ORG_CNAME like CONCAT('%', #{orgCname, jdbcType=VARCHAR}, '%')
+			and main.ORG_CNAME like CONCAT('%', #{orgCname, jdbcType=VARCHAR}, '%')
 		</if>
 		
 		<if test="orgEname != null and orgEname != ''">
-			and ORG_ENAME like CONCAT('%', #{orgEname, jdbcType=VARCHAR}, '%')
+			and main.ORG_ENAME like CONCAT('%', #{orgEname, jdbcType=VARCHAR}, '%')
 		</if>
 		
 		<if test="telephone != null and telephone != ''">
-			and TELEPHONE like CONCAT('%', #{telephone, jdbcType=VARCHAR}, '%')
+			and main.TELEPHONE like CONCAT('%', #{telephone, jdbcType=VARCHAR}, '%')
 		</if>
 		
 		<if test="address != null and address != ''">
-			and ADDRESS like CONCAT('%', #{address, jdbcType=VARCHAR}, '%')
+			and main.ADDRESS like CONCAT('%', #{address, jdbcType=VARCHAR}, '%')
 		</if>
 			
 		<if test="linkManName != null and linkManName != ''">
-			and LINK_MAN_NAME like CONCAT('%', #{linkManName, jdbcType=VARCHAR}, '%')
+			and main.LINK_MAN_NAME like CONCAT('%', #{linkManName, jdbcType=VARCHAR}, '%')
 		</if>
 		
 		<if test="linkManDept != null and linkManDept != ''">
-			and LINK_MAN_DEPT like CONCAT('%', #{linkManDept, jdbcType=VARCHAR}, '%')
+			and main.LINK_MAN_DEPT like CONCAT('%', #{linkManDept, jdbcType=VARCHAR}, '%')
 		</if>
 		
 		<if test="linkManPos != null and linkManPos != ''">
-			and LINK_MAN_POS like CONCAT('%', #{linkManPos, jdbcType=VARCHAR}, '%')
+			and main.LINK_MAN_POS like CONCAT('%', #{linkManPos, jdbcType=VARCHAR}, '%')
 		</if>
 		
 		<if test="linkManTel != null and linkManTel != ''">
-			and LINK_MAN_TEL like CONCAT('%', #{linkManTel, jdbcType=VARCHAR}, '%')
+			and main.LINK_MAN_TEL like CONCAT('%', #{linkManTel, jdbcType=VARCHAR}, '%')
 		</if>
 		 
 		<if test="linkManFax != null and linkManFax != ''">
-			and LINK_MAN_FAX like CONCAT('%', #{linkManFax, jdbcType=VARCHAR}, '%')
+			and main.LINK_MAN_FAX like CONCAT('%', #{linkManFax, jdbcType=VARCHAR}, '%')
 		</if>
 		 
 		<if test="linkManEmail != null and linkManEmail != ''">
-			and LINK_MAN_EMAIL like CONCAT('%', #{linkManEmail, jdbcType=VARCHAR}, '%')
+			and main.LINK_MAN_EMAIL like CONCAT('%', #{linkManEmail, jdbcType=VARCHAR}, '%')
 		</if>
 
 		<if test="updateTime != null and updateTime != ''">
-			and UPDATED_TIME >=  #{updateTime, jdbcType=DECIMAL}
+			and main.UPDATE_TIME >=  #{updateTime, jdbcType=DECIMAL}
 		</if>
 		<if test="isLinkage != null ">
-			and IS_LINKAGE = #{isLinkage, jdbcType=SMALLINT}
+			and main.IS_LINKAGE = #{isLinkage, jdbcType=SMALLINT}
 		</if>
 	</select>
 
