@@ -66,6 +66,7 @@ public class OrgForm implements Serializable {
     private String userId;
     private List<IscCoordinate> gisList;
     private int thorough = 0;
+    private String gisArea;
 
     public String getOrgId() {
         return this.orgId;
@@ -227,4 +228,11 @@ public class OrgForm implements Serializable {
         this.gisList = gisList;
     }
 
+    public String getGisArea() {
+        return gisArea;
+    }
+
+    public void setGisArea(String gisArea) {
+        this.gisArea = gisArea;
+    }
 }

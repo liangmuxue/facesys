@@ -36,6 +36,7 @@ public class OrgQuery extends Pagination {
     private Short isLinkage;
     private String userId;
     private Integer dataType = 1;
+    private String gisArea;
 
     public Integer getDataType() {
         return this.dataType;
@@ -189,4 +190,11 @@ public class OrgQuery extends Pagination {
         this.isLinkage = isLinkage;
     }
 
+    public String getGisArea() {
+        return gisArea;
+    }
+
+    public void setGisArea(String gisArea) {
+        this.gisArea = gisArea;
+    }
 }
