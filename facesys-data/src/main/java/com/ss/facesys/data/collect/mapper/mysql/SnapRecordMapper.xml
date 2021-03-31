@@ -20,13 +20,25 @@
         main.sunglasses as sunGlassesState,
         main.glasses as glassesState,
         main.mask as maskState,
-        main.minority as nation,
+        main.nation,
         e1.enumName AS genderName,
-        e3.enumName AS nationName
+        e3.enumName AS nationName,
+        main.people_name as peopleName,
+        main.minority,
+        main.birthday,
+        main.card_no as cardNo,
+        main.people_address as peopleAddress,
+        main.issuance_authority as issuanceAuthority,
+        main.card_start_time as cardStartTime,
+        main.card_end_time as cardEndTime,
+        main.address,
+        main.face_img as faceImg,
+        main.recog_score as recogScore,
+        main.result_code as resultCode
         FROM
         ss_snap_record main
         LEFT JOIN cw_base_enum e1 ON e1.enumType = "GENDER" AND main.gender = e1.enumValue
-        LEFT JOIN cw_base_enum e3 ON e3.enumType = "NATION" AND main.minority = e3.enumValue
+        LEFT JOIN cw_base_enum e3 ON e3.enumType = "NATION" AND main.nation = e3.enumValue
         <where>
             <if test="idList != null and idList.size > 0 ">
                 main.id in

@@ -21,4 +21,6 @@ public interface IImgCollectionService {
 
     String remove(ImgCollection imgCollection) throws ServiceException;
 
+    ImgCollectionResultDTO detail(ImgCollection imgCollection) throws ServiceException;
+
 }

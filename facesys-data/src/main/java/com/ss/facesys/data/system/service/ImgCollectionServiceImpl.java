@@ -111,4 +111,45 @@ public class ImgCollectionServiceImpl implements IImgCollectionService {
         return "成功取消收藏";
     }
 
+    @Override
+    public ImgCollectionResultDTO detail(ImgCollection ic) throws ServiceException {
+        ImgCollectionResultDTO imgCollectionResultDTO = new ImgCollectionResultDTO();
+        ImgCollection imgCollection = this.imgCollectionMapper.selectByPrimaryKey(ic.getId());
+        if (imgCollection != null) {
+            List<CompareResultDTO> compareResultDTOS = new ArrayList<>();
+            CompareResultDTO compareResultDTO = new CompareResultDTO();
+            compareResultDTO.setUserId(Long.valueOf(imgCollection.getDataId()));
+            compareResultDTOS.add(compareResultDTO);
+            List<PersonCaptureDTO> resultList = snapRecordMapper.getById(compareResultDTOS, null, null, null, null, null, null, null);
+            if (resultList != null && resultList.size() > 0) {
+                imgCollectionResultDTO.setCollectionTime(imgCollection.getCollectionTime());
+                imgCollectionResultDTO.setRemark(imgCollection.getRemark());
+                imgCollectionResultDTO.setDeviceName(resultList.get(0).getDeviceName());
+                imgCollectionResultDTO.setDataCreateTime(resultList.get(0).getCreateTime());
+                imgCollectionResultDTO.setCollectionUrl(FilePropertiesUtil.getHttpUrl() + resultList.get(0).getCaptureUrl());
+                imgCollectionResultDTO.setPanoramaUrl(FilePropertiesUtil.getHttpUrl() + resultList.get(0).getPanoramaUrl());
+                imgCollectionResultDTO.setAge(resultList.get(0).getAge());
+                imgCollectionResultDTO.setGender(resultList.get(0).getGender());
+                imgCollectionResultDTO.setGenderName(resultList.get(0).getGenderName());
+                imgCollectionResultDTO.setNationName(resultList.get(0).getNationName());
+                imgCollectionResultDTO.setGlassesState(resultList.get(0).getGlassesState());
+                imgCollectionResultDTO.setSunGlassesState(resultList.get(0).getSunGlassesState());
+                imgCollectionResultDTO.setMaskState(resultList.get(0).getMaskState());
+                imgCollectionResultDTO.setMinority(resultList.get(0).getMinority());
+                imgCollectionResultDTO.setPeopleName(resultList.get(0).getPeopleName());
+                imgCollectionResultDTO.setBirthday(resultList.get(0).getBirthday());
+                imgCollectionResultDTO.setCardNo(resultList.get(0).getCardNo());
+                imgCollectionResultDTO.setPeopleAddress(resultList.get(0).getPeopleAddress());
+                imgCollectionResultDTO.setIssuanceAuthority(resultList.get(0).getIssuanceAuthority());
+                imgCollectionResultDTO.setCardStartTime(resultList.get(0).getCardStartTime());
+                imgCollectionResultDTO.setCardEndTime(resultList.get(0).getCardEndTime());
+                imgCollectionResultDTO.setAddress(resultList.get(0).getAddress());
+                imgCollectionResultDTO.setFaceImg(resultList.get(0).getFaceImg());
+                imgCollectionResultDTO.setRecogScore(resultList.get(0).getRecogScore());
+                imgCollectionResultDTO.setResultCode(resultList.get(0).getResultCode());
+            }
+        }
+        return imgCollectionResultDTO;
+    }
+
 }

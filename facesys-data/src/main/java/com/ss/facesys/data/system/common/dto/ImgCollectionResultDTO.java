@@ -33,6 +33,19 @@ public class ImgCollectionResultDTO {
     private Integer maskState;
     private Integer glassesState;
     private Integer sunGlassesState;
+    private String peopleName;
+    private Integer nation;
+    private String birthday;
+    private String cardNo;
+    private String peopleAddress;
+    private String issuanceAuthority;
+    private Long cardStartTime;
+    private Long cardEndTime;
+    private String address;
+    private String faceImg;
+    private Integer minority;
+    private Float recogScore;
+    private Integer resultCode;
 
     public Integer getId() {
         return id;
@@ -186,21 +199,107 @@ public class ImgCollectionResultDTO {
         this.sunGlassesState = sunGlassesState;
     }
 
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", ImgCollectionResultDTO.class.getSimpleName() + "[", "]")
-                .add("id=" + id)
-                .add("dataType=" + dataType)
-                .add("dataId=" + dataId)
-                .add("remark='" + remark + "'")
-                .add("collectionTime=" + collectionTime)
-                .add("userId='" + userId + "'")
-                .add("collectionUrl='" + collectionUrl + "'")
-                .add("deviceName='" + deviceName + "'")
-                .add("dataCreateTime=" + dataCreateTime)
-                .add("collectionCaptureDetail=" + collectionCaptureDetail)
-                .add("collectionPersoncardDetail=" + collectionPersoncardDetail)
-                .toString();
+    public String getPeopleName() {
+        return peopleName;
     }
 
+    public void setPeopleName(String peopleName) {
+        this.peopleName = peopleName;
+    }
+
+    public Integer getNation() {
+        return nation;
+    }
+
+    public void setNation(Integer nation) {
+        this.nation = nation;
+    }
+
+    public String getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(String birthday) {
+        this.birthday = birthday;
+    }
+
+    public String getCardNo() {
+        return cardNo;
+    }
+
+    public void setCardNo(String cardNo) {
+        this.cardNo = cardNo;
+    }
+
+    public String getPeopleAddress() {
+        return peopleAddress;
+    }
+
+    public void setPeopleAddress(String peopleAddress) {
+        this.peopleAddress = peopleAddress;
+    }
+
+    public String getIssuanceAuthority() {
+        return issuanceAuthority;
+    }
+
+    public void setIssuanceAuthority(String issuanceAuthority) {
+        this.issuanceAuthority = issuanceAuthority;
+    }
+
+    public Long getCardStartTime() {
+        return cardStartTime;
+    }
+
+    public void setCardStartTime(Long cardStartTime) {
+        this.cardStartTime = cardStartTime;
+    }
+
+    public Long getCardEndTime() {
+        return cardEndTime;
+    }
+
+    public void setCardEndTime(Long cardEndTime) {
+        this.cardEndTime = cardEndTime;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getFaceImg() {
+        return faceImg;
+    }
+
+    public void setFaceImg(String faceImg) {
+        this.faceImg = faceImg;
+    }
+
+    public Integer getMinority() {
+        return minority;
+    }
+
+    public void setMinority(Integer minority) {
+        this.minority = minority;
+    }
+
+    public Float getRecogScore() {
+        return recogScore;
+    }
+
+    public void setRecogScore(Float recogScore) {
+        this.recogScore = recogScore;
+    }
+
+    public Integer getResultCode() {
+        return resultCode;
+    }
+
+    public void setResultCode(Integer resultCode) {
+        this.resultCode = resultCode;
+    }
 }

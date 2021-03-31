@@ -72,6 +72,17 @@ public class PersonCaptureDTO {
     private Integer rightBlinkState;
     private String genderName;
     private String nationName;
+    private Integer minority;
+    private String birthday;
+    private String cardNo;
+    private String peopleAddress;
+    private String issuanceAuthority;
+    private Long cardStartTime;
+    private Long cardEndTime;
+    private String address;
+    private String faceImg;
+    private String peopleName;
+    private Integer resultCode;
 
     public String getCaptureId() {
         return this.captureId;
@@ -692,10 +703,6 @@ public class PersonCaptureDTO {
         this.rightBlinkState = rightBlinkState;
     }
 
-    @Override
-    public String toString() {
-        return "PersonCaptureDTO [captureId=" + this.captureId + ", captureUrl=" + this.captureUrl + ", captureUrlFull=" + this.captureUrlFull + ", captureTime=" + this.captureTime + ", panoramaId=" + this.panoramaId + ", panoramaUrl=" + this.panoramaUrl + ", panoramaUrlFull=" + this.panoramaUrlFull + ", deviceId=" + this.deviceId + ", deviceName=" + this.deviceName + ", deviceAddress=" + this.deviceAddress + ", devExtField1=" + this.devExtField1 + ", devExtField2=" + this.devExtField2 + ", devExtField3=" + this.devExtField3 + ", lng=" + this.lng + ", lat=" + this.lat + ", age=" + this.age + ", gender=" + this.gender + ", race=" + this.race + ", qualityScore=" + this.qualityScore + ", faceTotalScore=" + this.faceTotalScore + ", lightScore=" + this.lightScore + ", maskScore=" + this.maskScore + ", maskState=" + this.maskState + ", clarityScore=" + this.clarityScore + ", glassesScore=" + this.glassesScore + ", glassesState=" + this.glassesState + ", mouthScore=" + this.mouthScore + ", faceClarityScore=" + this.faceClarityScore + ", sunGlassesScore=" + this.sunGlassesScore + ", sunGlassesState=" + this.sunGlassesState + ", nation=" + this.nation + ", pitch=" + this.pitch + ", yaw=" + this.yaw + ", roll=" + this.roll + ", x=" + this.x + ", y=" + this.y + ", width=" + this.width + ", height=" + this.height + ", printFaceScore=" + this.printFaceScore + ", fromSystem=" + this.fromSystem + ", isLinkage=" + this.isLinkage + ", createTime=" + this.createTime + ", recogScore=" + this.recogScore + ", egCaptureId=" + this.egCaptureId + ", captureType=" + this.captureType + ", deviceType=" + this.deviceType + ", subType=" + this.subType + ", faceId=" + this.faceId + ", authResult=" + this.authResult + ", videoId=" + this.videoId + ", featureStatus=" + this.featureStatus + ", icCardType=" + this.icCardType + ", icCardNo=" + this.icCardNo + ", captureExtField1=" + this.captureExtField1 + ", captureExtField2=" + this.captureExtField2 + ", captureExtField3=" + this.captureExtField3 + ", captureExtField4=" + this.captureExtField4 + ", captureExtField5=" + this.captureExtField5 + ", leftBlinkScore=" + this.leftBlinkScore + ", leftBlinkState=" + this.leftBlinkState + ", rightBlinkScore=" + this.rightBlinkScore + ", rightBlinkState=" + this.rightBlinkState + "]";
-    }
 
     public String getGenderName() {
         return genderName;
@@ -711,5 +718,93 @@ public class PersonCaptureDTO {
 
     public void setNationName(String nationName) {
         this.nationName = nationName;
+    }
+
+    public Integer getMinority() {
+        return minority;
+    }
+
+    public void setMinority(Integer minority) {
+        this.minority = minority;
+    }
+
+    public String getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(String birthday) {
+        this.birthday = birthday;
+    }
+
+    public String getCardNo() {
+        return cardNo;
+    }
+
+    public void setCardNo(String cardNo) {
+        this.cardNo = cardNo;
+    }
+
+    public String getPeopleAddress() {
+        return peopleAddress;
+    }
+
+    public void setPeopleAddress(String peopleAddress) {
+        this.peopleAddress = peopleAddress;
+    }
+
+    public String getIssuanceAuthority() {
+        return issuanceAuthority;
+    }
+
+    public void setIssuanceAuthority(String issuanceAuthority) {
+        this.issuanceAuthority = issuanceAuthority;
+    }
+
+    public Long getCardStartTime() {
+        return cardStartTime;
+    }
+
+    public void setCardStartTime(Long cardStartTime) {
+        this.cardStartTime = cardStartTime;
+    }
+
+    public Long getCardEndTime() {
+        return cardEndTime;
+    }
+
+    public void setCardEndTime(Long cardEndTime) {
+        this.cardEndTime = cardEndTime;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getFaceImg() {
+        return faceImg;
+    }
+
+    public void setFaceImg(String faceImg) {
+        this.faceImg = faceImg;
+    }
+
+    public String getPeopleName() {
+        return peopleName;
+    }
+
+    public void setPeopleName(String peopleName) {
+        this.peopleName = peopleName;
+    }
+
+    public Integer getResultCode() {
+        return resultCode;
+    }
+
+    public void setResultCode(Integer resultCode) {
+        this.resultCode = resultCode;
     }
 }

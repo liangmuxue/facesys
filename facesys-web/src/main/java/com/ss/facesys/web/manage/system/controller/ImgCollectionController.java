@@ -119,4 +119,26 @@ public class ImgCollectionController extends BaseController {
         return resp;
     }
 
+    /**
+     * 查询收藏详情
+     *
+     * @param form
+     * @param bindingResult
+     * @return
+     * @throws BindException
+     */
+    @RequestMapping(value = {"/detail"}, method = {RequestMethod.POST})
+    public ResponseEntity<ImgCollectionResultDTO> detail(@RequestBody ImgCollectionForm form, BindingResult bindingResult) throws BindException {
+        ResponseEntity<ImgCollectionResultDTO> resp = validite(bindingResult);
+        ImgCollection imgCollection = new ImgCollection();
+        BeanUtils.copyProperties(form, imgCollection);
+        try {
+            resp.setData(this.imgCollectionService.detail(imgCollection));
+        } catch (ServiceException e) {
+            this.logger.error("查询收藏详情失败，错误码：{}，异常信息：{}", e.getCode(), e.getMessage(), e);
+            return createFailResponse(e);
+        }
+        return resp;
+    }
+
 }
