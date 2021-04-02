@@ -96,4 +96,10 @@ public interface IFacedbfaceService {
      */
     void updateByExampleSelective(FacedbFace facedbFace, Example example);
 
+    /**
+     * 校验图片类型
+     * @param imgPath
+     */
+    Integer checkPic(String imgPath) throws ServiceException;
+
 }

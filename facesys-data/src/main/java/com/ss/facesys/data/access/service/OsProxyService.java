@@ -390,6 +390,17 @@ public class OsProxyService {
     }
 
     /**
+     * 校验图片类型
+     *
+     * @param parmJson
+     * @return
+     */
+    public static JSONObject checkPic(String parmJson) {
+        String resultString = BaseHttpUtil.httpPost(parmJson, PropertiesUtil.getSfgohttp() + SfgoHttpConstant.FACE_OR_BODY_CHECK, null);
+        return JSONObject.parseObject(resultString);
+    }
+
+    /**
      * 删除人像集信息
      *
      * @param paramJson

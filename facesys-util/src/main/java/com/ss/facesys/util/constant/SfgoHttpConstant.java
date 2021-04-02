@@ -67,4 +67,9 @@ public class SfgoHttpConstant {
      * 统计人脸/体聚类信息
      */
     public static String GET_CLUSTER = "/cluster/getClusterCount";
+
+    /**
+     * 人脸人体判断
+     */
+    public static String FACE_OR_BODY_CHECK = "/reid/check";
 }

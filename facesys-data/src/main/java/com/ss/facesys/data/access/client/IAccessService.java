@@ -250,6 +250,13 @@ public interface IAccessService {
     JSONObject facedbfaceInsert(String paramString);
 
     /**
+     * 校验图片类型
+     * @param paramString
+     * @return
+     */
+    JSONObject checkPic(String paramString);
+
+    /**
      * 删除人像集信息
      *
      * @param paramString

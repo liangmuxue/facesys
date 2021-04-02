@@ -206,6 +206,20 @@ public class FacedbfaceController extends BaseController {
         return resp;
     }
 
+    @PostMapping(value = {"/checkPic"})
+    @OpLog(model = ModuleCode.RESOURCE, desc = "校验图片类型", type = OperaTypeEnum.SELECT)
+    public ResponseEntity<Integer> checkPic(@RequestBody FacedbFaceForm form, BindingResult bindingResult) throws BindException {
+        ResponseEntity<Integer> resp = validite(bindingResult);
+        try {
+            Integer integer = facedbfaceService.checkPic(form.getFacePath());
+            resp.setData(integer);
+        } catch (ServiceException e) {
+            this.logger.error("校验图片类型失败，错误码：{}，异常信息：{}", e.getCode(), e.getMessage(), e);
+            return createFailResponse(e);
+        }
+        return resp;
+    }
+
     private FacedbFace getOriginalDbObj(Integer id) {
         FacedbFace vp = new FacedbFace();
         vp.setId(id);

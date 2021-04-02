@@ -23,6 +23,7 @@ import com.ss.facesys.util.file.FileConstant;
 import com.ss.facesys.util.file.FilePropertiesUtil;
 import com.ss.facesys.util.file.FileUtil;
 import com.ss.tools.DateUtils;
+import com.ss.tools.FileUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -478,6 +479,29 @@ public class FacedbfaceServiceImpl extends BaseServiceImpl implements IFacedbfac
     @Override
     public void updateByExampleSelective(FacedbFace facedbFace, Example example) {
         facedbFaceMapper.updateByExampleSelective(facedbFace, example);
+    }
+
+    /**
+     * 校验图片类型
+     * @param img
+     * @return
+     */
+    @Override
+    public Integer checkPic(String imgPath) throws ServiceException {
+        Integer type = null;
+        JSONObject param = new JSONObject();
+        try {
+            param.put("img", FileUtils.getBase64ByUrl(imgPath));
+        } catch (Exception e) {
+            throw new ServiceException(ResultCode.IMG_TO_BASE64_FAIL);
+        }
+        JSONObject oceanResult = accessService.checkPic(param.toJSONString());
+        if (!StringUtils.checkSuccess(oceanResult)) {
+            type = oceanResult.getInteger("result");
+        } else {
+            throw new ServiceException(oceanResult.getString("code"), oceanResult.getString("message"));
+        }
+        return type;
     }
 
     /**

@@ -202,6 +202,11 @@ public class AccessServiceImpl implements IAccessService {
     }
 
     @Override
+    public JSONObject checkPic(String paramString) {
+        return OsProxyService.checkPic(paramString);
+    }
+
+    @Override
     public JSONObject facedbfaceDelete(String paramJson) {
         return OsProxyService.facedbfaceDelete(paramJson);
     }
