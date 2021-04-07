@@ -169,7 +169,7 @@ public class CameraServiceImpl extends BaseServiceImpl implements ICameraService
             return num;
         }
         Long dbId = createDbId();
-        camera.setCameraId("device_" + dbId);
+        camera.setCameraId(String.valueOf(dbId));
         num = this.cameraMapper.insertCamera(camera);
         UserResource userResource = new UserResource();
         userResource.setType(ResourceType.CAMERA.getValue());

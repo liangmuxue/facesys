@@ -69,7 +69,7 @@ public class RecogCameraCaptureController extends BaseController {
             JSONObject params = new JSONObject();
             //根据条件决定传参是特征值字符串还是图片
             params.put("img", captureQuery.getImg());
-            params.put("groupId", StringUtils.join(captureQuery.getDeviceIds(), ","));
+            params.put("groupId", StringUtils.join(captureQuery.getVplatDeviceIds(), ","));
             if (captureQuery.getTopN() != null) {
                 params.put("topN", captureQuery.getTopN());
             }
@@ -99,7 +99,7 @@ public class RecogCameraCaptureController extends BaseController {
                 throw new ServiceException(ResultCode.RECOG_CAPTURE_VPLAT_FAIL);
             }
             // 将结果转换为数据传输对象
-            List<CompareResultDTO> resultList1 = BaseFormatJsonUtil.formatList(oceanResult.get("datas"), CompareResultDTO.class);
+            List<CompareResultDTO> resultList1 = BaseFormatJsonUtil.formatList(oceanResult.get("faces"), CompareResultDTO.class);
             if(resultList1 == null || resultList1.isEmpty()){
                 Page<PersonCaptureDTO> page = new Page<>();
                 page.setPageSize(captureQuery.getPageSize());
